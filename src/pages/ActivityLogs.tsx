@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,11 +19,25 @@ import {
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+interface ActivityLog {
+  id: number;
+  type: string;
+  action: string;
+  details: string;
+  user: string;
+  userAvatar: string;
+  timestamp: string;
+  entity: string;
+  entityId: string | null;
+  relatedTo: string;
+  changes: Record<string, string>;
+}
+
 export default function ActivityLogs() {
   const [searchQuery, setSearchQuery] = useState("");
 
   // Mock activity logs data
-  const activities = [
+  const activities: ActivityLog[] = [
     {
       id: 1,
       type: "deal_created",
@@ -276,7 +289,7 @@ export default function ActivityLogs() {
     }
   };
 
-  const ActivityItem = ({ activity }: { activity: any }) => {
+  const ActivityItem = ({ activity }: { activity: ActivityLog }) => {
     const ActivityIcon = getActivityIcon(activity.type);
     
     return (

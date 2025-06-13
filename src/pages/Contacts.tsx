@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -20,9 +19,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { AddContactModal } from "@/components/modals/AddContactModal";
 
 export default function Contacts() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [addContactOpen, setAddContactOpen] = useState(false);
 
   // Mock contact data
   const contacts = [
@@ -128,149 +129,153 @@ export default function Contacts() {
   );
 
   return (
-    <div className="space-y-6 animate-in">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Contact Management</h1>
-          <p className="text-muted-foreground mt-1">
-            Manage all your business contacts and relationships.
-          </p>
-        </div>
-        <Button className="gap-2">
-          <Plus size={16} />
-          Add Contact
-        </Button>
-      </div>
-
-      {/* Filters and Search */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <Input
-                placeholder="Search contacts by name, company, email, or position..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <Button variant="outline" className="gap-2">
-              <Filter size={16} />
-              Filter
-            </Button>
+    <>
+      <div className="space-y-6 animate-in">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Contact Management</h1>
+            <p className="text-muted-foreground mt-1">
+              Manage all your business contacts and relationships.
+            </p>
           </div>
-        </CardContent>
-      </Card>
+          <Button className="gap-2" onClick={() => setAddContactOpen(true)}>
+            <Plus size={16} />
+            Add Contact
+          </Button>
+        </div>
 
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-4">
+        {/* Filters and Search */}
         <Card>
           <CardContent className="p-6">
-            <div className="text-center">
-              <p className="text-2xl font-bold">{contacts.length}</p>
-              <p className="text-sm text-muted-foreground">Total Contacts</p>
+            <div className="flex items-center gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input
+                  placeholder="Search contacts by name, company, email, or position..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <Button variant="outline" className="gap-2">
+                <Filter size={16} />
+                Filter
+              </Button>
             </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="text-center">
-              <p className="text-2xl font-bold">{contacts.filter(c => c.status === "Active").length}</p>
-              <p className="text-sm text-muted-foreground">Active Contacts</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="text-center">
-              <p className="text-2xl font-bold">{contacts.filter(c => c.tags.includes("Decision Maker")).length}</p>
-              <p className="text-sm text-muted-foreground">Decision Makers</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="text-center">
-              <p className="text-2xl font-bold">{new Set(contacts.map(c => c.company)).size}</p>
-              <p className="text-sm text-muted-foreground">Companies</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
 
-      {/* Contact List */}
-      <Card>
-        <CardHeader>
-          <CardTitle>All Contacts ({filteredContacts.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {filteredContacts.map((contact) => (
-              <div key={contact.id} className="flex items-center gap-4 p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors">
-                <Avatar className="h-12 w-12">
-                  <AvatarFallback className="bg-primary/10 text-primary font-medium">
-                    {contact.avatar}
-                  </AvatarFallback>
-                </Avatar>
-                
-                <div className="flex-1 grid grid-cols-1 md:grid-cols-5 gap-4">
-                  <div className="md:col-span-2">
-                    <h4 className="font-medium">{contact.name}</h4>
-                    <p className="text-sm text-muted-foreground">{contact.position}</p>
-                    <p className="text-sm text-muted-foreground">{contact.company}</p>
-                  </div>
+        {/* Stats Cards */}
+        <div className="grid gap-4 md:grid-cols-4">
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-center">
+                <p className="text-2xl font-bold">{contacts.length}</p>
+                <p className="text-sm text-muted-foreground">Total Contacts</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-center">
+                <p className="text-2xl font-bold">{contacts.filter(c => c.status === "Active").length}</p>
+                <p className="text-sm text-muted-foreground">Active Contacts</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-center">
+                <p className="text-2xl font-bold">{contacts.filter(c => c.tags.includes("Decision Maker")).length}</p>
+                <p className="text-sm text-muted-foreground">Decision Makers</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6">
+              <div className="text-center">
+                <p className="text-2xl font-bold">{new Set(contacts.map(c => c.company)).size}</p>
+                <p className="text-sm text-muted-foreground">Companies</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Contact List */}
+        <Card>
+          <CardHeader>
+            <CardTitle>All Contacts ({filteredContacts.length})</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {filteredContacts.map((contact) => (
+                <div key={contact.id} className="flex items-center gap-4 p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors">
+                  <Avatar className="h-12 w-12">
+                    <AvatarFallback className="bg-primary/10 text-primary font-medium">
+                      {contact.avatar}
+                    </AvatarFallback>
+                  </Avatar>
                   
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2 text-sm">
-                      <Mail className="h-3 w-3 text-muted-foreground" />
-                      <span className="text-muted-foreground">{contact.email}</span>
+                  <div className="flex-1 grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <div className="md:col-span-2">
+                      <h4 className="font-medium">{contact.name}</h4>
+                      <p className="text-sm text-muted-foreground">{contact.position}</p>
+                      <p className="text-sm text-muted-foreground">{contact.company}</p>
                     </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Phone className="h-3 w-3 text-muted-foreground" />
-                      <span className="text-muted-foreground">{contact.phone}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <div className="flex flex-wrap gap-1">
-                      {contact.tags.map((tag, index) => (
-                        <Badge key={index} variant="secondary" className={`${getTagColor(tag)} text-xs`}>
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                    <p className="text-xs text-muted-foreground">Last contact: {contact.lastContact}</p>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <Badge className={`${getStatusColor(contact.status)} text-white text-xs`}>
-                      {contact.status}
-                    </Badge>
                     
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>View Details</DropdownMenuItem>
-                        <DropdownMenuItem>Edit Contact</DropdownMenuItem>
-                        <DropdownMenuItem>Send Email</DropdownMenuItem>
-                        <DropdownMenuItem>Schedule Meeting</DropdownMenuItem>
-                        <DropdownMenuItem>Add Note</DropdownMenuItem>
-                        <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 text-sm">
+                        <Mail className="h-3 w-3 text-muted-foreground" />
+                        <span className="text-muted-foreground">{contact.email}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <Phone className="h-3 w-3 text-muted-foreground" />
+                        <span className="text-muted-foreground">{contact.phone}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex flex-wrap gap-1">
+                        {contact.tags.map((tag, index) => (
+                          <Badge key={index} variant="secondary" className={`${getTagColor(tag)} text-xs`}>
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                      <p className="text-xs text-muted-foreground">Last contact: {contact.lastContact}</p>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <Badge className={`${getStatusColor(contact.status)} text-white text-xs`}>
+                        {contact.status}
+                      </Badge>
+                      
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="bg-background border" align="end">
+                          <DropdownMenuItem>View Details</DropdownMenuItem>
+                          <DropdownMenuItem>Edit Contact</DropdownMenuItem>
+                          <DropdownMenuItem>Send Email</DropdownMenuItem>
+                          <DropdownMenuItem>Schedule Meeting</DropdownMenuItem>
+                          <DropdownMenuItem>Add Note</DropdownMenuItem>
+                          <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <AddContactModal open={addContactOpen} onOpenChange={setAddContactOpen} />
+    </>
   );
 }

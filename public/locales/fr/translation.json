@@ -1,0 +1,55 @@
+
+{
+  "sidebar": {
+    "dashboard": "Tableau de bord",
+    "clients": "Clients",
+    "contacts": "Contacts",
+    "deals": "Opportunités",
+    "aiLeads": "Leads IA",
+    "tasks": "Tâches",
+    "calendar": "Calendrier",
+    "email": "Centre E-mail",
+    "notes": "Notes",
+    "reports": "Rapports",
+    "users": "Utilisateurs",
+    "settings": "Paramètres",
+    "workflows": "Workflows",
+    "activityLogs": "Journaux d'activité"
+  },
+  "topNav": {
+    "searchPlaceholder": "Rechercher...",
+    "quickAdd": "Ajout rapide",
+    "pageTitle": {
+      "dashboard": "Tableau de bord",
+      "clients": "Gestion des clients",
+      "contacts": "Gestion des contacts",
+      "deals": "Gestion des opportunités",
+      "tasks": "Gestion des tâches",
+      "calendar": "Calendrier",
+      "email": "Centre E-mail",
+      "notes": "Notes",
+      "reports": "Rapports & Analyses",
+      "users": "Gestion des utilisateurs",
+      "workflows": "Workflows",
+      "activityLogs": "Journaux d'activité",
+      "settings": "Paramètres",
+      "aiLeads": "Intelligence des leads par IA",
+      "fallback": "WOLFHUNT CRM"
+    },
+    "pageDescription": {
+      "dashboard": "Aperçu des performances de votre CRM",
+      "clients": "Gérez vos relations clients",
+      "contacts": "Gardez une trace de tous vos contacts",
+      "deals": "Surveillez votre pipeline de ventes",
+      "tasks": "Restez au top de vos tâches",
+      "calendar": "Planifiez et gérez les rendez-vous",
+      "email": "Communiquez avec vos clients",
+      "notes": "Capturez les informations importantes",
+      "aiLeads": "Génération de leads MENA et Europe avec IA avancée"
+    }
+  },
+  "languageSwitcher": {
+    "chooseLanguage": "Choisir la langue",
+    "moreComingSoon": "Plus de langues bientôt disponibles"
+  }
+}

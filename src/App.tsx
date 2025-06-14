@@ -9,6 +9,8 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { TopNavigation } from "@/components/layout/TopNavigation";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { pageVariants } from "@/lib/animations";
+import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
 
 // Pages
 import Dashboard from "./pages/Dashboard";
@@ -73,51 +75,65 @@ function AnimatedRoutes() {
   );
 }
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <motion.div 
-            className="min-h-screen flex w-full bg-background transition-theme duration-theme ease-theme"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <motion.div
-              className="transition-theme duration-theme ease-theme"
-              layout
-              transition={{ duration: 0.5, ease: "easeInOut" }}
-            >
-              <Sidebar />
-            </motion.div>
-            
+const App = () => {
+  const { i18n } = useTranslation();
+
+  useEffect(() => {
+    document.documentElement.lang = i18n.language;
+    document.documentElement.dir = i18n.dir(i18n.language);
+  }, [i18n, i18n.language]);
+  
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
             <motion.div 
-              className="flex-1 flex flex-col ml-64 transition-theme duration-theme ease-theme"
-              layout
-              transition={{ duration: 0.5, ease: "easeInOut" }}
+              className="min-h-screen flex w-full bg-background transition-theme duration-theme ease-theme"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
             >
               <motion.div
                 className="transition-theme duration-theme ease-theme"
                 layout
+                transition={{ duration: 0.5, ease: "easeInOut" }}
               >
-                <TopNavigation />
+                <Sidebar />
               </motion.div>
               
-              <motion.main 
-                className="flex-1 p-4 md:p-6 overflow-auto bg-background transition-theme duration-theme ease-theme"
+              <motion.div 
+                className="flex-1 flex flex-col ml-64 transition-theme duration-theme ease-theme"
                 layout
+                transition={{ duration: 0.5, ease: "easeInOut" }}
               >
-                <AnimatedRoutes />
-              </motion.main>
+                <motion.div
+                  className="transition-theme duration-theme ease-theme"
+                  layout
+                >
+                  <TopNavigation />
+                </motion.div>
+                
+                <motion.main 
+                  key={i18n.language}
+                  className="flex-1 p-4 md:p-6 overflow-auto bg-background transition-theme duration-theme ease-theme"
+                  layout
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <AnimatedRoutes />
+                </motion.main>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        </BrowserRouter>
-      </TooltipProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
-);
+          </BrowserRouter>
+        </TooltipProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  );
+}
 
 export default App;

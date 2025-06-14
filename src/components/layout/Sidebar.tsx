@@ -6,10 +6,12 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { navigationItems } from "@/data/navigationData";
 import { containerVariants, itemVariants } from "@/lib/animations";
+import { useTranslation } from "react-i18next";
 
 export function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
+  const { t } = useTranslation();
 
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
@@ -104,8 +106,8 @@ export function Sidebar() {
                     isCollapsed ? "justify-center" : "",
                     isActive && "bg-muted text-foreground"
                   )}
-                  title={isCollapsed ? item.label : undefined}
-                  aria-label={isCollapsed ? item.label : undefined}
+                  title={isCollapsed ? t(item.labelKey) : undefined}
+                  aria-label={isCollapsed ? t(item.labelKey) : undefined}
                 >
                   {/* Active indicator */}
                   {isActive && (
@@ -138,7 +140,7 @@ export function Sidebar() {
                           isActive ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
                         )}
                       >
-                        {item.label}
+                        {t(item.labelKey)}
                       </motion.span>
                     )}
                   </AnimatePresence>
@@ -146,7 +148,7 @@ export function Sidebar() {
                   {/* Tooltip for collapsed state */}
                   {isCollapsed && (
                     <div className="absolute left-full ml-2 px-2 py-1 bg-popover text-popover-foreground text-xs rounded-md opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-50 border border-border shadow-md">
-                      {item.label}
+                      {t(item.labelKey)}
                     </div>
                   )}
                 </Link>

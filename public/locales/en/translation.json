@@ -1,0 +1,55 @@
+
+{
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "clients": "Clients",
+    "contacts": "Contacts",
+    "deals": "Deals",
+    "aiLeads": "AI Leads",
+    "tasks": "Tasks",
+    "calendar": "Calendar",
+    "email": "Email Center",
+    "notes": "Notes",
+    "reports": "Reports",
+    "users": "Users",
+    "settings": "Settings",
+    "workflows": "Workflows",
+    "activityLogs": "Activity Logs"
+  },
+  "topNav": {
+    "searchPlaceholder": "Search anything...",
+    "quickAdd": "Quick Add",
+    "pageTitle": {
+      "dashboard": "Dashboard",
+      "clients": "Client Management",
+      "contacts": "Contact Management",
+      "deals": "Deal Management",
+      "tasks": "Task Management",
+      "calendar": "Calendar",
+      "email": "Email Center",
+      "notes": "Notes",
+      "reports": "Reports & Analytics",
+      "users": "User Management",
+      "workflows": "Workflows",
+      "activityLogs": "Activity Logs",
+      "settings": "Settings",
+      "aiLeads": "AI Lead Intelligence",
+      "fallback": "WOLFHUNT CRM"
+    },
+    "pageDescription": {
+      "dashboard": "Overview of your CRM performance",
+      "clients": "Manage your client relationships",
+      "contacts": "Keep track of all your contacts",
+      "deals": "Monitor your sales pipeline",
+      "tasks": "Stay on top of your tasks",
+      "calendar": "Schedule and manage appointments",
+      "email": "Communicate with your clients",
+      "notes": "Capture important information",
+      "aiLeads": "Advanced AI-powered lead generation for MENA & Europe"
+    }
+  },
+  "languageSwitcher": {
+    "chooseLanguage": "Choose Language",
+    "moreComingSoon": "More languages coming soon"
+  }
+}

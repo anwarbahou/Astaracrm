@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -19,43 +18,28 @@ import { NotificationSidebar } from "./NotificationSidebar";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ThemeToggle } from "./ThemeToggle";
 import { buttonVariants, fadeVariants, springConfig } from "@/lib/animations";
+import { useTranslation } from "react-i18next";
 
 export function TopNavigation() {
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [notificationCount] = useState(3); // Mock unread count
   const location = useLocation();
+  const { t } = useTranslation();
   
   const getPageTitle = () => {
     const path = location.pathname;
-    if (path === "/") return "Dashboard";
-    if (path.startsWith("/clients")) return "Client Management";
-    if (path === "/contacts") return "Contact Management";
-    if (path === "/deals") return "Deal Management";
-    if (path === "/tasks") return "Task Management";
-    if (path === "/calendar") return "Calendar";
-    if (path === "/email") return "Email Center";
-    if (path === "/notes") return "Notes";
-    if (path === "/reports") return "Reports & Analytics";
-    if (path === "/users") return "User Management";
-    if (path === "/workflows") return "Workflows";
-    if (path === "/activity-logs") return "Activity Logs";
-    if (path === "/settings") return "Settings";
-    if (path === "/ai-leads") return "AI Lead Intelligence";
-    return "WOLFHUNT CRM";
+    const key = `topNav.pageTitle.${path.replace('/', '') || 'dashboard'}`;
+    if (path.startsWith("/clients")) return t("topNav.pageTitle.clients");
+    if (i18n.exists(key)) return t(key);
+    return t("topNav.pageTitle.fallback");
   };
 
   const getPageDescription = () => {
     const path = location.pathname;
-    if (path === "/") return "Overview of your CRM performance";
-    if (path.startsWith("/clients")) return "Manage your client relationships";
-    if (path === "/contacts") return "Keep track of all your contacts";
-    if (path === "/deals") return "Monitor your sales pipeline";
-    if (path === "/tasks") return "Stay on top of your tasks";
-    if (path === "/calendar") return "Schedule and manage appointments";
-    if (path === "/email") return "Communicate with your clients";
-    if (path === "/notes") return "Capture important information";
-    if (path === "/ai-leads") return "Génération de leads MENA et Europe avec IA avancée";
+    const key = `topNav.pageDescription.${path.replace('/', '') || 'dashboard'}`;
+     if (path.startsWith("/clients")) return t("topNav.pageDescription.clients");
+    if (i18n.exists(key)) return t(key);
     return "";
   };
 
@@ -111,10 +95,10 @@ export function TopNavigation() {
                 whileHover={{ scale: 1.02 }}
                 transition={springConfig}
               >
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 rtl:right-3 rtl:left-auto" />
                 <Input
-                  placeholder="Search anything..."
-                  className="pl-10 w-80 border-border/50 focus:border-primary/50 transition-all duration-200 focus:shadow-md"
+                  placeholder={t("topNav.searchPlaceholder")}
+                  className="pl-10 w-80 border-border/50 focus:border-primary/50 transition-all duration-200 focus:shadow-md rtl:pr-10 rtl:pl-4"
                 />
               </motion.div>
               
@@ -173,7 +157,7 @@ export function TopNavigation() {
                   onClick={() => setQuickAddOpen(true)}
                 >
                   <Plus size={16} />
-                  Quick Add
+                  {t('topNav.quickAdd')}
                 </Button>
               </motion.div>
               

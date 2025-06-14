@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -17,51 +18,20 @@ interface Language {
 }
 
 const languages: Language[] = [
-  {
-    code: "fr",
-    name: "French",
-    nativeName: "Français",
-    flag: "🇫🇷"
-  },
-  {
-    code: "en",
-    name: "English",
-    nativeName: "English",
-    flag: "🇬🇧"
-  },
-  {
-    code: "ar",
-    name: "Arabic",
-    nativeName: "العربية",
-    flag: "🇲🇦"
-  },
-  {
-    code: "es",
-    name: "Spanish",
-    nativeName: "Español",
-    flag: "🇪🇸"
-  }
+  { code: "en", name: "English", nativeName: "English", flag: "🇬🇧" },
+  { code: "fr", name: "French", nativeName: "Français", flag: "🇫🇷" },
+  { code: "ar", name: "Arabic", nativeName: "العربية", flag: "🇸🇦" },
 ];
 
 export function LanguageSwitcher() {
-  const [currentLanguage, setCurrentLanguage] = useState<Language>(() => {
-    const stored = localStorage.getItem('language');
-    return languages.find(lang => lang.code === stored) || languages[0];
-  });
+  const { i18n, t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
+  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
+
   const handleLanguageChange = (language: Language) => {
-    setCurrentLanguage(language);
+    i18n.changeLanguage(language.code);
     setIsOpen(false);
-    
-    // Store in localStorage
-    localStorage.setItem('language', language.code);
-    
-    // Simulate language change - in a real app, this would trigger i18n
-    console.log(`Switching to ${language.name} (${language.code})`);
-    
-    // You could dispatch a global state change here for actual translation
-    // dispatch(setLanguage(language.code));
   };
 
   return (
@@ -90,7 +60,7 @@ export function LanguageSwitcher() {
       >
         <div className="p-2">
           <div className="text-xs text-muted-foreground mb-2 px-2">
-            Choose Language
+            {t('languageSwitcher.chooseLanguage')}
           </div>
           
           {languages.map((language) => (
@@ -128,7 +98,7 @@ export function LanguageSwitcher() {
         
         <div className="border-t border-border mt-2 pt-2 px-2">
           <div className="text-xs text-muted-foreground px-2 py-1">
-            More languages coming soon
+            {t('languageSwitcher.moreComingSoon')}
           </div>
         </div>
       </DropdownMenuContent>

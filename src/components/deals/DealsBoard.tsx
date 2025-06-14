@@ -45,8 +45,8 @@ export function DealsBoard({ deals, onDealClick, onDealEdit, onDealDelete }: Dea
                     key={deal.id} 
                     deal={deal}
                     onClick={onDealClick}
-                    onEdit={onDealEdit}
-                    onDelete={onDealDelete}
+                    onDragStart={() => {}}
+                    onDragEnd={() => {}}
                   />
                 ))}
                 {stageDeals.length === 0 && (

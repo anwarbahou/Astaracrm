@@ -21,7 +21,15 @@ export interface Deal {
   files?: DealFile[];
 }
 
-export type DealStage = 'Discovery' | 'Qualified' | 'Proposal' | 'Negotiation' | 'Closed Won' | 'Closed Lost';
+export type DealStage = 'Prospect' | 'Lead' | 'Qualified' | 'Negotiation' | 'Won/Lost';
+
+export interface PipelineStage {
+  id: string;
+  name: DealStage;
+  color: string;
+  icon: string;
+  order: number;
+}
 
 export interface DealActivity {
   id: string;

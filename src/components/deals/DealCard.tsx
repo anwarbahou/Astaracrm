@@ -1,115 +1,100 @@
 
 import { Deal } from '@/types/deal';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Calendar, DollarSign, User, MoreHorizontal } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { Calendar, User } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface DealCardProps {
   deal: Deal;
   onClick: (deal: Deal) => void;
-  onEdit: (deal: Deal) => void;
-  onDelete: (dealId: string) => void;
+  onDragStart: (deal: Deal) => void;
+  onDragEnd: () => void;
 }
 
-export function DealCard({ deal, onClick, onEdit, onDelete }: DealCardProps) {
+export function DealCard({ deal, onClick, onDragStart, onDragEnd }: DealCardProps) {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'High': return 'bg-red-100 text-red-800';
-      case 'Medium': return 'bg-yellow-100 text-yellow-800';
-      case 'Low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'High': return 'bg-red-500/20 text-red-400 border-red-500/30';
+      case 'Medium': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+      case 'Low': return 'bg-green-500/20 text-green-400 border-green-500/30';
+      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
     }
   };
 
-  const handleCardClick = (e: React.MouseEvent) => {
-    e.preventDefault();
+  const handleDragStart = (e: React.DragEvent) => {
+    onDragStart(deal);
+  };
+
+  const handleClick = () => {
     onClick(deal);
-  };
-
-  const handleEdit = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onEdit(deal);
-  };
-
-  const handleDelete = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    onDelete(deal.id);
   };
 
   return (
     <div 
-      className="bg-card border border-border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
-      onClick={handleCardClick}
+      className="bg-gray-700 border border-gray-600 rounded-lg p-4 cursor-pointer transition-all duration-200 hover:bg-gray-600 hover:shadow-lg hover:scale-[1.02] group"
+      onClick={handleClick}
+      draggable
+      onDragStart={handleDragStart}
+      onDragEnd={onDragEnd}
     >
       <div className="space-y-3">
-        <div className="flex items-start justify-between">
-          <h4 className="font-medium text-sm leading-tight">{deal.name}</h4>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-              <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                <MoreHorizontal className="h-3 w-3" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={handleEdit}>Edit Deal</DropdownMenuItem>
-              <DropdownMenuItem>Add Note</DropdownMenuItem>
-              <DropdownMenuItem>Schedule Follow-up</DropdownMenuItem>
-              <DropdownMenuItem className="text-red-600" onClick={handleDelete}>
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+        {/* Deal Name */}
+        <h4 className="font-semibold text-white text-sm leading-tight group-hover:text-blue-300 transition-colors">
+          {deal.name}
+        </h4>
+        
+        {/* Client */}
+        <p className="text-gray-300 text-sm">{deal.client}</p>
+        
+        {/* Value and Priority */}
+        <div className="flex items-center justify-between">
+          <span className="font-bold text-green-400 text-lg">
+            {deal.value.toLocaleString()} {deal.currency}
+          </span>
+          <Badge className={cn("text-xs", getPriorityColor(deal.priority))}>
+            {deal.priority}
+          </Badge>
         </div>
         
-        <div className="space-y-2">
-          <p className="text-sm text-muted-foreground">{deal.client}</p>
-          <div className="flex items-center justify-between">
-            <span className="font-semibold text-lg">
-              {deal.value.toLocaleString()} {deal.currency}
-            </span>
-            <Badge variant="secondary" className={getPriorityColor(deal.priority)}>
-              {deal.priority}
-            </Badge>
+        {/* Probability Bar */}
+        <div className="space-y-1">
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-gray-400">Probability</span>
+            <span className="text-gray-300">{deal.probability}%</span>
           </div>
-        </div>
-        
-        <div className="space-y-2">
-          <div className="flex items-center justify-between text-sm">
-            <span>Probability</span>
-            <span>{deal.probability}%</span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-gray-800 rounded-full h-2">
             <div 
-              className="bg-primary h-2 rounded-full transition-all" 
+              className="bg-blue-500 h-2 rounded-full transition-all duration-300" 
               style={{ width: `${deal.probability}%` }}
-            ></div>
+            />
           </div>
         </div>
         
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
+        {/* Meta Info */}
+        <div className="flex items-center justify-between text-xs text-gray-400">
           <div className="flex items-center gap-1">
             <Calendar className="h-3 w-3" />
             <span>{new Date(deal.expectedCloseDate).toLocaleDateString()}</span>
           </div>
           <div className="flex items-center gap-1">
             <User className="h-3 w-3" />
-            <span className="truncate">{deal.owner}</span>
+            <span className="truncate max-w-[80px]">{deal.owner}</span>
           </div>
         </div>
 
+        {/* Tags */}
         {deal.tags.length > 0 && (
           <div className="flex flex-wrap gap-1">
-            {deal.tags.map((tag, index) => (
-              <Badge key={index} variant="outline" className="text-xs">
+            {deal.tags.slice(0, 2).map((tag, index) => (
+              <Badge key={index} variant="outline" className="text-xs bg-gray-800 text-gray-300 border-gray-600">
                 {tag}
               </Badge>
             ))}
+            {deal.tags.length > 2 && (
+              <Badge variant="outline" className="text-xs bg-gray-800 text-gray-300 border-gray-600">
+                +{deal.tags.length - 2}
+              </Badge>
+            )}
           </div>
         )}
       </div>

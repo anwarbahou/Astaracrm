@@ -48,7 +48,7 @@ function AnimatedRoutes() {
         initial="initial"
         animate="animate"
         exit="exit"
-        className="flex-1"
+        className="flex-1 transition-theme duration-theme ease-theme"
       >
         <Routes location={location}>
           <Route path="/" element={<Dashboard />} />
@@ -81,20 +81,33 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <motion.div 
-            className="min-h-screen flex w-full bg-background transition-colors duration-500"
+            className="min-h-screen flex w-full bg-background transition-theme duration-theme ease-theme"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <Sidebar />
-            <motion.div 
-              className="flex-1 flex flex-col ml-64"
+            <motion.div
+              className="transition-theme duration-theme ease-theme"
               layout
               transition={{ duration: 0.5, ease: "easeInOut" }}
             >
-              <TopNavigation />
+              <Sidebar />
+            </motion.div>
+            
+            <motion.div 
+              className="flex-1 flex flex-col ml-64 transition-theme duration-theme ease-theme"
+              layout
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+            >
+              <motion.div
+                className="transition-theme duration-theme ease-theme"
+                layout
+              >
+                <TopNavigation />
+              </motion.div>
+              
               <motion.main 
-                className="flex-1 p-4 md:p-6 overflow-auto"
+                className="flex-1 p-4 md:p-6 overflow-auto bg-background transition-theme duration-theme ease-theme"
                 layout
               >
                 <AnimatedRoutes />

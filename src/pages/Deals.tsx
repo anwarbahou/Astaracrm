@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,8 +5,7 @@ import { Input } from "@/components/ui/input";
 import { 
   Search, 
   Plus, 
-  Filter,
-  Eye
+  Filter
 } from "lucide-react";
 import { Deal, DealFilters } from '@/types/deal';
 import { mockDeals } from '@/data/mockDeals';
@@ -15,6 +13,8 @@ import { DealsBoard } from '@/components/deals/DealsBoard';
 import { DealModal } from '@/components/deals/DealModal';
 import { AddDealModal } from '@/components/deals/AddDealModal';
 import { FiltersPanel } from '@/components/deals/FiltersPanel';
+import { DealsViewToggle } from '@/components/deals/DealsViewToggle';
+import { DealsListTable } from '@/components/deals/DealsListTable';
 
 export default function Deals() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -121,9 +121,7 @@ export default function Deals() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setViewMode(viewMode === "kanban" ? "list" : "kanban")}>
-            {viewMode === "kanban" ? "List View" : "Kanban View"}
-          </Button>
+          <DealsViewToggle viewMode={viewMode} onViewModeChange={setViewMode} />
           <Button onClick={() => setAddDealModalOpen(true)} className="gap-2">
             <Plus size={16} />
             Add Deal
@@ -201,7 +199,7 @@ export default function Deals() {
         </Card>
       </div>
 
-      {/* Deals Board */}
+      {/* Deals Content - Toggle between views */}
       {viewMode === "kanban" ? (
         <DealsBoard
           deals={filteredDeals}
@@ -212,9 +210,10 @@ export default function Deals() {
       ) : (
         <Card>
           <CardContent className="p-6">
-            <div className="text-center py-8 text-muted-foreground">
-              List view will be implemented in a future update
-            </div>
+            <DealsListTable
+              deals={filteredDeals}
+              onDealClick={handleDealClick}
+            />
           </CardContent>
         </Card>
       )}

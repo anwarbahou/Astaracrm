@@ -49,84 +49,90 @@ export function ResearchAssistant() {
 
   const [generatedLeads, setGeneratedLeads] = useState<any[]>([]);
 
+  // Moroccan and regional focus
   const industryOptions = [
-    "SaaS", "Fintech", "Healthcare", "E-commerce", "Manufacturing", 
-    "Consulting", "Real Estate", "Education", "Media", "Non-profit"
+    "Tech & IA", "Fintech", "E-commerce", "Tourisme", "Immobilier", 
+    "Éducation", "Santé", "Automobile", "Agroalimentaire", "Énergie", 
+    "Télécoms", "Transport & Logistique"
   ];
 
   const countryOptions = [
-    "United States", "Canada", "United Kingdom", "Germany", "France",
-    "Australia", "Netherlands", "Sweden", "Singapore", "Brazil"
+    "Maroc", "Émirats Arabes Unis", "Arabie Saoudite", "Égypte", "Jordanie",
+    "Liban", "Tunisie", "Algérie", "France", "Espagne", "Allemagne", "Royaume-Uni"
   ];
 
   const companySizeOptions = [
-    "1-10 employees", "11-50 employees", "51-200 employees", 
-    "201-500 employees", "501-1000 employees", "1000+ employees"
+    "1-10 employés", "11-50 employés", "51-200 employés", 
+    "201-500 employés", "501-1000 employés", "1000+ employés"
   ];
 
   const jobTitleOptions = [
-    "CEO", "CTO", "VP of Engineering", "Head of Marketing", "Sales Director",
-    "Product Manager", "Operations Manager", "Finance Director", "HR Director"
+    "PDG/CEO", "Directeur Général", "CTO", "CMO", "Directeur Marketing", 
+    "Directeur Commercial", "Responsable Digital", "Chef de Projet", 
+    "Directeur Financier", "Directeur RH", "Fondateur"
   ];
 
   const handleGenerate = async () => {
     setIsGenerating(true);
     
-    // Simulate AI lead generation
+    // Simulate AI lead generation with regional data
     setTimeout(() => {
       const mockLeads = [
         {
           id: 1,
-          name: "Alex Thompson",
-          company: "TechFlow Solutions",
-          position: "VP of Engineering",
-          email: "alex@techflow.io",
-          phone: "+1 (555) 123-4567",
-          location: "San Francisco, CA",
-          score: 92,
-          industry: searchParams.industry || "SaaS",
-          companySize: "150-200 employees",
+          name: "Karim El-Fassi",
+          company: "Marrakech Digital Solutions",
+          position: "Directeur Général",
+          email: "k.elfassi@marrakechdigital.ma",
+          phone: "+212 6 11 22 33 44",
+          location: "Marrakech, Maroc",
+          score: 94,
+          industry: searchParams.industry || "Tech & IA",
+          companySize: "100-200 employés",
+          country: "Maroc",
           enrichment: {
-            linkedin: "linkedin.com/in/alexthompson",
-            fundingStage: "Series B",
-            recentNews: "Raised $25M Series B round",
-            technologies: ["React", "AWS", "Kubernetes"]
+            linkedin: "linkedin.com/in/karimelfassi",
+            fundingStage: "Série A",
+            recentNews: "Levée de fonds 15M MAD",
+            technologies: ["React", "Node.js", "MongoDB"]
           }
         },
         {
           id: 2,
-          name: "Maria Garcia",
-          company: "InnovateLabs",
-          position: "Head of Product",
-          email: "maria@innovatelabs.co",
-          phone: "+1 (555) 234-5678",
-          location: "Austin, TX",
-          score: 87,
-          industry: searchParams.industry || "SaaS",
-          companySize: "50-100 employees",
+          name: "Amina Al-Zahra",
+          company: "Dubai Innovation Labs",
+          position: "Chief Innovation Officer",
+          email: "amina@dubaiinnovation.ae",
+          phone: "+971 50 987 6543",
+          location: "Dubai, EAU",
+          score: 91,
+          industry: searchParams.industry || "Tech & IA",
+          companySize: "200+ employés",
+          country: "Émirats Arabes Unis",
           enrichment: {
-            linkedin: "linkedin.com/in/mariagarcia",
-            fundingStage: "Seed",
-            recentNews: "Launched new product line",
-            technologies: ["Python", "Docker", "PostgreSQL"]
+            linkedin: "linkedin.com/in/aminaalzahra",
+            fundingStage: "Série B",
+            recentNews: "Expansion vers l'Afrique du Nord",
+            technologies: ["AI/ML", "Blockchain", "IoT"]
           }
         },
         {
           id: 3,
-          name: "David Chen",
-          company: "DataCorp Analytics",
-          position: "CTO",
-          email: "david@datacorp.com",
-          phone: "+1 (555) 345-6789",
-          location: "New York, NY",
-          score: 94,
-          industry: searchParams.industry || "Analytics",
-          companySize: "200+ employees",
+          name: "Hassan Benkirane",
+          company: "Casablanca Fintech",
+          position: "CEO & Fondateur",
+          email: "h.benkirane@casablancafintech.ma",
+          phone: "+212 6 77 88 99 00",
+          location: "Casablanca, Maroc",
+          score: 88,
+          industry: searchParams.industry || "Fintech",
+          companySize: "50-100 employés",
+          country: "Maroc",
           enrichment: {
-            linkedin: "linkedin.com/in/davidchen",
-            fundingStage: "Series C",
-            recentNews: "Acquired two competitors",
-            technologies: ["TensorFlow", "Spark", "Snowflake"]
+            linkedin: "linkedin.com/in/hassanbenkirane",
+            fundingStage: "Seed",
+            recentNews: "Partenariat avec Bank of Africa",
+            technologies: ["Python", "Django", "PostgreSQL"]
           }
         }
       ];
@@ -143,39 +149,39 @@ export function ResearchAssistant() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="gap-2 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border-purple-500/30 text-purple-300 hover:bg-purple-500/30">
+        <Button variant="outline" className="gap-2 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border-purple-500/20 hover:bg-purple-500/20">
           <Brain size={16} />
-          Research Assistant
+          Assistant Recherche
         </Button>
       </DialogTrigger>
       
-      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto bg-slate-900 border-white/10">
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-white text-xl flex items-center gap-2">
-            <Search className="text-purple-400" size={20} />
-            AI Research Assistant
+          <DialogTitle className="text-foreground text-xl flex items-center gap-2">
+            <Search className="text-purple-500" size={20} />
+            Assistant Recherche IA - MENA & Europe
           </DialogTitle>
         </DialogHeader>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
           {/* Search Parameters */}
           <div className="lg:col-span-1 space-y-6">
-            <div className="p-4 bg-white/5 rounded-lg border border-white/10">
-              <h3 className="text-white font-medium mb-4 flex items-center gap-2">
+            <div className="p-4 bg-muted/50 rounded-lg border">
+              <h3 className="text-foreground font-medium mb-4 flex items-center gap-2">
                 <Target size={16} />
-                Search Parameters
+                Paramètres de Recherche
               </h3>
 
               <div className="space-y-4">
                 <div>
-                  <Label className="text-white">Industry</Label>
+                  <Label className="text-foreground">Secteur d'Activité</Label>
                   <Select value={searchParams.industry} onValueChange={(value) => setSearchParams(prev => ({ ...prev, industry: value }))}>
-                    <SelectTrigger className="bg-white/5 border-white/20 text-white mt-1">
-                      <SelectValue placeholder="Select industry..." />
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Sélectionner un secteur..." />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-800 border-white/20">
+                    <SelectContent>
                       {industryOptions.map((industry) => (
-                        <SelectItem key={industry} value={industry} className="text-white hover:bg-white/10">
+                        <SelectItem key={industry} value={industry}>
                           {industry}
                         </SelectItem>
                       ))}
@@ -184,14 +190,14 @@ export function ResearchAssistant() {
                 </div>
 
                 <div>
-                  <Label className="text-white">Country</Label>
+                  <Label className="text-foreground">Pays/Région</Label>
                   <Select value={searchParams.country} onValueChange={(value) => setSearchParams(prev => ({ ...prev, country: value }))}>
-                    <SelectTrigger className="bg-white/5 border-white/20 text-white mt-1">
-                      <SelectValue placeholder="Select country..." />
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Sélectionner un pays..." />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-800 border-white/20">
+                    <SelectContent>
                       {countryOptions.map((country) => (
-                        <SelectItem key={country} value={country} className="text-white hover:bg-white/10">
+                        <SelectItem key={country} value={country}>
                           {country}
                         </SelectItem>
                       ))}
@@ -200,14 +206,14 @@ export function ResearchAssistant() {
                 </div>
 
                 <div>
-                  <Label className="text-white">Job Title</Label>
+                  <Label className="text-foreground">Poste/Fonction</Label>
                   <Select value={searchParams.jobTitle} onValueChange={(value) => setSearchParams(prev => ({ ...prev, jobTitle: value }))}>
-                    <SelectTrigger className="bg-white/5 border-white/20 text-white mt-1">
-                      <SelectValue placeholder="Select job title..." />
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Sélectionner un poste..." />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-800 border-white/20">
+                    <SelectContent>
                       {jobTitleOptions.map((title) => (
-                        <SelectItem key={title} value={title} className="text-white hover:bg-white/10">
+                        <SelectItem key={title} value={title}>
                           {title}
                         </SelectItem>
                       ))}
@@ -216,14 +222,14 @@ export function ResearchAssistant() {
                 </div>
 
                 <div>
-                  <Label className="text-white">Company Size</Label>
+                  <Label className="text-foreground">Taille Entreprise</Label>
                   <Select value={searchParams.companySize} onValueChange={(value) => setSearchParams(prev => ({ ...prev, companySize: value }))}>
-                    <SelectTrigger className="bg-white/5 border-white/20 text-white mt-1">
-                      <SelectValue placeholder="Select company size..." />
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Sélectionner une taille..." />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-800 border-white/20">
+                    <SelectContent>
                       {companySizeOptions.map((size) => (
-                        <SelectItem key={size} value={size} className="text-white hover:bg-white/10">
+                        <SelectItem key={size} value={size}>
                           {size}
                         </SelectItem>
                       ))}
@@ -232,12 +238,12 @@ export function ResearchAssistant() {
                 </div>
 
                 <div>
-                  <Label className="text-white">Keywords</Label>
+                  <Label className="text-foreground">Mots-clés Additionnels</Label>
                   <Textarea
-                    placeholder="Additional keywords or criteria..."
+                    placeholder="Critères supplémentaires, technologies, etc..."
                     value={searchParams.keywords}
                     onChange={(e) => setSearchParams(prev => ({ ...prev, keywords: e.target.value }))}
-                    className="bg-white/5 border-white/20 text-white mt-1"
+                    className="mt-1"
                     rows={3}
                   />
                 </div>
@@ -248,12 +254,12 @@ export function ResearchAssistant() {
                     checked={searchParams.deepEnrichment}
                     onCheckedChange={(checked) => setSearchParams(prev => ({ ...prev, deepEnrichment: checked }))}
                   />
-                  <Label htmlFor="deep-enrichment" className="text-white text-sm">
-                    Deep Enrichment
+                  <Label htmlFor="deep-enrichment" className="text-foreground text-sm">
+                    Enrichissement Avancé
                   </Label>
                 </div>
-                <p className="text-gray-400 text-xs">
-                  Include social profiles, funding data, and tech stack information
+                <p className="text-muted-foreground text-xs">
+                  Inclure profils sociaux, données de financement, et stack technologique
                 </p>
               </div>
 
@@ -265,12 +271,12 @@ export function ResearchAssistant() {
                 {isGenerating ? (
                   <>
                     <RefreshCw size={16} className="animate-spin" />
-                    Generating Leads...
+                    Génération en cours...
                   </>
                 ) : (
                   <>
                     <Sparkles size={16} />
-                    Generate Leads
+                    Générer des Leads
                   </>
                 )}
               </Button>
@@ -280,49 +286,49 @@ export function ResearchAssistant() {
           {/* Results */}
           <div className="lg:col-span-2 space-y-6">
             {isGenerating ? (
-              <div className="p-8 bg-white/5 rounded-lg border border-white/10 text-center">
-                <RefreshCw size={32} className="mx-auto text-purple-400 animate-spin mb-4" />
-                <h3 className="text-white font-medium mb-2">AI Research in Progress</h3>
-                <p className="text-gray-400">Scanning databases and enriching lead profiles...</p>
+              <div className="p-8 bg-muted/50 rounded-lg border text-center">
+                <RefreshCw size={32} className="mx-auto text-purple-500 animate-spin mb-4" />
+                <h3 className="text-foreground font-medium mb-2">Recherche IA en Cours</h3>
+                <p className="text-muted-foreground">Analyse des bases de données et enrichissement des profils...</p>
                 <div className="mt-4 space-y-2">
-                  <div className="text-sm text-gray-500">• Searching LinkedIn profiles</div>
-                  <div className="text-sm text-gray-500">• Analyzing company data</div>
-                  <div className="text-sm text-gray-500">• Enriching contact information</div>
+                  <div className="text-sm text-muted-foreground">• Recherche profils LinkedIn MENA</div>
+                  <div className="text-sm text-muted-foreground">• Analyse données entreprises</div>
+                  <div className="text-sm text-muted-foreground">• Enrichissement informations contact</div>
                 </div>
               </div>
             ) : generatedLeads.length > 0 ? (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-white font-medium flex items-center gap-2">
+                  <h3 className="text-foreground font-medium flex items-center gap-2">
                     <Users size={16} />
-                    Generated Leads ({generatedLeads.length})
+                    Leads Générés ({generatedLeads.length})
                   </h3>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline" className="gap-2 bg-white/5 border-white/20 text-white hover:bg-white/10">
+                    <Button size="sm" variant="outline" className="gap-2">
                       <Filter size={14} />
-                      Refine
+                      Affiner
                     </Button>
-                    <Button size="sm" onClick={handleExport} className="gap-2 bg-green-500 hover:bg-green-600">
+                    <Button size="sm" onClick={handleExport} className="gap-2">
                       <Download size={14} />
-                      Export to CRM
+                      Exporter vers CRM
                     </Button>
                   </div>
                 </div>
 
                 <div className="space-y-3">
                   {generatedLeads.map((lead) => (
-                    <div key={lead.id} className="p-4 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors">
+                    <div key={lead.id} className="p-4 bg-muted/50 rounded-lg border hover:bg-muted/70 transition-colors">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
                             <div>
-                              <h4 className="text-white font-medium">{lead.name}</h4>
-                              <p className="text-gray-400 text-sm">{lead.position} at {lead.company}</p>
+                              <h4 className="text-foreground font-medium">{lead.name}</h4>
+                              <p className="text-muted-foreground text-sm">{lead.position} chez {lead.company}</p>
                             </div>
                             <Badge className={`${
-                              lead.score >= 90 ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' :
-                              lead.score >= 80 ? 'bg-green-500/20 text-green-400 border-green-500/30' :
-                              'bg-amber-500/20 text-amber-400 border-amber-500/30'
+                              lead.score >= 90 ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' :
+                              lead.score >= 80 ? 'bg-green-500/10 text-green-600 border-green-500/20' :
+                              'bg-amber-500/10 text-amber-600 border-amber-500/20'
                             } border`}>
                               Score: {lead.score}
                             </Badge>
@@ -330,40 +336,40 @@ export function ResearchAssistant() {
 
                           <div className="grid grid-cols-2 gap-4 text-sm">
                             <div className="space-y-1">
-                              <div className="flex items-center gap-2 text-gray-300">
+                              <div className="flex items-center gap-2 text-muted-foreground">
                                 <Globe size={12} />
                                 {lead.location}
                               </div>
-                              <div className="flex items-center gap-2 text-gray-300">
+                              <div className="flex items-center gap-2 text-muted-foreground">
                                 <Building size={12} />
                                 {lead.companySize}
                               </div>
                             </div>
                             <div className="space-y-1">
-                              <div className="text-gray-300">{lead.email}</div>
-                              <div className="text-gray-300">{lead.phone}</div>
+                              <div className="text-muted-foreground">{lead.email}</div>
+                              <div className="text-muted-foreground">{lead.phone}</div>
                             </div>
                           </div>
 
                           {searchParams.deepEnrichment && lead.enrichment && (
-                            <div className="mt-3 pt-3 border-t border-white/10">
+                            <div className="mt-3 pt-3 border-t">
                               <div className="flex items-center gap-2 mb-2">
-                                <Zap size={14} className="text-purple-400" />
-                                <span className="text-purple-300 text-sm font-medium">Deep Enrichment Data</span>
+                                <Zap size={14} className="text-purple-500" />
+                                <span className="text-purple-600 text-sm font-medium">Données Enrichissement</span>
                               </div>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
                                 <div>
-                                  <span className="text-gray-400">Funding:</span>
-                                  <span className="text-gray-300 ml-2">{lead.enrichment.fundingStage}</span>
+                                  <span className="text-muted-foreground">Financement:</span>
+                                  <span className="text-foreground ml-2">{lead.enrichment.fundingStage}</span>
                                 </div>
                                 <div>
-                                  <span className="text-gray-400">Recent News:</span>
-                                  <span className="text-gray-300 ml-2">{lead.enrichment.recentNews}</span>
+                                  <span className="text-muted-foreground">Actualités:</span>
+                                  <span className="text-foreground ml-2">{lead.enrichment.recentNews}</span>
                                 </div>
                               </div>
                               <div className="flex gap-1 flex-wrap mt-2">
                                 {lead.enrichment.technologies.map((tech: string) => (
-                                  <Badge key={tech} variant="outline" className="text-xs border-white/20 text-gray-400">
+                                  <Badge key={tech} variant="outline" className="text-xs">
                                     {tech}
                                   </Badge>
                                 ))}
@@ -377,10 +383,10 @@ export function ResearchAssistant() {
                 </div>
               </div>
             ) : (
-              <div className="p-8 bg-white/5 rounded-lg border border-white/10 text-center">
-                <Brain size={32} className="mx-auto text-purple-400 mb-4" />
-                <h3 className="text-white font-medium mb-2">Ready to Generate Leads</h3>
-                <p className="text-gray-400">Configure your search parameters and click "Generate Leads" to start AI-powered research.</p>
+              <div className="p-8 bg-muted/50 rounded-lg border text-center">
+                <Brain size={32} className="mx-auto text-purple-500 mb-4" />
+                <h3 className="text-foreground font-medium mb-2">Prêt à Générer des Leads</h3>
+                <p className="text-muted-foreground">Configurez vos paramètres de recherche et cliquez sur "Générer des Leads" pour démarrer la recherche IA.</p>
               </div>
             )}
           </div>

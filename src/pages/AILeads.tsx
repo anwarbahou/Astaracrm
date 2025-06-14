@@ -20,7 +20,7 @@ import {
   Filter
 } from "lucide-react";
 
-// Import new components
+// Import components
 import { LeadsTable } from "@/components/leads/LeadsTable";
 import { LeadProfileModal } from "@/components/leads/LeadProfileModal";
 import { AdvancedFilters } from "@/components/leads/AdvancedFilters";
@@ -48,6 +48,7 @@ interface Lead {
   assignedTo?: string;
   dateAdded: string;
   aiInsights?: string;
+  country: string;
 }
 
 interface FilterState {
@@ -78,156 +79,184 @@ export default function AILeads() {
     dateRange: { start: "", end: "" }
   });
 
-  // Advanced lead stats with AI insights
+  // Enhanced lead stats with regional focus
   const leadStats = [
     { 
       label: "AI-Generated Leads", 
-      value: "2,847", 
-      change: "+23%",
+      value: "1,247", 
+      change: "+18%",
       icon: Bot, 
-      color: "text-blue-500",
+      color: "text-blue-400",
       bgColor: "bg-blue-500/10",
       trend: "up"
     },
     { 
-      label: "Qualified by AI", 
-      value: "891", 
-      change: "+31%",
+      label: "MENA Qualified", 
+      value: "423", 
+      change: "+25%",
       icon: Brain, 
-      color: "text-purple-500",
+      color: "text-purple-400",
       bgColor: "bg-purple-500/10",
       trend: "up"
     },
     { 
       label: "Conversion Rate", 
-      value: "43.2%", 
-      change: "+8.1%",
+      value: "38.7%", 
+      change: "+6.3%",
       icon: TrendingUp, 
-      color: "text-green-500",
-      bgColor: "bg-green-500/10",
+      color: "text-emerald-400",
+      bgColor: "bg-emerald-500/10",
       trend: "up"
     },
     { 
       label: "Active Campaigns", 
-      value: "12", 
-      change: "+3",
+      value: "8", 
+      change: "+2",
       icon: Target, 
-      color: "text-amber-500",
+      color: "text-amber-400",
       bgColor: "bg-amber-500/10",
       trend: "up"
     },
   ];
 
-  // Enhanced mock leads with AI insights
+  // Moroccan and regional lead data
   const mockLeads: Lead[] = [
     {
       id: 1,
-      name: "Sarah Johnson",
-      company: "TechFlow Solutions",
-      email: "sarah@techflow.io",
-      phone: "+1 (555) 234-5678",
-      position: "VP of Engineering",
-      score: 94,
+      name: "Aicha Bennani",
+      company: "Atlas Digital",
+      email: "a.bennani@atlasdigital.ma",
+      phone: "+212 6 12 34 56 78",
+      position: "Directrice Générale",
+      score: 92,
       status: "Hot",
-      source: "AI LinkedIn Scraper",
-      lastActivity: "2 hours ago",
-      aiInsights: "High intent signals detected. Viewed pricing 3x. Perfect fit for Enterprise plan.",
-      dealSize: "$45,000",
-      location: "San Francisco, CA",
-      companySize: "150-200 employees",
-      industry: "SaaS",
-      engagement: 92,
+      source: "AI LinkedIn Maroc",
+      lastActivity: "Il y a 1 heure",
+      aiInsights: "Fort intérêt pour les solutions digitales. A visité la page tarifs 4x. Parfait pour le plan Enterprise.",
+      dealSize: "285,000 MAD",
+      location: "Casablanca, Maroc",
+      country: "Morocco",
+      companySize: "50-100 employés",
+      industry: "Tech",
+      engagement: 94,
       avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400",
-      tags: ["Enterprise", "Hot Lead", "Decision Maker"],
-      assignedTo: "John Smith",
+      tags: ["Enterprise", "Lead Chaud", "Décideur"],
+      assignedTo: "Youssef Alami",
       dateAdded: "2024-01-15"
     },
     {
       id: 2,
-      name: "Michael Chen",
-      company: "DataCorp Analytics",
-      email: "m.chen@datacorp.com",
-      phone: "+1 (555) 345-6789",
-      position: "CTO",
-      score: 87,
-      status: "Warm",
-      source: "AI Content Engagement",
-      lastActivity: "6 hours ago",
-      aiInsights: "Downloaded 2 whitepapers. Strong technical interest. Schedule demo ASAP.",
-      dealSize: "$78,500",
-      location: "Austin, TX",
-      companySize: "50-100 employees",
-      industry: "Analytics",
-      engagement: 78,
+      name: "Omar Al-Rashid",
+      company: "Emirates FinTech",
+      email: "omar@emiratesfintech.ae",
+      phone: "+971 50 123 4567",
+      position: "Chief Technology Officer",
+      score: 89,
+      status: "Hot",
+      source: "AI Gulf Networks",
+      lastActivity: "2 hours ago",
+      aiInsights: "Active in fintech innovation. Downloaded 3 whitepapers. High-value prospect for Professional plan.",
+      dealSize: "$125,000",
+      location: "Dubai, UAE",
+      country: "UAE",
+      companySize: "200+ employees",
+      industry: "Fintech",
+      engagement: 91,
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400",
-      tags: ["Technical", "High Score", "Budget Confirmed"],
-      assignedTo: "Sarah Martinez",
+      tags: ["Fintech", "Innovation", "Gulf"],
+      assignedTo: "Sara Khalil",
       dateAdded: "2024-01-14"
     },
     {
       id: 3,
-      name: "Emily Rodriguez",
-      company: "InnovateLabs",
-      email: "emily@innovatelabs.co",
-      phone: "+1 (555) 456-7890",
-      position: "Head of Product",
-      score: 73,
+      name: "Fatima El-Khoury",
+      company: "Beirut Analytics",
+      email: "f.elkhoury@beirutanalytics.lb",
+      phone: "+961 3 456 789",
+      position: "Head of Data Science",
+      score: 85,
       status: "Warm",
-      source: "AI Event Tracker",
-      lastActivity: "1 day ago",
-      aiInsights: "Attended 3 webinars. Budget approved Q1. High-value prospect for Professional plan.",
-      dealSize: "$32,000",
-      location: "New York, NY",
-      companySize: "200+ employees",
-      industry: "Product",
-      engagement: 85,
+      source: "AI MENA Tracker",
+      lastActivity: "5 heures",
+      aiInsights: "Spécialiste en analytics. Budget approuvé Q1. Prospect de haute valeur pour le plan Professional.",
+      dealSize: "$67,500",
+      location: "Beyrouth, Liban",
+      country: "Lebanon",
+      companySize: "100-200 employés",
+      industry: "Analytics",
+      engagement: 82,
       avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400",
-      tags: ["Product", "Budget Approved", "Q1 Timeline"],
-      assignedTo: "Mike Johnson",
+      tags: ["Analytics", "Budget Approuvé", "MENA"],
+      assignedTo: "Hassan Medini",
       dateAdded: "2024-01-13"
     },
     {
       id: 4,
-      name: "David Park",
-      company: "CloudSecure Inc",
-      email: "david@cloudsecure.com",
-      phone: "+1 (555) 567-8901",
-      position: "Security Director",
-      score: 89,
+      name: "Ahmed Benali",
+      company: "Maroc Cyber Security",
+      email: "a.benali@maroccyber.ma",
+      phone: "+212 6 87 65 43 21",
+      position: "Directeur Sécurité",
+      score: 88,
       status: "Hot",
-      source: "AI LinkedIn Scraper",
-      lastActivity: "30 minutes ago",
-      aiInsights: "Actively researching security solutions. High engagement with our content.",
-      dealSize: "$95,000",
-      location: "Seattle, WA",
-      companySize: "300+ employees",
-      industry: "Security",
-      engagement: 94,
+      source: "AI LinkedIn Maroc",
+      lastActivity: "45 minutes",
+      aiInsights: "Recherche active de solutions de sécurité. Fort engagement avec notre contenu.",
+      dealSize: "320,000 MAD",
+      location: "Rabat, Maroc",
+      country: "Morocco",
+      companySize: "150+ employés",
+      industry: "Cybersécurité",
+      engagement: 89,
       avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
-      tags: ["Security", "High Intent", "Enterprise"],
-      assignedTo: "Lisa Chen",
+      tags: ["Sécurité", "Haute Intention", "Maroc"],
+      assignedTo: "Laila Benjelloun",
       dateAdded: "2024-01-12"
     },
     {
       id: 5,
-      name: "Amanda Foster",
-      company: "RetailMax Solutions",
-      email: "amanda@retailmax.com",
-      phone: "+1 (555) 678-9012",
+      name: "Sofia Martínez",
+      company: "Madrid Digital Hub",
+      email: "sofia@madriddigital.es",
+      phone: "+34 91 123 4567",
       position: "Chief Digital Officer",
-      score: 76,
+      score: 79,
       status: "Warm",
-      source: "AI Content Engagement",
-      lastActivity: "3 hours ago",
-      aiInsights: "Digital transformation focus. Evaluating multiple vendors.",
-      dealSize: "$52,000",
-      location: "Chicago, IL",
-      companySize: "500+ employees",
-      industry: "Retail",
-      engagement: 71,
+      source: "AI Europa Networks",
+      lastActivity: "2 horas",
+      aiInsights: "Enfoque en transformación digital. Evaluando múltiples proveedores.",
+      dealSize: "€95,000",
+      location: "Madrid, España",
+      country: "Spain",
+      companySize: "300+ empleados",
+      industry: "Digital",
+      engagement: 76,
       avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400",
-      tags: ["Digital Transform", "Multi-vendor", "Large Enterprise"],
+      tags: ["Transformación Digital", "Europa", "Gran Empresa"],
       dateAdded: "2024-01-11"
+    },
+    {
+      id: 6,
+      name: "Mehdi Tazi",
+      company: "Fes Tech Innovation",
+      email: "m.tazi@festech.ma",
+      phone: "+212 6 55 44 33 22",
+      position: "Fondateur & CEO",
+      score: 91,
+      status: "Hot",
+      source: "AI Startup Maroc",
+      lastActivity: "30 minutes",
+      aiInsights: "Startup prometteuse avec financement récent. Intérêt fort pour l'automatisation.",
+      dealSize: "180,000 MAD",
+      location: "Fès, Maroc",
+      country: "Morocco",
+      companySize: "25-50 employés",
+      industry: "Startup",
+      engagement: 93,
+      avatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400",
+      tags: ["Startup", "Innovation", "Financement"],
+      assignedTo: "Nadia Chraibi",
+      dateAdded: "2024-01-10"
     }
   ];
 
@@ -256,83 +285,81 @@ export default function AILeads() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
-      {/* Glassmorphism Header */}
-      <div className="mb-8">
-        <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl p-6 shadow-2xl">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl">
-                <Bot className="text-white" size={28} />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                  AI Lead Intelligence
-                </h1>
-                <p className="text-gray-400 mt-1">
-                  Enterprise-grade lead generation powered by advanced AI
-                </p>
-              </div>
-            </div>
-            <div className="flex gap-3">
-              <ResearchAssistant />
-              <Button 
-                variant="outline" 
-                className="gap-2 bg-white/5 border-white/20 text-white hover:bg-white/10"
-                onClick={() => setAiInsightsVisible(!aiInsightsVisible)}
-              >
-                <Brain size={16} />
-                AI Insights
-              </Button>
-              <NewCampaignModal />
-            </div>
+    <div className="min-h-screen bg-background p-4 md:p-6 space-y-6">
+      {/* Header Section */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-lg">
+            <Bot className="text-white" size={28} />
           </div>
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+              AI Lead Intelligence
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              Génération de leads MENA et Europe avec IA avancée
+            </p>
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <ResearchAssistant />
+          <Button 
+            variant="outline" 
+            className="gap-2"
+            onClick={() => setAiInsightsVisible(!aiInsightsVisible)}
+          >
+            <Brain size={16} />
+            AI Insights
+          </Button>
+          <NewCampaignModal />
         </div>
       </div>
 
       {/* AI Insights Panel */}
       {aiInsightsVisible && (
-        <div className="mb-6 backdrop-blur-xl bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-2xl p-6 animate-fade-in">
-          <div className="flex items-center gap-3 mb-4">
-            <Sparkles className="text-purple-400" size={20} />
-            <h3 className="text-lg font-semibold text-white">AI Insights & Recommendations</h3>
-          </div>
-          <div className="grid md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <p className="text-gray-300 text-sm">🎯 3 hot leads ready for immediate contact</p>
-              <p className="text-gray-300 text-sm">🚀 Best performing source: LinkedIn AI Scraper</p>
-              <p className="text-gray-300 text-sm">💡 Recommended: Follow up with Enterprise prospects within 2 hours</p>
+        <Card className="border-purple-500/20 bg-gradient-to-r from-purple-500/5 to-blue-500/5">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <Sparkles className="text-purple-400" size={20} />
+              <h3 className="text-lg font-semibold text-foreground">Insights & Recommandations IA</h3>
             </div>
-            <div className="space-y-2">
-              <p className="text-gray-300 text-sm">📈 Revenue pipeline up 67% vs last month</p>
-              <p className="text-gray-300 text-sm">🎉 12 active campaigns generating quality leads</p>
-              <p className="text-gray-300 text-sm">⚡ AI automation saved 23 hours this week</p>
+            <div className="grid md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">🎯 4 leads chauds prêts pour contact immédiat</p>
+                <p className="text-sm text-muted-foreground">🚀 Meilleure source: LinkedIn Maroc AI</p>
+                <p className="text-sm text-muted-foreground">💡 Recommandé: Suivre les prospects Enterprise sous 2h</p>
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">📈 Pipeline revenus +45% vs mois dernier</p>
+                <p className="text-sm text-muted-foreground">🎉 8 campagnes actives générant des leads qualifiés</p>
+                <p className="text-sm text-muted-foreground">⚡ Automatisation IA: 19h économisées cette semaine</p>
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">🔥 Leads haute intention +28% cette semaine</p>
+                <p className="text-sm text-muted-foreground">💼 Taille moyenne deal: 195,000 MAD</p>
+                <p className="text-sm text-muted-foreground">📊 Taux conversion amélioré à 38.7%</p>
+              </div>
             </div>
-            <div className="space-y-2">
-              <p className="text-gray-300 text-sm">🔥 High-intent leads increased 34% this week</p>
-              <p className="text-gray-300 text-sm">💼 Average deal size: $58,500</p>
-              <p className="text-gray-300 text-sm">📊 Conversion rate improved to 43.2%</p>
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       )}
 
-      {/* Advanced Stats Grid */}
-      <div className="grid gap-6 md:grid-cols-4 mb-8">
+      {/* Stats Grid */}
+      <div className="grid gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-4">
         {leadStats.map((stat, index) => {
           const IconComponent = stat.icon;
           return (
-            <Card key={index} className="backdrop-blur-xl bg-white/5 border-white/10 hover:bg-white/10 transition-all duration-300 group">
+            <Card key={index} className="hover:shadow-lg transition-all duration-300 group">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-2xl font-bold text-white group-hover:scale-105 transition-transform">
+                    <p className="text-2xl font-bold text-foreground group-hover:scale-105 transition-transform">
                       {stat.value}
                     </p>
-                    <p className="text-sm text-gray-400">{stat.label}</p>
+                    <p className="text-sm text-muted-foreground">{stat.label}</p>
                     <div className="flex items-center gap-1 mt-1">
-                      <TrendingUp size={12} className="text-green-400" />
-                      <span className="text-xs text-green-400">{stat.change}</span>
+                      <TrendingUp size={12} className="text-emerald-500" />
+                      <span className="text-xs text-emerald-500">{stat.change}</span>
                     </div>
                   </div>
                   <div className={`p-3 rounded-xl ${stat.bgColor}`}>
@@ -346,28 +373,28 @@ export default function AILeads() {
       </div>
 
       {/* Search & Filters */}
-      <Card className="mb-6 backdrop-blur-xl bg-white/5 border-white/10">
+      <Card>
         <CardContent className="p-6">
           <div className="flex items-center gap-4 flex-wrap mb-4">
             <div className="flex-1 min-w-[300px]">
               <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search leads by name, company, or email..."
+                  placeholder="Rechercher par nom, entreprise, ou email..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-white/5 border-white/20 text-white placeholder:text-gray-400"
+                  className="pl-10"
                 />
               </div>
             </div>
-            <Button variant="outline" className="gap-2 bg-white/5 border-white/20 text-white hover:bg-white/10">
+            <Button variant="outline" className="gap-2">
               <BarChart3 size={16} />
               Analytics
             </Button>
             {selectedLeads.length > 0 && (
-              <Button onClick={handleBulkExport} variant="outline" className="gap-2 bg-green-500/20 border-green-500/30 text-green-400 hover:bg-green-500/30">
+              <Button onClick={handleBulkExport} variant="outline" className="gap-2">
                 <Download size={16} />
-                Export ({selectedLeads.length})
+                Exporter ({selectedLeads.length})
               </Button>
             )}
           </div>
@@ -379,23 +406,23 @@ export default function AILeads() {
         </CardContent>
       </Card>
 
-      {/* Enhanced Leads Table */}
-      <Card className="backdrop-blur-xl bg-white/5 border-white/10">
+      {/* Leads Table */}
+      <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-white flex items-center gap-2">
+            <CardTitle className="text-foreground flex items-center gap-2">
               <Users size={20} />
-              Lead Pipeline ({filteredLeads.length})
+              Pipeline Leads ({filteredLeads.length})
             </CardTitle>
             <div className="flex items-center gap-2">
-              <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30">
-                {filteredLeads.filter(l => l.status === 'Hot').length} Hot
+              <Badge variant="secondary" className="bg-red-500/10 text-red-400 border-red-500/20">
+                {filteredLeads.filter(l => l.status === 'Hot').length} Chauds
               </Badge>
-              <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30">
-                {filteredLeads.filter(l => l.status === 'Warm').length} Warm
+              <Badge variant="secondary" className="bg-amber-500/10 text-amber-400 border-amber-500/20">
+                {filteredLeads.filter(l => l.status === 'Warm').length} Tièdes
               </Badge>
-              <Badge className="bg-gray-500/20 text-gray-300 border-gray-500/30">
-                {filteredLeads.filter(l => l.status === 'Cold').length} Cold
+              <Badge variant="secondary" className="bg-blue-500/10 text-blue-400 border-blue-500/20">
+                {filteredLeads.filter(l => l.status === 'Cold').length} Froids
               </Badge>
             </div>
           </div>
@@ -409,10 +436,10 @@ export default function AILeads() {
           />
 
           {/* AI Insights Footer */}
-          <div className="mt-6 p-4 backdrop-blur-sm bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-lg border border-blue-500/20">
-            <div className="flex items-center gap-2 text-sm text-blue-300">
+          <div className="mt-6 p-4 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-lg border border-blue-500/10">
+            <div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
               <Brain size={16} />
-              <strong>AI Recommendation:</strong> Focus on hot leads in the next 2 hours for optimal conversion rates. Sarah Johnson and David Park show highest purchase intent.
+              <strong>Recommandation IA:</strong> Concentrez-vous sur Aicha Bennani et Mehdi Tazi dans les 2 prochaines heures pour un taux de conversion optimal.
             </div>
           </div>
         </CardContent>

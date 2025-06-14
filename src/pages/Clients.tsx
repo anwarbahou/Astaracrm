@@ -1,17 +1,48 @@
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Navigate } from "react-router-dom";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, LogOut } from "lucide-react";
 import { AddClientModal } from "@/components/modals/AddClientModal";
-import { ClientsTable, Client } from "@/components/clients/ClientsTable";
+import { ClientsTable } from "@/components/clients/ClientsTable";
 import { ClientProfileModal } from "@/components/clients/ClientProfileModal";
 import { ClientFiltersPanel } from "@/components/clients/ClientFiltersPanel";
+import { useClients } from "@/hooks/useClients";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
+import type { Database } from '@/integrations/supabase/types';
+
+type Client = Database['public']['Tables']['clients']['Row'];
+
+// Transform database client to match the existing Client interface
+const transformClientForTable = (dbClient: Client) => ({
+  id: dbClient.id,
+  name: dbClient.name || '',
+  email: dbClient.email || '',
+  phone: dbClient.phone || '',
+  industry: dbClient.industry || '',
+  stage: dbClient.stage || 'lead',
+  tags: dbClient.tags || [],
+  owner: 'Current User', // We'll enhance this later when we have user profiles
+  country: dbClient.country || '',
+  contactsCount: dbClient.contacts_count || 0,
+  totalDealValue: Number(dbClient.total_deal_value) || 0,
+  createdDate: dbClient.created_at ? new Date(dbClient.created_at).toLocaleDateString() : '',
+  lastInteraction: 'Recently', // We'll enhance this later with actual interaction data
+  status: dbClient.status === 'active' ? 'Active' as const : 'Archived' as const,
+  avatar: dbClient.avatar_url || "",
+  notes: dbClient.notes || ""
+});
 
 export default function Clients() {
+  const { user, loading: authLoading, signOut } = useAuth();
+  const { clients: dbClients, loading, addClient, updateClient } = useClients();
+  const { toast } = useToast();
+  
   const [searchQuery, setSearchQuery] = useState("");
   const [addClientOpen, setAddClientOpen] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [selectedClient, setSelectedClient] = useState<any>(null);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [filters, setFilters] = useState({
@@ -27,162 +58,56 @@ export default function Clients() {
     lastInteractionTo: '',
   });
 
-  // Mock client data with enhanced fields
-  const [clients] = useState<Client[]>([
-    {
-      id: 1,
-      name: "Acme Corporation",
-      email: "contact@acme.com",
-      phone: "+212 661 234567",
-      industry: "Technology",
-      stage: "Active",
-      tags: ["VIP", "Enterprise"],
-      owner: "John Smith",
-      country: "Morocco",
-      contactsCount: 5,
-      totalDealValue: 1450000,
-      createdDate: "2023-01-15",
-      lastInteraction: "2 days ago",
-      status: "Active",
-      avatar: "",
-      notes: "Key client in the technology sector. Interested in expanding their digital infrastructure."
-    },
-    {
-      id: 2,
-      name: "Tech Solutions Ltd",
-      email: "info@techsolutions.com",
-      phone: "+212 661 987654",
-      industry: "Technology",
-      stage: "Active",
-      tags: ["High Value", "SMB"],
-      owner: "Sarah Johnson",
-      country: "France",
-      contactsCount: 3,
-      totalDealValue: 895000,
-      createdDate: "2023-03-20",
-      lastInteraction: "1 week ago",
-      status: "Active",
-      avatar: "",
-      notes: "Growing tech company looking for innovative solutions."
-    },
-    {
-      id: 3,
-      name: "Global Industries",
-      email: "contact@global.com",
-      phone: "+212 661 456789",
-      industry: "Manufacturing",
-      stage: "Inactive",
-      tags: ["International"],
-      owner: "Mike Wilson",
-      country: "Spain",
-      contactsCount: 2,
-      totalDealValue: 230000,
-      createdDate: "2022-11-10",
-      lastInteraction: "3 weeks ago",
-      status: "Active",
-      avatar: "",
-      notes: "Manufacturing company with operations across Europe."
-    },
-    {
-      id: 4,
-      name: "HealthCare Plus",
-      email: "admin@healthcareplus.com",
-      phone: "+212 661 321098",
-      industry: "Healthcare",
-      stage: "Active",
-      tags: ["Healthcare", "Critical"],
-      owner: "Emily Davis",
-      country: "Morocco",
-      contactsCount: 8,
-      totalDealValue: 672000,
-      createdDate: "2023-06-05",
-      lastInteraction: "Yesterday",
-      status: "Active",
-      avatar: "",
-      notes: "Leading healthcare provider focused on digital transformation."
-    },
-    {
-      id: 5,
-      name: "Financial Services Corp",
-      email: "contact@finserv.com",
-      phone: "+212 661 654321",
-      industry: "Finance",
-      stage: "Prospect",
-      tags: ["Finance", "Urgent"],
-      owner: "David Brown",
-      country: "UAE",
-      contactsCount: 4,
-      totalDealValue: 0,
-      createdDate: "2024-01-12",
-      lastInteraction: "1 month ago",
-      status: "Active",
-      avatar: "",
-      notes: "Potential client in the financial services sector."
-    },
-    {
-      id: 6,
-      name: "Retail Masters",
-      email: "hello@retailmasters.com",
-      phone: "+212 661 789012",
-      industry: "Retail",
-      stage: "Lead",
-      tags: ["Retail", "SMB"],
-      owner: "John Smith",
-      country: "Morocco",
-      contactsCount: 2,
-      totalDealValue: 125000,
-      createdDate: "2024-02-28",
-      lastInteraction: "5 days ago",
-      status: "Active",
-      avatar: "",
-      notes: "Retail chain looking to modernize their systems."
-    },
-    {
-      id: 7,
-      name: "Education Excellence",
-      email: "info@eduexcellence.com",
-      phone: "+212 661 345678",
-      industry: "Education",
-      stage: "Active",
-      tags: ["Education", "Non-profit"],
-      owner: "Sarah Johnson",
-      country: "Morocco",
-      contactsCount: 6,
-      totalDealValue: 445000,
-      createdDate: "2023-09-15",
-      lastInteraction: "3 days ago",
-      status: "Active",
-      avatar: "",
-      notes: "Educational institution focused on improving learning outcomes."
-    },
-    {
-      id: 8,
-      name: "Consulting Pro",
-      email: "team@consultingpro.com",
-      phone: "+212 661 567890",
-      industry: "Consulting",
-      stage: "Active",
-      tags: ["Consulting", "Strategic"],
-      owner: "Mike Wilson",
-      country: "France",
-      contactsCount: 3,
-      totalDealValue: 780000,
-      createdDate: "2023-04-22",
-      lastInteraction: "1 week ago",
-      status: "Active",
-      avatar: "",
-      notes: "Strategic consulting firm specializing in digital transformation."
-    }
-  ]);
+  // Show loading while checking authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
-  const handleClientClick = (client: Client) => {
+  // Redirect to auth if not authenticated
+  if (!user) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  // Transform database clients for the table
+  const clients = dbClients.map(transformClientForTable);
+
+  const handleClientClick = (client: any) => {
     setSelectedClient(client);
     setProfileModalOpen(true);
   };
 
-  const handleSaveClient = (updatedClient: Client) => {
-    // In a real app, this would update the client in the database
-    console.log('Saving client:', updatedClient);
+  const handleSaveClient = async (updatedClient: any) => {
+    try {
+      await updateClient(updatedClient.id, {
+        name: updatedClient.name,
+        email: updatedClient.email,
+        phone: updatedClient.phone,
+        industry: updatedClient.industry,
+        stage: updatedClient.stage,
+        tags: updatedClient.tags,
+        country: updatedClient.country,
+        notes: updatedClient.notes,
+        address: updatedClient.address,
+        website: updatedClient.website,
+      });
+    } catch (error) {
+      console.error('Error updating client:', error);
+    }
+  };
+
+  const handleSignOut = async () => {
+    const { error } = await signOut();
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to sign out",
+        variant: "destructive",
+      });
+    }
   };
 
   const formatCurrency = (amount: number) => {
@@ -195,6 +120,14 @@ export default function Clients() {
 
   const totalRevenue = clients.reduce((sum, client) => sum + client.totalDealValue, 0);
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="space-y-6 animate-in">
@@ -206,10 +139,16 @@ export default function Clients() {
               Manage your client relationships and track business growth.
             </p>
           </div>
-          <Button className="gap-2" onClick={() => setAddClientOpen(true)}>
-            <Plus size={16} />
-            Add Client
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={handleSignOut} className="gap-2">
+              <LogOut size={16} />
+              Sign Out
+            </Button>
+            <Button className="gap-2" onClick={() => setAddClientOpen(true)}>
+              <Plus size={16} />
+              Add Client
+            </Button>
+          </div>
         </div>
 
         {/* Stats Cards */}
@@ -225,7 +164,7 @@ export default function Clients() {
           <Card>
             <CardContent className="p-6">
               <div className="text-center">
-                <p className="text-2xl font-bold">{clients.filter(c => c.stage === "Active").length}</p>
+                <p className="text-2xl font-bold">{clients.filter(c => c.stage === "active").length}</p>
                 <p className="text-sm text-muted-foreground">Active Clients</p>
               </div>
             </CardContent>
@@ -233,7 +172,7 @@ export default function Clients() {
           <Card>
             <CardContent className="p-6">
               <div className="text-center">
-                <p className="text-2xl font-bold">{clients.filter(c => c.stage === "Prospect").length}</p>
+                <p className="text-2xl font-bold">{clients.filter(c => c.stage === "prospect").length}</p>
                 <p className="text-sm text-muted-foreground">Prospects</p>
               </div>
             </CardContent>
@@ -267,7 +206,13 @@ export default function Clients() {
       </div>
 
       {/* Modals */}
-      <AddClientModal open={addClientOpen} onOpenChange={setAddClientOpen} />
+      <AddClientModal 
+        open={addClientOpen} 
+        onOpenChange={setAddClientOpen}
+        onClientAdded={() => {
+          // The useClients hook will automatically refetch and update the state
+        }}
+      />
       
       <ClientProfileModal
         client={selectedClient}

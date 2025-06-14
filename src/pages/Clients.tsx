@@ -1,114 +1,199 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { 
-  Search, 
-  Plus, 
-  Filter,
-  MoreHorizontal,
-  Mail,
-  Phone,
-  MapPin
-} from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Link } from "react-router-dom";
+import { Plus } from "lucide-react";
 import { AddClientModal } from "@/components/modals/AddClientModal";
+import { ClientsTable, Client } from "@/components/clients/ClientsTable";
+import { ClientProfileModal } from "@/components/clients/ClientProfileModal";
+import { ClientFiltersPanel } from "@/components/clients/ClientFiltersPanel";
 
 export default function Clients() {
   const [searchQuery, setSearchQuery] = useState("");
   const [addClientOpen, setAddClientOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filters, setFilters] = useState({
+    owner: '',
+    stage: '',
+    industry: '',
+    country: '',
+    status: '',
+    tags: [] as string[],
+    dateCreatedFrom: '',
+    dateCreatedTo: '',
+    lastInteractionFrom: '',
+    lastInteractionTo: '',
+  });
 
-  // Mock client data
-  const clients = [
+  // Mock client data with enhanced fields
+  const [clients] = useState<Client[]>([
     {
       id: 1,
       name: "Acme Corporation",
-      contact: "John Smith",
-      email: "john@acme.com",
-      phone: "+1 (555) 123-4567",
-      location: "New York, NY",
+      email: "contact@acme.com",
+      phone: "+212 661 234567",
+      industry: "Technology",
+      stage: "Active",
+      tags: ["VIP", "Enterprise"],
+      owner: "John Smith",
+      country: "Morocco",
+      contactsCount: 5,
+      totalDealValue: 1450000,
+      createdDate: "2023-01-15",
+      lastInteraction: "2 days ago",
       status: "Active",
-      deals: 3,
-      revenue: "$145,000",
-      lastContact: "2 days ago",
-      avatar: "AC"
+      avatar: "",
+      notes: "Key client in the technology sector. Interested in expanding their digital infrastructure."
     },
     {
       id: 2,
       name: "Tech Solutions Ltd",
-      contact: "Sarah Johnson",
-      email: "sarah@techsolutions.com",
-      phone: "+1 (555) 987-6543",
-      location: "San Francisco, CA",
+      email: "info@techsolutions.com",
+      phone: "+212 661 987654",
+      industry: "Technology",
+      stage: "Active",
+      tags: ["High Value", "SMB"],
+      owner: "Sarah Johnson",
+      country: "France",
+      contactsCount: 3,
+      totalDealValue: 895000,
+      createdDate: "2023-03-20",
+      lastInteraction: "1 week ago",
       status: "Active",
-      deals: 2,
-      revenue: "$89,500",
-      lastContact: "1 week ago",
-      avatar: "TS"
+      avatar: "",
+      notes: "Growing tech company looking for innovative solutions."
     },
     {
       id: 3,
       name: "Global Industries",
-      contact: "Mike Chen",
-      email: "mike@global.com",
-      phone: "+1 (555) 456-7890",
-      location: "Chicago, IL",
-      status: "Inactive",
-      deals: 1,
-      revenue: "$23,000",
-      lastContact: "3 weeks ago",
-      avatar: "GI"
+      email: "contact@global.com",
+      phone: "+212 661 456789",
+      industry: "Manufacturing",
+      stage: "Inactive",
+      tags: ["International"],
+      owner: "Mike Wilson",
+      country: "Spain",
+      contactsCount: 2,
+      totalDealValue: 230000,
+      createdDate: "2022-11-10",
+      lastInteraction: "3 weeks ago",
+      status: "Active",
+      avatar: "",
+      notes: "Manufacturing company with operations across Europe."
     },
     {
       id: 4,
-      name: "StartupXYZ",
-      contact: "Emily Davis",
-      email: "emily@startupxyz.com",
-      phone: "+1 (555) 321-0987",
-      location: "Austin, TX",
+      name: "HealthCare Plus",
+      email: "admin@healthcareplus.com",
+      phone: "+212 661 321098",
+      industry: "Healthcare",
+      stage: "Active",
+      tags: ["Healthcare", "Critical"],
+      owner: "Emily Davis",
+      country: "Morocco",
+      contactsCount: 8,
+      totalDealValue: 672000,
+      createdDate: "2023-06-05",
+      lastInteraction: "Yesterday",
       status: "Active",
-      deals: 4,
-      revenue: "$67,200",
-      lastContact: "Yesterday",
-      avatar: "SX"
+      avatar: "",
+      notes: "Leading healthcare provider focused on digital transformation."
     },
     {
       id: 5,
-      name: "Enterprise Corp",
-      contact: "David Wilson",
-      email: "david@enterprise.com",
-      phone: "+1 (555) 654-3210",
-      location: "Boston, MA",
-      status: "Prospect",
-      deals: 0,
-      revenue: "$0",
-      lastContact: "1 month ago",
-      avatar: "EC"
+      name: "Financial Services Corp",
+      email: "contact@finserv.com",
+      phone: "+212 661 654321",
+      industry: "Finance",
+      stage: "Prospect",
+      tags: ["Finance", "Urgent"],
+      owner: "David Brown",
+      country: "UAE",
+      contactsCount: 4,
+      totalDealValue: 0,
+      createdDate: "2024-01-12",
+      lastInteraction: "1 month ago",
+      status: "Active",
+      avatar: "",
+      notes: "Potential client in the financial services sector."
+    },
+    {
+      id: 6,
+      name: "Retail Masters",
+      email: "hello@retailmasters.com",
+      phone: "+212 661 789012",
+      industry: "Retail",
+      stage: "Lead",
+      tags: ["Retail", "SMB"],
+      owner: "John Smith",
+      country: "Morocco",
+      contactsCount: 2,
+      totalDealValue: 125000,
+      createdDate: "2024-02-28",
+      lastInteraction: "5 days ago",
+      status: "Active",
+      avatar: "",
+      notes: "Retail chain looking to modernize their systems."
+    },
+    {
+      id: 7,
+      name: "Education Excellence",
+      email: "info@eduexcellence.com",
+      phone: "+212 661 345678",
+      industry: "Education",
+      stage: "Active",
+      tags: ["Education", "Non-profit"],
+      owner: "Sarah Johnson",
+      country: "Morocco",
+      contactsCount: 6,
+      totalDealValue: 445000,
+      createdDate: "2023-09-15",
+      lastInteraction: "3 days ago",
+      status: "Active",
+      avatar: "",
+      notes: "Educational institution focused on improving learning outcomes."
+    },
+    {
+      id: 8,
+      name: "Consulting Pro",
+      email: "team@consultingpro.com",
+      phone: "+212 661 567890",
+      industry: "Consulting",
+      stage: "Active",
+      tags: ["Consulting", "Strategic"],
+      owner: "Mike Wilson",
+      country: "France",
+      contactsCount: 3,
+      totalDealValue: 780000,
+      createdDate: "2023-04-22",
+      lastInteraction: "1 week ago",
+      status: "Active",
+      avatar: "",
+      notes: "Strategic consulting firm specializing in digital transformation."
     }
-  ];
+  ]);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Active": return "bg-green-500";
-      case "Inactive": return "bg-red-500";
-      case "Prospect": return "bg-yellow-500";
-      default: return "bg-gray-500";
-    }
+  const handleClientClick = (client: Client) => {
+    setSelectedClient(client);
+    setProfileModalOpen(true);
   };
 
-  const filteredClients = clients.filter(client =>
-    client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    client.contact.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    client.email.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const handleSaveClient = (updatedClient: Client) => {
+    // In a real app, this would update the client in the database
+    console.log('Saving client:', updatedClient);
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('fr-MA', {
+      style: 'currency',
+      currency: 'MAD',
+      minimumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  const totalRevenue = clients.reduce((sum, client) => sum + client.totalDealValue, 0);
 
   return (
     <>
@@ -127,27 +212,6 @@ export default function Clients() {
           </Button>
         </div>
 
-        {/* Filters and Search */}
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                <Input
-                  placeholder="Search clients by name, contact, or email..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <Button variant="outline" className="gap-2">
-                <Filter size={16} />
-                Filter
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Stats Cards */}
         <div className="grid gap-4 md:grid-cols-4">
           <Card>
@@ -161,7 +225,7 @@ export default function Clients() {
           <Card>
             <CardContent className="p-6">
               <div className="text-center">
-                <p className="text-2xl font-bold">{clients.filter(c => c.status === "Active").length}</p>
+                <p className="text-2xl font-bold">{clients.filter(c => c.stage === "Active").length}</p>
                 <p className="text-sm text-muted-foreground">Active Clients</p>
               </div>
             </CardContent>
@@ -169,7 +233,7 @@ export default function Clients() {
           <Card>
             <CardContent className="p-6">
               <div className="text-center">
-                <p className="text-2xl font-bold">{clients.filter(c => c.status === "Prospect").length}</p>
+                <p className="text-2xl font-bold">{clients.filter(c => c.stage === "Prospect").length}</p>
                 <p className="text-sm text-muted-foreground">Prospects</p>
               </div>
             </CardContent>
@@ -177,95 +241,40 @@ export default function Clients() {
           <Card>
             <CardContent className="p-6">
               <div className="text-center">
-                <p className="text-2xl font-bold">$324,700</p>
+                <p className="text-2xl font-bold">{formatCurrency(totalRevenue)}</p>
                 <p className="text-sm text-muted-foreground">Total Revenue</p>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Client List */}
-        <Card>
-          <CardHeader>
-            <CardTitle>All Clients ({filteredClients.length})</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {filteredClients.map((client) => (
-                <div key={client.id} className="flex items-center gap-4 p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors">
-                  <Avatar className="h-12 w-12">
-                    <AvatarFallback className="bg-primary/10 text-primary font-medium">
-                      {client.avatar}
-                    </AvatarFallback>
-                  </Avatar>
-                  
-                  <div className="flex-1 grid grid-cols-1 md:grid-cols-6 gap-4">
-                    <div className="md:col-span-2">
-                      <Link 
-                        to={`/clients/${client.id}`}
-                        className="font-medium hover:text-primary transition-colors"
-                      >
-                        {client.name}
-                      </Link>
-                      <p className="text-sm text-muted-foreground">{client.contact}</p>
-                    </div>
-                    
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2 text-sm">
-                        <Mail className="h-3 w-3 text-muted-foreground" />
-                        <span className="text-muted-foreground">{client.email}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <Phone className="h-3 w-3 text-muted-foreground" />
-                        <span className="text-muted-foreground">{client.phone}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2 text-sm">
-                        <MapPin className="h-3 w-3 text-muted-foreground" />
-                        <span className="text-muted-foreground">{client.location}</span>
-                      </div>
-                      <p className="text-sm text-muted-foreground">Last contact: {client.lastContact}</p>
-                    </div>
-                    
-                    <div className="text-center">
-                      <p className="font-medium">{client.deals}</p>
-                      <p className="text-xs text-muted-foreground">Active Deals</p>
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">{client.revenue}</p>
-                        <Badge className={`${getStatusColor(client.status)} text-white text-xs`}>
-                          {client.status}
-                        </Badge>
-                      </div>
-                      
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="bg-background border" align="end">
-                          <DropdownMenuItem>View Details</DropdownMenuItem>
-                          <DropdownMenuItem>Edit Client</DropdownMenuItem>
-                          <DropdownMenuItem>Send Email</DropdownMenuItem>
-                          <DropdownMenuItem>Add Note</DropdownMenuItem>
-                          <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        {/* Filters Panel */}
+        <ClientFiltersPanel
+          isOpen={filtersOpen}
+          onClose={() => setFiltersOpen(false)}
+          filters={filters}
+          onFiltersChange={setFilters}
+        />
+
+        {/* Clients Table */}
+        <ClientsTable
+          clients={clients}
+          onClientClick={handleClientClick}
+          onFiltersToggle={() => setFiltersOpen(!filtersOpen)}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+        />
       </div>
 
+      {/* Modals */}
       <AddClientModal open={addClientOpen} onOpenChange={setAddClientOpen} />
+      
+      <ClientProfileModal
+        client={selectedClient}
+        open={profileModalOpen}
+        onOpenChange={setProfileModalOpen}
+        onSave={handleSaveClient}
+      />
     </>
   );
 }

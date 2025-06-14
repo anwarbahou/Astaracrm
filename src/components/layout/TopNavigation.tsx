@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
@@ -17,6 +16,7 @@ import { useLocation } from "react-router-dom";
 import { QuickAddModal } from "@/components/modals/QuickAddModal";
 import { NotificationSidebar } from "./NotificationSidebar";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function TopNavigation() {
   const [quickAddOpen, setQuickAddOpen] = useState(false);
@@ -59,7 +59,7 @@ export function TopNavigation() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
+      <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80 transition-colors duration-300">
         <div className="flex h-16 items-center px-6 gap-4">
           <SidebarTrigger className="h-8 w-8 text-muted-foreground hover:text-foreground transition-colors duration-200" />
           
@@ -77,9 +77,12 @@ export function TopNavigation() {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   placeholder="Search anything..."
-                  className="pl-10 w-80 crm-input border-border/50 focus:border-primary/50"
+                  className="pl-10 w-80 crm-input border-border/50 focus:border-primary/50 transition-colors duration-200"
                 />
               </div>
+              
+              {/* Theme Toggle */}
+              <ThemeToggle />
               
               {/* Language Switcher */}
               <LanguageSwitcher />
@@ -90,6 +93,7 @@ export function TopNavigation() {
                 size="icon" 
                 className="relative h-9 w-9 hover:bg-muted/50 transition-colors duration-200"
                 onClick={() => setNotificationOpen(true)}
+                aria-label="Notifications"
               >
                 <Bell className={`h-4 w-4 transition-transform duration-200 ${notificationCount > 0 ? 'animate-pulse' : ''}`} />
                 {notificationCount > 0 && (
@@ -112,7 +116,11 @@ export function TopNavigation() {
               {/* Enhanced User Menu with Profile Image */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-9 w-9 rounded-full hover:bg-muted/50 transition-colors duration-200">
+                  <Button 
+                    variant="ghost" 
+                    className="relative h-9 w-9 rounded-full hover:bg-muted/50 transition-colors duration-200"
+                    aria-label="User menu"
+                  >
                     <Avatar className="h-9 w-9">
                       <AvatarImage 
                         src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" 
@@ -123,7 +131,7 @@ export function TopNavigation() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent 
-                  className="w-56 bg-popover border border-border animate-scale-in" 
+                  className="w-56 bg-popover border border-border animate-scale-in z-50" 
                   align="end" 
                   forceMount
                 >

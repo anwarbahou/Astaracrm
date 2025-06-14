@@ -66,7 +66,7 @@
   }
   
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors duration-300;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
@@ -74,19 +74,19 @@
 /* CRM Specific Styling */
 @layer components {
   .app-layout {
-    @apply min-h-screen flex w-full;
+    @apply min-h-screen flex w-full transition-colors duration-300;
   }
   
   .content-container {
-    @apply flex-1 flex flex-col;
+    @apply flex-1 flex flex-col transition-colors duration-300;
   }
   
   .page-container {
-    @apply flex-1 p-4 md:p-6;
+    @apply flex-1 p-4 md:p-6 transition-colors duration-300;
   }
   
   .crm-card {
-    @apply bg-card text-card-foreground rounded-lg border shadow-sm;
+    @apply bg-card text-card-foreground rounded-lg border shadow-sm transition-colors duration-300;
   }
   
   .crm-button-primary {
@@ -98,7 +98,7 @@
   }
 }
 
-/* Enhanced Animations */
+/* Enhanced Animations with Theme Support */
 @layer utilities {
   .animate-fade-in {
     animation: fadeIn 0.3s ease-out;
@@ -118,6 +118,10 @@
   
   .animate-bell-ring {
     animation: bellRing 0.5s ease-in-out;
+  }
+  
+  .theme-transition {
+    @apply transition-colors duration-300;
   }
 }
 
@@ -176,7 +180,7 @@
   }
 }
 
-/* Scrollbar Styling */
+/* Scrollbar Styling that adapts to theme */
 .scrollbar-thin::-webkit-scrollbar {
   width: 6px;
 }
@@ -188,6 +192,7 @@
 .scrollbar-thin::-webkit-scrollbar-thumb {
   background: hsl(var(--muted-foreground) / 0.3);
   border-radius: 3px;
+  transition: background-color 0.2s ease;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
@@ -200,4 +205,28 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Ensure dropdowns have proper background and z-index */
+[data-radix-popper-content-wrapper] {
+  z-index: 50 !important;
+}
+
+.dropdown-content {
+  @apply bg-popover border border-border shadow-lg z-50;
+}
+
+/* Theme-aware focus styles */
+.focus-visible {
+  @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+}
+
+/* Ensure smooth transitions for all interactive elements */
+button, 
+input, 
+select, 
+textarea, 
+[role="menuitem"], 
+[role="button"] {
+  @apply transition-colors duration-200;
 }

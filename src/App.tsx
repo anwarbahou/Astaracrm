@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { TopNavigation } from "@/components/layout/TopNavigation";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 // Pages
 import Dashboard from "./pages/Dashboard";
@@ -30,40 +31,42 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <SidebarProvider>
-          <div className="app-layout">
-            <AppSidebar />
-            <div className="content-container">
-              <TopNavigation />
-              <main className="page-container">
-                <Routes>
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/clients" element={<Clients />} />
-                  <Route path="/clients/:id" element={<ClientProfile />} />
-                  <Route path="/contacts" element={<Contacts />} />
-                  <Route path="/deals" element={<Deals />} />
-                  <Route path="/ai-leads" element={<AILeads />} />
-                  <Route path="/tasks" element={<Tasks />} />
-                  <Route path="/calendar" element={<Calendar />} />
-                  <Route path="/email" element={<EmailCenter />} />
-                  <Route path="/notes" element={<Notes />} />
-                  <Route path="/reports" element={<Reports />} />
-                  <Route path="/users" element={<Users />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/workflows" element={<Workflows />} />
-                  <Route path="/activity-logs" element={<ActivityLogs />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </main>
+    <ThemeProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <SidebarProvider>
+            <div className="app-layout transition-colors duration-300">
+              <AppSidebar />
+              <div className="content-container">
+                <TopNavigation />
+                <main className="page-container">
+                  <Routes>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/clients" element={<Clients />} />
+                    <Route path="/clients/:id" element={<ClientProfile />} />
+                    <Route path="/contacts" element={<Contacts />} />
+                    <Route path="/deals" element={<Deals />} />
+                    <Route path="/ai-leads" element={<AILeads />} />
+                    <Route path="/tasks" element={<Tasks />} />
+                    <Route path="/calendar" element={<Calendar />} />
+                    <Route path="/email" element={<EmailCenter />} />
+                    <Route path="/notes" element={<Notes />} />
+                    <Route path="/reports" element={<Reports />} />
+                    <Route path="/users" element={<Users />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/workflows" element={<Workflows />} />
+                    <Route path="/activity-logs" element={<ActivityLogs />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </main>
+              </div>
             </div>
-          </div>
-        </SidebarProvider>
-      </BrowserRouter>
-    </TooltipProvider>
+          </SidebarProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

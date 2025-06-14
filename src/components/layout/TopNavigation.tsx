@@ -15,9 +15,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useLocation } from "react-router-dom";
 import { QuickAddModal } from "@/components/modals/QuickAddModal";
+import { NotificationSidebar } from "./NotificationSidebar";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
 export function TopNavigation() {
   const [quickAddOpen, setQuickAddOpen] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [notificationCount] = useState(3); // Mock unread count
   const location = useLocation();
   
   const getPageTitle = () => {
@@ -35,6 +39,7 @@ export function TopNavigation() {
     if (path === "/workflows") return "Workflows";
     if (path === "/activity-logs") return "Activity Logs";
     if (path === "/settings") return "Settings";
+    if (path === "/ai-leads") return "AI Lead Intelligence";
     return "WOLFHUNT CRM";
   };
 
@@ -48,6 +53,7 @@ export function TopNavigation() {
     if (path === "/calendar") return "Schedule and manage appointments";
     if (path === "/email") return "Communicate with your clients";
     if (path === "/notes") return "Capture important information";
+    if (path === "/ai-leads") return "Génération de leads MENA et Europe avec IA avancée";
     return "";
   };
 
@@ -65,7 +71,7 @@ export function TopNavigation() {
               )}
             </div>
             
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               {/* Enhanced Search Bar */}
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -75,16 +81,22 @@ export function TopNavigation() {
                 />
               </div>
               
-              {/* Notifications - Fixed alignment */}
+              {/* Language Switcher */}
+              <LanguageSwitcher />
+              
+              {/* Enhanced Notifications with animated bell */}
               <Button 
                 variant="ghost" 
                 size="icon" 
                 className="relative h-9 w-9 hover:bg-muted/50 transition-colors duration-200"
+                onClick={() => setNotificationOpen(true)}
               >
-                <Bell className="h-4 w-4" />
-                <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs bg-destructive border-0 flex items-center justify-center">
-                  3
-                </Badge>
+                <Bell className={`h-4 w-4 transition-transform duration-200 ${notificationCount > 0 ? 'animate-pulse' : ''}`} />
+                {notificationCount > 0 && (
+                  <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs bg-red-500 text-white border-0 flex items-center justify-center animate-bounce">
+                    {notificationCount}
+                  </Badge>
+                )}
               </Button>
               
               {/* Quick Actions */}
@@ -138,7 +150,9 @@ export function TopNavigation() {
         </div>
       </header>
 
+      {/* Modals and Sidebars */}
       <QuickAddModal open={quickAddOpen} onOpenChange={setQuickAddOpen} />
+      <NotificationSidebar open={notificationOpen} onOpenChange={setNotificationOpen} />
     </>
   );
 }

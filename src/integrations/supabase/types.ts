@@ -9,125 +9,7 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      clients: {
-        Row: {
-          address: string | null
-          avatar_url: string | null
-          contacts_count: number | null
-          country: string | null
-          created_at: string | null
-          email: string | null
-          id: string
-          industry: string | null
-          name: string
-          notes: string | null
-          owner_id: string | null
-          phone: string | null
-          stage: Database["public"]["Enums"]["client_stage"] | null
-          status: Database["public"]["Enums"]["user_status"] | null
-          tags: string[] | null
-          total_deal_value: number | null
-          updated_at: string | null
-          website: string | null
-        }
-        Insert: {
-          address?: string | null
-          avatar_url?: string | null
-          contacts_count?: number | null
-          country?: string | null
-          created_at?: string | null
-          email?: string | null
-          id?: string
-          industry?: string | null
-          name: string
-          notes?: string | null
-          owner_id?: string | null
-          phone?: string | null
-          stage?: Database["public"]["Enums"]["client_stage"] | null
-          status?: Database["public"]["Enums"]["user_status"] | null
-          tags?: string[] | null
-          total_deal_value?: number | null
-          updated_at?: string | null
-          website?: string | null
-        }
-        Update: {
-          address?: string | null
-          avatar_url?: string | null
-          contacts_count?: number | null
-          country?: string | null
-          created_at?: string | null
-          email?: string | null
-          id?: string
-          industry?: string | null
-          name?: string
-          notes?: string | null
-          owner_id?: string | null
-          phone?: string | null
-          stage?: Database["public"]["Enums"]["client_stage"] | null
-          status?: Database["public"]["Enums"]["user_status"] | null
-          tags?: string[] | null
-          total_deal_value?: number | null
-          updated_at?: string | null
-          website?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "clients_owner_id_fkey"
-            columns: ["owner_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      users: {
-        Row: {
-          avatar_url: string | null
-          created_at: string | null
-          email: string
-          first_name: string | null
-          id: string
-          last_login_at: string | null
-          last_name: string | null
-          phone: string | null
-          preferences: Json | null
-          role: Database["public"]["Enums"]["user_role"] | null
-          status: Database["public"]["Enums"]["user_status"] | null
-          timezone: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          avatar_url?: string | null
-          created_at?: string | null
-          email: string
-          first_name?: string | null
-          id?: string
-          last_login_at?: string | null
-          last_name?: string | null
-          phone?: string | null
-          preferences?: Json | null
-          role?: Database["public"]["Enums"]["user_role"] | null
-          status?: Database["public"]["Enums"]["user_status"] | null
-          timezone?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          avatar_url?: string | null
-          created_at?: string | null
-          email?: string
-          first_name?: string | null
-          id?: string
-          last_login_at?: string | null
-          last_name?: string | null
-          phone?: string | null
-          preferences?: Json | null
-          role?: Database["public"]["Enums"]["user_role"] | null
-          status?: Database["public"]["Enums"]["user_status"] | null
-          timezone?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Views: {
       [_ in never]: never
@@ -136,35 +18,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      activity_type:
-        | "deal_created"
-        | "deal_updated"
-        | "contact_created"
-        | "contact_updated"
-        | "client_created"
-        | "client_updated"
-        | "task_created"
-        | "task_completed"
-        | "email_sent"
-        | "note_created"
-        | "meeting_scheduled"
-      client_stage: "lead" | "prospect" | "active" | "inactive"
-      contact_status: "active" | "inactive"
-      deal_priority: "low" | "medium" | "high"
-      deal_stage:
-        | "prospect"
-        | "qualified"
-        | "proposal"
-        | "negotiation"
-        | "won"
-        | "lost"
-      email_type: "received" | "sent" | "draft"
-      note_type: "general" | "meeting" | "task" | "idea"
-      note_visibility: "public" | "private" | "team"
-      task_priority: "low" | "medium" | "high"
-      task_status: "pending" | "in_progress" | "completed" | "cancelled"
-      user_role: "admin" | "manager" | "user"
-      user_status: "active" | "inactive"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -279,38 +133,6 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {
-      activity_type: [
-        "deal_created",
-        "deal_updated",
-        "contact_created",
-        "contact_updated",
-        "client_created",
-        "client_updated",
-        "task_created",
-        "task_completed",
-        "email_sent",
-        "note_created",
-        "meeting_scheduled",
-      ],
-      client_stage: ["lead", "prospect", "active", "inactive"],
-      contact_status: ["active", "inactive"],
-      deal_priority: ["low", "medium", "high"],
-      deal_stage: [
-        "prospect",
-        "qualified",
-        "proposal",
-        "negotiation",
-        "won",
-        "lost",
-      ],
-      email_type: ["received", "sent", "draft"],
-      note_type: ["general", "meeting", "task", "idea"],
-      note_visibility: ["public", "private", "team"],
-      task_priority: ["low", "medium", "high"],
-      task_status: ["pending", "in_progress", "completed", "cancelled"],
-      user_role: ["admin", "manager", "user"],
-      user_status: ["active", "inactive"],
-    },
+    Enums: {},
   },
 } as const

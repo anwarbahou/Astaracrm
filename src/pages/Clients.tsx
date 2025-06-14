@@ -11,6 +11,7 @@ import { ClientFiltersPanel } from "@/components/clients/ClientFiltersPanel";
 import { useClients } from "@/hooks/useClients";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import type { Database } from '@/integrations/supabase/types';
 
 type Client = Database['public']['Tables']['clients']['Row'];
@@ -36,9 +37,9 @@ const transformClientForTable = (dbClient: Client, index: number) => ({
   notes: dbClient.notes || ""
 });
 
-export default function Clients() {
+function ClientsContent() {
   const { user, loading: authLoading, signOut } = useAuth();
-  const { clients: dbClients, loading, addClient, updateClient } = useClients();
+  const { clients: dbClients, loading, addClient, updateClient, error } = useClients();
   const { toast } = useToast();
   
   const [searchQuery, setSearchQuery] = useState("");
@@ -71,6 +72,52 @@ export default function Clients() {
   // Redirect to auth if not authenticated
   if (!user) {
     return <Navigate to="/auth" replace />;
+  }
+
+  // Show error state if there's a fetching error
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Client Management</h1>
+            <p className="text-muted-foreground mt-1">
+              Manage your client relationships and track business growth.
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={signOut} className="gap-2">
+              <LogOut size={16} />
+              Sign Out
+            </Button>
+            <Button className="gap-2" onClick={() => setAddClientOpen(true)}>
+              <Plus size={16} />
+              Add Client
+            </Button>
+          </div>
+        </div>
+
+        <Card className="p-8 text-center">
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold text-destructive">Failed to Load Clients</h2>
+            <p className="text-muted-foreground">
+              {error || "There was an error loading your clients. Please try refreshing the page."}
+            </p>
+            <Button onClick={() => window.location.reload()}>
+              Refresh Page
+            </Button>
+          </div>
+        </Card>
+
+        <AddClientModal 
+          open={addClientOpen} 
+          onOpenChange={setAddClientOpen}
+          onClientAdded={() => {
+            // The useClients hook will automatically refetch and update the state
+          }}
+        />
+      </div>
+    );
   }
 
   // Transform database clients for the table
@@ -132,8 +179,38 @@ export default function Clients() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Client Management</h1>
+            <p className="text-muted-foreground mt-1">
+              Loading your clients...
+            </p>
+          </div>
+        </div>
+        
+        <div className="grid gap-4 md:grid-cols-4">
+          {[1, 2, 3, 4].map((i) => (
+            <Card key={i}>
+              <CardContent className="p-6">
+                <div className="text-center">
+                  <div className="h-8 bg-muted animate-pulse rounded mb-2"></div>
+                  <div className="h-4 bg-muted animate-pulse rounded"></div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        
+        <Card>
+          <CardContent className="p-6">
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-12 bg-muted animate-pulse rounded"></div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -197,22 +274,42 @@ export default function Clients() {
           </Card>
         </div>
 
+        {/* Empty State for No Clients */}
+        {clients.length === 0 && !loading && (
+          <Card className="p-8 text-center">
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold">No clients yet</h2>
+              <p className="text-muted-foreground">
+                Get started by adding your first client to the CRM.
+              </p>
+              <Button onClick={() => setAddClientOpen(true)} className="gap-2">
+                <Plus size={16} />
+                Add Your First Client
+              </Button>
+            </div>
+          </Card>
+        )}
+
         {/* Filters Panel */}
-        <ClientFiltersPanel
-          isOpen={filtersOpen}
-          onClose={() => setFiltersOpen(false)}
-          filters={filters}
-          onFiltersChange={setFilters}
-        />
+        {clients.length > 0 && (
+          <ClientFiltersPanel
+            isOpen={filtersOpen}
+            onClose={() => setFiltersOpen(false)}
+            filters={filters}
+            onFiltersChange={setFilters}
+          />
+        )}
 
         {/* Clients Table */}
-        <ClientsTable
-          clients={clients}
-          onClientClick={handleClientClick}
-          onFiltersToggle={() => setFiltersOpen(!filtersOpen)}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-        />
+        {clients.length > 0 && (
+          <ClientsTable
+            clients={clients}
+            onClientClick={handleClientClick}
+            onFiltersToggle={() => setFiltersOpen(!filtersOpen)}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+          />
+        )}
       </div>
 
       {/* Modals */}
@@ -231,5 +328,13 @@ export default function Clients() {
         onSave={handleSaveClient}
       />
     </>
+  );
+}
+
+export default function Clients() {
+  return (
+    <DashboardLayout>
+      <ClientsContent />
+    </DashboardLayout>
   );
 }

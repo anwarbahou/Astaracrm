@@ -17,21 +17,41 @@ export function useClients() {
   const fetchClients = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      setError(null);
+      
+      console.log('Fetching clients...');
+      
+      const { data, error: fetchError } = await supabase
         .from('clients')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (fetchError) {
+        console.error('Supabase error:', fetchError);
+        throw fetchError;
+      }
+      
+      console.log('Clients fetched successfully:', data?.length || 0, 'clients');
       setClients(data || []);
     } catch (err) {
+      console.error('Error fetching clients:', err);
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch clients';
       setError(errorMessage);
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
+      
+      // Check if it's an RLS error
+      if (errorMessage.includes('Row Level Security') || errorMessage.includes('RLS') || errorMessage.includes('policy')) {
+        toast({
+          title: "Access Error",
+          description: "Unable to access clients. Please ensure you're properly authenticated.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }

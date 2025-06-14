@@ -1,5 +1,5 @@
 
-import { Variants } from "framer-motion";
+import { Variants, Transition } from "framer-motion";
 
 // Page transition variants
 export const pageVariants: Variants = {
@@ -218,21 +218,21 @@ export const slideVariants: Variants = {
   })
 };
 
-// Spring configurations
-export const springConfig = {
-  type: "spring",
+// Properly typed spring configurations
+export const springConfig: Transition = {
+  type: "spring" as const,
   stiffness: 200,
   damping: 25
 };
 
-export const gentleSpring = {
-  type: "spring",
+export const gentleSpring: Transition = {
+  type: "spring" as const,
   stiffness: 100,
   damping: 20
 };
 
-export const bounceSpring = {
-  type: "spring",
+export const bounceSpring: Transition = {
+  type: "spring" as const,
   stiffness: 300,
   damping: 15
 };

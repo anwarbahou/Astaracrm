@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -30,6 +29,16 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+    
+    /* Enhanced sidebar variables */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 10.6% 64.9%;
   }
 
   .dark {
@@ -57,6 +66,16 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+    
+    /* Enhanced dark sidebar variables */
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 224.3 76.3% 94.1%;
+    --sidebar-primary-foreground: 220.9 39.3% 11%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 10.6% 64.9%;
   }
 }
 
@@ -86,15 +105,33 @@
   }
   
   .crm-card {
-    @apply bg-card text-card-foreground rounded-lg border shadow-sm transition-colors duration-300;
+    @apply bg-card text-card-foreground rounded-lg border shadow-sm transition-all duration-300;
   }
   
   .crm-button-primary {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90 transition-colors duration-200;
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200;
   }
   
   .crm-input {
     @apply bg-background border-input transition-colors duration-200;
+  }
+  
+  /* Enhanced sidebar navigation styling */
+  .crm-nav-item {
+    @apply relative rounded-lg transition-all duration-300 ease-in-out;
+  }
+  
+  .crm-nav-item:hover {
+    @apply bg-sidebar-accent/50 transform scale-[1.02];
+  }
+  
+  .crm-nav-item.active {
+    @apply bg-sidebar-accent text-sidebar-accent-foreground shadow-sm;
+  }
+  
+  .crm-nav-item.active::before {
+    content: '';
+    @apply absolute left-0 top-1/2 w-1 h-6 bg-primary rounded-r-full transform -translate-y-1/2 transition-all duration-300;
   }
 }
 
@@ -120,8 +157,20 @@
     animation: bellRing 0.5s ease-in-out;
   }
   
+  .animate-sidebar-collapse {
+    animation: sidebarCollapse 0.5s ease-in-out;
+  }
+  
+  .animate-sidebar-expand {
+    animation: sidebarExpand 0.5s ease-in-out;
+  }
+  
   .theme-transition {
-    @apply transition-colors duration-300;
+    @apply transition-all duration-300;
+  }
+  
+  .sidebar-transition {
+    @apply transition-all duration-500 ease-in-out;
   }
 }
 
@@ -177,6 +226,24 @@
   }
   75% {
     transform: rotate(-10deg);
+  }
+}
+
+@keyframes sidebarCollapse {
+  from {
+    width: 16rem;
+  }
+  to {
+    width: 4rem;
+  }
+}
+
+@keyframes sidebarExpand {
+  from {
+    width: 4rem;
+  }
+  to {
+    width: 16rem;
   }
 }
 

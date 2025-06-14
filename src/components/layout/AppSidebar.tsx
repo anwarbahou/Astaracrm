@@ -1,3 +1,4 @@
+
 import {
   Sidebar,
   SidebarContent,
@@ -94,27 +95,38 @@ export function AppSidebar() {
   const isCollapsed = state === "collapsed";
 
   return (
-    <Sidebar className="border-r border-sidebar-border sidebar-transition">
-      <SidebarHeader className={cn("p-4 transition-all duration-300", isCollapsed ? "px-2" : "px-6")}>
-        <div className={cn("flex items-center gap-3 transition-all duration-300", isCollapsed && "justify-center")}>
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
+    <Sidebar className="border-r border-sidebar-border/20 transition-all duration-500 ease-in-out overflow-hidden">
+      <SidebarHeader className={cn(
+        "p-4 transition-all duration-500 ease-in-out",
+        isCollapsed ? "px-2 py-4" : "px-6 py-4"
+      )}>
+        <div className={cn(
+          "flex items-center gap-3 transition-all duration-500 ease-in-out",
+          isCollapsed && "justify-center"
+        )}>
+          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300 hover:scale-105">
             <span className="text-primary-foreground font-bold text-sm">W</span>
           </div>
-          {!isCollapsed && (
-            <span className="font-bold text-xl text-sidebar-foreground animate-fade-in">
-              WOLFHUNT
-            </span>
-          )}
+          <span className={cn(
+            "font-bold text-xl text-sidebar-foreground transition-all duration-500 ease-in-out",
+            isCollapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100 w-auto"
+          )}>
+            WOLFHUNT
+          </span>
         </div>
       </SidebarHeader>
       
-      <SidebarContent className={cn("px-2 transition-all duration-300", isCollapsed ? "px-1" : "px-3")}>
+      <SidebarContent className={cn(
+        "px-2 transition-all duration-500 ease-in-out",
+        isCollapsed ? "px-1" : "px-3"
+      )}>
         <SidebarGroup>
-          {!isCollapsed && (
-            <SidebarGroupLabel className="text-sidebar-foreground/70 text-xs font-medium mb-2 px-3 animate-fade-in">
-              MAIN MENU
-            </SidebarGroupLabel>
-          )}
+          <SidebarGroupLabel className={cn(
+            "text-sidebar-foreground/70 text-xs font-medium mb-2 px-3 transition-all duration-500 ease-in-out",
+            isCollapsed ? "opacity-0 h-0 mb-0 overflow-hidden" : "opacity-100 h-auto mb-2"
+          )}>
+            MAIN MENU
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-1">
               {navigationItems.map((item) => (
@@ -123,17 +135,26 @@ export function AppSidebar() {
                     asChild 
                     isActive={location.pathname === item.url}
                     className={cn(
-                      "crm-nav-item",
-                      location.pathname === item.url && "active",
-                      isCollapsed && "justify-center px-2"
+                      "crm-nav-item transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-sm",
+                      location.pathname === item.url && "active bg-sidebar-accent/80 shadow-sm",
+                      isCollapsed && "justify-center px-2 w-12 h-12 mx-auto"
                     )}
                     tooltip={isCollapsed ? item.title : undefined}
                   >
-                    <Link to={item.url} className="flex items-center gap-3">
-                      <item.icon size={18} className="flex-shrink-0" />
-                      {!isCollapsed && (
-                        <span className="animate-fade-in">{item.title}</span>
-                      )}
+                    <Link to={item.url} className={cn(
+                      "flex items-center gap-3 w-full transition-all duration-300 ease-in-out",
+                      isCollapsed && "justify-center"
+                    )}>
+                      <item.icon size={20} className={cn(
+                        "flex-shrink-0 transition-all duration-300 ease-in-out",
+                        isCollapsed ? "text-sidebar-foreground" : "text-sidebar-foreground/80"
+                      )} />
+                      <span className={cn(
+                        "transition-all duration-500 ease-in-out font-medium",
+                        isCollapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100 w-auto"
+                      )}>
+                        {item.title}
+                      </span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -143,9 +164,26 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       
-      <SidebarFooter className={cn("p-4 transition-all duration-300", isCollapsed ? "px-2" : "px-4")}>
-        <div className={cn("text-xs text-sidebar-foreground/50 transition-all duration-300", isCollapsed && "text-center")}>
-          {!isCollapsed ? "© 2024 WOLFHUNT CRM" : "© '24"}
+      <SidebarFooter className={cn(
+        "p-4 transition-all duration-500 ease-in-out border-t border-sidebar-border/10",
+        isCollapsed ? "px-2 py-4" : "px-4 py-4"
+      )}>
+        <div className={cn(
+          "text-xs text-sidebar-foreground/50 transition-all duration-500 ease-in-out",
+          isCollapsed ? "text-center opacity-70" : "opacity-100"
+        )}>
+          <span className={cn(
+            "transition-all duration-500 ease-in-out",
+            isCollapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100 w-auto"
+          )}>
+            © 2024 WOLFHUNT CRM
+          </span>
+          <span className={cn(
+            "transition-all duration-500 ease-in-out",
+            isCollapsed ? "opacity-100" : "opacity-0 absolute"
+          )}>
+            © '24
+          </span>
         </div>
       </SidebarFooter>
     </Sidebar>

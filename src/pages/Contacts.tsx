@@ -128,6 +128,10 @@ export default function Contacts() {
     contact.position.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleViewProfile = (contactId: number) => {
+    window.location.href = `/contacts/${contactId}`;
+  };
+
   return (
     <>
       <div className="space-y-6 animate-in">
@@ -258,7 +262,9 @@ export default function Contacts() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="bg-background border" align="end">
-                          <DropdownMenuItem>View Details</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleViewProfile(contact.id)}>
+                            View Profile
+                          </DropdownMenuItem>
                           <DropdownMenuItem>Edit Contact</DropdownMenuItem>
                           <DropdownMenuItem>Send Email</DropdownMenuItem>
                           <DropdownMenuItem>Schedule Meeting</DropdownMenuItem>

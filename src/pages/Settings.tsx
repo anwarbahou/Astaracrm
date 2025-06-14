@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -32,7 +31,7 @@ export default function Settings() {
     companyPhone: "+1 (555) 123-4567",
     companyAddress: "123 Business Ave, Suite 500, New York, NY 10001",
     timezone: "America/New_York",
-    currency: "USD",
+    currency: "MAD",
     dateFormat: "MM/DD/YYYY",
     
     // Notifications
@@ -180,6 +179,7 @@ export default function Settings() {
                     id="currency"
                     value={settings.currency}
                     onChange={(e) => handleSettingChange('currency', e.target.value)}
+                    placeholder="MAD"
                   />
                 </div>
                 <div className="space-y-2">

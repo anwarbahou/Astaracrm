@@ -1,139 +1,174 @@
-import { useState } from "react";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 import { 
+  TrendingUp, 
   Users, 
-  Plus, 
-  Calendar, 
-  Mail, 
-  Clock,
-  TrendingUp,
-  DollarSign,
-  Target
+  DollarSign, 
+  Calendar,
+  ArrowUpRight,
+  ArrowDownRight,
+  Plus,
+  Eye
 } from "lucide-react";
-import { QuickAddModal } from "@/components/modals/QuickAddModal";
+import { useState } from "react";
+import { AddClientModal } from "@/components/modals/AddClientModal";
+import { AddContactModal } from "@/components/modals/AddContactModal";
 
 export default function Dashboard() {
-  const [quickAddOpen, setQuickAddOpen] = useState(false);
+  const [addClientOpen, setAddClientOpen] = useState(false);
+  const [addContactOpen, setAddContactOpen] = useState(false);
 
-  // Mock data for the dashboard
+  // Mock data for demo purposes
   const stats = [
-    { title: "Total Clients", value: "247", change: "+12%", icon: Users, color: "text-blue-500" },
-    { title: "Active Deals", value: "43", change: "+8%", icon: Target, color: "text-green-500" },
-    { title: "Revenue This Month", value: "$127,480", change: "+23%", icon: DollarSign, color: "text-purple-500" },
-    { title: "Tasks Completed", value: "89%", change: "+5%", icon: Clock, color: "text-orange-500" },
+    {
+      title: "Total Revenue",
+      value: "2,847,500 MAD",
+      change: "+12.5%",
+      trend: "up",
+      description: "vs last month"
+    },
+    {
+      title: "Active Clients",
+      value: "247",
+      change: "+3.2%",
+      trend: "up",
+      description: "vs last month"
+    },
+    {
+      title: "Deals in Pipeline",
+      value: "89",
+      change: "-2.1%",
+      trend: "down",
+      description: "vs last month"
+    },
+    {
+      title: "Tasks Due Today",
+      value: "12",
+      change: "+5",
+      trend: "up",
+      description: "vs yesterday"
+    }
   ];
 
   const recentDeals = [
-    { id: 1, client: "Acme Corp", value: "$45,000", stage: "Negotiation", probability: 75 },
-    { id: 2, client: "Tech Solutions", value: "$32,000", stage: "Proposal", probability: 60 },
-    { id: 3, client: "Global Industries", value: "$78,000", stage: "Qualified", probability: 40 },
-    { id: 4, client: "StartupXYZ", value: "$12,000", stage: "Closed Won", probability: 100 },
+    { id: 1, client: "Acme Corp", value: "125,000 MAD", status: "Negotiation", probability: 75 },
+    { id: 2, client: "Tech Solutions", value: "87,500 MAD", status: "Proposal", probability: 60 },
+    { id: 3, client: "Global Industries", value: "245,000 MAD", status: "Qualified", probability: 90 },
+    { id: 4, client: "StartupXYZ", value: "52,000 MAD", status: "Discovery", probability: 40 }
   ];
 
   const upcomingTasks = [
-    { id: 1, task: "Follow up with Acme Corp", due: "Today 2:00 PM", priority: "High" },
-    { id: 2, task: "Prepare proposal for Tech Solutions", due: "Tomorrow 10:00 AM", priority: "Medium" },
-    { id: 3, task: "Contract review meeting", due: "Dec 15, 3:00 PM", priority: "High" },
-    { id: 4, task: "Monthly team sync", due: "Dec 16, 9:00 AM", priority: "Low" },
+    { id: 1, title: "Follow up with Acme Corp", due: "Today, 2:00 PM", priority: "high" },
+    { id: 2, title: "Prepare proposal for Tech Solutions", due: "Tomorrow, 10:00 AM", priority: "medium" },
+    { id: 3, title: "Schedule demo call", due: "Dec 16, 3:00 PM", priority: "low" },
+    { id: 4, title: "Send contract to Global Industries", due: "Dec 17, 9:00 AM", priority: "high" }
   ];
 
-  const getStageColor = (stage: string) => {
-    switch (stage) {
-      case "Closed Won": return "bg-green-500";
-      case "Negotiation": return "bg-blue-500";
-      case "Proposal": return "bg-yellow-500";
-      case "Qualified": return "bg-purple-500";
-      default: return "bg-gray-500";
+  const recentActivities = [
+    { id: 1, action: "New deal created", details: "Acme Corp - Enterprise License", time: "2 hours ago" },
+    { id: 2, action: "Contact updated", details: "John Smith - Acme Corp", time: "4 hours ago" },
+    { id: 3, action: "Task completed", details: "Send proposal to Tech Solutions", time: "6 hours ago" },
+    { id: 4, action: "Meeting scheduled", details: "Demo call with StartupXYZ", time: "1 day ago" }
+  ];
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "Negotiation": return "bg-orange-100 text-orange-800";
+      case "Proposal": return "bg-blue-100 text-blue-800";
+      case "Qualified": return "bg-green-100 text-green-800";
+      case "Discovery": return "bg-purple-100 text-purple-800";
+      default: return "bg-gray-100 text-gray-800";
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case "High": return "bg-red-500";
-      case "Medium": return "bg-yellow-500";
-      case "Low": return "bg-green-500";
-      default: return "bg-gray-500";
+      case "high": return "bg-red-100 text-red-800";
+      case "medium": return "bg-yellow-100 text-yellow-800";
+      case "low": return "bg-green-100 text-green-800";
+      default: return "bg-gray-100 text-gray-800";
     }
   };
 
   return (
     <>
       <div className="space-y-6 animate-in">
-        {/* Welcome Section */}
+        {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Welcome back, John! 👋</h1>
+            <h1 className="text-3xl font-bold">Dashboard</h1>
             <p className="text-muted-foreground mt-1">
-              Here's what's happening with your business today.
+              Welcome back! Here's what's happening with your business today.
             </p>
           </div>
           <div className="flex gap-2">
-            <Button className="gap-2" onClick={() => setQuickAddOpen(true)}>
-              <Plus size={16} />
-              Add Deal
+            <Button variant="outline" onClick={() => setAddContactOpen(true)}>
+              <Plus size={16} className="mr-2" />
+              Add Contact
             </Button>
-            <Button variant="outline" className="gap-2" onClick={() => setQuickAddOpen(true)}>
-              <Calendar size={16} />
-              Schedule Meeting
+            <Button onClick={() => setAddClientOpen(true)}>
+              <Plus size={16} className="mr-2" />
+              Add Client
             </Button>
           </div>
         </div>
 
-        {/* Stats Grid */}
+        {/* Stats Cards */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {stats.map((stat, index) => (
-            <Card key={index} className="crm-card">
+            <Card key={index}>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <p className="text-2xl font-bold">{stat.value}</p>
-                      <Badge variant="secondary" className="text-xs">
-                        {stat.change}
-                      </Badge>
-                    </div>
+                    <p className="text-2xl font-bold">{stat.value}</p>
                   </div>
-                  <stat.icon className={`h-8 w-8 ${stat.color}`} />
+                  <div className={`p-2 rounded-full ${stat.trend === 'up' ? 'bg-green-100' : 'bg-red-100'}`}>
+                    {stat.trend === 'up' ? 
+                      <ArrowUpRight className="h-4 w-4 text-green-600" /> : 
+                      <ArrowDownRight className="h-4 w-4 text-red-600" />
+                    }
+                  </div>
+                </div>
+                <div className="mt-4 flex items-center gap-2">
+                  <span className={`text-xs font-medium ${stat.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
+                    {stat.change}
+                  </span>
+                  <span className="text-xs text-muted-foreground">{stat.description}</span>
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid gap-6 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2">
           {/* Recent Deals */}
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <DollarSign className="h-5 w-5" />
                 Recent Deals
-                <Button variant="outline" size="sm">View All</Button>
               </CardTitle>
+              <Button variant="ghost" size="sm">
+                <Eye className="h-4 w-4 mr-2" />
+                View All
+              </Button>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {recentDeals.map((deal) => (
-                  <div key={deal.id} className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors">
+                  <div key={deal.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
                     <div className="flex-1">
-                      <div className="flex items-center gap-3">
-                        <div>
-                          <p className="font-medium">{deal.client}</p>
-                          <p className="text-sm text-muted-foreground">{deal.value}</p>
-                        </div>
-                      </div>
+                      <p className="font-medium">{deal.client}</p>
+                      <p className="text-sm text-muted-foreground">{deal.value}</p>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <Badge className={`${getStageColor(deal.stage)} text-white`}>
-                        {deal.stage}
+                    <div className="flex items-center gap-2">
+                      <Badge className={getStatusColor(deal.status)} variant="secondary">
+                        {deal.status}
                       </Badge>
-                      <div className="text-right min-w-[60px]">
-                        <p className="text-sm font-medium">{deal.probability}%</p>
-                        <Progress value={deal.probability} className="w-16 h-2" />
-                      </div>
+                      <span className="text-xs text-muted-foreground">{deal.probability}%</span>
                     </div>
                   </div>
                 ))}
@@ -143,27 +178,27 @@ export default function Dashboard() {
 
           {/* Upcoming Tasks */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <Calendar className="h-5 w-5" />
                 Upcoming Tasks
-                <Button variant="outline" size="sm">View All</Button>
               </CardTitle>
+              <Button variant="ghost" size="sm">
+                <Eye className="h-4 w-4 mr-2" />
+                View All
+              </Button>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {upcomingTasks.map((task) => (
-                  <div key={task.id} className="space-y-2">
-                    <div className="flex items-start gap-3">
-                      <div className={`w-2 h-2 rounded-full mt-2 ${getPriorityColor(task.priority)}`} />
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm">{task.task}</p>
-                        <p className="text-xs text-muted-foreground">{task.due}</p>
-                      </div>
-                      <Badge variant="outline" className="text-xs">
-                        {task.priority}
-                      </Badge>
+                  <div key={task.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
+                    <div className="flex-1">
+                      <p className="font-medium">{task.title}</p>
+                      <p className="text-sm text-muted-foreground">{task.due}</p>
                     </div>
-                    {task.id !== upcomingTasks.length && <div className="border-b border-border" />}
+                    <Badge className={getPriorityColor(task.priority)} variant="secondary">
+                      {task.priority}
+                    </Badge>
                   </div>
                 ))}
               </div>
@@ -171,27 +206,24 @@ export default function Dashboard() {
           </Card>
         </div>
 
-        {/* Activity Feed */}
+        {/* Recent Activities */}
         <Card>
           <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5" />
+              Recent Activities
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {[
-                { type: "deal", message: "New deal created with Acme Corp - $45,000", time: "2 hours ago", icon: Target },
-                { type: "email", message: "Email sent to 15 prospects in the SaaS pipeline", time: "4 hours ago", icon: Mail },
-                { type: "meeting", message: "Meeting completed with Tech Solutions", time: "1 day ago", icon: Calendar },
-                { type: "client", message: "New client Global Industries added", time: "2 days ago", icon: Users },
-              ].map((activity, index) => (
-                <div key={index} className="flex items-center gap-4 p-3 rounded-lg hover:bg-accent/50 transition-colors">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                    <activity.icon className="w-4 h-4 text-primary" />
-                  </div>
+              {recentActivities.map((activity) => (
+                <div key={activity.id} className="flex items-center gap-4 p-3 rounded-lg border border-border">
+                  <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium">{activity.message}</p>
-                    <p className="text-xs text-muted-foreground">{activity.time}</p>
+                    <p className="font-medium">{activity.action}</p>
+                    <p className="text-sm text-muted-foreground">{activity.details}</p>
                   </div>
+                  <span className="text-xs text-muted-foreground">{activity.time}</span>
                 </div>
               ))}
             </div>
@@ -199,7 +231,8 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      <QuickAddModal open={quickAddOpen} onOpenChange={setQuickAddOpen} />
+      <AddClientModal open={addClientOpen} onOpenChange={setAddClientOpen} />
+      <AddContactModal open={addContactOpen} onOpenChange={setAddContactOpen} />
     </>
   );
 }

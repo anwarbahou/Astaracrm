@@ -1,4 +1,3 @@
-
 {
   "sidebar": {
     "dashboard": "Dashboard",
@@ -14,7 +13,9 @@
     "users": "Users",
     "settings": "Settings",
     "workflows": "Workflows",
-    "activityLogs": "Activity Logs"
+    "activityLogs": "Activity Logs",
+    "expand": "Expand",
+    "collapse": "Collapse"
   },
   "topNav": {
     "searchPlaceholder": "Search anything...",
@@ -51,5 +52,48 @@
   "languageSwitcher": {
     "chooseLanguage": "Choose Language",
     "moreComingSoon": "More languages coming soon"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcomeMessage": "Welcome back! Here's what's happening with your business today.",
+    "addContact": "Add Contact",
+    "addClient": "Add Client",
+    "totalRevenue": "Total Revenue",
+    "activeClients": "Active Clients",
+    "dealsInPipeline": "Deals in Pipeline",
+    "tasksDueToday": "Tasks Due Today",
+    "vsLastMonth": "vs last month",
+    "vsYesterday": "vs yesterday",
+    "recentDeals": "Recent Deals",
+    "upcomingTasks": "Upcoming Tasks",
+    "recentActivities": "Recent Activities",
+    "viewAll": "View All",
+    "status": {
+      "negotiation": "Negotiation",
+      "proposal": "Proposal",
+      "qualified": "Qualified",
+      "discovery": "Discovery"
+    },
+    "priority": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "mockTasks": {
+      "followUp": "Follow up with Acme Corp",
+      "prepareProposal": "Prepare proposal for Tech Solutions",
+      "scheduleDemo": "Schedule demo call",
+      "sendContract": "Send contract to Global Industries"
+    },
+    "mockActivities": {
+      "newDeal": "New deal created",
+      "dealDetails": "Acme Corp - Enterprise License",
+      "contactUpdated": "Contact updated",
+      "contactDetails": "John Smith - Acme Corp",
+      "taskCompleted": "Task completed",
+      "taskDetails": "Send proposal to Tech Solutions",
+      "meetingScheduled": "Meeting scheduled",
+      "meetingDetails": "Demo call with StartupXYZ"
+    }
   }
 }

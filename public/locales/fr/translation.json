@@ -1,4 +1,3 @@
-
 {
   "sidebar": {
     "dashboard": "Tableau de bord",
@@ -14,7 +13,9 @@
     "users": "Utilisateurs",
     "settings": "Paramètres",
     "workflows": "Workflows",
-    "activityLogs": "Journaux d'activité"
+    "activityLogs": "Journaux d'activité",
+    "expand": "Agrandir",
+    "collapse": "Réduire"
   },
   "topNav": {
     "searchPlaceholder": "Rechercher...",
@@ -51,5 +52,48 @@
   "languageSwitcher": {
     "chooseLanguage": "Choisir la langue",
     "moreComingSoon": "Plus de langues bientôt disponibles"
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "welcomeMessage": "Bon retour ! Voici ce qui se passe avec votre entreprise aujourd'hui.",
+    "addContact": "Ajouter un contact",
+    "addClient": "Ajouter un client",
+    "totalRevenue": "Revenu total",
+    "activeClients": "Clients actifs",
+    "dealsInPipeline": "Affaires en cours",
+    "tasksDueToday": "Tâches pour aujourd'hui",
+    "vsLastMonth": "vs le mois dernier",
+    "vsYesterday": "vs hier",
+    "recentDeals": "Affaires récentes",
+    "upcomingTasks": "Tâches à venir",
+    "recentActivities": "Activités récentes",
+    "viewAll": "Voir tout",
+    "status": {
+      "negotiation": "Négociation",
+      "proposal": "Proposition",
+      "qualified": "Qualifié",
+      "discovery": "Découverte"
+    },
+    "priority": {
+      "high": "Haute",
+      "medium": "Moyenne",
+      "low": "Basse"
+    },
+    "mockTasks": {
+      "followUp": "Suivi avec Acme Corp",
+      "prepareProposal": "Préparer la proposition pour Tech Solutions",
+      "scheduleDemo": "Planifier un appel de démo",
+      "sendContract": "Envoyer le contrat à Global Industries"
+    },
+    "mockActivities": {
+      "newDeal": "Nouvelle affaire créée",
+      "dealDetails": "Acme Corp - Licence Entreprise",
+      "contactUpdated": "Contact mis à jour",
+      "contactDetails": "John Smith - Acme Corp",
+      "taskCompleted": "Tâche terminée",
+      "taskDetails": "Envoyer la proposition à Tech Solutions",
+      "meetingScheduled": "Réunion planifiée",
+      "meetingDetails": "Appel de démo with StartupXYZ"
+    }
   }
 }

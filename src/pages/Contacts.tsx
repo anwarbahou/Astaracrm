@@ -1,135 +1,203 @@
+
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { 
-  Search, 
-  Plus, 
-  Filter,
-  MoreHorizontal,
-  Mail,
-  Phone,
-  User
-} from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Plus } from "lucide-react";
 import { AddContactModal } from "@/components/modals/AddContactModal";
+import { ContactsTable, Contact } from "@/components/contacts/ContactsTable";
+import { ContactProfileModal } from "@/components/contacts/ContactProfileModal";
+import { ContactFiltersPanel } from "@/components/contacts/ContactFiltersPanel";
 
 export default function Contacts() {
   const [searchQuery, setSearchQuery] = useState("");
   const [addContactOpen, setAddContactOpen] = useState(false);
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filters, setFilters] = useState({
+    company: '',
+    role: '',
+    country: '',
+    status: '',
+    tags: [] as string[],
+    dateCreatedFrom: '',
+    dateCreatedTo: '',
+    lastContactedFrom: '',
+    lastContactedTo: '',
+  });
 
-  // Mock contact data
-  const contacts = [
+  // Enhanced mock contact data
+  const [contacts] = useState<Contact[]>([
     {
       id: 1,
-      name: "John Smith",
+      firstName: "John",
+      lastName: "Smith",
       email: "john@acme.com",
-      phone: "+1 (555) 123-4567",
+      phone: "+212 661 234567",
+      role: "CEO",
       company: "Acme Corporation",
-      position: "CEO",
-      status: "Active",
-      lastContact: "2 days ago",
       tags: ["Decision Maker", "VIP"],
-      avatar: "JS"
+      country: "Morocco",
+      status: "Active",
+      createdDate: "2023-01-15",
+      lastContacted: "2 days ago",
+      avatar: "",
+      notes: "Key decision maker for technology investments. Very interested in our CRM platform."
     },
     {
       id: 2,
-      name: "Sarah Johnson",
+      firstName: "Sarah",
+      lastName: "Johnson",
       email: "sarah@techsolutions.com",
-      phone: "+1 (555) 987-6543",
+      phone: "+33 1 42 86 83 02",
+      role: "CTO",
       company: "Tech Solutions Ltd",
-      position: "CTO",
+      tags: ["Technical", "Decision Maker"],
+      country: "France",
       status: "Active",
-      lastContact: "1 week ago",
-      tags: ["Technical"],
-      avatar: "SJ"
+      createdDate: "2023-03-20",
+      lastContacted: "1 week ago",
+      avatar: "",
+      notes: "Technical lead evaluating our software solutions."
     },
     {
       id: 3,
-      name: "Mike Chen",
+      firstName: "Mike",
+      lastName: "Chen",
       email: "mike@global.com",
-      phone: "+1 (555) 456-7890",
+      phone: "+34 91 123 4567",
+      role: "Procurement Manager",
       company: "Global Industries",
-      position: "Procurement Manager",
-      status: "Inactive",
-      lastContact: "3 weeks ago",
       tags: ["Procurement"],
-      avatar: "MC"
+      country: "Spain",
+      status: "Inactive",
+      createdDate: "2022-11-10",
+      lastContacted: "3 weeks ago",
+      avatar: "",
+      notes: "Handles procurement decisions for European operations."
     },
     {
       id: 4,
-      name: "Emily Davis",
+      firstName: "Emily",
+      lastName: "Davis",
       email: "emily@startupxyz.com",
-      phone: "+1 (555) 321-0987",
+      phone: "+1 555 987 6543",
+      role: "Founder",
       company: "StartupXYZ",
-      position: "Founder",
-      status: "Active",
-      lastContact: "Yesterday",
       tags: ["Founder", "Startup"],
-      avatar: "ED"
+      country: "USA",
+      status: "Active",
+      createdDate: "2023-06-05",
+      lastContacted: "Yesterday",
+      avatar: "",
+      notes: "Startup founder looking for scalable CRM solutions."
     },
     {
       id: 5,
-      name: "David Wilson",
+      firstName: "David",
+      lastName: "Wilson",
       email: "david@enterprise.com",
-      phone: "+1 (555) 654-3210",
+      phone: "+971 4 123 4567",
+      role: "VP Sales",
       company: "Enterprise Corp",
-      position: "VP Sales",
-      status: "Prospect",
-      lastContact: "1 month ago",
-      tags: ["Sales"],
-      avatar: "DW"
+      tags: ["Sales", "VIP"],
+      country: "UAE",
+      status: "Active",
+      createdDate: "2024-01-12",
+      lastContacted: "1 month ago",
+      avatar: "",
+      notes: "Sales VP interested in pipeline management features."
     },
     {
       id: 6,
-      name: "Lisa Anderson",
+      firstName: "Lisa",
+      lastName: "Anderson",
       email: "lisa@acme.com",
-      phone: "+1 (555) 789-0123",
+      phone: "+212 661 345678",
+      role: "CTO",
       company: "Acme Corporation",
-      position: "CTO",
-      status: "Active",
-      lastContact: "3 days ago",
       tags: ["Technical", "Decision Maker"],
-      avatar: "LA"
+      country: "Morocco",
+      status: "Active",
+      createdDate: "2023-09-15",
+      lastContacted: "3 days ago",
+      avatar: "",
+      notes: "Technical decision maker for IT infrastructure projects."
+    },
+    {
+      id: 7,
+      firstName: "Robert",
+      lastName: "Garcia",
+      email: "robert@consulting.com",
+      phone: "+44 20 7946 0958",
+      role: "Senior Consultant",
+      company: "Consulting Pro",
+      tags: ["Consulting"],
+      country: "UK",
+      status: "Active",
+      createdDate: "2023-04-22",
+      lastContacted: "5 days ago",
+      avatar: "",
+      notes: "Consultant specializing in digital transformation projects."
+    },
+    {
+      id: 8,
+      firstName: "Maria",
+      lastName: "Rodriguez",
+      email: "maria@healthcare.com",
+      phone: "+212 661 567890",
+      role: "IT Director",
+      company: "HealthCare Plus",
+      tags: ["Healthcare", "Technical"],
+      country: "Morocco",
+      status: "Active",
+      createdDate: "2023-07-30",
+      lastContacted: "2 weeks ago",
+      avatar: "",
+      notes: "IT Director overseeing healthcare technology initiatives."
+    },
+    {
+      id: 9,
+      firstName: "James",
+      lastName: "Brown",
+      email: "james@retail.com",
+      phone: "+49 30 12345678",
+      role: "Operations Manager",
+      company: "Retail Masters",
+      tags: ["Retail", "Operations"],
+      country: "Germany",
+      status: "Inactive",
+      createdDate: "2022-12-08",
+      lastContacted: "2 months ago",
+      avatar: "",
+      notes: "Operations manager for retail chain modernization project."
+    },
+    {
+      id: 10,
+      firstName: "Anna",
+      lastName: "Schmidt",
+      email: "anna@fintech.com",
+      phone: "+41 44 123 4567",
+      role: "Product Manager",
+      company: "FinTech Solutions",
+      tags: ["Finance", "Product"],
+      country: "Switzerland",
+      status: "Active",
+      createdDate: "2024-02-14",
+      lastContacted: "4 days ago",
+      avatar: "",
+      notes: "Product manager for financial technology solutions."
     }
-  ];
+  ]);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Active": return "bg-green-500";
-      case "Inactive": return "bg-red-500";
-      case "Prospect": return "bg-yellow-500";
-      default: return "bg-gray-500";
-    }
+  const handleContactClick = (contact: Contact) => {
+    setSelectedContact(contact);
+    setProfileModalOpen(true);
   };
 
-  const getTagColor = (tag: string) => {
-    switch (tag) {
-      case "Decision Maker": return "bg-purple-100 text-purple-800";
-      case "VIP": return "bg-gold-100 text-yellow-800";
-      case "Technical": return "bg-blue-100 text-blue-800";
-      case "Founder": return "bg-green-100 text-green-800";
-      case "Startup": return "bg-orange-100 text-orange-800";
-      default: return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const filteredContacts = contacts.filter(contact =>
-    contact.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    contact.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    contact.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    contact.position.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const handleViewProfile = (contactId: number) => {
-    window.location.href = `/contacts/${contactId}`;
+  const handleSaveContact = (updatedContact: Contact) => {
+    // In a real app, this would update the contact in the database
+    console.log('Saving contact:', updatedContact);
   };
 
   return (
@@ -148,27 +216,6 @@ export default function Contacts() {
             Add Contact
           </Button>
         </div>
-
-        {/* Filters and Search */}
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                <Input
-                  placeholder="Search contacts by name, company, email, or position..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <Button variant="outline" className="gap-2">
-                <Filter size={16} />
-                Filter
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Stats Cards */}
         <div className="grid gap-4 md:grid-cols-4">
@@ -206,82 +253,33 @@ export default function Contacts() {
           </Card>
         </div>
 
-        {/* Contact List */}
-        <Card>
-          <CardHeader>
-            <CardTitle>All Contacts ({filteredContacts.length})</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {filteredContacts.map((contact) => (
-                <div key={contact.id} className="flex items-center gap-4 p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors">
-                  <Avatar className="h-12 w-12">
-                    <AvatarFallback className="bg-primary/10 text-primary font-medium">
-                      {contact.avatar}
-                    </AvatarFallback>
-                  </Avatar>
-                  
-                  <div className="flex-1 grid grid-cols-1 md:grid-cols-5 gap-4">
-                    <div className="md:col-span-2">
-                      <h4 className="font-medium">{contact.name}</h4>
-                      <p className="text-sm text-muted-foreground">{contact.position}</p>
-                      <p className="text-sm text-muted-foreground">{contact.company}</p>
-                    </div>
-                    
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2 text-sm">
-                        <Mail className="h-3 w-3 text-muted-foreground" />
-                        <span className="text-muted-foreground">{contact.email}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <Phone className="h-3 w-3 text-muted-foreground" />
-                        <span className="text-muted-foreground">{contact.phone}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <div className="flex flex-wrap gap-1">
-                        {contact.tags.map((tag, index) => (
-                          <Badge key={index} variant="secondary" className={`${getTagColor(tag)} text-xs`}>
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                      <p className="text-xs text-muted-foreground">Last contact: {contact.lastContact}</p>
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <Badge className={`${getStatusColor(contact.status)} text-white text-xs`}>
-                        {contact.status}
-                      </Badge>
-                      
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="bg-background border" align="end">
-                          <DropdownMenuItem onClick={() => handleViewProfile(contact.id)}>
-                            View Profile
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>Edit Contact</DropdownMenuItem>
-                          <DropdownMenuItem>Send Email</DropdownMenuItem>
-                          <DropdownMenuItem>Schedule Meeting</DropdownMenuItem>
-                          <DropdownMenuItem>Add Note</DropdownMenuItem>
-                          <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        {/* Filters Panel */}
+        <ContactFiltersPanel
+          isOpen={filtersOpen}
+          onClose={() => setFiltersOpen(false)}
+          filters={filters}
+          onFiltersChange={setFilters}
+        />
+
+        {/* Contacts Table */}
+        <ContactsTable
+          contacts={contacts}
+          onContactClick={handleContactClick}
+          onFiltersToggle={() => setFiltersOpen(!filtersOpen)}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+        />
       </div>
 
+      {/* Modals */}
       <AddContactModal open={addContactOpen} onOpenChange={setAddContactOpen} />
+      
+      <ContactProfileModal
+        contact={selectedContact}
+        open={profileModalOpen}
+        onOpenChange={setProfileModalOpen}
+        onSave={handleSaveContact}
+      />
     </>
   );
 }

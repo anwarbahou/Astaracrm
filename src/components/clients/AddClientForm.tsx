@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/hooks/use-toast';
@@ -7,7 +8,7 @@ import {
   BusinessInfoSection,
   TagsSection,
   NotesSection,
-} from './ClientFormSections';
+} from './client-form-sections';
 import { Button } from '@/components/ui/button';
 
 export interface ClientFormData {

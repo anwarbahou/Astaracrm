@@ -59,6 +59,14 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
     setTags(tags.filter(tag => tag !== tagToRemove));
   };
 
+  const handleTypeChange = (value: string) => {
+    setType(value as Note["type"]);
+  };
+
+  const handleVisibilityChange = (value: string) => {
+    setVisibility(value as Note["visibility"]);
+  };
+
   const handleSave = () => {
     const noteData: Partial<Note> = {
       title,
@@ -111,7 +119,7 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Type</Label>
-              <Select value={type} onValueChange={setType}>
+              <Select value={type} onValueChange={handleTypeChange}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -126,7 +134,7 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
 
             <div className="space-y-2">
               <Label>Visibility</Label>
-              <Select value={visibility} onValueChange={setVisibility}>
+              <Select value={visibility} onValueChange={handleVisibilityChange}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>

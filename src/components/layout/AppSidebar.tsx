@@ -95,7 +95,10 @@ export function AppSidebar() {
   const isCollapsed = state === "collapsed";
 
   return (
-    <Sidebar className="border-r border-sidebar-border/20 transition-all duration-500 ease-in-out overflow-hidden">
+    <Sidebar 
+      collapsible="icon"
+      className="border-r border-sidebar-border/20 transition-all duration-500 ease-in-out overflow-hidden"
+    >
       <SidebarHeader className={cn(
         "p-4 transition-all duration-500 ease-in-out",
         isCollapsed ? "px-2 py-4" : "px-6 py-4"
@@ -108,7 +111,7 @@ export function AppSidebar() {
             <span className="text-primary-foreground font-bold text-sm">W</span>
           </div>
           <span className={cn(
-            "font-bold text-xl text-sidebar-foreground transition-all duration-500 ease-in-out",
+            "font-bold text-xl text-sidebar-foreground transition-all duration-500 ease-in-out whitespace-nowrap",
             isCollapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100 w-auto"
           )}>
             WOLFHUNT
@@ -150,7 +153,7 @@ export function AppSidebar() {
                         isCollapsed ? "text-sidebar-foreground" : "text-sidebar-foreground/80"
                       )} />
                       <span className={cn(
-                        "transition-all duration-500 ease-in-out font-medium",
+                        "transition-all duration-500 ease-in-out font-medium whitespace-nowrap",
                         isCollapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100 w-auto"
                       )}>
                         {item.title}
@@ -173,17 +176,16 @@ export function AppSidebar() {
           isCollapsed ? "text-center opacity-70" : "opacity-100"
         )}>
           <span className={cn(
-            "transition-all duration-500 ease-in-out",
+            "transition-all duration-500 ease-in-out whitespace-nowrap",
             isCollapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100 w-auto"
           )}>
             © 2024 WOLFHUNT CRM
           </span>
-          <span className={cn(
-            "transition-all duration-500 ease-in-out",
-            isCollapsed ? "opacity-100" : "opacity-0 absolute"
-          )}>
-            © '24
-          </span>
+          {isCollapsed && (
+            <span className="transition-all duration-500 ease-in-out">
+              © '24
+            </span>
+          )}
         </div>
       </SidebarFooter>
     </Sidebar>

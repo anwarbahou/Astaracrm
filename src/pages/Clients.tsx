@@ -16,8 +16,9 @@ import type { Database } from '@/integrations/supabase/types';
 type Client = Database['public']['Tables']['clients']['Row'];
 
 // Transform database client to match the existing Client interface
-const transformClientForTable = (dbClient: Client) => ({
-  id: dbClient.id,
+const transformClientForTable = (dbClient: Client, index: number) => ({
+  id: index + 1, // Use index as numeric ID for the table
+  dbId: dbClient.id, // Keep the actual database ID for operations
   name: dbClient.name || '',
   email: dbClient.email || '',
   phone: dbClient.phone || '',
@@ -73,11 +74,20 @@ export default function Clients() {
   }
 
   // Transform database clients for the table
-  const clients = dbClients.map(transformClientForTable);
+  const clients = dbClients.map((dbClient, index) => transformClientForTable(dbClient, index));
 
   const handleClientClick = (client: any) => {
-    setSelectedClient(client);
-    setProfileModalOpen(true);
+    // Find the original database client using dbId
+    const dbClient = dbClients.find(db => db.id === client.dbId);
+    if (dbClient) {
+      setSelectedClient({
+        ...client,
+        id: dbClient.id, // Use the actual database ID for operations
+        address: dbClient.address || '',
+        website: dbClient.website || ''
+      });
+      setProfileModalOpen(true);
+    }
   };
 
   const handleSaveClient = async (updatedClient: any) => {

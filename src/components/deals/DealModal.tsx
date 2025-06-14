@@ -1,6 +1,7 @@
 
 import { Deal, DealStage } from '@/types/deal';
 import { useState } from 'react';
+import * as React from 'react';
 import {
   Sheet,
   SheetContent,

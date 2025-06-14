@@ -24,4 +24,5 @@ export interface UnreadCounts {
   starred: number;
   archive: number;
   trash: number;
+  [key: string]: number; // Add index signature to allow any string key
 }

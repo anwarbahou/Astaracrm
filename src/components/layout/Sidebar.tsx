@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
@@ -8,21 +7,27 @@ import { navigationItems } from "@/data/navigationData";
 import { containerVariants, itemVariants } from "@/lib/animations";
 import { useTranslation } from "react-i18next";
 
-export function Sidebar() {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+interface SidebarProps {
+  isCollapsed: boolean;
+  onToggle: (collapsed: boolean) => void;
+}
+
+export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
   const location = useLocation();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.dir() === "rtl";
 
   const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed);
+    onToggle(!isCollapsed);
   };
 
   return (
     <motion.aside
       layout
       className={cn(
-        "fixed left-0 top-0 h-screen bg-card border-r border-border shadow-lg flex flex-col z-40",
-        "transition-theme duration-theme ease-theme",
+        "fixed top-0 h-screen bg-card shadow-lg flex flex-col z-40",
+        "transition-all duration-500 ease-in-out",
+        isRtl ? "right-0 border-l border-border" : "left-0 border-r border-border",
         isCollapsed ? "w-16" : "w-64"
       )}
       variants={containerVariants}
@@ -34,21 +39,25 @@ export function Sidebar() {
       <div className="relative p-4 border-b border-border transition-theme duration-theme ease-theme">
         <motion.button
           onClick={toggleSidebar}
-          className="absolute -right-3 top-6 z-50 w-6 h-6 bg-card border border-border rounded-full flex items-center justify-center hover:bg-muted transition-theme duration-theme ease-theme shadow-md"
+          className={cn(
+            "absolute top-6 z-50 w-6 h-6 bg-card border border-border rounded-full flex items-center justify-center hover:bg-muted transition-theme duration-theme ease-theme shadow-md",
+            isRtl ? "-left-3" : "-right-3"
+          )}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-label={isCollapsed ? t('sidebar.expand') : t('sidebar.collapse')}
         >
-          <motion.div
-            animate={{ rotate: isCollapsed ? 180 : 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-          >
-            {isCollapsed ? (
-              <ChevronRight size={14} className="text-muted-foreground transition-theme duration-theme ease-theme" />
+          {isRtl ? (
+            isCollapsed ? (
+              <ChevronLeft size={14} className="text-muted-foreground" />
             ) : (
-              <ChevronLeft size={14} className="text-muted-foreground transition-theme duration-theme ease-theme" />
-            )}
-          </motion.div>
+              <ChevronRight size={14} className="text-muted-foreground" />
+            )
+          ) : isCollapsed ? (
+            <ChevronRight size={14} className="text-muted-foreground" />
+          ) : (
+            <ChevronLeft size={14} className="text-muted-foreground" />
+          )}
         </motion.button>
 
         <motion.div 
@@ -113,7 +122,10 @@ export function Sidebar() {
                   {isActive && (
                     <motion.div
                       layoutId="activeIndicator"
-                      className="absolute left-0 top-1/2 w-1 h-6 bg-primary rounded-r-full transition-theme duration-theme ease-theme"
+                      className={cn(
+                        "absolute top-1/2 w-1 h-6 bg-primary transition-theme duration-theme ease-theme",
+                         isRtl ? "right-0 rounded-l-full" : "left-0 rounded-r-full"
+                      )}
                       style={{ transform: "translateY(-50%)" }}
                       transition={{ duration: 0.2 }}
                     />

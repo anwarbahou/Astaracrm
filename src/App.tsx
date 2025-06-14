@@ -10,7 +10,8 @@ import { TopNavigation } from "@/components/layout/TopNavigation";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { pageVariants } from "@/lib/animations";
 import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 
 // Pages
 import Dashboard from "./pages/Dashboard";
@@ -77,12 +78,19 @@ function AnimatedRoutes() {
 
 const App = () => {
   const { i18n } = useTranslation();
+  const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     document.documentElement.lang = i18n.language;
     document.documentElement.dir = i18n.dir(i18n.language);
   }, [i18n, i18n.language]);
   
+  const isRtl = i18n.dir() === 'rtl';
+
+  const mainContentMargin = isSidebarCollapsed
+    ? isRtl ? "mr-16" : "ml-16"
+    : isRtl ? "mr-64" : "ml-64";
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
@@ -101,11 +109,14 @@ const App = () => {
                 layout
                 transition={{ duration: 0.5, ease: "easeInOut" }}
               >
-                <Sidebar />
+                <Sidebar isCollapsed={isSidebarCollapsed} onToggle={setSidebarCollapsed} />
               </motion.div>
               
               <motion.div 
-                className="flex-1 flex flex-col ml-64 transition-theme duration-theme ease-theme"
+                className={cn(
+                  "flex-1 flex flex-col transition-all duration-500 ease-in-out",
+                  mainContentMargin
+                )}
                 layout
                 transition={{ duration: 0.5, ease: "easeInOut" }}
               >

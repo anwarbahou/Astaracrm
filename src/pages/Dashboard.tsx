@@ -1,3 +1,4 @@
+
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
@@ -18,7 +19,7 @@ import { useState } from "react";
 import { AddClientModal } from "@/components/modals/AddClientModal";
 import { AddContactModal } from "@/components/modals/AddContactModal";
 
-function DashboardContent() {
+export default function Dashboard() {
   const { user, loading } = useAuth();
   const [addClientOpen, setAddClientOpen] = useState(false);
   const [addContactOpen, setAddContactOpen] = useState(false);
@@ -26,9 +27,11 @@ function DashboardContent() {
   // Show loading while checking authentication
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
+      <DashboardLayout>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      </DashboardLayout>
     );
   }
 
@@ -110,7 +113,7 @@ function DashboardContent() {
   };
 
   return (
-    <>
+    <DashboardLayout>
       <div className="space-y-6 animate-in">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -250,14 +253,6 @@ function DashboardContent() {
 
       <AddClientModal open={addClientOpen} onOpenChange={setAddClientOpen} />
       <AddContactModal open={addContactOpen} onOpenChange={setAddContactOpen} />
-    </>
-  );
-}
-
-export default function Dashboard() {
-  return (
-    <DashboardLayout>
-      <DashboardContent />
     </DashboardLayout>
   );
 }

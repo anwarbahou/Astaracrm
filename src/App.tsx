@@ -1,21 +1,28 @@
+
 import {
   BrowserRouter,
   Routes,
   Route,
+  Navigate,
 } from "react-router-dom";
+import { Toaster } from "@/components/ui/toaster";
 import Clients from "./pages/Clients";
 import ClientProfile from "./pages/ClientProfile";
 import Auth from "@/pages/Auth";
+import Dashboard from "@/pages/Dashboard";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Clients />} />
+        <Route path="/" element={<Navigate to="/clients" replace />} />
         <Route path="/clients" element={<Clients />} />
         <Route path="/clients/:id" element={<ClientProfile />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/auth" element={<Auth />} />
+        <Route path="*" element={<Navigate to="/clients" replace />} />
       </Routes>
+      <Toaster />
     </BrowserRouter>
   );
 }

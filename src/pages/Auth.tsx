@@ -1,21 +1,22 @@
 
 import { useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { Mail, Lock, Eye, EyeOff, ArrowRight, Loader2 } from 'lucide-react';
 
 export default function Auth() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { user, signIn, signUp } = useAuth();
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   // Redirect if already authenticated
   if (user) {
@@ -24,6 +25,15 @@ export default function Auth() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!email || !password) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -32,9 +42,20 @@ export default function Auth() {
         : await signIn(email, password);
 
       if (error) {
+        let errorMessage = error.message;
+        
+        // Handle specific error cases with user-friendly messages
+        if (error.message.includes('Invalid login credentials')) {
+          errorMessage = 'Invalid email or password. Please check your credentials and try again.';
+        } else if (error.message.includes('Email not confirmed')) {
+          errorMessage = 'Please check your email and click the confirmation link before signing in.';
+        } else if (error.message.includes('User already registered')) {
+          errorMessage = 'An account with this email already exists. Try signing in instead.';
+        }
+
         toast({
           title: "Authentication Error",
-          description: error.message,
+          description: errorMessage,
           variant: "destructive",
         });
       } else {
@@ -42,17 +63,18 @@ export default function Auth() {
           title: "Success",
           description: isSignUp 
             ? "Account created successfully! Please check your email to confirm your account."
-            : "Signed in successfully!",
+            : "Welcome back! Redirecting to your dashboard...",
         });
         
-        if (!isSignUp) {
-          navigate('/clients');
-        }
+        // Clear form
+        setEmail('');
+        setPassword('');
       }
     } catch (err) {
+      console.error('Authentication error:', err);
       toast({
         title: "Error",
-        description: "An unexpected error occurred",
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -61,58 +83,148 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-2xl text-center">
-            {isSignUp ? 'Create Account' : 'Sign In'}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                placeholder="Enter your email"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                placeholder="Enter your password"
-                minLength={6}
-              />
-            </div>
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+        <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/10 via-purple-600/10 to-pink-600/10"></div>
+        
+        {/* Floating geometric shapes */}
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-indigo-400/10 to-blue-400/10 rounded-full blur-3xl animate-pulse delay-500"></div>
+      </div>
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Loading...' : (isSignUp ? 'Sign Up' : 'Sign In')}
-            </Button>
-          </form>
-
-          <div className="mt-4 text-center">
-            <Button
-              variant="link"
-              onClick={() => setIsSignUp(!isSignUp)}
-              className="text-sm"
-            >
+      {/* Content */}
+      <div className="relative z-10 w-full max-w-md mx-4">
+        <Card className="backdrop-blur-lg bg-white/80 border-white/20 shadow-2xl animate-fade-in">
+          <CardHeader className="text-center pb-8">
+            <div className="mx-auto mb-4 w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center">
+              <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                <div className="w-4 h-4 bg-gradient-to-br from-blue-600 to-purple-600 rounded"></div>
+              </div>
+            </div>
+            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+              {isSignUp ? 'Create Account' : 'Welcome Back'}
+            </CardTitle>
+            <p className="text-gray-600 mt-2">
               {isSignUp 
-                ? 'Already have an account? Sign in' 
-                : "Don't have an account? Sign up"}
-            </Button>
+                ? 'Sign up to start managing your clients' 
+                : 'Sign in to your CRM dashboard'}
+            </p>
+          </CardHeader>
+          
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                  Email Address
+                </Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    placeholder="Enter your email"
+                    className="pl-10 h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500 transition-colors"
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                  Password
+                </Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    placeholder="Enter your password"
+                    minLength={6}
+                    className="pl-10 pr-10 h-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500 transition-colors"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
+              </div>
+
+              <Button 
+                type="submit" 
+                className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium rounded-lg transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed" 
+                disabled={loading}
+              >
+                {loading ? (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    {isSignUp ? 'Creating Account...' : 'Signing In...'}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    {isSignUp ? 'Create Account' : 'Sign In'}
+                    <ArrowRight className="h-4 w-4" />
+                  </div>
+                )}
+              </Button>
+            </form>
+
+            <div className="mt-8 text-center">
+              <Button
+                variant="link"
+                onClick={() => {
+                  setIsSignUp(!isSignUp);
+                  setEmail('');
+                  setPassword('');
+                }}
+                className="text-gray-600 hover:text-blue-600 transition-colors"
+              >
+                {isSignUp 
+                  ? 'Already have an account? Sign in' 
+                  : "Don't have an account? Sign up"}
+              </Button>
+            </div>
+
+            {/* Additional Info */}
+            <div className="mt-6 text-center">
+              <p className="text-xs text-gray-500">
+                By continuing, you agree to our Terms of Service and Privacy Policy
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Features highlights */}
+        <div className="mt-8 grid grid-cols-3 gap-4 text-center">
+          <div className="text-white/80">
+            <div className="w-8 h-8 mx-auto mb-2 bg-white/20 rounded-lg flex items-center justify-center">
+              <div className="w-4 h-4 bg-white rounded"></div>
+            </div>
+            <p className="text-xs">Secure</p>
           </div>
-        </CardContent>
-      </Card>
+          <div className="text-white/80">
+            <div className="w-8 h-8 mx-auto mb-2 bg-white/20 rounded-lg flex items-center justify-center">
+              <div className="w-4 h-4 bg-white rounded"></div>
+            </div>
+            <p className="text-xs">Fast</p>
+          </div>
+          <div className="text-white/80">
+            <div className="w-8 h-8 mx-auto mb-2 bg-white/20 rounded-lg flex items-center justify-center">
+              <div className="w-4 h-4 bg-white rounded"></div>
+            </div>
+            <p className="text-xs">Reliable</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

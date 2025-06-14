@@ -39,7 +39,7 @@
     },
     "pageDescription": {
       "dashboard": "Overview of your CRM performance",
-      "clients": "Manage your client relationships",
+      "clients": "Manage your client relationships and track business growth.",
       "contacts": "Keep track of all your contacts",
       "deals": "Monitor your sales pipeline",
       "tasks": "Stay on top of your tasks",
@@ -95,5 +95,79 @@
       "meetingScheduled": "Meeting scheduled",
       "meetingDetails": "Demo call with StartupXYZ"
     }
+  },
+  "clients": {
+    "addClient": "Add Client",
+    "totalClients": "Total Clients",
+    "activeClients": "Active Clients",
+    "prospects": "Prospects",
+    "totalRevenue": "Total Revenue"
+  },
+  "common": {
+    "add": "Add",
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "close": "Close"
+  },
+  "countries": {
+    "morocco": "Morocco",
+    "france": "France",
+    "spain": "Spain",
+    "usa": "United States",
+    "uae": "United Arab Emirates",
+    "uk": "United Kingdom",
+    "germany": "Germany"
+  },
+  "industries": {
+    "technology": "Technology",
+    "healthcare": "Healthcare",
+    "finance": "Finance",
+    "retail": "Retail",
+    "manufacturing": "Manufacturing",
+    "consulting": "Consulting",
+    "education": "Education",
+    "real_estate": "Real Estate",
+    "other": "Other"
+  },
+  "clientStages": {
+    "lead": "Lead",
+    "prospect": "Prospect",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "toasts": {
+    "addClient": {
+      "success": {
+        "title": "Success!",
+        "description": "Client added successfully."
+      }
+    }
+  },
+  "addClientModal": {
+    "title": "Add New Client",
+    "profilePicture": "Profile Picture",
+    "uploadPhoto": "Upload Photo",
+    "uploadHint": "Optional: Upload client logo or photo",
+    "nameLabel": "Company/Client Name *",
+    "namePlaceholder": "Enter company name",
+    "emailLabel": "Email Address *",
+    "emailPlaceholder": "contact@company.com",
+    "phoneLabel": "Phone Number",
+    "phonePlaceholder": "+212 6XX XXX XXX",
+    "countryLabel": "Country/Location",
+    "countryPlaceholder": "Select location",
+    "industryLabel": "Industry",
+    "industryPlaceholder": "Select industry",
+    "stageLabel": "Client Stage",
+    "stagePlaceholder": "Select stage",
+    "ownerLabel": "Account Owner",
+    "ownerPlaceholder": "Assign account owner",
+    "tagsLabel": "Tags",
+    "tagsPlaceholder": "Add a tag and press Enter",
+    "notesLabel": "Notes",
+    "notesPlaceholder": "Add any additional notes about this client...",
+    "submitButton": "Add Client"
   }
 }

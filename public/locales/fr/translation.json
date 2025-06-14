@@ -39,7 +39,7 @@
     },
     "pageDescription": {
       "dashboard": "Aperçu des performances de votre CRM",
-      "clients": "Gérez vos relations clients",
+      "clients": "Gérez vos relations clients et suivez la croissance de votre entreprise.",
       "contacts": "Gardez une trace de tous vos contacts",
       "deals": "Surveillez votre pipeline de ventes",
       "tasks": "Restez au top de vos tâches",
@@ -95,5 +95,79 @@
       "meetingScheduled": "Réunion planifiée",
       "meetingDetails": "Appel de démo with StartupXYZ"
     }
+  },
+  "clients": {
+    "addClient": "Ajouter un client",
+    "totalClients": "Total des clients",
+    "activeClients": "Clients actifs",
+    "prospects": "Prospects",
+    "totalRevenue": "Revenu total"
+  },
+  "common": {
+    "add": "Ajouter",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "close": "Fermer"
+  },
+  "countries": {
+    "morocco": "Maroc",
+    "france": "France",
+    "spain": "Espagne",
+    "usa": "États-Unis",
+    "uae": "Émirats Arabes Unis",
+    "uk": "Royaume-Uni",
+    "germany": "Allemagne"
+  },
+  "industries": {
+    "technology": "Technologie",
+    "healthcare": "Santé",
+    "finance": "Finance",
+    "retail": "Vente au détail",
+    "manufacturing": "Industrie",
+    "consulting": "Conseil",
+    "education": "Éducation",
+    "real_estate": "Immobilier",
+    "other": "Autre"
+  },
+  "clientStages": {
+    "lead": "Lead",
+    "prospect": "Prospect",
+    "active": "Actif",
+    "inactive": "Inactif"
+  },
+  "toasts": {
+    "addClient": {
+      "success": {
+        "title": "Succès !",
+        "description": "Client ajouté avec succès."
+      }
+    }
+  },
+  "addClientModal": {
+    "title": "Ajouter un nouveau client",
+    "profilePicture": "Photo de profil",
+    "uploadPhoto": "Télécharger une photo",
+    "uploadHint": "Optionnel : Téléchargez le logo ou la photo du client",
+    "nameLabel": "Nom de l'entreprise/client *",
+    "namePlaceholder": "Entrez le nom de l'entreprise",
+    "emailLabel": "Adresse e-mail *",
+    "emailPlaceholder": "contact@entreprise.com",
+    "phoneLabel": "Numéro de téléphone",
+    "phonePlaceholder": "+212 6XX XXX XXX",
+    "countryLabel": "Pays/Lieu",
+    "countryPlaceholder": "Sélectionnez un lieu",
+    "industryLabel": "Secteur d'activité",
+    "industryPlaceholder": "Sélectionnez un secteur",
+    "stageLabel": "Étape du client",
+    "stagePlaceholder": "Sélectionnez une étape",
+    "ownerLabel": "Propriétaire du compte",
+    "ownerPlaceholder": "Attribuer un propriétaire de compte",
+    "tagsLabel": "Étiquettes",
+    "tagsPlaceholder": "Ajoutez une étiquette et appuyez sur Entrée",
+    "notesLabel": "Notes",
+    "notesPlaceholder": "Ajoutez des notes supplémentaires sur ce client...",
+    "submitButton": "Ajouter le client"
   }
 }

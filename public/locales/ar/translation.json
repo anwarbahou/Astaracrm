@@ -39,7 +39,7 @@
     },
     "pageDescription": {
       "dashboard": "نظرة عامة على أداء CRM الخاص بك",
-      "clients": "إدارة علاقات العملاء الخاصة بك",
+      "clients": "إدارة علاقات العملاء الخاصة بك وتتبع نمو الأعمال.",
       "contacts": "تتبع جميع جهات الاتصال الخاصة بك",
       "deals": "مراقبة خط أنابيب المبيعات الخاص بك",
       "tasks": "ابق على اطلاع بمهامك",
@@ -95,5 +95,79 @@
       "meetingScheduled": "تمت جدولة اجتماع",
       "meetingDetails": "مكالمة تجريبية مع StartupXYZ"
     }
+  },
+  "clients": {
+    "addClient": "إضافة عميل",
+    "totalClients": "إجمالي العملاء",
+    "activeClients": "العملاء النشطون",
+    "prospects": "العملاء المحتملين",
+    "totalRevenue": "إجمالي الإيرادات"
+  },
+  "common": {
+    "add": "إضافة",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "close": "إغلاق"
+  },
+  "countries": {
+    "morocco": "المغرب",
+    "france": "فرنسا",
+    "spain": "إسبانيا",
+    "usa": "الولايات المتحدة",
+    "uae": "الإمارات العربية المتحدة",
+    "uk": "المملكة المتحدة",
+    "germany": "ألمانيا"
+  },
+  "industries": {
+    "technology": "التكنولوجيا",
+    "healthcare": "الرعاية الصحية",
+    "finance": "المالية",
+    "retail": "التجزئة",
+    "manufacturing": "الصناعة",
+    "consulting": "الاستشارات",
+    "education": "التعليم",
+    "real_estate": "العقارات",
+    "other": "أخرى"
+  },
+  "clientStages": {
+    "lead": "عميل محتمل",
+    "prospect": "مرشح",
+    "active": "نشط",
+    "inactive": "غير نشط"
+  },
+  "toasts": {
+    "addClient": {
+      "success": {
+        "title": "نجاح!",
+        "description": "تمت إضافة العميل بنجاح."
+      }
+    }
+  },
+  "addClientModal": {
+    "title": "إضافة عميل جديد",
+    "profilePicture": "صورة الملف الشخصي",
+    "uploadPhoto": "تحميل صورة",
+    "uploadHint": "اختياري: قم بتحميل شعار العميل أو صورته",
+    "nameLabel": "اسم الشركة/العميل *",
+    "namePlaceholder": "أدخل اسم الشركة",
+    "emailLabel": "عنوان البريد الإلكتروني *",
+    "emailPlaceholder": "contact@company.com",
+    "phoneLabel": "رقم الهاتف",
+    "phonePlaceholder": "+212 6XX XXX XXX",
+    "countryLabel": "البلد/الموقع",
+    "countryPlaceholder": "اختر الموقع",
+    "industryLabel": "الصناعة",
+    "industryPlaceholder": "اختر الصناعة",
+    "stageLabel": "مرحلة العميل",
+    "stagePlaceholder": "اختر المرحلة",
+    "ownerLabel": "مالك الحساب",
+    "ownerPlaceholder": "تعيين مالك الحساب",
+    "tagsLabel": "العلامات",
+    "tagsPlaceholder": "أضف علامة واضغط على إدخال",
+    "notesLabel": "ملاحظات",
+    "notesPlaceholder": "أضف أي ملاحظات إضافية حول هذا العميل...",
+    "submitButton": "إضافة عميل"
   }
 }

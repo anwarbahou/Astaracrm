@@ -1,14 +1,16 @@
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { AddClientModal } from "@/components/modals/AddClientModal";
 import { ClientsTable, Client } from "@/components/clients/ClientsTable";
 import { ClientProfileModal } from "@/components/clients/ClientProfileModal";
 import { ClientFiltersPanel } from "@/components/clients/ClientFiltersPanel";
+import { useTranslation } from "react-i18next";
 
 export default function Clients() {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [addClientOpen, setAddClientOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
@@ -201,14 +203,14 @@ export default function Clients() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Client Management</h1>
+            <h1 className="text-3xl font-bold">{t('topNav.pageTitle.clients')}</h1>
             <p className="text-muted-foreground mt-1">
-              Manage your client relationships and track business growth.
+              {t('topNav.pageDescription.clients')}
             </p>
           </div>
           <Button className="gap-2" onClick={() => setAddClientOpen(true)}>
             <Plus size={16} />
-            Add Client
+            {t('clients.addClient')}
           </Button>
         </div>
 
@@ -218,7 +220,7 @@ export default function Clients() {
             <CardContent className="p-6">
               <div className="text-center">
                 <p className="text-2xl font-bold">{clients.length}</p>
-                <p className="text-sm text-muted-foreground">Total Clients</p>
+                <p className="text-sm text-muted-foreground">{t('clients.totalClients')}</p>
               </div>
             </CardContent>
           </Card>
@@ -226,7 +228,7 @@ export default function Clients() {
             <CardContent className="p-6">
               <div className="text-center">
                 <p className="text-2xl font-bold">{clients.filter(c => c.stage === "Active").length}</p>
-                <p className="text-sm text-muted-foreground">Active Clients</p>
+                <p className="text-sm text-muted-foreground">{t('clients.activeClients')}</p>
               </div>
             </CardContent>
           </Card>
@@ -234,7 +236,7 @@ export default function Clients() {
             <CardContent className="p-6">
               <div className="text-center">
                 <p className="text-2xl font-bold">{clients.filter(c => c.stage === "Prospect").length}</p>
-                <p className="text-sm text-muted-foreground">Prospects</p>
+                <p className="text-sm text-muted-foreground">{t('clients.prospects')}</p>
               </div>
             </CardContent>
           </Card>
@@ -242,7 +244,7 @@ export default function Clients() {
             <CardContent className="p-6">
               <div className="text-center">
                 <p className="text-2xl font-bold">{formatCurrency(totalRevenue)}</p>
-                <p className="text-sm text-muted-foreground">Total Revenue</p>
+                <p className="text-sm text-muted-foreground">{t('clients.totalRevenue')}</p>
               </div>
             </CardContent>
           </Card>

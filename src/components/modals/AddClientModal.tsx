@@ -21,6 +21,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Upload, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface AddClientModalProps {
   open: boolean;
@@ -28,6 +29,7 @@ interface AddClientModalProps {
 }
 
 export function AddClientModal({ open, onOpenChange }: AddClientModalProps) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -47,8 +49,8 @@ export function AddClientModal({ open, onOpenChange }: AddClientModalProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     toast({
-      title: "Success!",
-      description: "Client added successfully.",
+      title: t("toasts.addClient.success.title"),
+      description: t("toasts.addClient.success.description"),
     });
     onOpenChange(false);
     setFormData({
@@ -90,7 +92,7 @@ export function AddClientModal({ open, onOpenChange }: AddClientModalProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Add New Client</DialogTitle>
+          <DialogTitle>{t('addClientModal.title')}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -103,67 +105,67 @@ export function AddClientModal({ open, onOpenChange }: AddClientModalProps) {
               </AvatarFallback>
             </Avatar>
             <div className="space-y-2">
-              <Label>Profile Picture</Label>
+              <Label>{t('addClientModal.profilePicture')}</Label>
               <Button type="button" variant="outline" size="sm" className="gap-2">
                 <Upload size={16} />
-                Upload Photo
+                {t('addClientModal.uploadPhoto')}
               </Button>
-              <p className="text-xs text-muted-foreground">Optional: Upload client logo or photo</p>
+              <p className="text-xs text-muted-foreground">{t('addClientModal.uploadHint')}</p>
             </div>
           </div>
 
           {/* Basic Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="name">Company/Client Name *</Label>
+              <Label htmlFor="name">{t('addClientModal.nameLabel')}</Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Enter company name"
+                placeholder={t('addClientModal.namePlaceholder')}
                 required
               />
             </div>
 
             <div>
-              <Label htmlFor="email">Email Address *</Label>
+              <Label htmlFor="email">{t('addClientModal.emailLabel')}</Label>
               <Input
                 id="email"
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder="contact@company.com"
+                placeholder={t('addClientModal.emailPlaceholder')}
                 required
               />
             </div>
 
             <div>
-              <Label htmlFor="phone">Phone Number</Label>
+              <Label htmlFor="phone">{t('addClientModal.phoneLabel')}</Label>
               <Input
                 id="phone"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                placeholder="+212 6XX XXX XXX"
+                placeholder={t('addClientModal.phonePlaceholder')}
               />
             </div>
 
             <div>
-              <Label htmlFor="country">Country/Location</Label>
+              <Label htmlFor="country">{t('addClientModal.countryLabel')}</Label>
               <Select
                 value={formData.country}
                 onValueChange={(value) => setFormData({ ...formData, country: value })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select location" />
+                  <SelectValue placeholder={t('addClientModal.countryPlaceholder')} />
                 </SelectTrigger>
                 <SelectContent className="bg-background border">
-                  <SelectItem value="Morocco">Morocco</SelectItem>
-                  <SelectItem value="France">France</SelectItem>
-                  <SelectItem value="Spain">Spain</SelectItem>
-                  <SelectItem value="USA">United States</SelectItem>
-                  <SelectItem value="UAE">United Arab Emirates</SelectItem>
-                  <SelectItem value="UK">United Kingdom</SelectItem>
-                  <SelectItem value="Germany">Germany</SelectItem>
+                  <SelectItem value="Morocco">{t('countries.morocco')}</SelectItem>
+                  <SelectItem value="France">{t('countries.france')}</SelectItem>
+                  <SelectItem value="Spain">{t('countries.spain')}</SelectItem>
+                  <SelectItem value="USA">{t('countries.usa')}</SelectItem>
+                  <SelectItem value="UAE">{t('countries.uae')}</SelectItem>
+                  <SelectItem value="UK">{t('countries.uk')}</SelectItem>
+                  <SelectItem value="Germany">{t('countries.germany')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -172,54 +174,54 @@ export function AddClientModal({ open, onOpenChange }: AddClientModalProps) {
           {/* Business Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="industry">Industry</Label>
+              <Label htmlFor="industry">{t('addClientModal.industryLabel')}</Label>
               <Select
                 value={formData.industry}
                 onValueChange={(value) => setFormData({ ...formData, industry: value })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select industry" />
+                  <SelectValue placeholder={t('addClientModal.industryPlaceholder')} />
                 </SelectTrigger>
                 <SelectContent className="bg-background border">
-                  <SelectItem value="Technology">Technology</SelectItem>
-                  <SelectItem value="Healthcare">Healthcare</SelectItem>
-                  <SelectItem value="Finance">Finance</SelectItem>
-                  <SelectItem value="Retail">Retail</SelectItem>
-                  <SelectItem value="Manufacturing">Manufacturing</SelectItem>
-                  <SelectItem value="Consulting">Consulting</SelectItem>
-                  <SelectItem value="Education">Education</SelectItem>
-                  <SelectItem value="Real Estate">Real Estate</SelectItem>
-                  <SelectItem value="Other">Other</SelectItem>
+                  <SelectItem value="Technology">{t('industries.technology')}</SelectItem>
+                  <SelectItem value="Healthcare">{t('industries.healthcare')}</SelectItem>
+                  <SelectItem value="Finance">{t('industries.finance')}</SelectItem>
+                  <SelectItem value="Retail">{t('industries.retail')}</SelectItem>
+                  <SelectItem value="Manufacturing">{t('industries.manufacturing')}</SelectItem>
+                  <SelectItem value="Consulting">{t('industries.consulting')}</SelectItem>
+                  <SelectItem value="Education">{t('industries.education')}</SelectItem>
+                  <SelectItem value="Real Estate">{t('industries.real_estate')}</SelectItem>
+                  <SelectItem value="Other">{t('industries.other')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <Label htmlFor="stage">Client Stage</Label>
+              <Label htmlFor="stage">{t('addClientModal.stageLabel')}</Label>
               <Select
                 value={formData.stage}
                 onValueChange={(value) => setFormData({ ...formData, stage: value })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select stage" />
+                  <SelectValue placeholder={t('addClientModal.stagePlaceholder')} />
                 </SelectTrigger>
                 <SelectContent className="bg-background border">
-                  <SelectItem value="Lead">Lead</SelectItem>
-                  <SelectItem value="Prospect">Prospect</SelectItem>
-                  <SelectItem value="Active">Active</SelectItem>
-                  <SelectItem value="Inactive">Inactive</SelectItem>
+                  <SelectItem value="Lead">{t('clientStages.lead')}</SelectItem>
+                  <SelectItem value="Prospect">{t('clientStages.prospect')}</SelectItem>
+                  <SelectItem value="Active">{t('clientStages.active')}</SelectItem>
+                  <SelectItem value="Inactive">{t('clientStages.inactive')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="md:col-span-2">
-              <Label htmlFor="owner">Account Owner</Label>
+              <Label htmlFor="owner">{t('addClientModal.ownerLabel')}</Label>
               <Select
                 value={formData.owner}
                 onValueChange={(value) => setFormData({ ...formData, owner: value })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Assign account owner" />
+                  <SelectValue placeholder={t('addClientModal.ownerPlaceholder')} />
                 </SelectTrigger>
                 <SelectContent className="bg-background border">
                   <SelectItem value="John Smith">John Smith</SelectItem>
@@ -234,18 +236,18 @@ export function AddClientModal({ open, onOpenChange }: AddClientModalProps) {
 
           {/* Tags Section */}
           <div>
-            <Label>Tags</Label>
+            <Label>{t('addClientModal.tagsLabel')}</Label>
             <div className="space-y-2">
               <div className="flex gap-2">
                 <Input
                   value={newTag}
                   onChange={(e) => setNewTag(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Add a tag and press Enter"
+                  placeholder={t('addClientModal.tagsPlaceholder')}
                   className="flex-1"
                 />
                 <Button type="button" onClick={addTag} size="sm">
-                  Add
+                  {t('common.add')}
                 </Button>
               </div>
               {formData.tags.length > 0 && (
@@ -267,12 +269,12 @@ export function AddClientModal({ open, onOpenChange }: AddClientModalProps) {
 
           {/* Notes Section */}
           <div>
-            <Label htmlFor="notes">Notes</Label>
+            <Label htmlFor="notes">{t('addClientModal.notesLabel')}</Label>
             <Textarea
               id="notes"
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              placeholder="Add any additional notes about this client..."
+              placeholder={t('addClientModal.notesPlaceholder')}
               rows={4}
             />
           </div>
@@ -283,9 +285,9 @@ export function AddClientModal({ open, onOpenChange }: AddClientModalProps) {
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
-            <Button type="submit">Add Client</Button>
+            <Button type="submit">{t('addClientModal.submitButton')}</Button>
           </div>
         </form>
       </DialogContent>

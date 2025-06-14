@@ -62,7 +62,7 @@ export function TopNavigation() {
   return (
     <>
       <motion.header 
-        className="sticky top-0 z-50 border-b border-border/50 bg-card/95 backdrop-blur-xl supports-[backdrop-filter]:bg-card/80 shadow-sm"
+        className="sticky top-0 z-40 border-b border-border/50 bg-card/95 backdrop-blur-xl supports-[backdrop-filter]:bg-card/80 shadow-sm"
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
@@ -114,7 +114,7 @@ export function TopNavigation() {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   placeholder="Search anything..."
-                  className="pl-10 w-80 crm-input border-border/50 focus:border-primary/50 transition-all duration-200 focus:shadow-md"
+                  className="pl-10 w-80 border-border/50 focus:border-primary/50 transition-all duration-200 focus:shadow-md"
                 />
               </motion.div>
               
@@ -169,7 +169,7 @@ export function TopNavigation() {
               >
                 <Button 
                   size="sm" 
-                  className="gap-2 crm-button-primary shadow-md hover:shadow-lg transition-shadow duration-200" 
+                  className="gap-2 shadow-md hover:shadow-lg transition-shadow duration-200" 
                   onClick={() => setQuickAddOpen(true)}
                 >
                   <Plus size={16} />

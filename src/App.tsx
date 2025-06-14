@@ -81,20 +81,20 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <motion.div 
-            className="app-layout min-h-screen flex w-full transition-colors duration-500"
+            className="min-h-screen flex w-full bg-background transition-colors duration-500"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
             <Sidebar />
             <motion.div 
-              className="content-container flex-1 flex flex-col"
+              className="flex-1 flex flex-col ml-64"
               layout
               transition={{ duration: 0.5, ease: "easeInOut" }}
             >
               <TopNavigation />
               <motion.main 
-                className="page-container flex-1 p-4 md:p-6 overflow-hidden"
+                className="flex-1 p-4 md:p-6 overflow-auto"
                 layout
               >
                 <AnimatedRoutes />

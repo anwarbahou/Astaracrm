@@ -9,7 +9,6 @@ import { NoteDetailDrawer } from "@/components/notes/NoteDetailDrawer";
 import { NoteFilters } from "@/components/notes/NoteFilters";
 import { mockNotes } from "@/data/mockNotes";
 import type { Note, NoteFilters as NoteFiltersType } from "@/types/note";
-import { DashboardLayout } from "@/components/layout/DashboardLayout";
 
 export default function Notes() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -63,68 +62,66 @@ export default function Notes() {
   };
 
   return (
-    <DashboardLayout>
-      <div className="min-h-screen bg-background">
-        {/* Header */}
-        <div className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
-          <div className="container mx-auto px-6 py-4">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <h1 className="text-2xl font-semibold text-foreground">Notes</h1>
-                <p className="text-sm text-muted-foreground">
-                  Capture ideas, meeting notes, and important information
-                </p>
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-semibold text-foreground">Notes</h1>
+              <p className="text-sm text-muted-foreground">
+                Capture ideas, meeting notes, and important information
+              </p>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              {/* Search */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input
+                  placeholder="Search notes..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 w-64"
+                />
               </div>
               
-              <div className="flex items-center gap-3">
-                {/* Search */}
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                  <Input
-                    placeholder="Search notes..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 w-64"
-                  />
-                </div>
-                
-                {/* Filters */}
-                <NoteFilters filters={filters} onFiltersChange={setFilters} />
-                
-                {/* Create Note Button */}
-                <Button 
-                  onClick={() => setIsCreateModalOpen(true)}
-                  className="gap-2 bg-primary hover:bg-primary/90"
-                >
-                  <Plus size={16} />
-                  New Note
-                </Button>
-              </div>
+              {/* Filters */}
+              <NoteFilters filters={filters} onFiltersChange={setFilters} />
+              
+              {/* Create Note Button */}
+              <Button 
+                onClick={() => setIsCreateModalOpen(true)}
+                className="gap-2 bg-primary hover:bg-primary/90"
+              >
+                <Plus size={16} />
+                New Note
+              </Button>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Main Content */}
-        <div className="container mx-auto px-6 py-8">
-          <NotesGrid 
-            notes={sortedNotes} 
-            onNoteClick={handleNoteClick}
-          />
-        </div>
-
-        {/* Modals */}
-        <NoteModal
-          isOpen={isCreateModalOpen}
-          onClose={() => setIsCreateModalOpen(false)}
-          onSave={handleCreateNote}
-        />
-
-        <NoteDetailDrawer
-          note={selectedNote}
-          isOpen={isDetailDrawerOpen}
-          onClose={() => setIsDetailDrawerOpen(false)}
+      {/* Main Content */}
+      <div className="container mx-auto px-6 py-8">
+        <NotesGrid 
+          notes={sortedNotes} 
+          onNoteClick={handleNoteClick}
         />
       </div>
-    </DashboardLayout>
+
+      {/* Modals */}
+      <NoteModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSave={handleCreateNote}
+      />
+
+      <NoteDetailDrawer
+        note={selectedNote}
+        isOpen={isDetailDrawerOpen}
+        onClose={() => setIsDetailDrawerOpen(false)}
+      />
+    </div>
   );
 }

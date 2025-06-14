@@ -5,7 +5,6 @@ import { NewEventModal } from "@/components/calendar/NewEventModal";
 import { EventDetailDrawer } from "@/components/calendar/EventDetailDrawer";
 import { ExtendedAgendaView } from "@/components/calendar/ExtendedAgendaView";
 import { useCalendar } from "@/hooks/useCalendar";
-import { DashboardLayout } from "@/components/layout/DashboardLayout";
 
 export default function Calendar() {
   const {
@@ -29,50 +28,48 @@ export default function Calendar() {
   } = useCalendar();
 
   return (
-    <DashboardLayout>
-      <div className="min-h-screen bg-background">
-        <CalendarHeader
-          currentDate={currentDate}
-          setCurrentDate={setCurrentDate}
-          viewMode={viewMode}
-          setViewMode={setViewMode}
-          calendarView={calendarView}
-          setCalendarView={setCalendarView}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          onNewEvent={openNewEventModal}
-        />
+    <div className="min-h-screen bg-background">
+      <CalendarHeader
+        currentDate={currentDate}
+        setCurrentDate={setCurrentDate}
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+        calendarView={calendarView}
+        setCalendarView={setCalendarView}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        onNewEvent={openNewEventModal}
+      />
 
-        {/* Main Content */}
-        <div className="p-6">
-          {calendarView === "calendar" ? (
-            <CalendarGrid
-              currentDate={currentDate}
-              viewMode={viewMode}
-              events={filteredEvents}
-              onEventClick={handleEventClick}
-            />
-          ) : (
-            <ExtendedAgendaView
-              events={filteredEvents}
-              onEventClick={handleEventClick}
-            />
-          )}
-        </div>
-
-        {/* Modals */}
-        <NewEventModal
-          isOpen={isNewEventModalOpen}
-          onClose={closeNewEventModal}
-          onSave={handleCreateEvent}
-        />
-
-        <EventDetailDrawer
-          event={selectedEvent}
-          isOpen={isEventDetailOpen}
-          onClose={closeEventDetail}
-        />
+      {/* Main Content */}
+      <div className="p-6">
+        {calendarView === "calendar" ? (
+          <CalendarGrid
+            currentDate={currentDate}
+            viewMode={viewMode}
+            events={filteredEvents}
+            onEventClick={handleEventClick}
+          />
+        ) : (
+          <ExtendedAgendaView
+            events={filteredEvents}
+            onEventClick={handleEventClick}
+          />
+        )}
       </div>
-    </DashboardLayout>
+
+      {/* Modals */}
+      <NewEventModal
+        isOpen={isNewEventModalOpen}
+        onClose={closeNewEventModal}
+        onSave={handleCreateEvent}
+      />
+
+      <EventDetailDrawer
+        event={selectedEvent}
+        isOpen={isEventDetailOpen}
+        onClose={closeEventDetail}
+      />
+    </div>
   );
 }

@@ -12,14 +12,14 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Home, Users, User, Settings, Calendar, Mail, Search, List, Clock, DollarSign, FileText, Workflow, BarChart3 } from "lucide-react";
+import { Home, Users, User, Settings, Calendar, Mail, Search, List, Clock, DollarSign } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
 const navigationItems = [
   {
     title: "Dashboard",
-    url: "/dashboard",
+    url: "/",
     icon: Home,
   },
   {
@@ -55,12 +55,12 @@ const navigationItems = [
   {
     title: "Notes",
     url: "/notes",
-    icon: FileText,
+    icon: Search,
   },
   {
     title: "Reports",
     url: "/reports",
-    icon: BarChart3,
+    icon: Search,
   },
   {
     title: "Users",
@@ -70,7 +70,7 @@ const navigationItems = [
   {
     title: "Workflows",
     url: "/workflows",
-    icon: Workflow,
+    icon: Settings,
   },
   {
     title: "Activity Logs",
@@ -88,13 +88,6 @@ export function AppSidebar() {
   const location = useLocation();
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
-
-  const isActiveRoute = (url: string) => {
-    if (url === "/dashboard") {
-      return location.pathname === "/" || location.pathname === "/dashboard";
-    }
-    return location.pathname === url || location.pathname.startsWith(url + "/");
-  };
 
   return (
     <Sidebar className="border-r border-sidebar-border sidebar-transition">
@@ -124,10 +117,10 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild 
-                    isActive={isActiveRoute(item.url)}
+                    isActive={location.pathname === item.url}
                     className={cn(
-                      "crm-nav-item transition-all duration-200",
-                      isActiveRoute(item.url) && "bg-sidebar-accent text-sidebar-accent-foreground font-medium",
+                      "crm-nav-item",
+                      location.pathname === item.url && "active",
                       isCollapsed && "justify-center px-2"
                     )}
                     tooltip={isCollapsed ? item.title : undefined}

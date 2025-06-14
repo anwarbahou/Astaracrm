@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -25,7 +26,7 @@ export function TopNavigation() {
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [notificationCount] = useState(3); // Mock unread count
   const location = useLocation();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   
   const getPageTitle = () => {
     const path = location.pathname;

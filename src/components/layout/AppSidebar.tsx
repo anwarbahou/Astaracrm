@@ -1,4 +1,7 @@
 
+"use client";
+
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Sidebar,
   SidebarContent,
@@ -15,6 +18,13 @@ import {
 import { Home, Users, User, Settings, Calendar, Mail, Search, List, Clock, DollarSign, Bot } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { 
+  sidebarVariants, 
+  sidebarContentVariants,
+  itemVariants,
+  buttonVariants,
+  springConfig
+} from "@/lib/animations";
 
 const navigationItems = [
   {
@@ -97,96 +107,169 @@ export function AppSidebar() {
   return (
     <Sidebar 
       collapsible="icon"
-      className="border-r border-sidebar-border/20 transition-all duration-500 ease-in-out overflow-hidden"
+      className="border-r border-sidebar-border/10 backdrop-blur-sm bg-sidebar/95 shadow-lg transition-all duration-500 ease-in-out"
     >
-      <SidebarHeader className={cn(
-        "p-4 transition-all duration-500 ease-in-out",
-        isCollapsed ? "px-2 py-4" : "px-6 py-4"
-      )}>
-        <div className={cn(
-          "flex items-center gap-3 transition-all duration-500 ease-in-out",
-          isCollapsed && "justify-center"
-        )}>
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300 hover:scale-105">
-            <span className="text-primary-foreground font-bold text-sm">W</span>
-          </div>
-          <span className={cn(
-            "font-bold text-xl text-sidebar-foreground transition-all duration-500 ease-in-out whitespace-nowrap",
-            isCollapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100 w-auto"
-          )}>
-            WOLFHUNT
-          </span>
-        </div>
+      {/* Header with Logo */}
+      <SidebarHeader className="p-6 border-b border-sidebar-border/10">
+        <motion.div 
+          className="flex items-center gap-3"
+          layout
+          transition={springConfig}
+        >
+          <motion.div 
+            className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-lg"
+            whileHover={{ scale: 1.05, rotate: 5 }}
+            whileTap={{ scale: 0.95 }}
+            transition={springConfig}
+          >
+            <span className="text-primary-foreground font-bold text-lg">W</span>
+          </motion.div>
+          
+          <AnimatePresence mode="wait">
+            {!isCollapsed && (
+              <motion.div
+                initial={{ opacity: 0, x: -20, width: 0 }}
+                animate={{ opacity: 1, x: 0, width: "auto" }}
+                exit={{ opacity: 0, x: -20, width: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="overflow-hidden"
+              >
+                <motion.h1 
+                  className="font-bold text-xl text-sidebar-foreground bg-gradient-to-r from-sidebar-foreground to-sidebar-foreground/80 bg-clip-text"
+                  layout
+                >
+                  WOLFHUNT
+                </motion.h1>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
       </SidebarHeader>
       
-      <SidebarContent className={cn(
-        "px-2 transition-all duration-500 ease-in-out",
-        isCollapsed ? "px-1" : "px-3"
-      )}>
+      {/* Main Content */}
+      <SidebarContent className="px-4 py-2">
         <SidebarGroup>
-          <SidebarGroupLabel className={cn(
-            "text-sidebar-foreground/70 text-xs font-medium mb-2 px-3 transition-all duration-500 ease-in-out",
-            isCollapsed ? "opacity-0 h-0 mb-0 overflow-hidden" : "opacity-100 h-auto mb-2"
-          )}>
-            MAIN MENU
-          </SidebarGroupLabel>
+          <AnimatePresence mode="wait">
+            {!isCollapsed && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <SidebarGroupLabel className="text-sidebar-foreground/60 text-xs font-semibold mb-4 px-3 tracking-wider uppercase">
+                  Main Menu
+                </SidebarGroupLabel>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          
           <SidebarGroupContent>
-            <SidebarMenu className="space-y-1">
-              {navigationItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton 
-                    asChild 
-                    isActive={location.pathname === item.url}
-                    className={cn(
-                      "crm-nav-item transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-sm",
-                      location.pathname === item.url && "active bg-sidebar-accent/80 shadow-sm",
-                      isCollapsed && "justify-center px-2 w-12 h-12 mx-auto"
-                    )}
-                    tooltip={isCollapsed ? item.title : undefined}
-                  >
-                    <Link to={item.url} className={cn(
-                      "flex items-center gap-3 w-full transition-all duration-300 ease-in-out",
-                      isCollapsed && "justify-center"
-                    )}>
-                      <item.icon size={20} className={cn(
-                        "flex-shrink-0 transition-all duration-300 ease-in-out",
-                        isCollapsed ? "text-sidebar-foreground" : "text-sidebar-foreground/80"
-                      )} />
-                      <span className={cn(
-                        "transition-all duration-500 ease-in-out font-medium whitespace-nowrap",
-                        isCollapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100 w-auto"
-                      )}>
-                        {item.title}
-                      </span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+            <SidebarMenu className="space-y-2">
+              {navigationItems.map((item, index) => (
+                <motion.div
+                  key={item.title}
+                  variants={itemVariants}
+                  initial="initial"
+                  animate="animate"
+                  transition={{ delay: index * 0.05 }}
+                >
+                  <SidebarMenuItem>
+                    <SidebarMenuButton 
+                      asChild 
+                      isActive={location.pathname === item.url}
+                      className={cn(
+                        "group relative rounded-xl transition-all duration-300 hover:shadow-md",
+                        location.pathname === item.url && 
+                        "bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 shadow-sm",
+                        isCollapsed ? "justify-center p-3 mx-1" : "px-4 py-3"
+                      )}
+                      tooltip={isCollapsed ? item.title : undefined}
+                    >
+                      <Link to={item.url} className="flex items-center gap-3 w-full">
+                        <motion.div
+                          variants={buttonVariants}
+                          whileHover="hover"
+                          whileTap="tap"
+                          className={cn(
+                            "flex items-center justify-center",
+                            location.pathname === item.url && "text-primary"
+                          )}
+                        >
+                          <item.icon 
+                            size={20} 
+                            className="transition-colors duration-200" 
+                          />
+                        </motion.div>
+                        
+                        <AnimatePresence mode="wait">
+                          {!isCollapsed && (
+                            <motion.span
+                              initial={{ opacity: 0, x: -10, width: 0 }}
+                              animate={{ opacity: 1, x: 0, width: "auto" }}
+                              exit={{ opacity: 0, x: -10, width: 0 }}
+                              transition={{ duration: 0.3, ease: "easeInOut" }}
+                              className={cn(
+                                "font-medium text-sm overflow-hidden whitespace-nowrap",
+                                location.pathname === item.url && "text-primary font-semibold"
+                              )}
+                            >
+                              {item.title}
+                            </motion.span>
+                          )}
+                        </AnimatePresence>
+                        
+                        {/* Active indicator */}
+                        {location.pathname === item.url && (
+                          <motion.div
+                            layoutId="activeIndicator"
+                            className="absolute left-0 top-1/2 w-1 h-6 bg-primary rounded-r-full"
+                            initial={{ opacity: 0, scale: 0.5 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={springConfig}
+                          />
+                        )}
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </motion.div>
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
       
-      <SidebarFooter className={cn(
-        "p-4 transition-all duration-500 ease-in-out border-t border-sidebar-border/10",
-        isCollapsed ? "px-2 py-4" : "px-4 py-4"
-      )}>
-        <div className={cn(
-          "text-xs text-sidebar-foreground/50 transition-all duration-500 ease-in-out",
-          isCollapsed ? "text-center opacity-70" : "opacity-100"
-        )}>
-          <span className={cn(
-            "transition-all duration-500 ease-in-out whitespace-nowrap",
-            isCollapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100 w-auto"
-          )}>
-            © 2024 WOLFHUNT CRM
-          </span>
-          {isCollapsed && (
-            <span className="transition-all duration-500 ease-in-out">
-              © '24
-            </span>
-          )}
-        </div>
+      {/* Footer */}
+      <SidebarFooter className="p-4 border-t border-sidebar-border/10 mt-auto">
+        <motion.div 
+          className="text-center"
+          layout
+          transition={springConfig}
+        >
+          <AnimatePresence mode="wait">
+            {!isCollapsed ? (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.3 }}
+                className="text-xs text-sidebar-foreground/40 font-medium"
+              >
+                © 2024 WOLFHUNT CRM
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.3 }}
+                className="text-xs text-sidebar-foreground/40 font-medium"
+              >
+                © '24
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
       </SidebarFooter>
     </Sidebar>
   );

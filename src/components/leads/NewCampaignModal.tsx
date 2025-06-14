@@ -323,10 +323,10 @@ Best regards,
               <div className="space-y-2">
                 <h4 className="text-white font-medium">Available Variables:</h4>
                 <div className="text-sm text-gray-400 space-y-1">
-                  <div>• {{firstName}} - Lead's first name</div>
-                  <div>• {{companyName}} - Company name</div>
-                  <div>• {{industry}} - Industry type</div>
-                  <div>• {{role}} - Job title</div>
+                  <div>• {`{{firstName}}`} - Lead's first name</div>
+                  <div>• {`{{companyName}}`} - Company name</div>
+                  <div>• {`{{industry}}`} - Industry type</div>
+                  <div>• {`{{role}}`} - Job title</div>
                 </div>
               </div>
               <div className="space-y-2">

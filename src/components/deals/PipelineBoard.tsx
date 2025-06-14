@@ -41,7 +41,7 @@ export function PipelineBoard({ deals, stages, onDealMove, onDealClick, onAddDea
   };
 
   return (
-    <div className="flex gap-6 overflow-x-auto pb-6 min-h-[calc(100vh-200px)]">
+    <div className="flex gap-6 overflow-x-auto pb-6 min-h-[calc(100vh-350px)] animate-fade-in">
       {stages.map((stage) => {
         const stageDeals = getStageDeals(stage.name);
         const isDropTarget = dragOverStage === stage.name;

@@ -1,10 +1,10 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
   Search, 
-  Plus
+  Plus,
+  Filter
 } from "lucide-react";
 import { Deal, DealFilters, DealStage } from '@/types/deal';
 import { mockDeals, pipelineStages } from '@/data/mockDeals';
@@ -14,7 +14,7 @@ import { AddDealModal } from '@/components/deals/AddDealModal';
 import { DealsFilterDropdown } from '@/components/deals/DealsFilterDropdown';
 import { DealsViewToggle } from '@/components/deals/DealsViewToggle';
 import { DealsListTable } from '@/components/deals/DealsListTable';
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, Badge } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Deals() {
@@ -38,22 +38,14 @@ export default function Deals() {
   const { toast } = useToast();
 
   const filteredDeals = deals.filter(deal => {
-    // Search filter
     const matchesSearch = 
       deal.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       deal.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
       deal.owner.toLowerCase().includes(searchQuery.toLowerCase());
 
-    // Stage filter
     const matchesStage = filters.stages.length === 0 || filters.stages.includes(deal.stage);
-    
-    // Owner filter
     const matchesOwner = filters.owners.length === 0 || filters.owners.includes(deal.owner);
-    
-    // Value range filter
     const matchesValue = deal.value >= filters.valueRange[0] && deal.value <= filters.valueRange[1];
-    
-    // Date range filter
     const matchesDate = (!filters.dateRange.start || deal.expectedCloseDate >= filters.dateRange.start) &&
                        (!filters.dateRange.end || deal.expectedCloseDate <= filters.dateRange.end);
 
@@ -143,70 +135,98 @@ export default function Deals() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 p-6 space-y-6">
-      {/* Header */}
+    <div className="space-y-6 animate-fade-in">
+      {/* Enhanced Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white">Sales Pipeline</h1>
-          <p className="text-gray-400 mt-1">
+          <h1 className="text-3xl font-bold text-foreground">Sales Pipeline</h1>
+          <p className="text-muted-foreground mt-1">
             Manage your deals through the sales process
           </p>
         </div>
         <div className="flex gap-3">
           <DealsViewToggle viewMode={viewMode} onViewModeChange={setViewMode} />
-          <Button onClick={() => handleOpenAddDeal('Prospect')} className="gap-2 bg-blue-600 hover:bg-blue-700">
+          <Button onClick={() => handleOpenAddDeal('Prospect')} className="gap-2 crm-button-primary">
             <Plus size={16} />
             New Deal
           </Button>
         </div>
       </div>
 
-      {/* Search and Filters */}
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-          <Input
-            placeholder="Search deals..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-gray-800 border-gray-600 text-gray-100 placeholder-gray-400"
-          />
-        </div>
-        <DealsFilterDropdown
-          filters={filters}
-          onFiltersChange={handleFiltersChange}
-          onClearFilters={handleClearFilters}
-        />
-      </div>
+      {/* Enhanced Search and Filters */}
+      <Card className="crm-card">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-4">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                placeholder="Search deals..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 crm-input"
+              />
+            </div>
+            <DealsFilterDropdown
+              filters={filters}
+              onFiltersChange={handleFiltersChange}
+              onClearFilters={handleClearFilters}
+            />
+            <Button variant="outline" className="gap-2 crm-button-secondary">
+              <Filter size={16} />
+              Filters
+              {(filters.stages.length > 0 || filters.owners.length > 0) && (
+                <Badge variant="secondary" className="ml-1">
+                  {filters.stages.length + filters.owners.length}
+                </Badge>
+              )}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
-      {/* Stats Cards */}
+      {/* Enhanced Stats Cards */}
       <div className="grid gap-4 md:grid-cols-4">
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-          <div className="text-center">
-            <p className="text-2xl font-bold text-white">{filteredDeals.length}</p>
-            <p className="text-sm text-gray-400">Active Deals</p>
-          </div>
-        </div>
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-          <div className="text-center">
-            <p className="text-2xl font-bold text-green-400">{totalValue.toLocaleString()} MAD</p>
-            <p className="text-sm text-gray-400">Pipeline Value</p>
-          </div>
-        </div>
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-          <div className="text-center">
-            <p className="text-2xl font-bold text-blue-400">{wonDeals.length}</p>
-            <p className="text-sm text-gray-400">Deals Won</p>
-          </div>
-        </div>
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-          <div className="text-center">
-            <p className="text-2xl font-bold text-purple-400">
+        <Card className="crm-card hover:shadow-lg transition-all duration-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Active Deals</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="text-2xl font-bold text-foreground">{filteredDeals.length}</div>
+            <div className="text-xs text-muted-foreground">+12% from last month</div>
+          </CardContent>
+        </Card>
+
+        <Card className="crm-card hover:shadow-lg transition-all duration-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Pipeline Value</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="text-2xl font-bold text-primary">{totalValue.toLocaleString()} MAD</div>
+            <div className="text-xs text-muted-foreground">+8% from last month</div>
+          </CardContent>
+        </Card>
+
+        <Card className="crm-card hover:shadow-lg transition-all duration-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Deals Won</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="text-2xl font-bold text-accent">{wonDeals.length}</div>
+            <div className="text-xs text-muted-foreground">+15% from last month</div>
+          </CardContent>
+        </Card>
+
+        <Card className="crm-card hover:shadow-lg transition-all duration-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Avg Deal Size</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="text-2xl font-bold text-foreground">
               {filteredDeals.length > 0 ? Math.round(totalValue / filteredDeals.length).toLocaleString() : 0} MAD
-            </p>
-            <p className="text-sm text-gray-400">Avg Deal Size</p>
-          </div>
-        </div>
+            </div>
+            <div className="text-xs text-muted-foreground">+5% from last month</div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Pipeline Content */}
@@ -219,7 +239,7 @@ export default function Deals() {
           onAddDeal={handleOpenAddDeal}
         />
       ) : (
-        <Card className="bg-gray-800 border-gray-700">
+        <Card className="crm-card">
           <CardContent className="p-6">
             <DealsListTable
               deals={filteredDeals}

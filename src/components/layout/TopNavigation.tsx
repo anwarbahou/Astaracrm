@@ -3,14 +3,16 @@ import { useState } from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Plus, User } from "lucide-react";
+import { Search, Plus, User, Bell } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { useLocation } from "react-router-dom";
 import { QuickAddModal } from "@/components/modals/QuickAddModal";
 
@@ -36,51 +38,85 @@ export function TopNavigation() {
     return "WOLFHUNT CRM";
   };
 
+  const getPageDescription = () => {
+    const path = location.pathname;
+    if (path === "/") return "Overview of your CRM performance";
+    if (path.startsWith("/clients")) return "Manage your client relationships";
+    if (path === "/contacts") return "Keep track of all your contacts";
+    if (path === "/deals") return "Monitor your sales pipeline";
+    if (path === "/tasks") return "Stay on top of your tasks";
+    if (path === "/calendar") return "Schedule and manage appointments";
+    if (path === "/email") return "Communicate with your clients";
+    if (path === "/notes") return "Capture important information";
+    return "";
+  };
+
   return (
     <>
-      <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
         <div className="flex h-16 items-center px-6 gap-4">
-          <SidebarTrigger className="-ml-2" />
+          <SidebarTrigger className="h-8 w-8 text-muted-foreground hover:text-foreground transition-colors" />
           
           <div className="flex-1 flex items-center justify-between">
-            <div>
-              <h1 className="text-xl font-semibold">{getPageTitle()}</h1>
+            <div className="animate-fade-in">
+              <h1 className="text-xl font-semibold text-foreground">{getPageTitle()}</h1>
+              {getPageDescription() && (
+                <p className="text-sm text-muted-foreground mt-0.5">{getPageDescription()}</p>
+              )}
             </div>
             
             <div className="flex items-center gap-4">
-              {/* Search Bar */}
+              {/* Enhanced Search Bar */}
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   placeholder="Search anything..."
-                  className="pl-10 w-80"
+                  className="pl-10 w-80 crm-input border-border/50 focus:border-primary/50"
                 />
               </div>
               
+              {/* Notifications */}
+              <Button variant="ghost" size="icon" className="relative h-9 w-9 hover:bg-muted/50">
+                <Bell className="h-4 w-4" />
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs bg-destructive">
+                  3
+                </Badge>
+              </Button>
+              
               {/* Quick Actions */}
-              <Button size="sm" className="gap-2" onClick={() => setQuickAddOpen(true)}>
+              <Button 
+                size="sm" 
+                className="gap-2 crm-button-primary" 
+                onClick={() => setQuickAddOpen(true)}
+              >
                 <Plus size={16} />
                 Quick Add
               </Button>
               
-              {/* User Menu */}
+              {/* Enhanced User Menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="relative h-9 w-9 rounded-full">
+                  <Button variant="ghost" className="relative h-9 w-9 rounded-full hover:bg-muted/50">
                     <Avatar className="h-9 w-9">
-                      <AvatarFallback>JD</AvatarFallback>
+                      <AvatarFallback className="bg-primary text-primary-foreground">JD</AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56 bg-background border" align="end" forceMount>
-                  <DropdownMenuItem>
+                <DropdownMenuContent className="w-56 bg-popover border border-border animate-scale-in" align="end" forceMount>
+                  <div className="px-2 py-1.5">
+                    <p className="text-sm font-medium">John Doe</p>
+                    <p className="text-xs text-muted-foreground">john@wolfhunt.com</p>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="hover:bg-muted/50">
                     <User className="mr-2 h-4 w-4" />
                     Profile
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem className="hover:bg-muted/50">
                     Settings
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="hover:bg-muted/50 text-destructive focus:text-destructive">
                     Sign out
                   </DropdownMenuItem>
                 </DropdownMenuContent>

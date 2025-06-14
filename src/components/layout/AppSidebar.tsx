@@ -10,9 +10,11 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
-import { Home, Users, User, Settings, Calendar, Mail, Plus, Search, List, Clock } from "lucide-react";
+import { Home, Users, User, Settings, Calendar, Mail, Plus, Search, List, Clock, DollarSign } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
 const navigationItems = [
   {
@@ -33,7 +35,7 @@ const navigationItems = [
   {
     title: "Deals",
     url: "/deals",
-    icon: Plus,
+    icon: DollarSign,
   },
   {
     title: "Tasks",
@@ -84,35 +86,50 @@ const navigationItems = [
 
 export function AppSidebar() {
   const location = useLocation();
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
 
   return (
-    <Sidebar className="border-r border-border">
-      <SidebarHeader className="p-6">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+    <Sidebar className="border-r border-sidebar-border sidebar-transition">
+      <SidebarHeader className={cn("p-4 transition-all duration-300", isCollapsed ? "px-2" : "px-6")}>
+        <div className={cn("flex items-center gap-3 transition-all duration-300", isCollapsed && "justify-center")}>
+          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
             <span className="text-primary-foreground font-bold text-sm">W</span>
           </div>
-          <span className="font-bold text-xl text-foreground">WOLFHUNT</span>
+          {!isCollapsed && (
+            <span className="font-bold text-xl text-sidebar-foreground animate-fade-in">
+              WOLFHUNT
+            </span>
+          )}
         </div>
       </SidebarHeader>
       
-      <SidebarContent className="px-3">
+      <SidebarContent className={cn("px-2 transition-all duration-300", isCollapsed ? "px-1" : "px-3")}>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-muted-foreground text-xs font-medium mb-2">
-            MAIN MENU
-          </SidebarGroupLabel>
+          {!isCollapsed && (
+            <SidebarGroupLabel className="text-sidebar-foreground/70 text-xs font-medium mb-2 px-3 animate-fade-in">
+              MAIN MENU
+            </SidebarGroupLabel>
+          )}
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-1">
               {navigationItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton 
                     asChild 
                     isActive={location.pathname === item.url}
-                    className="w-full justify-start"
+                    className={cn(
+                      "crm-nav-item",
+                      location.pathname === item.url && "active",
+                      isCollapsed && "justify-center px-2"
+                    )}
+                    tooltip={isCollapsed ? item.title : undefined}
                   >
-                    <Link to={item.url} className="flex items-center gap-3 px-3 py-2">
-                      <item.icon size={18} />
-                      <span>{item.title}</span>
+                    <Link to={item.url} className="flex items-center gap-3">
+                      <item.icon size={18} className="flex-shrink-0" />
+                      {!isCollapsed && (
+                        <span className="animate-fade-in">{item.title}</span>
+                      )}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -122,9 +139,9 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       
-      <SidebarFooter className="p-4">
-        <div className="text-xs text-muted-foreground">
-          © 2024 WOLFHUNT CRM
+      <SidebarFooter className={cn("p-4 transition-all duration-300", isCollapsed ? "px-2" : "px-4")}>
+        <div className={cn("text-xs text-sidebar-foreground/50 transition-all duration-300", isCollapsed && "text-center")}>
+          {!isCollapsed ? "© 2024 WOLFHUNT CRM" : "© '24"}
         </div>
       </SidebarFooter>
     </Sidebar>

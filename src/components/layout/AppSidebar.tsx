@@ -110,19 +110,28 @@ export function AppSidebar() {
       className="border-r border-sidebar-border/10 backdrop-blur-sm bg-sidebar/95 shadow-lg transition-all duration-500 ease-in-out"
     >
       {/* Header with Logo */}
-      <SidebarHeader className="p-6 border-b border-sidebar-border/10">
+      <SidebarHeader className={cn(
+        "border-b border-sidebar-border/10 transition-all duration-500",
+        isCollapsed ? "p-3" : "p-6"
+      )}>
         <motion.div 
           className="flex items-center gap-3"
           layout
           transition={springConfig}
         >
           <motion.div 
-            className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-lg"
+            className={cn(
+              "bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-lg transition-all duration-500",
+              isCollapsed ? "w-12 h-12" : "w-10 h-10"
+            )}
             whileHover={{ scale: 1.05, rotate: 5 }}
             whileTap={{ scale: 0.95 }}
             transition={springConfig}
           >
-            <span className="text-primary-foreground font-bold text-lg">W</span>
+            <span className={cn(
+              "text-primary-foreground font-bold transition-all duration-300",
+              isCollapsed ? "text-xl" : "text-lg"
+            )}>W</span>
           </motion.div>
           
           <AnimatePresence mode="wait">
@@ -147,7 +156,10 @@ export function AppSidebar() {
       </SidebarHeader>
       
       {/* Main Content */}
-      <SidebarContent className="px-4 py-2">
+      <SidebarContent className={cn(
+        "transition-all duration-500",
+        isCollapsed ? "px-2 py-2" : "px-4 py-2"
+      )}>
         <SidebarGroup>
           <AnimatePresence mode="wait">
             {!isCollapsed && (
@@ -182,7 +194,7 @@ export function AppSidebar() {
                         "group relative rounded-xl transition-all duration-300 hover:shadow-md",
                         location.pathname === item.url && 
                         "bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 shadow-sm",
-                        isCollapsed ? "justify-center p-3 mx-1" : "px-4 py-3"
+                        isCollapsed ? "justify-center p-4 mx-1 h-14" : "px-4 py-3"
                       )}
                       tooltip={isCollapsed ? item.title : undefined}
                     >
@@ -192,13 +204,14 @@ export function AppSidebar() {
                           whileHover="hover"
                           whileTap="tap"
                           className={cn(
-                            "flex items-center justify-center",
-                            location.pathname === item.url && "text-primary"
+                            "flex items-center justify-center transition-all duration-300",
+                            location.pathname === item.url && "text-primary",
+                            isCollapsed && "scale-110"
                           )}
                         >
                           <item.icon 
-                            size={20} 
-                            className="transition-colors duration-200" 
+                            size={isCollapsed ? 24 : 20} 
+                            className="transition-all duration-300" 
                           />
                         </motion.div>
                         
@@ -240,7 +253,10 @@ export function AppSidebar() {
       </SidebarContent>
       
       {/* Footer */}
-      <SidebarFooter className="p-4 border-t border-sidebar-border/10 mt-auto">
+      <SidebarFooter className={cn(
+        "border-t border-sidebar-border/10 mt-auto transition-all duration-500",
+        isCollapsed ? "p-2" : "p-4"
+      )}>
         <motion.div 
           className="text-center"
           layout

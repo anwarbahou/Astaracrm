@@ -6,6 +6,7 @@ import { EmailDetailModal } from "@/components/email/EmailDetailModal";
 import { useEmailData } from "@/hooks/useEmailData";
 import { getFilteredEmails, getUnreadCounts } from "@/utils/emailUtils";
 import { Email } from "@/types/email";
+import { DashboardLayout } from "@/components/layout/DashboardLayout";
 
 export default function EmailCenter() {
   const {
@@ -45,38 +46,40 @@ export default function EmailCenter() {
   };
 
   return (
-    <div className="flex h-screen bg-background">
-      {/* Sidebar */}
-      <EmailSidebar
-        selectedFolder={selectedFolder}
-        onFolderSelect={setSelectedFolder}
-        onComposeClick={() => setComposeOpen(true)}
-        unreadCounts={getUnreadCounts(emails)}
-      />
+    <DashboardLayout>
+      <div className="flex h-screen bg-background">
+        {/* Sidebar */}
+        <EmailSidebar
+          selectedFolder={selectedFolder}
+          onFolderSelect={setSelectedFolder}
+          onComposeClick={() => setComposeOpen(true)}
+          unreadCounts={getUnreadCounts(emails)}
+        />
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col">
-        <EmailList
-          emails={getFilteredEmails(emails, selectedFolder)}
-          selectedEmails={selectedEmails}
-          onEmailSelect={handleEmailSelect}
-          onEmailClick={handleEmailClick}
-          onBulkSelect={handleBulkSelect}
-          folder={selectedFolder}
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col">
+          <EmailList
+            emails={getFilteredEmails(emails, selectedFolder)}
+            selectedEmails={selectedEmails}
+            onEmailSelect={handleEmailSelect}
+            onEmailClick={handleEmailClick}
+            onBulkSelect={handleBulkSelect}
+            folder={selectedFolder}
+          />
+        </div>
+
+        {/* Modals */}
+        <ComposeEmailModal
+          open={composeOpen}
+          onOpenChange={setComposeOpen}
+        />
+
+        <EmailDetailModal
+          email={selectedEmail}
+          open={detailOpen}
+          onOpenChange={setDetailOpen}
         />
       </div>
-
-      {/* Modals */}
-      <ComposeEmailModal
-        open={composeOpen}
-        onOpenChange={setComposeOpen}
-      />
-
-      <EmailDetailModal
-        email={selectedEmail}
-        open={detailOpen}
-        onOpenChange={setDetailOpen}
-      />
-    </div>
+    </DashboardLayout>
   );
 }

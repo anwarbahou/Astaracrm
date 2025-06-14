@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/hooks/use-toast';
@@ -59,18 +58,16 @@ export function AddClientForm({ onOpenChange }: AddClientFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <ProfileSection formData={formData} t={t} />
-      <BasicInfoSection formData={formData} setFormData={setFormData} t={t} />
-      <BusinessInfoSection formData={formData} setFormData={setFormData} t={t} />
+      <ProfileSection formData={formData} />
+      <BasicInfoSection formData={formData} setFormData={setFormData} />
+      <BusinessInfoSection formData={formData} setFormData={setFormData} />
       <TagsSection
         tags={formData.tags}
         onTagsChange={(newTags) => setFormData({ ...formData, tags: newTags })}
-        t={t}
       />
       <NotesSection
         notes={formData.notes}
         onNotesChange={(newNotes) => setFormData({ ...formData, notes: newNotes })}
-        t={t}
       />
       <div className="flex justify-end space-x-2 pt-4">
         <Button

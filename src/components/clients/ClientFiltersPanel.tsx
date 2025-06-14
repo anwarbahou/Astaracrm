@@ -97,13 +97,13 @@ export function ClientFiltersPanel({ isOpen, onClose, filters, onFiltersChange }
             <Label>Owner</Label>
             <Select
               value={localFilters.owner}
-              onValueChange={(value) => setLocalFilters({ ...localFilters, owner: value })}
+              onValueChange={(value) => setLocalFilters({ ...localFilters, owner: value === "all" ? "" : value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select owner" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Owners</SelectItem>
+                <SelectItem value="all">All Owners</SelectItem>
                 <SelectItem value="John Smith">John Smith</SelectItem>
                 <SelectItem value="Sarah Johnson">Sarah Johnson</SelectItem>
                 <SelectItem value="Mike Wilson">Mike Wilson</SelectItem>
@@ -117,13 +117,13 @@ export function ClientFiltersPanel({ isOpen, onClose, filters, onFiltersChange }
             <Label>Stage</Label>
             <Select
               value={localFilters.stage}
-              onValueChange={(value) => setLocalFilters({ ...localFilters, stage: value })}
+              onValueChange={(value) => setLocalFilters({ ...localFilters, stage: value === "all" ? "" : value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select stage" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Stages</SelectItem>
+                <SelectItem value="all">All Stages</SelectItem>
                 <SelectItem value="Lead">Lead</SelectItem>
                 <SelectItem value="Prospect">Prospect</SelectItem>
                 <SelectItem value="Active">Active</SelectItem>
@@ -137,13 +137,13 @@ export function ClientFiltersPanel({ isOpen, onClose, filters, onFiltersChange }
             <Label>Industry</Label>
             <Select
               value={localFilters.industry}
-              onValueChange={(value) => setLocalFilters({ ...localFilters, industry: value })}
+              onValueChange={(value) => setLocalFilters({ ...localFilters, industry: value === "all" ? "" : value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select industry" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Industries</SelectItem>
+                <SelectItem value="all">All Industries</SelectItem>
                 <SelectItem value="Technology">Technology</SelectItem>
                 <SelectItem value="Healthcare">Healthcare</SelectItem>
                 <SelectItem value="Finance">Finance</SelectItem>
@@ -159,13 +159,13 @@ export function ClientFiltersPanel({ isOpen, onClose, filters, onFiltersChange }
             <Label>Location</Label>
             <Select
               value={localFilters.country}
-              onValueChange={(value) => setLocalFilters({ ...localFilters, country: value })}
+              onValueChange={(value) => setLocalFilters({ ...localFilters, country: value === "all" ? "" : value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select location" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Locations</SelectItem>
+                <SelectItem value="all">All Locations</SelectItem>
                 <SelectItem value="Morocco">Morocco</SelectItem>
                 <SelectItem value="France">France</SelectItem>
                 <SelectItem value="Spain">Spain</SelectItem>
@@ -180,13 +180,13 @@ export function ClientFiltersPanel({ isOpen, onClose, filters, onFiltersChange }
             <Label>Status</Label>
             <Select
               value={localFilters.status}
-              onValueChange={(value) => setLocalFilters({ ...localFilters, status: value })}
+              onValueChange={(value) => setLocalFilters({ ...localFilters, status: value === "all" ? "" : value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Status</SelectItem>
+                <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="Active">Active</SelectItem>
                 <SelectItem value="Archived">Archived</SelectItem>
               </SelectContent>

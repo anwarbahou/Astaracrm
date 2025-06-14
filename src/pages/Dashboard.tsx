@@ -20,6 +20,8 @@ import { AddContactModal } from "@/components/modals/AddContactModal";
 
 function DashboardContent() {
   const { user, loading } = useAuth();
+  const [addClientOpen, setAddClientOpen] = useState(false);
+  const [addContactOpen, setAddContactOpen] = useState(false);
 
   // Show loading while checking authentication
   if (loading) {

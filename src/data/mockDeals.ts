@@ -1,4 +1,3 @@
-
 import { Deal, PipelineStage } from '@/types/deal';
 
 export const pipelineStages: PipelineStage[] = [
@@ -8,6 +7,9 @@ export const pipelineStages: PipelineStage[] = [
   { id: '4', name: 'Negotiation', color: 'bg-orange-100 border-orange-300', icon: 'handshake', order: 4 },
   { id: '5', name: 'Won/Lost', color: 'bg-green-100 border-green-300', icon: 'dollar-sign', order: 5 }
 ];
+
+// Export dealStages as an alias for compatibility with DealsBoard
+export const dealStages = pipelineStages;
 
 export const mockDeals: Deal[] = [
   {

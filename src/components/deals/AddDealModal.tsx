@@ -1,4 +1,3 @@
-
 import { Deal, DealStage } from '@/types/deal';
 import { useState } from 'react';
 import {
@@ -32,7 +31,7 @@ export function AddDealModal({ open, onOpenChange, onSubmit }: AddDealModalProps
     name: '',
     client: '',
     value: 0,
-    stage: 'Discovery' as DealStage,
+    stage: 'Prospect' as DealStage,
     probability: 25,
     expectedCloseDate: '',
     source: '',
@@ -68,13 +67,19 @@ export function AddDealModal({ open, onOpenChange, onSubmit }: AddDealModalProps
 
     onSubmit(newDeal);
     onOpenChange(false);
-    
-    // Reset form
+    resetForm();
+  };
+
+  const updateField = (field: string, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const resetForm = () => {
     setFormData({
       name: '',
       client: '',
       value: 0,
-      stage: 'Discovery',
+      stage: 'Prospect',
       probability: 25,
       expectedCloseDate: '',
       source: '',
@@ -83,10 +88,6 @@ export function AddDealModal({ open, onOpenChange, onSubmit }: AddDealModalProps
       tags: [],
       notes: ''
     });
-  };
-
-  const updateField = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   return (
@@ -142,12 +143,11 @@ export function AddDealModal({ open, onOpenChange, onSubmit }: AddDealModalProps
                   <SelectValue placeholder="Select stage" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Discovery">Discovery</SelectItem>
+                  <SelectItem value="Prospect">Prospect</SelectItem>
+                  <SelectItem value="Lead">Lead</SelectItem>
                   <SelectItem value="Qualified">Qualified</SelectItem>
-                  <SelectItem value="Proposal">Proposal</SelectItem>
                   <SelectItem value="Negotiation">Negotiation</SelectItem>
-                  <SelectItem value="Closed Won">Closed Won</SelectItem>
-                  <SelectItem value="Closed Lost">Closed Lost</SelectItem>
+                  <SelectItem value="Won/Lost">Won/Lost</SelectItem>
                 </SelectContent>
               </Select>
             </div>

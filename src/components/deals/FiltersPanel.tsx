@@ -1,4 +1,3 @@
-
 import { DealFilters, DealStage } from '@/types/deal';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -32,7 +31,7 @@ export function FiltersPanel({
 }: FiltersPanelProps) {
   const [localFilters, setLocalFilters] = useState<DealFilters>(filters);
 
-  const stages: DealStage[] = ['Discovery', 'Qualified', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'];
+  const stages: DealStage[] = ['Prospect', 'Lead', 'Qualified', 'Negotiation', 'Won/Lost'];
   const owners = ['John Doe', 'Sarah Smith', 'Mike Johnson', 'Emily Davis', 'David Wilson'];
   const sources = ['Website', 'Referral', 'Cold Outreach', 'LinkedIn', 'Existing Client'];
 

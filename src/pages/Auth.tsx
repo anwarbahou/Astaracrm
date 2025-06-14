@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
-import { Mail, Lock, Eye, EyeOff, ArrowRight, Loader2 } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowRight, Loader2, RefreshCw } from 'lucide-react';
 
 export default function Auth() {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -15,6 +15,8 @@ export default function Auth() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [resendingEmail, setResendingEmail] = useState(false);
+  const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
   const { user, signIn, signUp } = useAuth();
   const { toast } = useToast();
 
@@ -22,6 +24,32 @@ export default function Auth() {
   if (user) {
     return <Navigate to="/clients" replace />;
   }
+
+  const handleResendConfirmation = async () => {
+    if (!email) {
+      toast({
+        title: "Email Required",
+        description: "Please enter your email address to resend confirmation.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setResendingEmail(true);
+    try {
+      const { error } = await signUp(email, password);
+      if (!error) {
+        toast({
+          title: "Confirmation Email Sent",
+          description: "Please check your email and click the confirmation link.",
+        });
+      }
+    } catch (err) {
+      console.error('Resend confirmation error:', err);
+    } finally {
+      setResendingEmail(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,6 +77,7 @@ export default function Auth() {
           errorMessage = 'Invalid email or password. Please check your credentials and try again.';
         } else if (error.message.includes('Email not confirmed')) {
           errorMessage = 'Please check your email and click the confirmation link before signing in.';
+          setShowEmailConfirmation(true);
         } else if (error.message.includes('User already registered')) {
           errorMessage = 'An account with this email already exists. Try signing in instead.';
         }
@@ -59,12 +88,18 @@ export default function Auth() {
           variant: "destructive",
         });
       } else {
-        toast({
-          title: "Success",
-          description: isSignUp 
-            ? "Account created successfully! Please check your email to confirm your account."
-            : "Welcome back! Redirecting to your dashboard...",
-        });
+        if (isSignUp) {
+          setShowEmailConfirmation(true);
+          toast({
+            title: "Success",
+            description: "Account created! Please check your email to confirm your account before signing in.",
+          });
+        } else {
+          toast({
+            title: "Success",
+            description: "Welcome back! Redirecting to your dashboard...",
+          });
+        }
         
         // Clear form
         setEmail('');
@@ -114,6 +149,42 @@ export default function Auth() {
           </CardHeader>
           
           <CardContent>
+            {showEmailConfirmation && (
+              <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <Mail className="h-5 w-5 text-blue-600 mt-0.5" />
+                  <div className="flex-1">
+                    <h4 className="text-sm font-medium text-blue-800 mb-1">
+                      Email Confirmation Required
+                    </h4>
+                    <p className="text-sm text-blue-700 mb-3">
+                      We've sent a confirmation link to <strong>{email}</strong>. 
+                      Please check your email and click the link to activate your account.
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleResendConfirmation}
+                      disabled={resendingEmail}
+                      className="border-blue-200 text-blue-700 hover:bg-blue-50"
+                    >
+                      {resendingEmail ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <RefreshCw className="h-4 w-4 mr-2" />
+                          Resend Email
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-sm font-medium text-gray-700">
@@ -185,6 +256,7 @@ export default function Auth() {
                   setIsSignUp(!isSignUp);
                   setEmail('');
                   setPassword('');
+                  setShowEmailConfirmation(false);
                 }}
                 className="text-gray-600 hover:text-blue-600 transition-colors"
               >

@@ -5,8 +5,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/layout/AppSidebar";
+import { Sidebar } from "@/components/layout/Sidebar";
 import { TopNavigation } from "@/components/layout/TopNavigation";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { pageVariants } from "@/lib/animations";
@@ -81,29 +80,27 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <SidebarProvider>
+          <motion.div 
+            className="app-layout min-h-screen flex w-full transition-colors duration-500"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Sidebar />
             <motion.div 
-              className="app-layout min-h-screen flex w-full transition-colors duration-500"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
+              className="content-container flex-1 flex flex-col"
+              layout
+              transition={{ duration: 0.5, ease: "easeInOut" }}
             >
-              <AppSidebar />
-              <motion.div 
-                className="content-container flex-1 flex flex-col"
+              <TopNavigation />
+              <motion.main 
+                className="page-container flex-1 p-4 md:p-6 overflow-hidden"
                 layout
-                transition={{ duration: 0.5, ease: "easeInOut" }}
               >
-                <TopNavigation />
-                <motion.main 
-                  className="page-container flex-1 p-4 md:p-6 overflow-hidden"
-                  layout
-                >
-                  <AnimatedRoutes />
-                </motion.main>
-              </motion.div>
+                <AnimatedRoutes />
+              </motion.main>
             </motion.div>
-          </SidebarProvider>
+          </motion.div>
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>

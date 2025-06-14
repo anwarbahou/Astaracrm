@@ -1,7 +1,6 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Plus, User, Bell } from "lucide-react";
@@ -69,14 +68,6 @@ export function TopNavigation() {
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
         <div className="flex h-16 items-center px-6 gap-4">
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            transition={springConfig}
-          >
-            <SidebarTrigger className="h-8 w-8 text-muted-foreground hover:text-foreground transition-colors duration-200" />
-          </motion.div>
-          
           <div className="flex-1 flex items-center justify-between">
             <motion.div 
               key={location.pathname}

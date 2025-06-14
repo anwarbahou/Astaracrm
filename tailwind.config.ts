@@ -63,6 +63,13 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
+				// Add app-specific colors
+				'app-background': 'hsl(var(--app-background))',
+				'content-background': 'hsl(var(--content-background))',
+				surface: {
+					DEFAULT: 'hsl(var(--surface))',
+					hover: 'hsl(var(--surface-hover))'
+				},
 				// CRM specific colors
 				crm: {
 					primary: '#2563eb',

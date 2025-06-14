@@ -94,15 +94,18 @@
 @layer components {
   /* Layout Components */
   .app-layout {
-    @apply min-h-screen flex w-full bg-app-background;
+    @apply min-h-screen flex w-full;
+    background: hsl(var(--app-background));
   }
 
   .content-container {
-    @apply flex-1 flex flex-col min-h-screen bg-content-background;
+    @apply flex-1 flex flex-col min-h-screen;
+    background: hsl(var(--content-background));
   }
 
   .page-container {
-    @apply flex-1 p-6 overflow-auto bg-app-background;
+    @apply flex-1 p-6 overflow-auto;
+    background: hsl(var(--app-background));
   }
 
   /* Card Components */
@@ -115,11 +118,12 @@
   }
 
   .crm-surface {
-    @apply rounded-lg border border-border bg-surface transition-colors duration-200;
+    @apply rounded-lg border border-border transition-colors duration-200;
+    background: hsl(var(--surface));
   }
 
   .crm-surface:hover {
-    @apply bg-surface-hover;
+    background: hsl(var(--surface-hover));
   }
 
   /* Button Components */

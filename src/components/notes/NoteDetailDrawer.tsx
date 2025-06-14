@@ -1,5 +1,5 @@
-
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -34,6 +34,7 @@ interface NoteDetailDrawerProps {
 }
 
 export function NoteDetailDrawer({ note, isOpen, onClose }: NoteDetailDrawerProps) {
+  const { t, i18n } = useTranslation();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   if (!note) return null;
@@ -75,19 +76,12 @@ export function NoteDetailDrawer({ note, isOpen, onClose }: NoteDetailDrawerProp
     }
   };
 
-  const getVisibilityText = (visibility: string) => {
-    switch (visibility) {
-      case "private":
-        return "Private";
-      case "team":
-        return "Team";
-      default:
-        return "Public";
-    }
+  const getVisibilityText = (visibility: Note["visibility"]) => {
+    return t(`notes.visibility.${visibility}`);
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
+    return new Date(dateString).toLocaleDateString(i18n.language, {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -163,7 +157,7 @@ export function NoteDetailDrawer({ note, isOpen, onClose }: NoteDetailDrawerProp
 
               {note.linkedTo && (
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">Linked to:</span>
+                  <span className="text-sm text-muted-foreground">{t('notes.detail.linkedTo')}</span>
                   <Badge variant="outline">
                     {note.linkedTo.name}
                   </Badge>
@@ -172,7 +166,7 @@ export function NoteDetailDrawer({ note, isOpen, onClose }: NoteDetailDrawerProp
 
               {note.tags.length > 0 && (
                 <div className="space-y-2">
-                  <span className="text-sm text-muted-foreground">Tags:</span>
+                  <span className="text-sm text-muted-foreground">{t('notes.detail.tags')}</span>
                   <div className="flex flex-wrap gap-2">
                     {note.tags.map((tag, index) => (
                       <Badge key={index} variant="secondary">
@@ -188,7 +182,7 @@ export function NoteDetailDrawer({ note, isOpen, onClose }: NoteDetailDrawerProp
           <div className="space-y-6 py-6">
             {/* Content */}
             <div className="space-y-3">
-              <h3 className="font-medium">Content</h3>
+              <h3 className="font-medium">{t('notes.detail.content')}</h3>
               <div className="prose prose-sm max-w-none">
                 <div className="whitespace-pre-wrap text-sm leading-relaxed">
                   {note.content}
@@ -201,7 +195,7 @@ export function NoteDetailDrawer({ note, isOpen, onClose }: NoteDetailDrawerProp
               <div className="space-y-3">
                 <h3 className="font-medium flex items-center gap-2">
                   <Calendar className="h-4 w-4" />
-                  Reminder
+                  {t('notes.detail.reminder')}
                 </h3>
                 <p className="text-sm text-muted-foreground">
                   {formatDate(note.reminderDate)}
@@ -214,7 +208,7 @@ export function NoteDetailDrawer({ note, isOpen, onClose }: NoteDetailDrawerProp
               <div className="space-y-3">
                 <h3 className="font-medium flex items-center gap-2">
                   <Paperclip className="h-4 w-4" />
-                  Attachments ({note.attachments.length})
+                  {t('notes.detail.attachments', { count: note.attachments.length })}
                 </h3>
                 <div className="space-y-2">
                   {note.attachments.map((attachment) => (
@@ -247,17 +241,17 @@ export function NoteDetailDrawer({ note, isOpen, onClose }: NoteDetailDrawerProp
                 </Avatar>
                 <div>
                   <p className="text-sm font-medium">{note.createdBy.name}</p>
-                  <p className="text-xs text-muted-foreground">Author</p>
+                  <p className="text-xs text-muted-foreground">{t('notes.detail.author')}</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <p className="text-muted-foreground">Created</p>
+                  <p className="text-muted-foreground">{t('notes.detail.created')}</p>
                   <p>{formatDate(note.createdAt)}</p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">Modified</p>
+                  <p className="text-muted-foreground">{t('notes.detail.modified')}</p>
                   <p>{formatDate(note.updatedAt)}</p>
                 </div>
               </div>

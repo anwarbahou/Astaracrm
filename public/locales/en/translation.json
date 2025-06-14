@@ -20,11 +20,22 @@
   "topNav": {
     "searchPlaceholder": "Search anything...",
     "quickAdd": "Quick Add",
+    "notifications": {
+      "ariaLabel": "Notifications"
+    },
+    "userMenu": {
+      "name": "John Doe",
+      "email": "john@wolfhunt.com",
+      "profile": "Profile",
+      "settings": "Settings",
+      "signOut": "Sign out",
+      "ariaLabel": "User menu"
+    },
     "pageTitle": {
       "dashboard": "Dashboard",
       "clients": "Client Management",
       "contacts": "Contact Management",
-      "deals": "Deal Management",
+      "deals": "Sales Pipeline",
       "tasks": "Task Management",
       "calendar": "Calendar",
       "email": "Email Center",
@@ -32,7 +43,7 @@
       "reports": "Reports & Analytics",
       "users": "User Management",
       "workflows": "Workflows",
-      "activityLogs": "Activity Logs",
+      "activityLogs": "Activity Logs & Audit Trail",
       "settings": "Settings",
       "aiLeads": "AI Lead Intelligence",
       "fallback": "WOLFHUNT CRM"
@@ -40,18 +51,23 @@
     "pageDescription": {
       "dashboard": "Overview of your CRM performance",
       "clients": "Manage your client relationships and track business growth.",
-      "contacts": "Keep track of all your contacts",
-      "deals": "Monitor your sales pipeline",
+      "contacts": "Manage all your business contacts and relationships.",
+      "deals": "Manage your deals through the sales process",
       "tasks": "Stay on top of your tasks",
       "calendar": "Schedule and manage appointments",
       "email": "Communicate with your clients",
       "notes": "Capture important information",
+      "activityLogs": "Track all system activities and user actions across your CRM.",
       "aiLeads": "Advanced AI-powered lead generation for MENA & Europe"
     }
   },
   "languageSwitcher": {
     "chooseLanguage": "Choose Language",
     "moreComingSoon": "More languages coming soon"
+  },
+  "indexPage": {
+    "title": "Welcome to Your Blank App",
+    "subtitle": "Start building your amazing project here!"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -102,6 +118,128 @@
     "activeClients": "Active Clients",
     "prospects": "Prospects",
     "totalRevenue": "Total Revenue"
+  },
+  "contacts": {
+    "title": "Contact Management",
+    "description": "Manage all your business contacts and relationships.",
+    "addContact": "Add Contact",
+    "stats": {
+      "total": "Total Contacts",
+      "active": "Active Contacts",
+      "decisionMakers": "Decision Makers",
+      "companies": "Companies"
+    }
+  },
+  "deals": {
+    "title": "Sales Pipeline",
+    "description": "Manage your deals through the sales process",
+    "newDeal": "New Deal",
+    "searchPlaceholder": "Search deals...",
+    "filters": "Filters",
+    "stats": {
+      "active": "Active Deals",
+      "pipelineValue": "Pipeline Value",
+      "won": "Deals Won",
+      "avgSize": "Avg Deal Size",
+      "vsLastMonth": "{{change}} from last month"
+    },
+    "toasts": {
+      "moved": {
+        "title": "Deal moved",
+        "description": "Deal moved to {{stage}} stage"
+      },
+      "updated": {
+        "title": "Deal updated",
+        "description": "Deal has been successfully updated"
+      },
+      "deleted": {
+        "title": "Deal deleted",
+        "description": "Deal has been successfully deleted"
+      },
+      "created": {
+        "title": "Deal created",
+        "description": "New deal added to {{stage}} stage"
+      }
+    }
+  },
+  "activityLogs": {
+    "title": "Activity Logs & Audit Trail",
+    "description": "Track all system activities and user actions across your CRM.",
+    "filter": "Filter",
+    "export": "Export Logs",
+    "searchPlaceholder": "Search activities by action, user, or related entity..."
+  },
+  "notes": {
+    "grid": {
+      "empty": {
+        "title": "No notes found",
+        "description": "Start capturing your ideas, meeting notes, and important information by creating your first note."
+      },
+      "pinnedNotes": "Pinned Notes",
+      "allNotes": "All Notes"
+    },
+    "filters": {
+      "button": "Filters",
+      "title": "Filter Notes",
+      "sortBy": {
+        "label": "Sort By",
+        "modified": "Last Modified",
+        "created": "Date Created",
+        "title": "Title"
+      },
+      "type": {
+        "label": "Type",
+        "all": "All Types"
+      },
+      "visibility": {
+        "label": "Visibility",
+        "all": "All"
+      },
+      "tags": {
+        "label": "Tags"
+      }
+    },
+    "noteType": {
+      "general": "General",
+      "meeting": "Meeting",
+      "task": "Task",
+      "idea": "Idea"
+    },
+    "visibility": {
+      "public": "Public",
+      "team": "Team",
+      "private": "Private"
+    },
+    "modal": {
+      "createTitle": "Create New Note",
+      "editTitle": "Edit Note",
+      "titleLabel": "Title",
+      "titlePlaceholder": "Enter note title...",
+      "typeLabel": "Type",
+      "visibilityLabel": "Visibility",
+      "tagsLabel": "Tags",
+      "tagsPlaceholder": "Add a tag...",
+      "contentLabel": "Content",
+      "contentPlaceholder": "Write your note content...",
+      "pinNote": "Pin this note",
+      "setReminder": "Set reminder",
+      "reminderDate": "Reminder Date",
+      "selectDate": "Select date",
+      "attachmentsLabel": "Attachments",
+      "attachmentsPlaceholder": "Drag & drop files here or click to browse",
+      "updateButton": "Update Note",
+      "createButton": "Create Note"
+    },
+    "detail": {
+      "linkedTo": "Linked to:",
+      "tags": "Tags:",
+      "content": "Content",
+      "reminder": "Reminder",
+      "attachments": "Attachments ({{count}})",
+      "author": "Author",
+      "created": "Created",
+      "modified": "Modified"
+    }
   },
   "common": {
     "add": "Add",

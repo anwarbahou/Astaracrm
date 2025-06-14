@@ -20,11 +20,22 @@
   "topNav": {
     "searchPlaceholder": "ابحث عن أي شيء...",
     "quickAdd": "إضافة سريعة",
+    "notifications": {
+      "ariaLabel": "الإشعارات"
+    },
+    "userMenu": {
+      "name": "جون دو",
+      "email": "john@wolfhunt.com",
+      "profile": "الملف الشخصي",
+      "settings": "الإعدادات",
+      "signOut": "تسجيل الخروج",
+      "ariaLabel": "قائمة المستخدم"
+    },
     "pageTitle": {
       "dashboard": "لوحة التحكم",
       "clients": "إدارة العملاء",
       "contacts": "إدارة جهات الاتصال",
-      "deals": "إدارة الصفقات",
+      "deals": "خط أنابيب المبيعات",
       "tasks": "إدارة المهام",
       "calendar": "التقويم",
       "email": "مركز البريد الإلكتروني",
@@ -32,7 +43,7 @@
       "reports": "التقارير والتحليلات",
       "users": "إدارة المستخدمين",
       "workflows": "مسارات العمل",
-      "activityLogs": "سجلات النشاط",
+      "activityLogs": "سجلات النشاط ومسار التدقيق",
       "settings": "الإعدادات",
       "aiLeads": "استخبارات العملاء المحتملين بالذكاء الاصطناعي",
       "fallback": "WOLFHUNT CRM"
@@ -40,18 +51,23 @@
     "pageDescription": {
       "dashboard": "نظرة عامة على أداء CRM الخاص بك",
       "clients": "إدارة علاقات العملاء الخاصة بك وتتبع نمو الأعمال.",
-      "contacts": "تتبع جميع جهات الاتصال الخاصة بك",
-      "deals": "مراقبة خط أنابيب المبيعات الخاص بك",
+      "contacts": "إدارة جميع جهات الاتصال والعلاقات التجارية الخاصة بك.",
+      "deals": "إدارة صفقاتك خلال عملية البيع",
       "tasks": "ابق على اطلاع بمهامك",
       "calendar": "جدولة وإدارة المواعيد",
       "email": "تواصل مع عملائك",
       "notes": "التقاط المعلومات الهامة",
+      "activityLogs": "تتبع جميع أنشطة النظام وإجراءات المستخدمين.",
       "aiLeads": "توليد عملاء محتملين متقدم لمنطقة الشرق الأوسط وشمال إفريقيا وأوروبا"
     }
   },
   "languageSwitcher": {
     "chooseLanguage": "اختر اللغة",
     "moreComingSoon": "المزيد من اللغات قريبا"
+  },
+  "indexPage": {
+    "title": "أهلاً بك في تطبيقك الفارغ",
+    "subtitle": "ابدأ ببناء مشروعك المذهل هنا!"
   },
   "dashboard": {
     "title": "لوحة التحكم",
@@ -102,6 +118,128 @@
     "activeClients": "العملاء النشطون",
     "prospects": "العملاء المحتملين",
     "totalRevenue": "إجمالي الإيرادات"
+  },
+  "contacts": {
+    "title": "إدارة جهات الاتصال",
+    "description": "إدارة جميع جهات الاتصال والعلاقات التجارية الخاصة بك.",
+    "addContact": "إضافة جهة اتصال",
+    "stats": {
+      "total": "إجمالي جهات الاتصال",
+      "active": "جهات الاتصال النشطة",
+      "decisionMakers": "صناع القرار",
+      "companies": "الشركات"
+    }
+  },
+  "deals": {
+    "title": "خط أنابيب المبيعات",
+    "description": "إدارة صفقاتك خلال عملية البيع",
+    "newDeal": "صفقة جديدة",
+    "searchPlaceholder": "البحث عن صفقات...",
+    "filters": "الفلاتر",
+    "stats": {
+      "active": "الصفقات النشطة",
+      "pipelineValue": "قيمة خط الأنابيب",
+      "won": "الصفقات المربوحة",
+      "avgSize": "متوسط حجم الصفقة",
+      "vsLastMonth": "{{change}} عن الشهر الماضي"
+    },
+    "toasts": {
+      "moved": {
+        "title": "تم نقل الصفقة",
+        "description": "تم نقل الصفقة إلى مرحلة {{stage}}"
+      },
+      "updated": {
+        "title": "تم تحديث الصفقة",
+        "description": "تم تحديث الصفقة بنجاح"
+      },
+      "deleted": {
+        "title": "تم حذف الصفقة",
+        "description": "تم حذف الصفقة بنجاح"
+      },
+      "created": {
+        "title": "تم إنشاء الصفقة",
+        "description": "تمت إضافة صفقة جديدة إلى مرحلة {{stage}}"
+      }
+    }
+  },
+  "activityLogs": {
+    "title": "سجلات النشاط ومسار التدقيق",
+    "description": "تتبع جميع أنشطة النظام وإجراءات المستخدمين.",
+    "filter": "تصفية",
+    "export": "تصدير السجلات",
+    "searchPlaceholder": "ابحث في الأنشطة حسب الإجراء أو المستخدم أو الكيان ذي الصلة..."
+  },
+  "notes": {
+    "grid": {
+      "empty": {
+        "title": "لم يتم العثور على ملاحظات",
+        "description": "ابدأ بتدوين أفكارك وملاحظات الاجتماعات والمعلومات المهمة عن طريق إنشاء ملاحظتك الأولى."
+      },
+      "pinnedNotes": "الملاحظات المثبتة",
+      "allNotes": "كل الملاحظات"
+    },
+    "filters": {
+      "button": "الفلاتر",
+      "title": "تصفية الملاحظات",
+      "sortBy": {
+        "label": "فرز حسب",
+        "modified": "آخر تعديل",
+        "created": "تاريخ الإنشاء",
+        "title": "العنوان"
+      },
+      "type": {
+        "label": "النوع",
+        "all": "كل الأنواع"
+      },
+      "visibility": {
+        "label": "الرؤية",
+        "all": "الكل"
+      },
+      "tags": {
+        "label": "العلامات"
+      }
+    },
+    "noteType": {
+      "general": "عام",
+      "meeting": "اجتماع",
+      "task": "مهمة",
+      "idea": "فكرة"
+    },
+    "visibility": {
+      "public": "عام",
+      "team": "الفريق",
+      "private": "خاص"
+    },
+    "modal": {
+      "createTitle": "إنشاء ملاحظة جديدة",
+      "editTitle": "تعديل الملاحظة",
+      "titleLabel": "العنوان",
+      "titlePlaceholder": "أدخل عنوان الملاحظة...",
+      "typeLabel": "النوع",
+      "visibilityLabel": "الرؤية",
+      "tagsLabel": "العلامات",
+      "tagsPlaceholder": "أضف علامة...",
+      "contentLabel": "المحتوى",
+      "contentPlaceholder": "اكتب محتوى ملاحظتك...",
+      "pinNote": "تثبيت هذه الملاحظة",
+      "setReminder": "تعيين تذكير",
+      "reminderDate": "تاريخ التذكير",
+      "selectDate": "اختر تاريخًا",
+      "attachmentsLabel": "المرفقات",
+      "attachmentsPlaceholder": "اسحب وأفلت الملفات هنا أو انقر للتصفح",
+      "updateButton": "تحديث الملاحظة",
+      "createButton": "إنشاء الملاحظة"
+    },
+    "detail": {
+      "linkedTo": "مرتبط بـ:",
+      "tags": "العلامات:",
+      "content": "المحتوى",
+      "reminder": "تذكير",
+      "attachments": "المرفقات ({{count}})",
+      "author": "المؤلف",
+      "created": "أُنشئت في",
+      "modified": "عُدلت في"
+    }
   },
   "common": {
     "add": "إضافة",

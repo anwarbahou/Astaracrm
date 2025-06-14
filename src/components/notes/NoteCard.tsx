@@ -1,4 +1,3 @@
-
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,6 +14,7 @@ import {
   MessageSquare
 } from "lucide-react";
 import type { Note } from "@/types/note";
+import { useTranslation } from "react-i18next";
 
 interface NoteCardProps {
   note: Note;
@@ -22,6 +22,8 @@ interface NoteCardProps {
 }
 
 export function NoteCard({ note, onClick }: NoteCardProps) {
+  const { i18n } = useTranslation();
+
   const getTypeIcon = (type: string) => {
     switch (type) {
       case "meeting":
@@ -62,15 +64,30 @@ export function NoteCard({ note, onClick }: NoteCardProps) {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
-    const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
+    const diffInSeconds = (now.getTime() - date.getTime()) / 1000;
     
-    if (diffInHours < 24) {
-      return `${Math.floor(diffInHours)}h ago`;
-    } else if (diffInHours < 24 * 7) {
-      return `${Math.floor(diffInHours / 24)}d ago`;
-    } else {
-      return date.toLocaleDateString();
+    // Intl.RelativeTimeFormat is great for "X days ago" type formats
+    const rtf = new Intl.RelativeTimeFormat(i18n.language, { numeric: 'auto' });
+
+    const diffInDays = diffInSeconds / (60 * 60 * 24);
+    if (diffInDays > 7) {
+      return date.toLocaleDateString(i18n.language);
     }
+    if (diffInDays >= 1) {
+      return rtf.format(-Math.floor(diffInDays), 'day');
+    }
+    
+    const diffInHours = diffInSeconds / (60 * 60);
+    if (diffInHours >= 1) {
+      return rtf.format(-Math.floor(diffInHours), 'hour');
+    }
+
+    const diffInMinutes = diffInSeconds / 60;
+    if (diffInMinutes >= 1) {
+      return rtf.format(-Math.floor(diffInMinutes), 'minute');
+    }
+    
+    return rtf.format(-Math.floor(diffInSeconds), 'second');
   };
 
   return (

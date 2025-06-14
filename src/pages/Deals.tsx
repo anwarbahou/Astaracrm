@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -19,6 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Deals() {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"kanban" | "list">("kanban");
   const [deals, setDeals] = useState<Deal[]>(mockDeals);
@@ -73,8 +75,8 @@ export default function Deals() {
     ));
     
     toast({
-      title: "Deal moved",
-      description: `Deal moved to ${newStage} stage`,
+      title: t('deals.toasts.moved.title'),
+      description: t('deals.toasts.moved.description', { stage: newStage }),
     });
   };
 
@@ -84,8 +86,8 @@ export default function Deals() {
     ));
     
     toast({
-      title: "Deal updated",
-      description: "Deal has been successfully updated",
+      title: t('deals.toasts.updated.title'),
+      description: t('deals.toasts.updated.description'),
     });
   };
 
@@ -93,8 +95,8 @@ export default function Deals() {
     setDeals(prev => prev.filter(deal => deal.id !== dealId));
     
     toast({
-      title: "Deal deleted",
-      description: "Deal has been successfully deleted",
+      title: t('deals.toasts.deleted.title'),
+      description: t('deals.toasts.deleted.description'),
     });
   };
 
@@ -109,8 +111,8 @@ export default function Deals() {
     setDeals(prev => [...prev, newDeal]);
     
     toast({
-      title: "Deal created",
-      description: `New deal added to ${addDealStage} stage`,
+      title: t('deals.toasts.created.title'),
+      description: t('deals.toasts.created.description', { stage: addDealStage }),
     });
   };
 
@@ -140,16 +142,16 @@ export default function Deals() {
       {/* Enhanced Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Sales Pipeline</h1>
+          <h1 className="text-3xl font-bold text-foreground">{t('deals.title')}</h1>
           <p className="text-muted-foreground mt-1">
-            Manage your deals through the sales process
+            {t('deals.description')}
           </p>
         </div>
         <div className="flex gap-3">
           <DealsViewToggle viewMode={viewMode} onViewModeChange={setViewMode} />
           <Button onClick={() => handleOpenAddDeal('Prospect')} className="gap-2 crm-button-primary">
             <Plus size={16} />
-            New Deal
+            {t('deals.newDeal')}
           </Button>
         </div>
       </div>
@@ -161,7 +163,7 @@ export default function Deals() {
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
-                placeholder="Search deals..."
+                placeholder={t('deals.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 crm-input"
@@ -174,7 +176,7 @@ export default function Deals() {
             />
             <Button variant="outline" className="gap-2 crm-button-secondary">
               <Filter size={16} />
-              Filters
+              {t('deals.filters')}
               {(filters.stages.length > 0 || filters.owners.length > 0) && (
                 <Badge variant="secondary" className="ml-1">
                   {filters.stages.length + filters.owners.length}
@@ -189,43 +191,43 @@ export default function Deals() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card className="crm-card hover:shadow-lg transition-all duration-200">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Active Deals</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t('deals.stats.active')}</CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
             <div className="text-2xl font-bold text-foreground">{filteredDeals.length}</div>
-            <div className="text-xs text-muted-foreground">+12% from last month</div>
+            <div className="text-xs text-muted-foreground">{t('deals.stats.vsLastMonth', { change: '+12%' })}</div>
           </CardContent>
         </Card>
 
         <Card className="crm-card hover:shadow-lg transition-all duration-200">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Pipeline Value</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t('deals.stats.pipelineValue')}</CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
             <div className="text-2xl font-bold text-primary">{totalValue.toLocaleString()} MAD</div>
-            <div className="text-xs text-muted-foreground">+8% from last month</div>
+            <div className="text-xs text-muted-foreground">{t('deals.stats.vsLastMonth', { change: '+8%' })}</div>
           </CardContent>
         </Card>
 
         <Card className="crm-card hover:shadow-lg transition-all duration-200">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Deals Won</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t('deals.stats.won')}</CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
             <div className="text-2xl font-bold text-accent">{wonDeals.length}</div>
-            <div className="text-xs text-muted-foreground">+15% from last month</div>
+            <div className="text-xs text-muted-foreground">{t('deals.stats.vsLastMonth', { change: '+15%' })}</div>
           </CardContent>
         </Card>
 
         <Card className="crm-card hover:shadow-lg transition-all duration-200">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Avg Deal Size</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{t('deals.stats.avgSize')}</CardTitle>
           </CardHeader>
           <CardContent className="pt-0">
             <div className="text-2xl font-bold text-foreground">
               {filteredDeals.length > 0 ? Math.round(totalValue / filteredDeals.length).toLocaleString() : 0} MAD
             </div>
-            <div className="text-xs text-muted-foreground">+5% from last month</div>
+            <div className="text-xs text-muted-foreground">{t('deals.stats.vsLastMonth', { change: '+5%' })}</div>
           </CardContent>
         </Card>
       </div>

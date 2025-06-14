@@ -1,5 +1,5 @@
-
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -36,6 +36,7 @@ interface NoteModalProps {
 }
 
 export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
+  const { t } = useTranslation();
   const [title, setTitle] = useState(note?.title || "");
   const [content, setContent] = useState(note?.content || "");
   const [type, setType] = useState(note?.type || "general");
@@ -100,16 +101,16 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{note ? "Edit Note" : "Create New Note"}</DialogTitle>
+          <DialogTitle>{note ? t('notes.modal.editTitle') : t('notes.modal.createTitle')}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
           {/* Title */}
           <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
+            <Label htmlFor="title">{t('notes.modal.titleLabel')}</Label>
             <Input
               id="title"
-              placeholder="Enter note title..."
+              placeholder={t('notes.modal.titlePlaceholder')}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
@@ -118,30 +119,30 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
           {/* Type and Visibility */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Type</Label>
+              <Label>{t('notes.modal.typeLabel')}</Label>
               <Select value={type} onValueChange={handleTypeChange}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="general">General</SelectItem>
-                  <SelectItem value="meeting">Meeting</SelectItem>
-                  <SelectItem value="task">Task</SelectItem>
-                  <SelectItem value="idea">Idea</SelectItem>
+                  <SelectItem value="general">{t('notes.noteType.general')}</SelectItem>
+                  <SelectItem value="meeting">{t('notes.noteType.meeting')}</SelectItem>
+                  <SelectItem value="task">{t('notes.noteType.task')}</SelectItem>
+                  <SelectItem value="idea">{t('notes.noteType.idea')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label>Visibility</Label>
+              <Label>{t('notes.modal.visibilityLabel')}</Label>
               <Select value={visibility} onValueChange={handleVisibilityChange}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="private">Private</SelectItem>
-                  <SelectItem value="team">Team</SelectItem>
-                  <SelectItem value="public">Public</SelectItem>
+                  <SelectItem value="private">{t('notes.visibility.private')}</SelectItem>
+                  <SelectItem value="team">{t('notes.visibility.team')}</SelectItem>
+                  <SelectItem value="public">{t('notes.visibility.public')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -149,17 +150,17 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
 
           {/* Tags */}
           <div className="space-y-2">
-            <Label>Tags</Label>
+            <Label>{t('notes.modal.tagsLabel')}</Label>
             <div className="flex gap-2 mb-2">
               <Input
-                placeholder="Add a tag..."
+                placeholder={t('notes.modal.tagsPlaceholder')}
                 value={currentTag}
                 onChange={(e) => setCurrentTag(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && handleAddTag()}
                 className="flex-1"
               />
               <Button type="button" variant="outline" onClick={handleAddTag}>
-                Add
+                {t('common.add')}
               </Button>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -177,10 +178,10 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
 
           {/* Content */}
           <div className="space-y-2">
-            <Label htmlFor="content">Content</Label>
+            <Label htmlFor="content">{t('notes.modal.contentLabel')}</Label>
             <Textarea
               id="content"
-              placeholder="Write your note content..."
+              placeholder={t('notes.modal.contentPlaceholder')}
               value={content}
               onChange={(e) => setContent(e.target.value)}
               className="min-h-[200px]"
@@ -190,7 +191,7 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
           {/* Options */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <Label htmlFor="pinned">Pin this note</Label>
+              <Label htmlFor="pinned">{t('notes.modal.pinNote')}</Label>
               <Switch
                 id="pinned"
                 checked={isPinned}
@@ -199,7 +200,7 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
             </div>
 
             <div className="flex items-center justify-between">
-              <Label htmlFor="reminder">Set reminder</Label>
+              <Label htmlFor="reminder">{t('notes.modal.setReminder')}</Label>
               <Switch
                 id="reminder"
                 checked={hasReminder}
@@ -209,12 +210,12 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
 
             {hasReminder && (
               <div className="space-y-2">
-                <Label>Reminder Date</Label>
+                <Label>{t('notes.modal.reminderDate')}</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full justify-start">
                       <CalendarIcon className="h-4 w-4 mr-2" />
-                      {reminderDate ? reminderDate.toLocaleDateString() : "Select date"}
+                      {reminderDate ? reminderDate.toLocaleDateString() : t('notes.modal.selectDate')}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
@@ -232,11 +233,11 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
 
           {/* Attachments */}
           <div className="space-y-2">
-            <Label>Attachments</Label>
+            <Label>{t('notes.modal.attachmentsLabel')}</Label>
             <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
               <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
               <p className="text-sm text-muted-foreground">
-                Drag & drop files here or click to browse
+                {t('notes.modal.attachmentsPlaceholder')}
               </p>
             </div>
           </div>
@@ -245,10 +246,10 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
         {/* Actions */}
         <div className="flex justify-end gap-3 pt-6 border-t">
           <Button variant="outline" onClick={handleClose}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button onClick={handleSave} disabled={!title.trim()}>
-            {note ? "Update Note" : "Create Note"}
+            {note ? t('notes.modal.updateButton') : t('notes.modal.createButton')}
           </Button>
         </div>
       </DialogContent>

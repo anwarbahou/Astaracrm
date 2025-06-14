@@ -20,11 +20,22 @@
   "topNav": {
     "searchPlaceholder": "Rechercher...",
     "quickAdd": "Ajout rapide",
+    "notifications": {
+      "ariaLabel": "Notifications"
+    },
+    "userMenu": {
+      "name": "John Doe",
+      "email": "john@wolfhunt.com",
+      "profile": "Profil",
+      "settings": "Paramètres",
+      "signOut": "Se déconnecter",
+      "ariaLabel": "Menu utilisateur"
+    },
     "pageTitle": {
       "dashboard": "Tableau de bord",
       "clients": "Gestion des clients",
       "contacts": "Gestion des contacts",
-      "deals": "Gestion des opportunités",
+      "deals": "Pipeline de Ventes",
       "tasks": "Gestion des tâches",
       "calendar": "Calendrier",
       "email": "Centre E-mail",
@@ -32,7 +43,7 @@
       "reports": "Rapports & Analyses",
       "users": "Gestion des utilisateurs",
       "workflows": "Workflows",
-      "activityLogs": "Journaux d'activité",
+      "activityLogs": "Journaux d'activité et piste d'audit",
       "settings": "Paramètres",
       "aiLeads": "Intelligence des leads par IA",
       "fallback": "WOLFHUNT CRM"
@@ -40,18 +51,23 @@
     "pageDescription": {
       "dashboard": "Aperçu des performances de votre CRM",
       "clients": "Gérez vos relations clients et suivez la croissance de votre entreprise.",
-      "contacts": "Gardez une trace de tous vos contacts",
-      "deals": "Surveillez votre pipeline de ventes",
+      "contacts": "Gérez tous vos contacts et relations d'affaires.",
+      "deals": "Gérez vos opportunités tout au long du processus de vente",
       "tasks": "Restez au top de vos tâches",
       "calendar": "Planifiez et gérez les rendez-vous",
       "email": "Communiquez avec vos clients",
       "notes": "Capturez les informations importantes",
+      "activityLogs": "Suivez toutes les activités du système et les actions des utilisateurs.",
       "aiLeads": "Génération de leads MENA et Europe avec IA avancée"
     }
   },
   "languageSwitcher": {
     "chooseLanguage": "Choisir la langue",
     "moreComingSoon": "Plus de langues bientôt disponibles"
+  },
+  "indexPage": {
+    "title": "Bienvenue dans votre application vide",
+    "subtitle": "Commencez à construire votre projet incroyable ici !"
   },
   "dashboard": {
     "title": "Tableau de bord",
@@ -102,6 +118,128 @@
     "activeClients": "Clients actifs",
     "prospects": "Prospects",
     "totalRevenue": "Revenu total"
+  },
+  "contacts": {
+    "title": "Gestion des contacts",
+    "description": "Gérez tous vos contacts et relations d'affaires.",
+    "addContact": "Ajouter un contact",
+    "stats": {
+      "total": "Total des contacts",
+      "active": "Contacts actifs",
+      "decisionMakers": "Décideurs",
+      "companies": "Entreprises"
+    }
+  },
+  "deals": {
+    "title": "Pipeline de Ventes",
+    "description": "Gérez vos opportunités tout au long du processus de vente",
+    "newDeal": "Nouvelle Opportunité",
+    "searchPlaceholder": "Rechercher des opportunités...",
+    "filters": "Filtres",
+    "stats": {
+      "active": "Opportunités Actives",
+      "pipelineValue": "Valeur du Pipeline",
+      "won": "Opportunités Gagnées",
+      "avgSize": "Taille Moy. Opp.",
+      "vsLastMonth": "{{change}} vs mois dernier"
+    },
+    "toasts": {
+      "moved": {
+        "title": "Opportunité déplacée",
+        "description": "Opportunité déplacée à l'étape {{stage}}"
+      },
+      "updated": {
+        "title": "Opportunité mise à jour",
+        "description": "L'opportunité a été mise à jour avec succès"
+      },
+      "deleted": {
+        "title": "Opportunité supprimée",
+        "description": "L'opportunité a été supprimée avec succès"
+      },
+      "created": {
+        "title": "Opportunité créée",
+        "description": "Nouvelle opportunité ajoutée à l'étape {{stage}}"
+      }
+    }
+  },
+  "activityLogs": {
+    "title": "Journaux d'activité et piste d'audit",
+    "description": "Suivez toutes les activités du système et les actions des utilisateurs.",
+    "filter": "Filtrer",
+    "export": "Exporter les journaux",
+    "searchPlaceholder": "Rechercher des activités par action, utilisateur ou entité..."
+  },
+  "notes": {
+    "grid": {
+      "empty": {
+        "title": "Aucune note trouvée",
+        "description": "Commencez à capturer vos idées, notes de réunion et informations importantes en créant votre première note."
+      },
+      "pinnedNotes": "Notes épinglées",
+      "allNotes": "Toutes les notes"
+    },
+    "filters": {
+      "button": "Filtres",
+      "title": "Filtrer les notes",
+      "sortBy": {
+        "label": "Trier par",
+        "modified": "Dernière modification",
+        "created": "Date de création",
+        "title": "Titre"
+      },
+      "type": {
+        "label": "Type",
+        "all": "Tous les types"
+      },
+      "visibility": {
+        "label": "Visibilité",
+        "all": "Toutes"
+      },
+      "tags": {
+        "label": "Étiquettes"
+      }
+    },
+    "noteType": {
+      "general": "Général",
+      "meeting": "Réunion",
+      "task": "Tâche",
+      "idea": "Idée"
+    },
+    "visibility": {
+      "public": "Public",
+      "team": "Équipe",
+      "private": "Privé"
+    },
+    "modal": {
+      "createTitle": "Créer une nouvelle note",
+      "editTitle": "Modifier la note",
+      "titleLabel": "Titre",
+      "titlePlaceholder": "Saisir le titre de la note...",
+      "typeLabel": "Type",
+      "visibilityLabel": "Visibilité",
+      "tagsLabel": "Étiquettes",
+      "tagsPlaceholder": "Ajouter une étiquette...",
+      "contentLabel": "Contenu",
+      "contentPlaceholder": "Rédigez le contenu de votre note...",
+      "pinNote": "Épingler cette note",
+      "setReminder": "Définir un rappel",
+      "reminderDate": "Date du rappel",
+      "selectDate": "Sélectionner une date",
+      "attachmentsLabel": "Pièces jointes",
+      "attachmentsPlaceholder": "Glissez-déposez des fichiers ici ou cliquez pour parcourir",
+      "updateButton": "Mettre à jour la note",
+      "createButton": "Créer la note"
+    },
+    "detail": {
+      "linkedTo": "Lié à :",
+      "tags": "Étiquettes :",
+      "content": "Contenu",
+      "reminder": "Rappel",
+      "attachments": "Pièces jointes ({{count}})",
+      "author": "Auteur",
+      "created": "Créé le",
+      "modified": "Modifié le"
+    }
   },
   "common": {
     "add": "Ajouter",

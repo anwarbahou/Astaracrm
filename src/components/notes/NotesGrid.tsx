@@ -1,6 +1,7 @@
 
 import { NoteCard } from "./NoteCard";
 import type { Note } from "@/types/note";
+import { useTranslation } from "react-i18next";
 
 interface NotesGridProps {
   notes: Note[];
@@ -8,13 +9,15 @@ interface NotesGridProps {
 }
 
 export function NotesGrid({ notes, onNoteClick }: NotesGridProps) {
+  const { t } = useTranslation();
+
   if (notes.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
         <div className="text-6xl mb-4">📝</div>
-        <h3 className="text-lg font-medium text-foreground mb-2">No notes found</h3>
+        <h3 className="text-lg font-medium text-foreground mb-2">{t('notes.grid.empty.title')}</h3>
         <p className="text-muted-foreground text-center max-w-md">
-          Start capturing your ideas, meeting notes, and important information by creating your first note.
+          {t('notes.grid.empty.description')}
         </p>
       </div>
     );
@@ -28,7 +31,7 @@ export function NotesGrid({ notes, onNoteClick }: NotesGridProps) {
       {pinnedNotes.length > 0 && (
         <div>
           <h2 className="text-lg font-medium text-foreground mb-4 flex items-center gap-2">
-            📌 Pinned Notes
+            📌 {t('notes.grid.pinnedNotes')}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {pinnedNotes.map((note) => (
@@ -45,7 +48,7 @@ export function NotesGrid({ notes, onNoteClick }: NotesGridProps) {
       {regularNotes.length > 0 && (
         <div>
           {pinnedNotes.length > 0 && (
-            <h2 className="text-lg font-medium text-foreground mb-4">All Notes</h2>
+            <h2 className="text-lg font-medium text-foreground mb-4">{t('notes.grid.allNotes')}</h2>
           )}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {regularNotes.map((note) => (

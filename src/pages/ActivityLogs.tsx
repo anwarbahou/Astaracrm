@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +11,7 @@ import { ActivityStats } from "@/components/activity/ActivityStats";
 import { ActivityTabs } from "@/components/activity/ActivityTabs";
 
 export default function ActivityLogs() {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
 
   // Use mock data
@@ -39,19 +41,19 @@ export default function ActivityLogs() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Activity Logs & Audit Trail</h1>
+          <h1 className="text-3xl font-bold">{t('activityLogs.title')}</h1>
           <p className="text-muted-foreground mt-1">
-            Track all system activities and user actions across your CRM.
+            {t('activityLogs.description')}
           </p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" className="gap-2">
             <Filter size={16} />
-            Filter
+            {t('activityLogs.filter')}
           </Button>
           <Button className="gap-2">
             <Download size={16} />
-            Export Logs
+            {t('activityLogs.export')}
           </Button>
         </div>
       </div>
@@ -62,7 +64,7 @@ export default function ActivityLogs() {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
-              placeholder="Search activities by action, user, or related entity..."
+              placeholder={t('activityLogs.searchPlaceholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"

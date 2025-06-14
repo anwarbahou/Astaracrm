@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -120,7 +119,7 @@ export function TopNavigation() {
                   size="icon" 
                   className="relative h-9 w-9 hover:bg-muted/50 transition-colors duration-200 rounded-xl"
                   onClick={() => setNotificationOpen(true)}
-                  aria-label="Notifications"
+                  aria-label={t('topNav.notifications.ariaLabel')}
                 >
                   <Bell className="h-4 w-4 transition-transform duration-200" />
                   <AnimatePresence>
@@ -173,7 +172,7 @@ export function TopNavigation() {
                     <Button 
                       variant="ghost" 
                       className="relative h-9 w-9 rounded-full hover:bg-muted/50 transition-colors duration-200"
-                      aria-label="User menu"
+                      aria-label={t('topNav.userMenu.ariaLabel')}
                     >
                       <Avatar className="h-9 w-9">
                         <AvatarImage 
@@ -198,20 +197,20 @@ export function TopNavigation() {
                     transition={{ duration: 0.2 }}
                   >
                     <div className="px-2 py-1.5">
-                      <p className="text-sm font-medium">John Doe</p>
-                      <p className="text-xs text-muted-foreground">john@wolfhunt.com</p>
+                      <p className="text-sm font-medium">{t('topNav.userMenu.name')}</p>
+                      <p className="text-xs text-muted-foreground">{t('topNav.userMenu.email')}</p>
                     </div>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem className="hover:bg-muted/50 transition-colors duration-200 rounded-lg mx-1">
                       <User className="mr-2 h-4 w-4" />
-                      Profile
+                      {t('topNav.userMenu.profile')}
                     </DropdownMenuItem>
                     <DropdownMenuItem className="hover:bg-muted/50 transition-colors duration-200 rounded-lg mx-1">
-                      Settings
+                      {t('topNav.userMenu.settings')}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem className="hover:bg-destructive/10 text-destructive focus:text-destructive transition-colors duration-200 rounded-lg mx-1">
-                      Sign out
+                      {t('topNav.userMenu.signOut')}
                     </DropdownMenuItem>
                   </motion.div>
                 </DropdownMenuContent>
@@ -221,15 +220,8 @@ export function TopNavigation() {
         </div>
       </motion.header>
 
-      {/* Modals and Sidebars */}
-      <AnimatePresence>
-        {quickAddOpen && (
-          <QuickAddModal open={quickAddOpen} onOpenChange={setQuickAddOpen} />
-        )}
-        {notificationOpen && (
-          <NotificationSidebar open={notificationOpen} onOpenChange={setNotificationOpen} />
-        )}
-      </AnimatePresence>
+      <QuickAddModal open={quickAddOpen} onOpenChange={setQuickAddOpen} />
+      <NotificationSidebar open={notificationOpen} onOpenChange={setNotificationOpen} />
     </>
   );
 }

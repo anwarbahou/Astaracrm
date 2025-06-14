@@ -1,5 +1,5 @@
-
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -9,6 +9,7 @@ import { ContactProfileModal } from "@/components/contacts/ContactProfileModal";
 import { ContactFiltersPanel } from "@/components/contacts/ContactFiltersPanel";
 
 export default function Contacts() {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [addContactOpen, setAddContactOpen] = useState(false);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
@@ -206,14 +207,14 @@ export default function Contacts() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Contact Management</h1>
+            <h1 className="text-3xl font-bold">{t('contacts.title')}</h1>
             <p className="text-muted-foreground mt-1">
-              Manage all your business contacts and relationships.
+              {t('contacts.description')}
             </p>
           </div>
           <Button className="gap-2" onClick={() => setAddContactOpen(true)}>
             <Plus size={16} />
-            Add Contact
+            {t('contacts.addContact')}
           </Button>
         </div>
 
@@ -223,7 +224,7 @@ export default function Contacts() {
             <CardContent className="p-6">
               <div className="text-center">
                 <p className="text-2xl font-bold">{contacts.length}</p>
-                <p className="text-sm text-muted-foreground">Total Contacts</p>
+                <p className="text-sm text-muted-foreground">{t('contacts.stats.total')}</p>
               </div>
             </CardContent>
           </Card>
@@ -231,7 +232,7 @@ export default function Contacts() {
             <CardContent className="p-6">
               <div className="text-center">
                 <p className="text-2xl font-bold">{contacts.filter(c => c.status === "Active").length}</p>
-                <p className="text-sm text-muted-foreground">Active Contacts</p>
+                <p className="text-sm text-muted-foreground">{t('contacts.stats.active')}</p>
               </div>
             </CardContent>
           </Card>
@@ -239,7 +240,7 @@ export default function Contacts() {
             <CardContent className="p-6">
               <div className="text-center">
                 <p className="text-2xl font-bold">{contacts.filter(c => c.tags.includes("Decision Maker")).length}</p>
-                <p className="text-sm text-muted-foreground">Decision Makers</p>
+                <p className="text-sm text-muted-foreground">{t('contacts.stats.decisionMakers')}</p>
               </div>
             </CardContent>
           </Card>
@@ -247,7 +248,7 @@ export default function Contacts() {
             <CardContent className="p-6">
               <div className="text-center">
                 <p className="text-2xl font-bold">{new Set(contacts.map(c => c.company)).size}</p>
-                <p className="text-sm text-muted-foreground">Companies</p>
+                <p className="text-sm text-muted-foreground">{t('contacts.stats.companies')}</p>
               </div>
             </CardContent>
           </Card>

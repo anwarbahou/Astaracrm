@@ -14,7 +14,8 @@ import { AddDealModal } from '@/components/deals/AddDealModal';
 import { DealsFilterDropdown } from '@/components/deals/DealsFilterDropdown';
 import { DealsViewToggle } from '@/components/deals/DealsViewToggle';
 import { DealsListTable } from '@/components/deals/DealsListTable';
-import { Card, CardContent, CardHeader, CardTitle, Badge } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Deals() {

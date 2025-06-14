@@ -1,38 +1,37 @@
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { 
-  Search, 
-  Plus, 
-  Mail,
-  Send,
-  Inbox,
-  Archive,
-  Star,
-  Paperclip,
-  Reply,
-  Forward,
-  MoreHorizontal
-} from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { EmailSidebar } from "@/components/email/EmailSidebar";
+import { EmailList } from "@/components/email/EmailList";
+import { ComposeEmailModal } from "@/components/email/ComposeEmailModal";
+import { EmailDetailModal } from "@/components/email/EmailDetailModal";
+
+interface Email {
+  id: number;
+  from: string;
+  fromName: string;
+  to: string;
+  subject: string;
+  preview: string;
+  body: string;
+  date: string;
+  read: boolean;
+  starred: boolean;
+  client: string;
+  thread: number;
+  attachments: string[];
+  type: "Received" | "Sent";
+  tags?: string[];
+}
 
 export default function EmailCenter() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedEmail, setSelectedEmail] = useState<any>(null);
+  const [selectedFolder, setSelectedFolder] = useState("inbox");
+  const [selectedEmails, setSelectedEmails] = useState<number[]>([]);
+  const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
+  const [composeOpen, setComposeOpen] = useState(false);
+  const [detailOpen, setDetailOpen] = useState(false);
 
-  // Mock email data
-  const emails = [
+  // Enhanced mock email data
+  const emails: Email[] = [
     {
       id: 1,
       from: "john@acme.com",
@@ -47,7 +46,8 @@ export default function EmailCenter() {
       client: "Acme Corporation",
       thread: 3,
       attachments: [],
-      type: "Received"
+      type: "Received",
+      tags: ["Priority", "Client"]
     },
     {
       id: 2,
@@ -63,7 +63,8 @@ export default function EmailCenter() {
       client: "Tech Solutions Ltd",
       thread: 1,
       attachments: ["demo-recording.mp4"],
-      type: "Sent"
+      type: "Sent",
+      tags: ["Follow-up"]
     },
     {
       id: 3,
@@ -79,7 +80,8 @@ export default function EmailCenter() {
       client: "Global Industries",
       thread: 1,
       attachments: ["contract-feedback.pdf"],
-      type: "Received"
+      type: "Received",
+      tags: ["Client"]
     },
     {
       id: 4,
@@ -95,7 +97,8 @@ export default function EmailCenter() {
       client: "Internal",
       thread: 1,
       attachments: [],
-      type: "Sent"
+      type: "Sent",
+      tags: ["Internal"]
     },
     {
       id: 5,
@@ -111,344 +114,171 @@ export default function EmailCenter() {
       client: "StartupXYZ",
       thread: 1,
       attachments: ["company-overview.pdf"],
-      type: "Received"
+      type: "Received",
+      tags: ["Priority"]
+    },
+    {
+      id: 6,
+      from: "alex@consulting.com",
+      fromName: "Alex Rodriguez",
+      to: "you@wolfhunt.com",
+      subject: "Meeting Confirmation - Tomorrow 2 PM",
+      preview: "Just confirming our meeting scheduled for tomorrow at 2 PM...",
+      body: "Hi,\n\nJust confirming our meeting scheduled for tomorrow at 2 PM to discuss the consulting engagement.\n\nThe meeting will be held in our downtown office, conference room B.\n\nLooking forward to it!\n\nBest,\nAlex",
+      date: "2024-12-10T15:20:00",
+      read: true,
+      starred: true,
+      client: "Rodriguez Consulting",
+      thread: 2,
+      attachments: [],
+      type: "Received",
+      tags: ["Meeting"]
+    },
+    {
+      id: 7,
+      from: "support@techplatform.com",
+      fromName: "Tech Platform Support",
+      to: "you@wolfhunt.com",
+      subject: "Your API Integration is Ready",
+      preview: "Your API integration has been successfully configured...",
+      body: "Dear Developer,\n\nYour API integration has been successfully configured and is now ready for testing.\n\nAPI Endpoint: https://api.techplatform.com/v2\nAPI Key: [REDACTED]\n\nPlease find the documentation attached.\n\nBest regards,\nTech Platform Team",
+      date: "2024-12-09T10:15:00",
+      read: false,
+      starred: false,
+      client: "Tech Platform",
+      thread: 1,
+      attachments: ["api-documentation.pdf"],
+      type: "Received",
+      tags: ["Technical"]
+    },
+    {
+      id: 8,
+      from: "you@wolfhunt.com",
+      fromName: "You",
+      to: "david@enterprise.com",
+      subject: "Proposal: CRM Implementation for Enterprise Corp",
+      preview: "Please find attached our comprehensive proposal for your CRM implementation...",
+      body: "Dear David,\n\nPlease find attached our comprehensive proposal for your CRM implementation project.\n\nThe proposal includes:\n- Technical specifications\n- Implementation timeline\n- Pricing breakdown\n- Support packages\n\nI'm available to discuss any questions you may have.\n\nBest regards,\nYour Name",
+      date: "2024-12-08T14:30:00",
+      read: true,
+      starred: false,
+      client: "Enterprise Corp",
+      thread: 1,
+      attachments: ["crm-proposal.pdf", "pricing-sheet.xlsx"],
+      type: "Sent",
+      tags: ["Proposal"]
     }
   ];
 
-  const templates = [
-    {
-      id: 1,
-      name: "Follow-up After Demo",
-      subject: "Thank you for your time - Next steps",
-      body: "Hi {{contact_name}},\n\nThank you for taking the time to see our product demonstration today. I hope you found it valuable and that our solution addresses your business needs.\n\nAs discussed, I'm attaching the pricing information and implementation timeline. Please let me know if you have any questions or if you'd like to schedule a follow-up call.\n\nBest regards,\n{{your_name}}"
-    },
-    {
-      id: 2,
-      name: "Proposal Submission",
-      subject: "Proposal for {{company_name}} - {{project_name}}",
-      body: "Dear {{contact_name}},\n\nPlease find attached our detailed proposal for {{project_name}}. We've carefully considered your requirements and believe our solution will deliver significant value to {{company_name}}.\n\nI'm available to discuss any questions you may have and look forward to the next steps.\n\nBest regards,\n{{your_name}}"
-    },
-    {
-      id: 3,
-      name: "Meeting Reminder",
-      subject: "Reminder: Meeting tomorrow at {{time}}",
-      body: "Hi {{contact_name}},\n\nThis is a friendly reminder about our meeting scheduled for tomorrow at {{time}}.\n\nWe'll be discussing:\n- {{topic_1}}\n- {{topic_2}}\n- {{topic_3}}\n\nPlease let me know if you need to reschedule.\n\nBest regards,\n{{your_name}}"
+  const getFilteredEmails = () => {
+    let filtered = emails;
+
+    switch (selectedFolder) {
+      case 'inbox':
+        filtered = emails.filter(email => email.type === 'Received');
+        break;
+      case 'sent':
+        filtered = emails.filter(email => email.type === 'Sent');
+        break;
+      case 'starred':
+        filtered = emails.filter(email => email.starred);
+        break;
+      case 'drafts':
+        // In a real app, this would filter actual drafts
+        filtered = [];
+        break;
+      case 'archive':
+        // In a real app, this would filter archived emails
+        filtered = [];
+        break;
+      case 'trash':
+        // In a real app, this would filter trashed emails
+        filtered = [];
+        break;
+      default:
+        if (selectedFolder.startsWith('tag:')) {
+          const tagName = selectedFolder.replace('tag:', '');
+          const tagMap: Record<string, string> = {
+            'priority': 'Priority',
+            'clients': 'Client',
+            'internal': 'Internal',
+            'follow-up': 'Follow-up'
+          };
+          filtered = emails.filter(email => 
+            email.tags?.includes(tagMap[tagName])
+          );
+        }
     }
-  ];
 
-  const filteredEmails = emails.filter(email =>
-    email.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    email.fromName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    email.preview.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+    return filtered;
+  };
 
-  const receivedEmails = filteredEmails.filter(e => e.type === "Received");
-  const sentEmails = filteredEmails.filter(e => e.type === "Sent");
-  const unreadEmails = filteredEmails.filter(e => !e.read);
-  const starredEmails = filteredEmails.filter(e => e.starred);
+  const getUnreadCounts = () => {
+    return {
+      inbox: emails.filter(e => e.type === 'Received' && !e.read).length,
+      sent: 0,
+      drafts: 0,
+      starred: emails.filter(e => e.starred && !e.read).length,
+      archive: 0,
+      trash: 0,
+    };
+  };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
+  const handleEmailSelect = (emailId: number) => {
+    setSelectedEmails(prev => 
+      prev.includes(emailId) 
+        ? prev.filter(id => id !== emailId)
+        : [...prev, emailId]
+    );
+  };
+
+  const handleEmailClick = (email: Email) => {
+    setSelectedEmail(email);
+    setDetailOpen(true);
     
-    if (diffInHours < 24) {
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    } else {
-      return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    // Mark as read
+    if (!email.read) {
+      email.read = true;
     }
   };
 
-  const EmailListItem = ({ email }: { email: any }) => (
-    <div 
-      className={`flex items-center gap-3 p-4 rounded-lg border cursor-pointer transition-colors hover:bg-accent/50 ${
-        selectedEmail?.id === email.id ? 'bg-accent/50 border-primary' : 'border-border'
-      } ${!email.read ? 'bg-blue-50/50' : ''}`}
-      onClick={() => setSelectedEmail(email)}
-    >
-      <div className="flex items-center gap-2">
-        {email.starred && <Star className="h-4 w-4 text-yellow-500 fill-current" />}
-        {!email.read && <div className="w-2 h-2 bg-blue-500 rounded-full" />}
-      </div>
-      
-      <Avatar className="h-8 w-8">
-        <AvatarFallback className="text-xs">
-          {email.fromName.split(' ').map(n => n[0]).join('')}
-        </AvatarFallback>
-      </Avatar>
-      
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between mb-1">
-          <span className={`font-medium truncate ${!email.read ? 'font-semibold' : ''}`}>
-            {email.fromName}
-          </span>
-          <span className="text-xs text-muted-foreground">{formatDate(email.date)}</span>
-        </div>
-        <div className="space-y-1">
-          <p className={`text-sm truncate ${!email.read ? 'font-medium' : ''}`}>
-            {email.subject}
-          </p>
-          <p className="text-xs text-muted-foreground truncate">{email.preview}</p>
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-xs">{email.client}</Badge>
-            {email.attachments.length > 0 && (
-              <Paperclip className="h-3 w-3 text-muted-foreground" />
-            )}
-            {email.thread > 1 && (
-              <span className="text-xs text-muted-foreground">({email.thread})</span>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  const handleBulkSelect = (emailIds: number[]) => {
+    setSelectedEmails(emailIds);
+  };
 
   return (
-    <div className="space-y-6 animate-in">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Email Communication Center</h1>
-          <p className="text-muted-foreground mt-1">
-            Manage all your client communications in one place.
-          </p>
-        </div>
-        <Button className="gap-2">
-          <Plus size={16} />
-          Compose Email
-        </Button>
+    <div className="flex h-screen bg-background">
+      {/* Sidebar */}
+      <EmailSidebar
+        selectedFolder={selectedFolder}
+        onFolderSelect={setSelectedFolder}
+        onComposeClick={() => setComposeOpen(true)}
+        unreadCounts={getUnreadCounts()}
+      />
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        <EmailList
+          emails={getFilteredEmails()}
+          selectedEmails={selectedEmails}
+          onEmailSelect={handleEmailSelect}
+          onEmailClick={handleEmailClick}
+          onBulkSelect={handleBulkSelect}
+          folder={selectedFolder}
+        />
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardContent className="p-6">
-            <div className="text-center">
-              <p className="text-2xl font-bold">{emails.length}</p>
-              <p className="text-sm text-muted-foreground">Total Emails</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-blue-600">{unreadEmails.length}</p>
-              <p className="text-sm text-muted-foreground">Unread</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="text-center">
-              <p className="text-2xl font-bold">{sentEmails.length}</p>
-              <p className="text-sm text-muted-foreground">Sent Today</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="text-center">
-              <p className="text-2xl font-bold">{starredEmails.length}</p>
-              <p className="text-sm text-muted-foreground">Starred</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Modals */}
+      <ComposeEmailModal
+        open={composeOpen}
+        onOpenChange={setComposeOpen}
+      />
 
-      {/* Email Interface */}
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Email List */}
-        <Card className="lg:col-span-1">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Emails</CardTitle>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                <Input
-                  placeholder="Search emails..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 w-60"
-                />
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="p-0">
-            <Tabs defaultValue="all">
-              <TabsList className="grid w-full grid-cols-4 m-3">
-                <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="inbox">Inbox</TabsTrigger>
-                <TabsTrigger value="sent">Sent</TabsTrigger>
-                <TabsTrigger value="starred">Starred</TabsTrigger>
-              </TabsList>
-              
-              <div className="px-3 pb-3">
-                <TabsContent value="all" className="space-y-2 mt-0">
-                  {filteredEmails.map((email) => (
-                    <EmailListItem key={email.id} email={email} />
-                  ))}
-                </TabsContent>
-                
-                <TabsContent value="inbox" className="space-y-2 mt-0">
-                  {receivedEmails.map((email) => (
-                    <EmailListItem key={email.id} email={email} />
-                  ))}
-                </TabsContent>
-                
-                <TabsContent value="sent" className="space-y-2 mt-0">
-                  {sentEmails.map((email) => (
-                    <EmailListItem key={email.id} email={email} />
-                  ))}
-                </TabsContent>
-                
-                <TabsContent value="starred" className="space-y-2 mt-0">
-                  {starredEmails.map((email) => (
-                    <EmailListItem key={email.id} email={email} />
-                  ))}
-                </TabsContent>
-              </div>
-            </Tabs>
-          </CardContent>
-        </Card>
-
-        {/* Email Content */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>
-                {selectedEmail ? selectedEmail.subject : "Select an email to view"}
-              </CardTitle>
-              {selectedEmail && (
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" className="gap-2">
-                    <Reply size={16} />
-                    Reply
-                  </Button>
-                  <Button variant="outline" size="sm" className="gap-2">
-                    <Forward size={16} />
-                    Forward
-                  </Button>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        <MoreHorizontal size={16} />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem>Mark as unread</DropdownMenuItem>
-                      <DropdownMenuItem>Add to starred</DropdownMenuItem>
-                      <DropdownMenuItem>Archive</DropdownMenuItem>
-                      <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              )}
-            </div>
-          </CardHeader>
-          <CardContent>
-            {selectedEmail ? (
-              <div className="space-y-6">
-                {/* Email Header */}
-                <div className="space-y-4 pb-4 border-b">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-10 w-10">
-                        <AvatarFallback>
-                          {selectedEmail.fromName.split(' ').map(n => n[0]).join('')}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium">{selectedEmail.fromName}</p>
-                        <p className="text-sm text-muted-foreground">{selectedEmail.from}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-muted-foreground">
-                        {new Date(selectedEmail.date).toLocaleString()}
-                      </p>
-                      <Badge variant="outline">{selectedEmail.client}</Badge>
-                    </div>
-                  </div>
-                  
-                  <div className="text-sm">
-                    <p><span className="text-muted-foreground">To:</span> {selectedEmail.to}</p>
-                  </div>
-                  
-                  {selectedEmail.attachments.length > 0 && (
-                    <div className="flex items-center gap-2">
-                      <Paperclip className="h-4 w-4 text-muted-foreground" />
-                      <div className="flex gap-2">
-                        {selectedEmail.attachments.map((attachment, index) => (
-                          <Badge key={index} variant="secondary" className="gap-1">
-                            <span>{attachment}</span>
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Email Body */}
-                <div className="prose max-w-none">
-                  <div className="whitespace-pre-wrap text-sm">
-                    {selectedEmail.body}
-                  </div>
-                </div>
-
-                {/* Quick Reply */}
-                <div className="border-t pt-4">
-                  <h4 className="font-medium mb-3">Quick Reply</h4>
-                  <div className="space-y-3">
-                    <Textarea 
-                      placeholder="Type your reply..." 
-                      className="min-h-[100px]"
-                    />
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Button variant="outline" size="sm">
-                          <Paperclip size={16} />
-                        </Button>
-                        <Button variant="outline" size="sm">Template</Button>
-                      </div>
-                      <Button className="gap-2">
-                        <Send size={16} />
-                        Send Reply
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-20">
-                <Mail className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="font-medium text-lg mb-2">No email selected</h3>
-                <p className="text-muted-foreground">Choose an email from the list to view its contents</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Email Templates */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Email Templates</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-3">
-            {templates.map((template) => (
-              <div key={template.id} className="p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors cursor-pointer">
-                <h4 className="font-medium mb-2">{template.name}</h4>
-                <p className="text-sm text-muted-foreground mb-3">{template.subject}</p>
-                <p className="text-xs text-muted-foreground line-clamp-3">{template.body}</p>
-                <Button variant="outline" size="sm" className="mt-3">
-                  Use Template
-                </Button>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <EmailDetailModal
+        email={selectedEmail}
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+      />
     </div>
   );
 }

@@ -6,8 +6,12 @@ CREATE TABLE IF NOT EXISTS users (
     first_name TEXT,
     last_name TEXT,
     avatar_url TEXT,
-    role TEXT DEFAULT 'user' CHECK (role IN ('admin', 'manager', 'user')),
-    status TEXT DEFAULT 'active' CHECK (status IN ('active', 'inactive')),
+    role user_role DEFAULT 'user',
+    status user_status DEFAULT 'active',
+    phone TEXT,
+    timezone TEXT DEFAULT 'UTC',
+    preferences JSONB DEFAULT '{}',
+    last_login_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -22,16 +26,21 @@ CREATE POLICY "Users can view their own profile" ON users
 CREATE POLICY "Users can update their own profile" ON users
     FOR UPDATE USING (auth.uid() = id);
 
--- Trigger for updated_at
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = NOW();
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
+CREATE POLICY "Admins can view all users" ON users
+    FOR SELECT USING (
+        EXISTS (
+            SELECT 1 FROM users 
+            WHERE id = auth.uid() AND role = 'admin'
+        )
+    );
 
+-- Trigger for updated_at
 CREATE TRIGGER update_users_updated_at
     BEFORE UPDATE ON users
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
+
+-- Indexes for performance
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_role ON users(role);
+CREATE INDEX idx_users_status ON users(status);

@@ -1,49 +1,54 @@
 
 # CRM Database Schema
 
-This folder contains SQL files to set up the complete database schema for the CRM application.
-
-## Tables Overview
-
-1. **users** - User authentication and profile management
-2. **clients** - Company/organization records
-3. **contacts** - Individual contact persons
-4. **deals** - Sales opportunities and pipeline management
-5. **deal_activities** - Activities related to specific deals
-6. **deal_files** - File attachments for deals
-7. **emails** - Email management and storage
-8. **activity_logs** - System-wide activity tracking
-9. **email_templates** - Reusable email templates
-10. **tasks** - Task management
-11. **notes** - General note-taking
+This directory contains the complete Supabase database schema for the WOLFHUNT CRM application.
 
 ## Setup Instructions
 
-1. Run the SQL files in numerical order (01 through 12)
-2. Each file includes:
-   - Table creation with proper constraints
-   - Row Level Security (RLS) policies
-   - Performance indexes
-   - Update triggers for timestamp management
+1. Run the SQL files in order (00-12) to set up the complete database schema
+2. Ensure Supabase Auth is configured for email/password authentication
+3. The seed data file (12_seed_data.sql) provides sample data for development
 
-## Security Features
+## Schema Overview
 
-- All tables use Row Level Security (RLS)
-- Users can only access data they own (based on auth.uid())
-- Proper foreign key relationships maintain data integrity
-- Enum constraints ensure data consistency
+### Core Tables
+- **users**: User accounts and profiles with role-based access
+- **clients**: Company/organization records
+- **contacts**: Individual contact records linked to clients
+- **deals**: Sales opportunities and pipeline management
+- **tasks**: Task management and assignment
+- **notes**: Note-taking system with linking capabilities
+- **emails**: Email communication tracking
+- **calendar_events**: Scheduling and calendar management
+- **activity_logs**: System activity tracking
+- **workflows**: Automation rules and triggers
+- **file_attachments**: File storage references
 
-## Key Features
+### Security Features
+- Row Level Security (RLS) enabled on all tables
+- User-based access control with owner_id references
+- Admin override policies for management access
+- Proper foreign key constraints and data integrity
 
-- **Multi-tenancy**: Each user's data is isolated using RLS
-- **Audit trail**: All tables include created_at/updated_at timestamps
-- **Relationships**: Foreign keys maintain referential integrity
-- **Performance**: Strategic indexes for common queries
-- **Flexibility**: JSONB fields for dynamic data storage
+### Key Features
+- UUID primary keys for all tables
+- Automatic timestamps (created_at, updated_at)
+- Comprehensive indexing for performance
+- JSONB fields for flexible data storage
+- Enum types for consistent data validation
+- Full text search capabilities on relevant fields
 
-## Usage Notes
+## Authentication Setup
 
-- Replace snake_case with the actual column names used in your frontend
-- Adjust enum values to match your business requirements
-- Add additional indexes based on your query patterns
-- Consider partitioning for large datasets
+Configure Supabase Auth with:
+- Email/password authentication
+- Email confirmation enabled
+- Role-based access control
+- JWT token expiration settings
+
+## Performance Considerations
+
+- All foreign keys are indexed
+- Common query patterns are optimized with composite indexes
+- JSONB fields use GIN indexes where appropriate
+- Row-level security policies are optimized for performance

@@ -12,7 +12,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Home, Users, User, Settings, Calendar, Mail, Plus, Search, List, Clock, DollarSign } from "lucide-react";
+import { Home, Users, User, Settings, Calendar, Mail, Search, List, Clock, DollarSign } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 

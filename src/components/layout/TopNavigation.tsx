@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useLocation } from "react-router-dom";
 import { QuickAddModal } from "@/components/modals/QuickAddModal";
@@ -55,7 +55,7 @@ export function TopNavigation() {
     <>
       <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
         <div className="flex h-16 items-center px-6 gap-4">
-          <SidebarTrigger className="h-8 w-8 text-muted-foreground hover:text-foreground transition-colors" />
+          <SidebarTrigger className="h-8 w-8 text-muted-foreground hover:text-foreground transition-colors duration-200" />
           
           <div className="flex-1 flex items-center justify-between">
             <div className="animate-fade-in">
@@ -75,10 +75,14 @@ export function TopNavigation() {
                 />
               </div>
               
-              {/* Notifications */}
-              <Button variant="ghost" size="icon" className="relative h-9 w-9 hover:bg-muted/50">
+              {/* Notifications - Fixed alignment */}
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="relative h-9 w-9 hover:bg-muted/50 transition-colors duration-200"
+              >
                 <Bell className="h-4 w-4" />
-                <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs bg-destructive">
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 text-xs bg-destructive border-0 flex items-center justify-center">
                   3
                 </Badge>
               </Button>
@@ -93,30 +97,38 @@ export function TopNavigation() {
                 Quick Add
               </Button>
               
-              {/* Enhanced User Menu */}
+              {/* Enhanced User Menu with Profile Image */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-9 w-9 rounded-full hover:bg-muted/50">
+                  <Button variant="ghost" className="relative h-9 w-9 rounded-full hover:bg-muted/50 transition-colors duration-200">
                     <Avatar className="h-9 w-9">
+                      <AvatarImage 
+                        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" 
+                        alt="John Doe Profile"
+                      />
                       <AvatarFallback className="bg-primary text-primary-foreground">JD</AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56 bg-popover border border-border animate-scale-in" align="end" forceMount>
+                <DropdownMenuContent 
+                  className="w-56 bg-popover border border-border animate-scale-in" 
+                  align="end" 
+                  forceMount
+                >
                   <div className="px-2 py-1.5">
                     <p className="text-sm font-medium">John Doe</p>
                     <p className="text-xs text-muted-foreground">john@wolfhunt.com</p>
                   </div>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="hover:bg-muted/50">
+                  <DropdownMenuItem className="hover:bg-muted/50 transition-colors duration-200">
                     <User className="mr-2 h-4 w-4" />
                     Profile
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="hover:bg-muted/50">
+                  <DropdownMenuItem className="hover:bg-muted/50 transition-colors duration-200">
                     Settings
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem className="hover:bg-muted/50 text-destructive focus:text-destructive">
+                  <DropdownMenuItem className="hover:bg-muted/50 text-destructive focus:text-destructive transition-colors duration-200">
                     Sign out
                   </DropdownMenuItem>
                 </DropdownMenuContent>

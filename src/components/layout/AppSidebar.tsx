@@ -1,4 +1,3 @@
-
 import {
   Sidebar,
   SidebarContent,
@@ -12,7 +11,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Home, Users, User, Settings, Calendar, Mail, Search, List, Clock, DollarSign } from "lucide-react";
+import { Home, Users, User, Settings, Calendar, Mail, Search, List, Clock, DollarSign, Bot } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
@@ -36,6 +35,11 @@ const navigationItems = [
     title: "Deals",
     url: "/deals",
     icon: DollarSign,
+  },
+  {
+    title: "AI Leads",
+    url: "/ai-leads",
+    icon: Bot,
   },
   {
     title: "Tasks",

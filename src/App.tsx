@@ -14,6 +14,7 @@ import Clients from "./pages/Clients";
 import ClientProfile from "./pages/ClientProfile";
 import Contacts from "./pages/Contacts";
 import Deals from "./pages/Deals";
+import AILeads from "./pages/AILeads";
 import Tasks from "./pages/Tasks";
 import Calendar from "./pages/Calendar";
 import EmailCenter from "./pages/EmailCenter";
@@ -45,6 +46,7 @@ const App = () => (
                   <Route path="/clients/:id" element={<ClientProfile />} />
                   <Route path="/contacts" element={<Contacts />} />
                   <Route path="/deals" element={<Deals />} />
+                  <Route path="/ai-leads" element={<AILeads />} />
                   <Route path="/tasks" element={<Tasks />} />
                   <Route path="/calendar" element={<Calendar />} />
                   <Route path="/email" element={<EmailCenter />} />

@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,6 +17,7 @@ import { CampaignMessageTab } from "./campaign/CampaignMessageTab";
 import { CampaignPreviewTab } from "./campaign/CampaignPreviewTab";
 
 export function NewCampaignModal() {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("setup");
   
@@ -45,7 +47,7 @@ export function NewCampaignModal() {
       <DialogTrigger asChild>
         <Button className="gap-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
           <Plus size={16} />
-          New Campaign
+          {t("aiLeads.buttons.newCampaign")}
         </Button>
       </DialogTrigger>
       

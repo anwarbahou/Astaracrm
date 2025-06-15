@@ -1,0 +1,75 @@
+
+{
+  "notes": {
+    "grid": {
+      "empty": {
+        "title": "لم يتم العثور على ملاحظات",
+        "description": "ابدأ بتدوين أفكارك وملاحظات الاجتماعات والمعلومات المهمة عن طريق إنشاء ملاحظتك الأولى."
+      },
+      "pinnedNotes": "الملاحظات المثبتة",
+      "allNotes": "كل الملاحظات"
+    },
+    "filters": {
+      "button": "الفلاتر",
+      "title": "تصفية الملاحظات",
+      "sortBy": {
+        "label": "فرز حسب",
+        "modified": "آخر تعديل",
+        "created": "تاريخ الإنشاء",
+        "title": "العنوان"
+      },
+      "type": {
+        "label": "النوع",
+        "all": "كل الأنواع"
+      },
+      "visibility": {
+        "label": "الرؤية",
+        "all": "الكل"
+      },
+      "tags": {
+        "label": "العلامات"
+      }
+    },
+    "noteType": {
+      "general": "عام",
+      "meeting": "اجتماع",
+      "task": "مهمة",
+      "idea": "فكرة"
+    },
+    "visibility": {
+      "public": "عام",
+      "team": "الفريق",
+      "private": "خاص"
+    },
+    "modal": {
+      "createTitle": "إنشاء ملاحظة جديدة",
+      "editTitle": "تعديل الملاحظة",
+      "titleLabel": "العنوان",
+      "titlePlaceholder": "أدخل عنوان الملاحظة...",
+      "typeLabel": "النوع",
+      "visibilityLabel": "الرؤية",
+      "tagsLabel": "العلامات",
+      "tagsPlaceholder": "أضف علامة...",
+      "contentLabel": "المحتوى",
+      "contentPlaceholder": "اكتب محتوى ملاحظتك...",
+      "pinNote": "تثبيت هذه الملاحظة",
+      "setReminder": "تعيين تذكير",
+      "reminderDate": "تاريخ التذكير",
+      "selectDate": "اختر تاريخًا",
+      "attachmentsLabel": "المرفقات",
+      "attachmentsPlaceholder": "اسحب وأفلت الملفات هنا أو انقر للتصفح",
+      "updateButton": "تحديث الملاحظة",
+      "createButton": "إنشاء الملاحظة"
+    },
+    "detail": {
+      "linkedTo": "مرتبط بـ:",
+      "tags": "العلامات:",
+      "content": "المحتوى",
+      "reminder": "تذكير",
+      "attachments": "المرفقات ({{count}})",
+      "author": "المؤلف",
+      "created": "أُنشئت في",
+      "modified": "عُدلت في"
+    }
+  }
+}

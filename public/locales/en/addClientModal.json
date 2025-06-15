@@ -1,0 +1,28 @@
+
+{
+  "addClientModal": {
+    "title": "Add New Client",
+    "profilePicture": "Profile Picture",
+    "uploadPhoto": "Upload Photo",
+    "uploadHint": "Optional: Upload the client's logo or picture",
+    "nameLabel": "Company/Client Name *",
+    "namePlaceholder": "Enter company name",
+    "emailLabel": "Email Address *",
+    "emailPlaceholder": "contact@company.com",
+    "phoneLabel": "Phone Number",
+    "phonePlaceholder": "+1 555 123 4567",
+    "countryLabel": "Country/Location",
+    "countryPlaceholder": "Select a location",
+    "industryLabel": "Industry",
+    "industryPlaceholder": "Select an industry",
+    "stageLabel": "Client Stage",
+    "stagePlaceholder": "Select a stage",
+    "ownerLabel": "Account Owner",
+    "ownerPlaceholder": "Assign an account owner",
+    "tagsLabel": "Tags",
+    "tagsPlaceholder": "Add a tag and press Enter",
+    "notesLabel": "Notes",
+    "notesPlaceholder": "Add any additional notes about this client...",
+    "submitButton": "Add Client"
+  }
+}

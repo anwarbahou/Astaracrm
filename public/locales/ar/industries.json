@@ -1,0 +1,14 @@
+
+{
+  "industries": {
+    "technology": "التكنولوجيا",
+    "healthcare": "الرعاية الصحية",
+    "finance": "المالية",
+    "retail": "التجزئة",
+    "manufacturing": "الصناعة",
+    "consulting": "الاستشارات",
+    "education": "التعليم",
+    "real_estate": "العقارات",
+    "other": "أخرى"
+  }
+}

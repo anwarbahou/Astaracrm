@@ -1,0 +1,102 @@
+
+{
+  "deals": {
+    "title": "Deals",
+    "description": "Manage your deals through the sales process.",
+    "newDeal": "New Deal",
+    "addDeal": "Add Deal",
+    "searchPlaceholder": "Search deals...",
+    "filters": "Filters",
+    "stages": {
+      "prospect": "Prospect",
+      "lead": "Lead",
+      "qualified": "Qualified",
+      "negotiation": "Negotiation",
+      "won-lost": "Won/Lost"
+    },
+    "stats": {
+      "active": "Active Deals",
+      "pipelineValue": "Pipeline Value",
+      "won": "Deals Won",
+      "avgSize": "Avg. Deal Size",
+      "vsLastMonth": "{{change}} from last month"
+    },
+    "toasts": {
+      "moved": {
+        "title": "Deal Moved",
+        "description": "Moved deal to {{stage}} stage"
+      },
+      "updated": {
+        "title": "Deal Updated",
+        "description": "Deal updated successfully"
+      },
+      "deleted": {
+        "title": "Deal Deleted",
+        "description": "Deal deleted successfully"
+      },
+      "created": {
+        "title": "Deal Created",
+        "description": "New deal added to {{stage}} stage"
+      }
+    },
+    "pipeline": {
+      "dropDeal": "Drop deal here",
+      "noDeals": "No deals in this stage",
+      "addFirstDeal": "Add your first deal",
+      "addDeal": "Add Deal"
+    },
+    "board": {
+      "noDeals": "No deals in this stage."
+    },
+    "filtersDropdown": {
+      "title": "Filter Deals",
+      "clear": "Clear",
+      "stagesLabel": "Stages",
+      "ownersLabel": "Owners",
+      "valueLabel": "Value Range ($)",
+      "minPlaceholder": "Min",
+      "maxPlaceholder": "Max",
+      "dateLabel": "Expected Close Date",
+      "showMore": "Show more",
+      "showLess": "Show less"
+    },
+    "filtersPanel": {
+      "sourcesLabel": "Sources",
+      "clearAll": "Clear All",
+      "apply": "Apply Filters"
+    },
+    "sources": {
+      "website": "Website",
+      "referral": "Referral",
+      "coldOutreach": "Cold Outreach",
+      "linkedIn": "LinkedIn",
+      "existingClient": "Existing Client"
+    },
+    "view": {
+      "pipeline": "Pipeline",
+      "list": "List"
+    },
+    "addDealModal": {
+      "title": "Add New Deal",
+      "description": "Create a new deal in your sales pipeline",
+      "dealNameLabel": "Deal Name *",
+      "dealNamePlaceholder": "Enter deal name",
+      "clientLabel": "Client *",
+      "clientPlaceholder": "Enter client name",
+      "valueLabel": "Value (MAD) *",
+      "stageLabel": "Stage",
+      "stagePlaceholder": "Select stage",
+      "probabilityLabel": "Probability (%)",
+      "closeDateLabel": "Expected Close Date *",
+      "sourceLabel": "Source",
+      "sourcePlaceholder": "e.g., Website, Referral, Cold Call",
+      "ownerLabel": "Owner",
+      "ownerPlaceholder": "Select owner",
+      "priorityLabel": "Priority",
+      "priorityPlaceholder": "Select priority",
+      "notesLabel": "Notes",
+      "notesPlaceholder": "Add any additional notes about this deal...",
+      "createButton": "Create Deal"
+    }
+  }
+}

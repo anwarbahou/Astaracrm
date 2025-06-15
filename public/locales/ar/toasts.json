@@ -1,0 +1,11 @@
+
+{
+  "toasts": {
+    "addClient": {
+      "success": {
+        "title": "نجاح!",
+        "description": "تمت إضافة العميل بنجاح."
+      }
+    }
+  }
+}

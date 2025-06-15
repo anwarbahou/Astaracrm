@@ -1,0 +1,9 @@
+
+{
+  "clientStages": {
+    "lead": "Lead",
+    "prospect": "Prospect",
+    "active": "Active",
+    "inactive": "Inactive"
+  }
+}

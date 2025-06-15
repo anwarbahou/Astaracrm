@@ -1,0 +1,48 @@
+
+{
+  "dashboard": {
+    "title": "لوحة التحكم",
+    "welcomeMessage": "مرحباً بعودتك! إليك آخر مستجدات عملك اليوم.",
+    "addContact": "إضافة جهة اتصال",
+    "addClient": "إضافة عميل",
+    "totalRevenue": "إجمالي الإيرادات",
+    "activeClients": "العملاء النشطون",
+    "dealsInPipeline": "الصفقات قيد التنفيذ",
+    "tasksDueToday": "مهام اليوم",
+    "vsLastMonth": "مقارنة بالشهر الماضي",
+    "vsYesterday": "مقارنة بالأمس",
+    "recentDeals": "الصفقات الأخيرة",
+    "upcomingTasks": "المهام القادمة",
+    "recentActivities": "الأنشطة الأخيرة",
+    "viewAll": "عرض الكل",
+    "status": {
+      "negotiation": "تفاوض",
+      "proposal": "اقتراح",
+      "qualified": "مؤهل",
+      "discovery": "اكتشاف"
+    },
+    "priority": {
+      "high": "عالية",
+      "medium": "متوسطة",
+      "low": "منخفضة"
+    },
+    "mockTasks": {
+      "followUp": "متابعة مع شركة Acme",
+      "prepareProposal": "إعداد عرض لـ Tech Solutions",
+      "scheduleDemo": "جدولة مكالمة تجريبية",
+      "sendContract": "إرسال عقد إلى Global Industries",
+      "dueToday": "Due today",
+      "dueTomorrow": "Due tomorrow"
+    },
+    "mockActivities": {
+      "newDeal": "تم إنشاء صفقة جديدة",
+      "dealDetails": "Acme Corp - رخصة مؤسسة",
+      "contactUpdated": "تم تحديث جهة الاتصال",
+      "contactDetails": "John Smith - Acme Corp",
+      "taskCompleted": "اكتملت المهمة",
+      "taskDetails": "إرسال الاقتراح إلى Tech Solutions",
+      "meetingScheduled": "تمت جدولة اجتماع",
+      "meetingDetails": "مكالمة تجريبية مع StartupXYZ"
+    }
+  }
+}

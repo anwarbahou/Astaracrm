@@ -1,0 +1,68 @@
+
+{
+  "clients": {
+    "addClient": "إضافة عميل",
+    "totalClients": "إجمالي العملاء",
+    "activeClients": "العملاء النشطون",
+    "prospects": "العملاء المحتملين",
+    "totalRevenue": "إجمالي الإيرادات",
+    "table": {
+      "searchPlaceholder": "ابحث عن عملاء بالاسم أو البريد الإلكتروني أو الصناعة أو المالك...",
+      "filters": "الفلاتر",
+      "clientName": "اسم العميل",
+      "industry": "الصناعة",
+      "tags": "العلامات",
+      "stage": "المرحلة",
+      "owner": "المالك",
+      "location": "الموقع",
+      "contacts": "جهات الاتصال",
+      "dealValue": "قيمة الصفقة",
+      "created": "تاريخ الإنشاء",
+      "lastInteraction": "آخر تفاعل",
+      "status": "الحالة",
+      "rowsPerPage": "صفوف لكل صفحة:",
+      "of": "{{start}}-{{end}} من {{total}}"
+    },
+    "filtersPanel": {
+      "title": "فلاتر متقدمة",
+      "owner": "المالك",
+      "ownerPlaceholder": "اختر المالك",
+      "allOwners": "كل المالكين",
+      "stage": "المرحلة",
+      "stagePlaceholder": "اختر المرحلة",
+      "allStages": "كل المراحل",
+      "industry": "الصناعة",
+      "industryPlaceholder": "اختر الصناعة",
+      "allIndustries": "كل الصناعات",
+      "location": "الموقع",
+      "locationPlaceholder": "اختر الموقع",
+      "allLocations": "كل المواقع",
+      "status": "الحالة",
+      "statusPlaceholder": "اختر الحالة",
+      "allStatuses": "كل الحالات",
+      "tags": "العلامات",
+      "addTag": "إضافة علامة",
+      "dateRanges": "نطاقات التاريخ",
+      "dateCreated": "تاريخ الإنشاء",
+      "from": "من",
+      "to": "إلى",
+      "lastInteraction": "آخر تفاعل",
+      "clearAll": "مسح الكل",
+      "apply": "تطبيق الفلاتر",
+      "showMore": "عرض المزيد",
+      "showLess": "عرض أقل"
+    },
+    "statuses": {
+      "active": "نشط",
+      "archived": "مؤرشف"
+    },
+    "tags": {
+      "vip": "VIP",
+      "high_value": "قيمة عالية",
+      "enterprise": "مؤسسة",
+      "smb": "شركات صغيرة ومتوسطة",
+      "urgent": "عاجل",
+      "international": "دولي"
+    }
+  }
+}

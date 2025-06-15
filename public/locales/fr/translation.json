@@ -508,5 +508,105 @@
     "submitButton": "Ajouter le contact",
     "successTitle": "Succès !",
     "successDescription": "Contact ajouté avec succès."
+  },
+  "aiLeads": {
+    "title": "Intelligence des leads par IA",
+    "subtitle": "Génération avancée de leads MENA et Europe avec IA.",
+    "buttons": {
+      "newCampaign": "Nouvelle campagne",
+      "aiInsights": "Insights IA",
+      "assistantRecherche": "Assistant de recherche",
+      "analytics": "Analyses",
+      "export": "Exporter",
+      "actionsGroupees": "Actions groupées",
+      "filtresAvances": "Filtres avancés",
+      "filtresRapides": "Filtres rapides"
+    },
+    "insights": {
+      "title": "Insights & Recommandations IA",
+      "hotLeads": "🎯 4 leads chauds prêts pour contact immédiat",
+      "bestSource": "🚀 Meilleure source: LinkedIn Maroc AI",
+      "recommendation": "💡 Recommandé: Suivre les prospects Enterprise sous 2h",
+      "pipelineRevenue": "📈 Pipeline revenus +45% vs mois dernier",
+      "activeCampaigns": "🎉 8 campagnes actives générant des leads qualifiés",
+      "aiAutomation": "⚡ Automatisation IA: 19h économisées cette semaine",
+      "highIntentLeads": "🔥 Leads haute intention +28% cette semaine",
+      "avgDealSize": "💼 Taille moyenne deal: 195,000 MAD",
+      "conversionRate": "📊 Taux conversion amélioré à 38.7%"
+    },
+    "recommendation": {
+      "title": "Recommandation IA:",
+      "message": "Concentrez-vous sur Aicha Bennani et Mehdi Tazi dans les 2 prochaines heures pour un taux de conversion optimal."
+    },
+    "stats": {
+      "activeCampaigns": "Campagnes actives",
+      "conversionRate": "Taux de conversion",
+      "menaQualified": "Qualifiés MENA",
+      "aiGeneratedLeads": "Leads générés par IA"
+    },
+    "filters": {
+      "mena": "MENA",
+      "nonAssignes": "Non assignés",
+      "scoreEleve": "Score élevé",
+      "leadChaud": "Lead chaud"
+    },
+    "searchPlaceholder": "Rechercher par nom, entreprise ou e-mail...",
+    "table": {
+      "headers": {
+        "dateAdded": "Date d'ajout",
+        "assignedTo": "Assigné à",
+        "tags": "Étiquettes",
+        "source": "Source",
+        "aiScore": "Score IA",
+        "status": "Statut",
+        "company": "Entreprise",
+        "leadName": "Nom du lead"
+      },
+      "statusLabels": {
+        "hot": "Chaud",
+        "warm": "Tiède",
+        "cold": "Froid"
+      },
+      "tags": {
+        "leadChaud": "Lead Chaud",
+        "enterprise": "Enterprise",
+        "innovation": "Innovation",
+        "fintech": "Fintech",
+        "gulf": "Golfe",
+        "budgetApprouve": "Budget Approuvé",
+        "hauteIntention": "Haute Intention",
+        "securite": "Sécurité",
+        "transformationDigitale": "Transformation Digitale",
+        "grandEntreprise": "Grande Entreprise",
+        "startup": "Startup",
+        "financement": "Financement"
+      },
+      "companies": {
+        "atlasDigital": "Atlas Digital",
+        "emiratesFintech": "Emirates FinTech",
+        "beirutAnalytics": "Beirut Analytics",
+        "marocCyberSecurity": "Maroc Cyber Security",
+        "madridDigitalHub": "Madrid Digital Hub",
+        "fesTechInnovation": "Fes Tech Innovation"
+      },
+      "assignees": {
+        "youssefAlami": "Youssef Alami",
+        "saraKhalil": "Sara Khalil",
+        "hassanMedini": "Hassan Medini",
+        "lailaBenjelloun": "Laila Benjelloun",
+        "nadiachraibi": "Nadia Chraibi"
+      }
+    },
+    "pipelineTitle": "Pipeline de leads ({{count}})",
+    "statusCounts": {
+      "hot": "{{count}} Chauds",
+      "warm": "{{count}} Tièdes", 
+      "cold": "{{count}} Froids"
+    },
+    "tabs": {
+      "froids": "Froids",
+      "tiedesWarm": "Tièdes",
+      "chauds": "Chauds"
+    }
   }
 }

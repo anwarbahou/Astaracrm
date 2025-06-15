@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -323,23 +324,23 @@ export default function AILeads() {
           <CardContent className="p-6">
             <div className="flex items-center gap-3 mb-4">
               <Sparkles className="text-purple-400" size={20} />
-              <h3 className="text-lg font-semibold text-foreground">Insights & Recommandations IA</h3>
+              <h3 className="text-lg font-semibold text-foreground">{t("aiLeads.insights.title")}</h3>
             </div>
             <div className="grid md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">🎯 4 leads chauds prêts pour contact immédiat</p>
-                <p className="text-sm text-muted-foreground">🚀 Meilleure source: LinkedIn Maroc AI</p>
-                <p className="text-sm text-muted-foreground">💡 Recommandé: Suivre les prospects Enterprise sous 2h</p>
+                <p className="text-sm text-muted-foreground">{t("aiLeads.insights.hotLeads")}</p>
+                <p className="text-sm text-muted-foreground">{t("aiLeads.insights.bestSource")}</p>
+                <p className="text-sm text-muted-foreground">{t("aiLeads.insights.recommendation")}</p>
               </div>
               <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">📈 Pipeline revenus +45% vs mois dernier</p>
-                <p className="text-sm text-muted-foreground">🎉 8 campagnes actives générant des leads qualifiés</p>
-                <p className="text-sm text-muted-foreground">⚡ Automatisation IA: 19h économisées cette semaine</p>
+                <p className="text-sm text-muted-foreground">{t("aiLeads.insights.pipelineRevenue")}</p>
+                <p className="text-sm text-muted-foreground">{t("aiLeads.insights.activeCampaigns")}</p>
+                <p className="text-sm text-muted-foreground">{t("aiLeads.insights.aiAutomation")}</p>
               </div>
               <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">🔥 Leads haute intention +28% cette semaine</p>
-                <p className="text-sm text-muted-foreground">💼 Taille moyenne deal: 195,000 MAD</p>
-                <p className="text-sm text-muted-foreground">📊 Taux conversion amélioré à 38.7%</p>
+                <p className="text-sm text-muted-foreground">{t("aiLeads.insights.highIntentLeads")}</p>
+                <p className="text-sm text-muted-foreground">{t("aiLeads.insights.avgDealSize")}</p>
+                <p className="text-sm text-muted-foreground">{t("aiLeads.insights.conversionRate")}</p>
               </div>
             </div>
           </CardContent>
@@ -441,7 +442,7 @@ export default function AILeads() {
           <div className="mt-6 p-4 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-lg border border-blue-500/10">
             <div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
               <Brain size={16} />
-              <strong>Recommandation IA:</strong> Concentrez-vous sur Aicha Bennani et Mehdi Tazi dans les 2 prochaines heures pour un taux de conversion optimal.
+              <strong>{t("aiLeads.recommendation.title")}</strong> {t("aiLeads.recommendation.message")}
             </div>
           </div>
         </CardContent>

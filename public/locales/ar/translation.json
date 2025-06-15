@@ -1,4 +1,3 @@
-
 {
   "app": {
     "sidebar": {
@@ -712,6 +711,57 @@
       "author": "المؤلف",
       "created": "أُنشئت في",
       "modified": "عُدلت في"
+    }
+  },
+  "campaign": {
+    "buttons": {
+      "newCampaign": "حملة جديدة"
+    },
+    "modal": {
+      "title": "إنشاء حملة جديدة"
+    },
+    "tabs": {
+      "setup": "الإعداد",
+      "audience": "الجمهور",
+      "message": "الرسالة",
+      "preview": "المعاينة"
+    },
+    "setup": {
+      "campaignName": "اسم الحملة",
+      "campaignNamePlaceholder": "أدخل اسم الحملة...",
+      "campaignObjective": "هدف الحملة",
+      "selectObjective": "اختر الهدف...",
+      "budget": "الميزانية",
+      "budgetPlaceholder": "0.00 درهم",
+      "duration": "المدة",
+      "selectDuration": "اختر المدة...",
+      "outreachChannels": "قنوات التواصل",
+      "email": "البريد الإلكتروني",
+      "linkedin": "لينكدإن",
+      "sms": "رسائل نصية",
+      "phone": "الهاتف"
+    },
+    "audience": {
+      "targetAudience": "الجمهور المستهدف",
+      "audienceDescription": "حدد ملف العميل المثالي",
+      "tags": "علامات الجمهور",
+      "addTag": "إضافة علامة",
+      "channels": "قنوات التسويق",
+      "selectChannels": "اختر قنوات التسويق"
+    },
+    "message": {
+      "messageTemplate": "قالب الرسالة",
+      "messageDescription": "أنشئ رسالة التواصل الخاصة بك",
+      "template": "القالب",
+      "templatePlaceholder": "اكتب قالب رسالتك...",
+      "aiGenerated": "مولد بالذكاء الاصطناعي",
+      "generateWithAI": "توليد بالذكاء الاصطناعي"
+    },
+    "preview": {
+      "campaignPreview": "معاينة الحملة",
+      "previewDescription": "راجع حملتك قبل الإطلاق",
+      "launch": "إطلاق الحملة",
+      "saveDraft": "حفظ المسودة"
     }
   },
   "common": {

@@ -151,7 +151,7 @@ export default function Deals() {
           <DealsViewToggle viewMode={viewMode} onViewModeChange={setViewMode} />
           <Button onClick={() => handleOpenAddDeal('Prospect')} className="gap-2 crm-button-primary">
             <Plus size={16} />
-            {t('deals.newDeal')}
+            New Deal
           </Button>
         </div>
       </div>

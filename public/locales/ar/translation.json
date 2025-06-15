@@ -1,3 +1,4 @@
+
 {
   "app": {
     "sidebar": {
@@ -327,6 +328,10 @@
       "coldOutreach": "تواصل بارد",
       "linkedIn": "لينكدإن",
       "existingClient": "عميل حالي"
+    },
+    "view": {
+      "pipeline": "خط الأنابيب",
+      "list": "قائمة"
     }
   },
   "activityLogs": {

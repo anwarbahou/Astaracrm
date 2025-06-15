@@ -1,3 +1,4 @@
+
 {
   "app": {
     "sidebar": {
@@ -265,6 +266,8 @@
   },
   "deals": {
     "title": "Deals",
+    "description": "Manage your deals through the sales process.",
+    "newDeal": "New Deal",
     "addDeal": "Add Deal",
     "searchPlaceholder": "Search deals...",
     "filters": "Filters",
@@ -332,6 +335,10 @@
       "coldOutreach": "Cold Outreach",
       "linkedIn": "LinkedIn",
       "existingClient": "Existing Client"
+    },
+    "view": {
+      "pipeline": "Pipeline",
+      "list": "List"
     }
   },
   "activityLogs": {

@@ -1,7 +1,7 @@
 
-import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { LayoutDashboard, List } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface DealsViewToggleProps {
   viewMode: 'kanban' | 'list';
@@ -9,15 +9,16 @@ interface DealsViewToggleProps {
 }
 
 export function DealsViewToggle({ viewMode, onViewModeChange }: DealsViewToggleProps) {
+  const { t } = useTranslation();
   return (
     <ToggleGroup type="single" value={viewMode} onValueChange={(value) => value && onViewModeChange(value as 'kanban' | 'list')}>
-      <ToggleGroupItem value="kanban" aria-label="Pipeline View" className="gap-2">
+      <ToggleGroupItem value="kanban" aria-label={t('deals.view.pipeline')} className="gap-2">
         <LayoutDashboard size={16} />
-        Pipeline
+        {t('deals.view.pipeline')}
       </ToggleGroupItem>
-      <ToggleGroupItem value="list" aria-label="List View" className="gap-2">
+      <ToggleGroupItem value="list" aria-label={t('deals.view.list')} className="gap-2">
         <List size={16} />
-        List
+        {t('deals.view.list')}
       </ToggleGroupItem>
     </ToggleGroup>
   );

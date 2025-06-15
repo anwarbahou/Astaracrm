@@ -1,224 +1,126 @@
+
 {
   "app": {
-    "title": "CRM",
-    "dashboard": "Dashboard",
-    "deals": "Deals",
-    "clients": "Clients",
-    "contacts": "Contacts",
-    "tasks": "Tasks",
-    "settings": "Settings",
-    "logout": "Logout",
-    "version": "Version",
-    "profile": "Profile",
-    "appearance": "Appearance",
-    "light": "Light",
-    "dark": "Dark",
-    "system": "System",
-    "language": "Language",
-    "english": "English",
-    "french": "French",
-    "arabic": "Arabic",
-    "rtl": "Right-to-Left",
-    "notes": "Notes",
-    "loading": "Loading...",
-    "noData": "No data available",
-    "confirm": "Confirm",
-    "cancel": "Cancel",
-    "deleteConfirmation": "Are you sure you want to delete this?",
-    "success": "Success!",
-    "error": "Error!",
-    "close": "Close",
-    "save": "Save",
-    "edit": "Edit",
-    "delete": "Delete",
-    "create": "Create",
-    "view": "View",
-    "all": "All",
-    "today": "Today",
-    "yesterday": "Yesterday",
-    "thisWeek": "This Week",
-    "lastWeek": "Last Week",
-    "thisMonth": "This Month",
-    "lastMonth": "Last Month",
-    "customRange": "Custom Range",
-    "january": "January",
-    "february": "February",
-    "march": "March",
-    "april": "April",
-    "may": "May",
-    "june": "June",
-    "july": "July",
-    "august": "August",
-    "september": "September",
-    "october": "October",
-    "november": "November",
-    "december": "December",
-    "sunday": "Sunday",
-    "monday": "Monday",
-    "tuesday": "Tuesday",
-    "wednesday": "Wednesday",
-    "thursday": "Thursday",
-    "friday": "Friday",
-    "saturday": "Saturday"
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "clients": "Clients",
+      "contacts": "Contacts",
+      "deals": "Deals",
+      "aiLeads": "AI Leads",
+      "tasks": "Tasks",
+      "calendar": "Calendar",
+      "email": "Email Center",
+      "notes": "Notes",
+      "reports": "Reports",
+      "users": "Users",
+      "settings": "Settings",
+      "workflows": "Workflows",
+      "activityLogs": "Activity Logs",
+      "expand": "Expand",
+      "collapse": "Collapse"
+    },
+    "topNav": {
+      "searchPlaceholder": "Search...",
+      "quickAdd": "Quick Add",
+      "notifications": {
+        "ariaLabel": "Notifications"
+      },
+      "userMenu": {
+        "name": "John Doe",
+        "email": "john@wolfhunt.com",
+        "profile": "Profile",
+        "settings": "Settings",
+        "signOut": "Sign Out",
+        "ariaLabel": "User menu"
+      },
+      "pageTitle": {
+        "dashboard": "Dashboard",
+        "clients": "Client Management",
+        "contacts": "Contact Management",
+        "deals": "Sales Pipeline",
+        "tasks": "Task Management",
+        "calendar": "Calendar",
+        "email": "Email Center",
+        "notes": "Notes",
+        "reports": "Reports & Analytics",
+        "users": "User Management",
+        "workflows": "Workflows",
+        "activityLogs": "Activity Logs & Audit Trail",
+        "settings": "Settings",
+        "aiLeads": "AI Lead Intelligence",
+        "fallback": "WOLFHUNT CRM"
+      },
+      "pageDescription": {
+        "dashboard": "An overview of your CRM's performance.",
+        "clients": "Manage your client relationships and track business growth.",
+        "contacts": "Manage all your contacts and business relationships.",
+        "deals": "Manage your deals through the sales process.",
+        "tasks": "Stay on top of your tasks.",
+        "calendar": "Schedule and manage appointments.",
+        "email": "Communicate with your clients.",
+        "notes": "Capture important information.",
+        "activityLogs": "Track all system activities and user actions.",
+        "aiLeads": "Advanced MENA and Europe lead generation with AI."
+      }
+    },
+    "languageSwitcher": {
+      "chooseLanguage": "Choose language",
+      "moreComingSoon": "More languages coming soon"
+    },
+    "indexPage": {
+      "title": "Welcome to your empty application",
+      "subtitle": "Start building your amazing project here!"
+    }
   },
   "dashboard": {
-    "welcome": "Welcome",
-    "dealsSummary": "Deals Summary",
-    "totalDeals": "Total Deals",
-    "dealsValue": "Deals Value",
-    "newDeals": "New Deals",
-    "dealsByStage": "Deals by Stage",
-    "clientsSummary": "Clients Summary",
+    "title": "Dashboard",
+    "welcomeMessage": "Welcome back! Here's what's happening with your business today.",
+    "addContact": "Add Contact",
+    "addClient": "Add Client",
+    "totalRevenue": "Total Revenue",
+    "activeClients": "Active Clients",
+    "dealsInPipeline": "Deals in Pipeline",
+    "tasksDueToday": "Tasks for Today",
+    "vsLastMonth": "vs last month",
+    "vsYesterday": "vs yesterday",
+    "recentDeals": "Recent Deals",
+    "upcomingTasks": "Upcoming Tasks",
+    "recentActivities": "Recent Activities",
+    "viewAll": "View all",
+    "status": {
+      "negotiation": "Negotiation",
+      "proposal": "Proposal",
+      "qualified": "Qualified",
+      "discovery": "Discovery"
+    },
+    "priority": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "mockTasks": {
+      "followUp": "Follow up with Acme Corp",
+      "prepareProposal": "Prepare proposal for Tech Solutions",
+      "scheduleDemo": "Schedule demo call",
+      "sendContract": "Send contract to Global Industries"
+    },
+    "mockActivities": {
+      "newDeal": "New deal created",
+      "dealDetails": "Acme Corp - Enterprise License",
+      "contactUpdated": "Contact updated",
+      "contactDetails": "John Smith - Acme Corp",
+      "taskCompleted": "Task completed",
+      "taskDetails": "Send proposal to Tech Solutions",
+      "meetingScheduled": "Meeting scheduled",
+      "meetingDetails": "Demo call with StartupXYZ"
+    }
+  },
+  "clients": {
+    "addClient": "Add Client",
     "totalClients": "Total Clients",
     "activeClients": "Active Clients",
-    "newClients": "New Clients",
-    "tasksSummary": "Tasks Summary",
-    "totalTasks": "Total Tasks",
-    "completedTasks": "Completed Tasks",
-    "pendingTasks": "Pending Tasks",
-    "recentActivities": "Recent Activities",
-    "noActivities": "No recent activities",
-    "viewAll": "View All",
-    "deals": "Deals",
-    "tasks": "Tasks",
-    "clients": "Clients",
-    "contacts": "Contacts",
-    "notes": "Notes",
-    "meetings": "Meetings",
-    "emails": "Emails",
-    "calls": "Calls",
-    "files": "Files",
-    "comments": "Comments",
-    "activityType": "Activity Type",
-    "date": "Date",
-    "user": "User",
-    "description": "Description"
-  },
-  "deals": {
-    "title": "Deals",
-    "searchPlaceholder": "Search deals...",
-    "filters": "Filters",
-    "dealsBoard": "Deals Board",
-    "dealsList": "Deals List",
-    "addDeal": "Add Deal",
-    "editDeal": "Edit Deal",
-    "viewDeal": "View Deal",
-    "deleteDeal": "Delete Deal",
-    "dealName": "Deal Name",
-    "dealValue": "Deal Value",
-    "dealStage": "Deal Stage",
-    "dealOwner": "Deal Owner",
-    "dealSource": "Deal Source",
-    "dealCloseDate": "Deal Close Date",
-    "dealDescription": "Deal Description",
-    "dealNotes": "Deal Notes",
-    "dealTags": "Deal Tags",
-    "dealCreatedDate": "Deal Created Date",
-    "dealUpdatedDate": "Deal Updated Date",
-    "dealProbability": "Deal Probability",
-    "dealExpectedRevenue": "Deal Expected Revenue",
-    "dealActualRevenue": "Deal Actual Revenue",
-    "dealCost": "Deal Cost",
-    "dealProfit": "Deal Profit",
-    "dealMargin": "Deal Margin",
-    "dealContact": "Deal Contact",
-    "dealClient": "Deal Client",
-    "dealTasks": "Deal Tasks",
-    "dealMeetings": "Deal Meetings",
-    "dealEmails": "Deal Emails",
-    "dealCalls": "Deal Calls",
-    "dealFiles": "Deal Files",
-    "dealComments": "Deal Comments",
-    "dealActivities": "Deal Activities",
-    "dealHistory": "Deal History",
-    "dealAttachments": "Deal Attachments",
-    "dealProducts": "Deal Products",
-    "dealServices": "Deal Services",
-    "dealCompetitors": "Deal Competitors",
-    "dealInternalNotes": "Deal Internal Notes",
-    "dealTermsAndConditions": "Deal Terms and Conditions",
-    "dealBillingAddress": "Deal Billing Address",
-    "dealShippingAddress": "Deal Shipping Address",
-    "dealTaxRate": "Deal Tax Rate",
-    "dealDiscountRate": "Deal Discount Rate",
-    "dealTotalAmount": "Deal Total Amount",
-    "dealAmountPaid": "Deal Amount Paid",
-    "dealAmountDue": "Deal Amount Due",
-    "dealPaymentStatus": "Deal Payment Status",
-    "dealInvoiceNumber": "Deal Invoice Number",
-    "dealInvoiceDate": "Deal Invoice Date",
-    "dealDueDate": "Deal Due Date",
-    "dealPipeline": "Deal Pipeline",
-    "dealPipelineStage": "Deal Pipeline Stage",
-    "dealPipelineHistory": "Deal Pipeline History",
-    "dealPipelineStageDuration": "Deal Pipeline Stage Duration",
-    "dealPipelineStageStartDate": "Deal Pipeline Stage Start Date",
-    "dealPipelineStageEndDate": "Deal Pipeline Stage End Date",
-    "dealPipelineStageNotes": "Deal Pipeline Stage Notes",
-    "dealPipelineStageActivities": "Deal Pipeline Stage Activities",
-    "dealPipelineStageHistory": "Deal Pipeline Stage History",
-    "dealPipelineStageAttachments": "Deal Pipeline Stage Attachments",
-    "dealPipelineStageProducts": "Deal Pipeline Stage Products",
-    "dealPipelineStageServices": "Deal Pipeline Stage Services",
-    "dealPipelineStageCompetitors": "Deal Pipeline Stage Competitors",
-    "dealPipelineStageInternalNotes": "Deal Pipeline Stage Internal Notes",
-    "dealPipelineStageTermsAndConditions": "Deal Pipeline Stage Terms and Conditions",
-    "dealPipelineStageBillingAddress": "Deal Pipeline Stage Billing Address",
-    "dealPipelineStageShippingAddress": "Deal Pipeline Stage Shipping Address",
-    "dealPipelineStageTaxRate": "Deal Pipeline Stage Tax Rate",
-    "dealPipelineStageDiscountRate": "Deal Pipeline Stage Discount Rate",
-    "dealPipelineStageTotalAmount": "Deal Pipeline Stage Total Amount",
-    "dealPipelineStageAmountPaid": "Deal Pipeline Stage Amount Paid",
-    "dealPipelineStageAmountDue": "Deal Pipeline Stage Amount Due",
-    "dealPipelineStagePaymentStatus": "Deal Pipeline Stage Payment Status",
-    "dealPipelineStageInvoiceNumber": "Deal Pipeline Stage Invoice Number",
-    "dealPipelineStageInvoiceDate": "Deal Pipeline Stage Invoice Date",
-    "dealPipelineStageDueDate": "Deal Pipeline Stage Due Date",
-    "stages": {
-      "prospect": "Prospect",
-      "lead": "Lead",
-      "qualified": "Qualified",
-      "negotiation": "Negotiation",
-      "won-lost": "Won/Lost"
-    },
-    "board": {
-      "noDeals": "No deals in this stage"
-    },
-    "pipeline": {
-      "dropDeal": "Drop deal here to move it to this stage",
-      "noDeals": "No deals in this stage. Add one!",
-      "addFirstDeal": "Add First Deal",
-      "addDeal": "Add Deal"
-    },
-    "filtersDropdown": {
-      "title": "Filters",
-      "clear": "Clear",
-      "stagesLabel": "Stages",
-      "ownersLabel": "Owners",
-      "valueLabel": "Value Range",
-      "minPlaceholder": "Min",
-      "maxPlaceholder": "Max",
-      "dateLabel": "Date Range"
-    },
-    "filtersPanel": {
-      "clearAll": "Clear All",
-      "sourcesLabel": "Sources"
-    },
-    "sources": {
-      "website": "Website",
-      "referral": "Referral",
-      "coldOutreach": "Cold Outreach",
-      "linkedIn": "LinkedIn",
-      "existingClient": "Existing Client"
-    },
-    "tags": {
-      "urgent": "Urgent",
-      "highPriority": "High Priority",
-      "new": "New",
-      "followUp": "Follow Up"
-    },
-    "search": "Search Deals...",
-    "apply": "Apply"
+    "prospects": "Prospects",
+    "totalRevenue": "Total Revenue"
   },
   "contacts": {
     "title": "Contacts",
@@ -297,95 +199,161 @@
       "inactive": "Inactive"
     }
   },
-  "notes": {
-    "title": "Notes",
-    "addNote": "Add Note",
-    "editNote": "Edit Note",
-    "viewNote": "View Note",
-    "deleteNote": "Delete Note",
-    "noteTitle": "Note Title",
-    "noteContent": "Note Content",
-    "noteCreatedDate": "Note Created Date",
-    "noteUpdatedDate": "Note Updated Date",
-    "noteTags": "Note Tags",
-    "noteAttachments": "Note Attachments",
-    "noteTasks": "Note Tasks",
-    "noteMeetings": "Note Meetings",
-    "noteEmails": "Note Emails",
-    "noteCalls": "Note Calls",
-    "noteComments": "Note Comments",
-    "noteActivities": "Note Activities",
-    "noteHistory": "Note History",
-    "search": "Search Notes..."
-  },
-  "tasks": {
-    "title": "Tasks",
-    "addTask": "Add Task",
-    "editTask": "Edit Task",
-    "viewTask": "View Task",
-    "deleteTask": "Delete Task",
-    "taskTitle": "Task Title",
-    "taskDescription": "Task Description",
-    "taskDueDate": "Task Due Date",
-    "taskPriority": "Task Priority",
-    "taskStatus": "Task Status",
-    "taskAssignedTo": "Task Assigned To",
-    "taskCreatedDate": "Task Created Date",
-    "taskUpdatedDate": "Task Updated Date",
-    "taskTags": "Task Tags",
-    "taskAttachments": "Task Attachments",
-    "taskMeetings": "Task Meetings",
-    "taskEmails": "Task Emails",
-    "taskCalls": "Task Calls",
-    "taskComments": "Task Comments",
-    "taskActivities": "Task Activities",
-    "taskHistory": "Task History",
-    "search": "Search Tasks...",
-    "priority": {
-      "high": "High",
-      "medium": "Medium",
-      "low": "Low"
+  "deals": {
+    "title": "Deals",
+    "addDeal": "Add Deal",
+    "searchPlaceholder": "Search deals...",
+    "filters": "Filters",
+    "stages": {
+      "prospect": "Prospect",
+      "lead": "Lead",
+      "qualified": "Qualified",
+      "negotiation": "Negotiation",
+      "won-lost": "Won/Lost"
     },
-    "status": {
-      "open": "Open",
-      "inProgress": "In Progress",
-      "completed": "Completed",
-      "onHold": "On Hold",
-      "cancelled": "Cancelled"
+    "stats": {
+      "active": "Active Deals",
+      "pipelineValue": "Pipeline Value",
+      "won": "Deals Won",
+      "avgSize": "Avg. Deal Size",
+      "vsLastMonth": "{{change}} from last month"
+    },
+    "toasts": {
+      "moved": {
+        "title": "Deal Moved",
+        "description": "Moved deal to {{stage}} stage"
+      },
+      "updated": {
+        "title": "Deal Updated",
+        "description": "Deal updated successfully"
+      },
+      "deleted": {
+        "title": "Deal Deleted",
+        "description": "Deal deleted successfully"
+      },
+      "created": {
+        "title": "Deal Created",
+        "description": "New deal added to {{stage}} stage"
+      }
+    },
+    "pipeline": {
+      "dropDeal": "Drop deal here",
+      "noDeals": "No deals in this stage",
+      "addFirstDeal": "Add your first deal",
+      "addDeal": "Add Deal"
+    },
+    "board": {
+      "noDeals": "No deals in this stage."
+    },
+    "filtersDropdown": {
+      "title": "Filter Deals",
+      "clear": "Clear",
+      "stagesLabel": "Stages",
+      "ownersLabel": "Owners",
+      "valueLabel": "Value Range ($)",
+      "minPlaceholder": "Min",
+      "maxPlaceholder": "Max",
+      "dateLabel": "Expected Close Date"
+    },
+    "filtersPanel": {
+      "sourcesLabel": "Sources",
+      "clearAll": "Clear All",
+      "apply": "Apply"
+    },
+    "sources": {
+      "website": "Website",
+      "referral": "Referral",
+      "coldOutreach": "Cold Outreach",
+      "linkedIn": "LinkedIn",
+      "existingClient": "Existing Client"
     }
   },
-  "clients": {
-    "title": "Clients",
-    "addClient": "Add Client",
-    "editClient": "Edit Client",
-    "viewClient": "View Client",
-    "deleteClient": "Delete Client",
-    "clientName": "Client Name",
-    "clientEmail": "Client Email",
-    "clientPhone": "Client Phone",
-    "clientWebsite": "Client Website",
-    "clientAddress": "Client Address",
-    "clientCity": "Client City",
-    "clientState": "Client State",
-    "clientZipCode": "Client Zip Code",
-    "clientCountry": "Client Country",
-    "clientIndustry": "Client Industry",
-    "clientStage": "Client Stage",
-    "clientOwner": "Client Owner",
-    "clientCreatedDate": "Client Created Date",
-    "clientUpdatedDate": "Client Updated Date",
-    "clientTags": "Client Tags",
-    "clientTasks": "Client Tasks",
-    "clientMeetings": "Client Meetings",
-    "clientEmails": "Client Emails",
-    "clientCalls": "Client Calls",
-    "clientComments": "Client Comments",
-    "clientActivities": "Client Activities",
-    "clientHistory": "Client History",
-    "clientAttachments": "Client Attachments",
-    "clientDeals": "Client Deals",
-    "clientContacts": "Client Contacts",
-    "search": "Search Clients..."
+  "activityLogs": {
+    "title": "Activity Logs & Audit Trail",
+    "description": "Track all system activities and user actions.",
+    "filter": "Filter",
+    "export": "Export Logs",
+    "searchPlaceholder": "Search activities by action, user, or entity..."
+  },
+  "notes": {
+    "grid": {
+      "empty": {
+        "title": "No notes found",
+        "description": "Start capturing your ideas, meeting notes, and important information by creating your first note."
+      },
+      "pinnedNotes": "Pinned Notes",
+      "allNotes": "All Notes"
+    },
+    "filters": {
+      "button": "Filters",
+      "title": "Filter Notes",
+      "sortBy": {
+        "label": "Sort by",
+        "modified": "Last modified",
+        "created": "Date created",
+        "title": "Title"
+      },
+      "type": {
+        "label": "Type",
+        "all": "All types"
+      },
+      "visibility": {
+        "label": "Visibility",
+        "all": "All"
+      },
+      "tags": {
+        "label": "Tags"
+      }
+    },
+    "noteType": {
+      "general": "General",
+      "meeting": "Meeting",
+      "task": "Task",
+      "idea": "Idea"
+    },
+    "visibility": {
+      "public": "Public",
+      "team": "Team",
+      "private": "Private"
+    },
+    "modal": {
+      "createTitle": "Create New Note",
+      "editTitle": "Edit Note",
+      "titleLabel": "Title",
+      "titlePlaceholder": "Enter note title...",
+      "typeLabel": "Type",
+      "visibilityLabel": "Visibility",
+      "tagsLabel": "Tags",
+      "tagsPlaceholder": "Add a tag...",
+      "contentLabel": "Content",
+      "contentPlaceholder": "Write your note content...",
+      "pinNote": "Pin this note",
+      "setReminder": "Set a reminder",
+      "reminderDate": "Reminder date",
+      "selectDate": "Select a date",
+      "attachmentsLabel": "Attachments",
+      "attachmentsPlaceholder": "Drag and drop files here or click to browse",
+      "updateButton": "Update Note",
+      "createButton": "Create Note"
+    },
+    "detail": {
+      "linkedTo": "Linked to:",
+      "tags": "Tags:",
+      "content": "Content",
+      "reminder": "Reminder",
+      "attachments": "Attachments ({{count}})",
+      "author": "Author",
+      "created": "Created",
+      "modified": "Modified"
+    }
+  },
+  "common": {
+    "add": "Add",
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "close": "Close"
   },
   "countries": {
     "morocco": "Morocco",
@@ -395,5 +363,55 @@
     "uae": "UAE",
     "uk": "UK",
     "germany": "Germany"
+  },
+  "industries": {
+    "technology": "Technology",
+    "healthcare": "Healthcare",
+    "finance": "Finance",
+    "retail": "Retail",
+    "manufacturing": "Manufacturing",
+    "consulting": "Consulting",
+    "education": "Education",
+    "real_estate": "Real Estate",
+    "other": "Other"
+  },
+  "clientStages": {
+    "lead": "Lead",
+    "prospect": "Prospect",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "toasts": {
+    "addClient": {
+      "success": {
+        "title": "Success!",
+        "description": "Client added successfully."
+      }
+    }
+  },
+  "addClientModal": {
+    "title": "Add New Client",
+    "profilePicture": "Profile Picture",
+    "uploadPhoto": "Upload Photo",
+    "uploadHint": "Optional: Upload the client's logo or picture",
+    "nameLabel": "Company/Client Name *",
+    "namePlaceholder": "Enter company name",
+    "emailLabel": "Email Address *",
+    "emailPlaceholder": "contact@company.com",
+    "phoneLabel": "Phone Number",
+    "phonePlaceholder": "+1 555 123 4567",
+    "countryLabel": "Country/Location",
+    "countryPlaceholder": "Select a location",
+    "industryLabel": "Industry",
+    "industryPlaceholder": "Select an industry",
+    "stageLabel": "Client Stage",
+    "stagePlaceholder": "Select a stage",
+    "ownerLabel": "Account Owner",
+    "ownerPlaceholder": "Assign an account owner",
+    "tagsLabel": "Tags",
+    "tagsPlaceholder": "Add a tag and press Enter",
+    "notesLabel": "Notes",
+    "notesPlaceholder": "Add any additional notes about this client...",
+    "submitButton": "Add Client"
   }
 }

@@ -1,4 +1,3 @@
-
 {
   "sidebar": {
     "dashboard": "لوحة التحكم",
@@ -263,7 +262,8 @@
       "coldOutreach": "تواصل بارد",
       "linkedIn": "لينكدإن",
       "existingClient": "عميل حالي"
-    }
+    },
+    "addDeal": "إضافة صفقة"
   },
   "activityLogs": {
     "title": "سجلات النشاط ومسار التدقيق",

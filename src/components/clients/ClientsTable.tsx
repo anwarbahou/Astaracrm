@@ -1,5 +1,5 @@
-
 import React, { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Table,
   TableBody,
@@ -66,6 +66,7 @@ export function ClientsTable({
   searchQuery, 
   onSearchChange 
 }: ClientsTableProps) {
+  const { t, i18n } = useTranslation();
   const [sortField, setSortField] = useState<SortField>('name');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
   const [currentPage, setCurrentPage] = useState(1);
@@ -88,6 +89,23 @@ export function ClientsTable({
       setSortField(field);
       setSortDirection('asc');
     }
+  };
+
+  const formatLastInteraction = (dateString: string) => {
+    const date = new Date(dateString);
+    const rtf = new Intl.RelativeTimeFormat(i18n.language, { numeric: 'auto' });
+    const now = new Date();
+    
+    const diffInSecondsPast = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (diffInSecondsPast < 60) return rtf.format(-diffInSecondsPast, 'second');
+    if (diffInSecondsPast < 3600) return rtf.format(-Math.floor(diffInSecondsPast / 60), 'minute');
+    if (diffInSecondsPast < 86400) return rtf.format(-Math.floor(diffInSecondsPast / 3600), 'hour');
+    const diffInDaysPast = Math.floor(diffInSecondsPast / 86400);
+    if (diffInDaysPast < 7) return rtf.format(-diffInDaysPast, 'day');
+    if (diffInDaysPast < 30) return rtf.format(-Math.floor(diffInDaysPast / 7), 'week');
+    if (diffInDaysPast < 365) return rtf.format(-Math.floor(diffInDaysPast / 30), 'month');
+    return rtf.format(-Math.floor(diffInDaysPast / 365), 'year');
   };
 
   const filteredAndSortedClients = useMemo(() => {
@@ -156,7 +174,7 @@ export function ClientsTable({
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
-                placeholder="Search clients by name, email, industry, or owner..."
+                placeholder={t('clients.table.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
                 className="pl-10"
@@ -164,7 +182,7 @@ export function ClientsTable({
             </div>
             <Button variant="outline" onClick={onFiltersToggle} className="gap-2">
               <Filter size={16} />
-              Filters
+              {t('clients.table.filters')}
             </Button>
           </div>
         </CardContent>
@@ -178,17 +196,17 @@ export function ClientsTable({
               <TableHeader className="sticky top-0 bg-background z-10">
                 <TableRow>
                   <TableHead className="w-16"></TableHead>
-                  <SortableHeader field="name">Client Name</SortableHeader>
-                  <SortableHeader field="industry">Industry</SortableHeader>
-                  <TableHead>Tags</TableHead>
-                  <SortableHeader field="stage">Stage</SortableHeader>
-                  <SortableHeader field="owner">Owner</SortableHeader>
-                  <SortableHeader field="country">Location</SortableHeader>
-                  <SortableHeader field="contactsCount">Contacts</SortableHeader>
-                  <SortableHeader field="totalDealValue">Deal Value</SortableHeader>
-                  <SortableHeader field="createdDate">Created</SortableHeader>
-                  <SortableHeader field="lastInteraction">Last Interaction</SortableHeader>
-                  <SortableHeader field="status">Status</SortableHeader>
+                  <SortableHeader field="name">{t('clients.table.clientName')}</SortableHeader>
+                  <SortableHeader field="industry">{t('clients.table.industry')}</SortableHeader>
+                  <TableHead>{t('clients.table.tags')}</TableHead>
+                  <SortableHeader field="stage">{t('clients.table.stage')}</SortableHeader>
+                  <SortableHeader field="owner">{t('clients.table.owner')}</SortableHeader>
+                  <SortableHeader field="country">{t('clients.table.location')}</SortableHeader>
+                  <SortableHeader field="contactsCount">{t('clients.table.contacts')}</SortableHeader>
+                  <SortableHeader field="totalDealValue">{t('clients.table.dealValue')}</SortableHeader>
+                  <SortableHeader field="createdDate">{t('clients.table.created')}</SortableHeader>
+                  <SortableHeader field="lastInteraction">{t('clients.table.lastInteraction')}</SortableHeader>
+                  <SortableHeader field="status">{t('clients.table.status')}</SortableHeader>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -232,7 +250,7 @@ export function ClientsTable({
                     <TableCell className="text-center">{client.contactsCount}</TableCell>
                     <TableCell className="font-medium">{formatCurrency(client.totalDealValue)}</TableCell>
                     <TableCell>{new Date(client.createdDate).toLocaleDateString()}</TableCell>
-                    <TableCell>{client.lastInteraction}</TableCell>
+                    <TableCell>{formatLastInteraction(client.lastInteraction)}</TableCell>
                     <TableCell>
                       <Badge variant={client.status === 'Active' ? 'default' : 'secondary'}>
                         {client.status}
@@ -247,7 +265,7 @@ export function ClientsTable({
           {/* Pagination */}
           <div className="flex items-center justify-between p-4 border-t">
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Rows per page:</span>
+              <span className="text-sm text-muted-foreground">{t('clients.table.rowsPerPage')}</span>
               <Select value={rowsPerPage.toString()} onValueChange={(value) => setRowsPerPage(Number(value))}>
                 <SelectTrigger className="w-20">
                   <SelectValue />
@@ -263,7 +281,11 @@ export function ClientsTable({
             
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">
-                {((currentPage - 1) * rowsPerPage) + 1}-{Math.min(currentPage * rowsPerPage, filteredAndSortedClients.length)} of {filteredAndSortedClients.length}
+                {t('clients.table.of', { 
+                  start: ((currentPage - 1) * rowsPerPage) + 1, 
+                  end: Math.min(currentPage * rowsPerPage, filteredAndSortedClients.length), 
+                  total: filteredAndSortedClients.length 
+                })}
               </span>
               <div className="flex gap-1">
                 <Button 

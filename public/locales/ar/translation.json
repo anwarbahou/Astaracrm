@@ -1,3 +1,4 @@
+
 {
   "app": {
     "sidebar": {
@@ -119,7 +120,24 @@
     "totalClients": "إجمالي العملاء",
     "activeClients": "العملاء النشطون",
     "prospects": "العملاء المحتملين",
-    "totalRevenue": "إجمالي الإيرادات"
+    "totalRevenue": "إجمالي الإيرادات",
+    "table": {
+      "searchPlaceholder": "ابحث عن عملاء بالاسم أو البريد الإلكتروني أو الصناعة أو المالك...",
+      "filters": "الفلاتر",
+      "clientName": "اسم العميل",
+      "industry": "الصناعة",
+      "tags": "العلامات",
+      "stage": "المرحلة",
+      "owner": "المالك",
+      "location": "الموقع",
+      "contacts": "جهات الاتصال",
+      "dealValue": "قيمة الصفقة",
+      "created": "تاريخ الإنشاء",
+      "lastInteraction": "آخر تفاعل",
+      "status": "الحالة",
+      "rowsPerPage": "صفوف لكل صفحة:",
+      "of": "{{start}}-{{end}} من {{total}}"
+    }
   },
   "contacts": {
     "title": "جهات الاتصال",

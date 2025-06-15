@@ -1,3 +1,4 @@
+
 {
   "app": {
     "sidebar": {
@@ -120,7 +121,24 @@
     "totalClients": "Total des clients",
     "activeClients": "Clients actifs",
     "prospects": "Prospects",
-    "totalRevenue": "Revenu total"
+    "totalRevenue": "Revenu total",
+    "table": {
+      "searchPlaceholder": "Rechercher des clients par nom, e-mail, secteur ou propriétaire...",
+      "filters": "Filtres",
+      "clientName": "Nom du Client",
+      "industry": "Secteur d'activité",
+      "tags": "Étiquettes",
+      "stage": "Étape",
+      "owner": "Propriétaire",
+      "location": "Lieu",
+      "contacts": "Contacts",
+      "dealValue": "Valeur des affaires",
+      "created": "Créé le",
+      "lastInteraction": "Dernière Interaction",
+      "status": "Statut",
+      "rowsPerPage": "Lignes par page :",
+      "of": "{{start}}-{{end}} sur {{total}}"
+    }
   },
   "contacts": {
     "title": "Contacts",

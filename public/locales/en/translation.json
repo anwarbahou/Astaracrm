@@ -1,3 +1,4 @@
+
 {
   "app": {
     "sidebar": {
@@ -120,7 +121,24 @@
     "totalClients": "Total Clients",
     "activeClients": "Active Clients",
     "prospects": "Prospects",
-    "totalRevenue": "Total Revenue"
+    "totalRevenue": "Total Revenue",
+    "table": {
+      "searchPlaceholder": "Search clients by name, email, industry, or owner...",
+      "filters": "Filters",
+      "clientName": "Client Name",
+      "industry": "Industry",
+      "tags": "Tags",
+      "stage": "Stage",
+      "owner": "Owner",
+      "location": "Location",
+      "contacts": "Contacts",
+      "dealValue": "Deal Value",
+      "created": "Created",
+      "lastInteraction": "Last Interaction",
+      "status": "Status",
+      "rowsPerPage": "Rows per page:",
+      "of": "{{start}}-{{end}} of {{total}}"
+    }
   },
   "contacts": {
     "title": "Contacts",

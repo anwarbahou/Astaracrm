@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Client } from "@/components/clients/ClientsTable";
 
@@ -17,7 +16,7 @@ const initialClients: Client[] = [
       contactsCount: 5,
       totalDealValue: 1450000,
       createdDate: "2023-01-15",
-      lastInteraction: "2 days ago",
+      lastInteraction: "2025-06-13",
       status: "Active",
       avatar: "",
       notes: "Key client in the technology sector. Interested in expanding their digital infrastructure."
@@ -35,7 +34,7 @@ const initialClients: Client[] = [
       contactsCount: 3,
       totalDealValue: 895000,
       createdDate: "2023-03-20",
-      lastInteraction: "1 week ago",
+      lastInteraction: "2025-06-08",
       status: "Active",
       avatar: "",
       notes: "Growing tech company looking for innovative solutions."
@@ -53,7 +52,7 @@ const initialClients: Client[] = [
       contactsCount: 2,
       totalDealValue: 230000,
       createdDate: "2022-11-10",
-      lastInteraction: "3 weeks ago",
+      lastInteraction: "2025-05-25",
       status: "Active",
       avatar: "",
       notes: "Manufacturing company with operations across Europe."
@@ -71,7 +70,7 @@ const initialClients: Client[] = [
       contactsCount: 8,
       totalDealValue: 672000,
       createdDate: "2023-06-05",
-      lastInteraction: "Yesterday",
+      lastInteraction: "2025-06-14",
       status: "Active",
       avatar: "",
       notes: "Leading healthcare provider focused on digital transformation."
@@ -89,7 +88,7 @@ const initialClients: Client[] = [
       contactsCount: 4,
       totalDealValue: 0,
       createdDate: "2024-01-12",
-      lastInteraction: "1 month ago",
+      lastInteraction: "2025-05-15",
       status: "Active",
       avatar: "",
       notes: "Potential client in the financial services sector."
@@ -107,7 +106,7 @@ const initialClients: Client[] = [
       contactsCount: 2,
       totalDealValue: 125000,
       createdDate: "2024-02-28",
-      lastInteraction: "5 days ago",
+      lastInteraction: "2025-06-10",
       status: "Active",
       avatar: "",
       notes: "Retail chain looking to modernize their systems."
@@ -125,7 +124,7 @@ const initialClients: Client[] = [
       contactsCount: 6,
       totalDealValue: 445000,
       createdDate: "2023-09-15",
-      lastInteraction: "3 days ago",
+      lastInteraction: "2025-06-12",
       status: "Active",
       avatar: "",
       notes: "Educational institution focused on improving learning outcomes."
@@ -143,7 +142,7 @@ const initialClients: Client[] = [
       contactsCount: 3,
       totalDealValue: 780000,
       createdDate: "2023-04-22",
-      lastInteraction: "1 week ago",
+      lastInteraction: "2025-06-08",
       status: "Active",
       avatar: "",
       notes: "Strategic consulting firm specializing in digital transformation."

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Client } from "@/components/clients/ClientsTable";
+import { Client } from "@/types/client";
 
 // Mock client data with enhanced fields
 const initialClients: Client[] = [

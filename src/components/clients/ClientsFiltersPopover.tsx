@@ -15,19 +15,7 @@ import { Filter, X } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import FilterSection from './FilterSection';
-
-export interface ClientFilters {
-  owner: string;
-  stage: string;
-  industry: string;
-  country: string;
-  status: string;
-  tags: string[];
-  dateCreatedFrom: string;
-  dateCreatedTo: string;
-  lastInteractionFrom: string;
-  lastInteractionTo: string;
-}
+import { ClientFilters } from '@/types/client';
 
 interface FiltersPopoverContentProps {
     filters: ClientFilters;

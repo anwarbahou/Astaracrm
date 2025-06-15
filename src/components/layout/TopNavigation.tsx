@@ -33,7 +33,7 @@ export function TopNavigation() {
     const path = location.pathname;
 
     if (path === '/') {
-      return t('topNav.pageTitle.dashboard');
+      return t('app.topNav.pageTitle.dashboard');
     }
 
     const currentNavItem = navigationItems
@@ -41,20 +41,20 @@ export function TopNavigation() {
       .sort((a, b) => b.path.length - a.path.length)[0];
 
     if (currentNavItem) {
-      const key = `topNav.pageTitle.${currentNavItem.labelKey}`;
+      const key = `app.topNav.pageTitle.${currentNavItem.labelKey}`;
       if (i18n.exists(key)) {
         return t(key);
       }
     }
     
-    return t("topNav.pageTitle.fallback");
+    return t("app.topNav.pageTitle.fallback");
   };
 
   const getPageDescription = () => {
     const path = location.pathname;
 
     if (path === '/') {
-      return t('topNav.pageDescription.dashboard');
+      return t('app.topNav.pageDescription.dashboard');
     }
 
     const currentNavItem = navigationItems
@@ -62,7 +62,7 @@ export function TopNavigation() {
       .sort((a, b) => b.path.length - a.path.length)[0];
 
     if (currentNavItem) {
-      const key = `topNav.pageDescription.${currentNavItem.labelKey}`;
+      const key = `app.topNav.pageDescription.${currentNavItem.labelKey}`;
       if (i18n.exists(key)) {
         return t(key);
       }
@@ -125,7 +125,7 @@ export function TopNavigation() {
               >
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 rtl:right-3 rtl:left-auto" />
                 <Input
-                  placeholder={t("topNav.searchPlaceholder")}
+                  placeholder={t("app.topNav.searchPlaceholder")}
                   className="pl-10 w-80 border-border/50 focus:border-primary/50 transition-all duration-200 focus:shadow-md rtl:pr-10 rtl:pl-4"
                 />
               </motion.div>
@@ -147,7 +147,7 @@ export function TopNavigation() {
                   size="icon" 
                   className="relative h-9 w-9 hover:bg-muted/50 transition-colors duration-200 rounded-xl"
                   onClick={() => setNotificationOpen(true)}
-                  aria-label={t('topNav.notifications.ariaLabel')}
+                  aria-label={t('app.topNav.notifications.ariaLabel')}
                 >
                   <Bell className="h-4 w-4 transition-transform duration-200" />
                   <AnimatePresence>
@@ -185,7 +185,7 @@ export function TopNavigation() {
                   onClick={() => setQuickAddOpen(true)}
                 >
                   <Plus size={16} />
-                  {t('topNav.quickAdd')}
+                  {t('app.topNav.quickAdd')}
                 </Button>
               </motion.div>
               
@@ -200,7 +200,7 @@ export function TopNavigation() {
                     <Button 
                       variant="ghost" 
                       className="relative h-9 w-9 rounded-full hover:bg-muted/50 transition-colors duration-200"
-                      aria-label={t('topNav.userMenu.ariaLabel')}
+                      aria-label={t('app.topNav.userMenu.ariaLabel')}
                     >
                       <Avatar className="h-9 w-9">
                         <AvatarImage 
@@ -225,20 +225,20 @@ export function TopNavigation() {
                     transition={{ duration: 0.2 }}
                   >
                     <div className="px-2 py-1.5">
-                      <p className="text-sm font-medium">{t('topNav.userMenu.name')}</p>
-                      <p className="text-xs text-muted-foreground">{t('topNav.userMenu.email')}</p>
+                      <p className="text-sm font-medium">{t('app.topNav.userMenu.name')}</p>
+                      <p className="text-xs text-muted-foreground">{t('app.topNav.userMenu.email')}</p>
                     </div>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem className="hover:bg-muted/50 transition-colors duration-200 rounded-lg mx-1">
                       <User className="mr-2 h-4 w-4" />
-                      {t('topNav.userMenu.profile')}
+                      {t('app.topNav.userMenu.profile')}
                     </DropdownMenuItem>
                     <DropdownMenuItem className="hover:bg-muted/50 transition-colors duration-200 rounded-lg mx-1">
-                      {t('topNav.userMenu.settings')}
+                      {t('app.topNav.userMenu.settings')}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem className="hover:bg-destructive/10 text-destructive focus:text-destructive transition-colors duration-200 rounded-lg mx-1">
-                      {t('topNav.userMenu.signOut')}
+                      {t('app.topNav.userMenu.signOut')}
                     </DropdownMenuItem>
                   </motion.div>
                 </DropdownMenuContent>

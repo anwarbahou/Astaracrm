@@ -35,7 +35,7 @@ import {
   History,
   Upload
 } from 'lucide-react';
-import { Client } from './ClientsTable';
+import { Client } from '@/types/client';
 
 interface ClientProfileModalProps {
   client: Client | null;

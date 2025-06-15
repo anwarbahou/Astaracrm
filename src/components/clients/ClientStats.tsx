@@ -1,7 +1,7 @@
 
 import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
-import { Client } from "@/components/clients/ClientsTable";
+import { Client } from "@/types/client";
 
 interface ClientStatsProps {
     clients: Client[];

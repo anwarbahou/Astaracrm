@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from "@/components/ui/button";
@@ -122,7 +121,7 @@ export const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: Fil
         <CardTitle className="flex items-center justify-between text-lg text-foreground">
           <span className="flex items-center gap-2">
             <Filter size={20} />
-            {t('clients.filtersPanel.advancedTitle')}
+            {t('clients.filtersPanel.title')}
           </span>
           <Button
             variant="ghost"

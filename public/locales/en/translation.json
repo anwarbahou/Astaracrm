@@ -1,4 +1,3 @@
-
 {
   "app": {
     "sidebar": {
@@ -141,7 +140,6 @@
     },
     "filtersPanel": {
       "title": "Advanced Filters",
-      "advancedTitle": "Advanced Filters",
       "owner": "Owner",
       "ownerPlaceholder": "Select owner",
       "allOwners": "All Owners",

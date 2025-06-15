@@ -3,12 +3,12 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Target } from "lucide-react";
 import { CampaignSetupTab } from "./campaign/CampaignSetupTab";
@@ -43,54 +43,40 @@ export function NewCampaignModal() {
   };
 
   return (
-    <Drawer open={isOpen} onOpenChange={setIsOpen} direction="right">
-      <DrawerTrigger asChild>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
         <Button className="gap-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
           <Plus size={16} />
           {t("campaign.buttons.newCampaign")}
         </Button>
-      </DrawerTrigger>
+      </DialogTrigger>
       
-      <DrawerContent className="fixed inset-y-0 right-0 z-50 h-full w-[900px] flex flex-col bg-background border-l border-border shadow-lg">
-        <DrawerHeader className="px-6 py-4 border-b border-border bg-background">
-          <DrawerTitle className="text-foreground text-xl flex items-center gap-2">
+      <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-xl flex items-center gap-2">
             <Target className="text-blue-400" size={20} />
             {t("campaign.modal.title")}
-          </DrawerTitle>
-        </DrawerHeader>
+          </DialogTitle>
+        </DialogHeader>
 
-        <div className="flex-1 overflow-hidden bg-background">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
-            <div className="px-6 pt-4">
-              <TabsList className="grid w-full grid-cols-4 bg-muted/50 border border-border">
-                <TabsTrigger 
-                  value="setup" 
-                  className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:border-b-2 data-[state=active]:border-blue-500"
-                >
-                  {t("campaign.tabs.setup")}
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="audience" 
-                  className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:border-b-2 data-[state=active]:border-blue-500"
-                >
-                  {t("campaign.tabs.audience")}
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="message" 
-                  className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:border-b-2 data-[state=active]:border-blue-500"
-                >
-                  {t("campaign.tabs.message")}
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="preview" 
-                  className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:border-b-2 data-[state=active]:border-blue-500"
-                >
-                  {t("campaign.tabs.preview")}
-                </TabsTrigger>
-              </TabsList>
-            </div>
+        <div className="mt-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="setup">
+                {t("campaign.tabs.setup")}
+              </TabsTrigger>
+              <TabsTrigger value="audience">
+                {t("campaign.tabs.audience")}
+              </TabsTrigger>
+              <TabsTrigger value="message">
+                {t("campaign.tabs.message")}
+              </TabsTrigger>
+              <TabsTrigger value="preview">
+                {t("campaign.tabs.preview")}
+              </TabsTrigger>
+            </TabsList>
 
-            <div className="flex-1 overflow-y-auto p-6">
+            <div className="mt-6 space-y-6">
               <TabsContent value="setup" className="space-y-6 mt-0">
                 <CampaignSetupTab campaign={campaign} setCampaign={setCampaign} />
               </TabsContent>
@@ -113,7 +99,7 @@ export function NewCampaignModal() {
             </div>
           </Tabs>
         </div>
-      </DrawerContent>
-    </Drawer>
+      </DialogContent>
+    </Dialog>
   );
 }

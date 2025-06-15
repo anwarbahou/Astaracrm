@@ -1,4 +1,3 @@
-
 {
   "app": {
     "sidebar": {
@@ -429,6 +428,90 @@
       "coldOutreach": "تواصل بارد",
       "linkedIn": "لينكدإن",
       "existingClient": "عميل حالي"
+    }
+  },
+  "aiLeads": {
+    "title": "استخبارات العملاء المحتملين بالذكاء الاصطناعي",
+    "subtitle": "توليد عملاء محتملين متقدم لمنطقة الشرق الأوسط وشمال إفريقيا وأوروبا مع الذكاء الاصطناعي المتقدم",
+    "buttons": {
+      "newCampaign": "حملة جديدة",
+      "aiInsights": "رؤى الذكاء الاصطناعي",
+      "assistantRecherche": "مساعد البحث",
+      "analytics": "التحليلات",
+      "export": "تصدير",
+      "actionsGroupees": "إجراءات مجمعة",
+      "filtresAvances": "فلاتر متقدمة",
+      "filtresRapides": "فلاتر سريعة"
+    },
+    "stats": {
+      "activeCampaigns": "الحملات النشطة",
+      "conversionRate": "معدل التحويل",
+      "menaQualified": "مؤهل منطقة الشرق الأوسط وشمال إفريقيا",
+      "aiGeneratedLeads": "العملاء المحتملين المولدين بالذكاء الاصطناعي"
+    },
+    "filters": {
+      "mena": "منطقة الشرق الأوسط وشمال إفريقيا",
+      "nonAssignes": "غير مُخصص",
+      "scoreEleve": "نقاط عالية",
+      "leadChaud": "عميل محتمل ساخن"
+    },
+    "searchPlaceholder": "...البحث بالاسم أو الشركة أو البريد الإلكتروني",
+    "table": {
+      "headers": {
+        "dateAdded": "تاريخ الإضافة",
+        "assignedTo": "مُخصص لـ",
+        "tags": "العلامات",
+        "source": "المصدر",
+        "aiScore": "نقاط الذكاء الاصطناعي",
+        "status": "الحالة",
+        "company": "الشركة",
+        "leadName": "اسم العميل المحتمل"
+      },
+      "statusLabels": {
+        "hot": "ساخن",
+        "warm": "دافئ",
+        "cold": "بارد"
+      },
+      "tags": {
+        "leadChaud": "عميل محتمل ساخن",
+        "enterprise": "مؤسسة",
+        "innovation": "ابتكار",
+        "fintech": "تكنولوجيا مالية",
+        "gulf": "خليج",
+        "budgetApprouve": "ميزانية معتمدة",
+        "hauteIntention": "نية عالية",
+        "securite": "أمان",
+        "transformationDigitale": "تحول رقمي",
+        "grandEntreprise": "شركة كبيرة",
+        "startup": "شركة ناشئة",
+        "financement": "تمويل"
+      },
+      "companies": {
+        "atlasDigital": "أطلس ديجيتال",
+        "emiratesFintech": "إمارات فين تيك",
+        "beirutAnalytics": "بيروت للتحليلات",
+        "marocCyberSecurity": "المغرب للأمن السيبراني",
+        "madridDigitalHub": "مدريد للرقمنة",
+        "fesTechInnovation": "فاس للتكنولوجيا والابتكار"
+      },
+      "assignees": {
+        "youssefAlami": "يوسف العلمي",
+        "saraKhalil": "سارة خليل",
+        "hassanMedini": "حسان مديني",
+        "lailaBenjelloun": "ليلى بنجلون",
+        "nadiachraibi": "نادية الشرايبي"
+      }
+    },
+    "pipelineTitle": "خط أنابيب العملاء المحتملين ({{count}})",
+    "statusCounts": {
+      "hot": "{{count}} ساخن",
+      "warm": "{{count}} دافئ", 
+      "cold": "{{count}} بارد"
+    },
+    "tabs": {
+      "froids": "باردين",
+      "tiedesWarm": "دافئين",
+      "chauds": "ساخنين"
     }
   },
   "activityLogs": {

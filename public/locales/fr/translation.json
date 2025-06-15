@@ -163,9 +163,7 @@
       "to": "À",
       "lastInteraction": "Dernière interaction",
       "clearAll": "Tout effacer",
-      "apply": "Appliquer les filtres",
-      "showMore": "Afficher plus",
-      "showLess": "Afficher moins"
+      "apply": "Appliquer les filtres"
     },
     "statuses": {
       "active": "Actif",
@@ -226,9 +224,7 @@
       "createdTo": "Créé jusqu'au",
       "lastContactedFrom": "Dernier contact de",
       "lastContactedTo": "Dernier contact à",
-      "tags": "Étiquettes",
-      "showMore": "Afficher plus",
-      "showLess": "Afficher moins"
+      "tags": "Étiquettes"
     },
     "tags": {
       "decisionMaker": "Décideur",
@@ -415,7 +411,9 @@
     "save": "Enregistrer",
     "edit": "Modifier",
     "delete": "Supprimer",
-    "close": "Fermer"
+    "close": "Fermer",
+    "showMore": "Afficher plus",
+    "showLess": "Afficher moins"
   },
   "countries": {
     "morocco": "Maroc",

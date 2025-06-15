@@ -151,7 +151,7 @@ export const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: Fil
             </RadioGroup>
             {owners.length > 3 && (
               <Button variant="link" size="sm" onClick={() => toggleShowMore('owner')} className="p-0 h-auto text-blue-400 hover:text-blue-500 mt-2 justify-start">
-                {showMore.owner ? t('clients.filtersPanel.showLess') : t('clients.filtersPanel.showMore')}
+                {showMore.owner ? t('common.showLess') : t('common.showMore')}
               </Button>
             )}
           </FilterSection>
@@ -171,7 +171,7 @@ export const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: Fil
             </RadioGroup>
             {stages.length > 3 && (
               <Button variant="link" size="sm" onClick={() => toggleShowMore('stage')} className="p-0 h-auto text-blue-400 hover:text-blue-500 mt-2 justify-start">
-                {showMore.stage ? t('clients.filtersPanel.showLess') : t('clients.filtersPanel.showMore')}
+                {showMore.stage ? t('common.showLess') : t('common.showMore')}
               </Button>
             )}
           </FilterSection>
@@ -191,7 +191,7 @@ export const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: Fil
             </RadioGroup>
              {industries.length > 3 && (
               <Button variant="link" size="sm" onClick={() => toggleShowMore('industry')} className="p-0 h-auto text-blue-400 hover:text-blue-500 mt-2 justify-start">
-                {showMore.industry ? t('clients.filtersPanel.showLess') : t('clients.filtersPanel.showMore')}
+                {showMore.industry ? t('common.showLess') : t('common.showMore')}
               </Button>
             )}
           </FilterSection>
@@ -211,7 +211,7 @@ export const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: Fil
             </RadioGroup>
             {countries.length > 3 && (
               <Button variant="link" size="sm" onClick={() => toggleShowMore('country')} className="p-0 h-auto text-blue-400 hover:text-blue-500 mt-2 justify-start">
-                {showMore.country ? t('clients.filtersPanel.showLess') : t('clients.filtersPanel.showMore')}
+                {showMore.country ? t('common.showLess') : t('common.showMore')}
               </Button>
             )}
           </FilterSection>

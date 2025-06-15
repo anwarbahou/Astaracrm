@@ -164,9 +164,7 @@
       "to": "إلى",
       "lastInteraction": "آخر تفاعل",
       "clearAll": "مسح الكل",
-      "apply": "تطبيق الفلاتر",
-      "showMore": "عرض المزيد",
-      "showLess": "عرض أقل"
+      "apply": "تطبيق الفلاتر"
     },
     "statuses": {
       "active": "نشط",
@@ -227,9 +225,7 @@
       "createdTo": "تاريخ الإنشاء إلى",
       "lastContactedFrom": "آخر تواصل من",
       "lastContactedTo": "آخر تواصل إلى",
-      "tags": "الوسوم",
-      "showMore": "عرض المزيد",
-      "showLess": "عرض أقل"
+      "tags": "الوسوم"
     },
     "tags": {
       "decisionMaker": "صانع قرار",
@@ -416,7 +412,9 @@
     "save": "حفظ",
     "edit": "تعديل",
     "delete": "حذف",
-    "close": "إغلاق"
+    "close": "إغلاق",
+    "showMore": "عرض المزيد",
+    "showLess": "عرض أقل"
   },
   "countries": {
     "morocco": "المغرب",
@@ -661,7 +659,9 @@
     "save": "حفظ",
     "edit": "تعديل",
     "delete": "حذف",
-    "close": "إغلاق"
+    "close": "إغلاق",
+    "showMore": "عرض المزيد",
+    "showLess": "عرض أقل"
   },
   "countries": {
     "morocco": "المغرب",

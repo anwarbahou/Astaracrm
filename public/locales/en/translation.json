@@ -1,3 +1,4 @@
+
 {
   "app": {
     "sidebar": {
@@ -178,6 +179,35 @@
       "smb": "SMB",
       "urgent": "Urgent",
       "international": "International"
+    },
+    "profile": {
+      "title": "Client Profile",
+      "edit": "Edit",
+      "save": "Save",
+      "cancel": "Cancel",
+      "memberSince": "Member since",
+      "totalDealValue": "Total Deal Value",
+      "activeDeals": "Active Deals",
+      "companyInformation": "Company Information",
+      "companyContacts": "Company Contacts",
+      "addContact": "Add Contact",
+      "primary": "Primary",
+      "uploadFile": "Upload File",
+      "filesDocuments": "Files & Documents",
+      "noFilesUploaded": "No files uploaded",
+      "uploadFirstDocument": "Upload First Document",
+      "uploadContracts": "Upload contracts, proposals, or other important documents",
+      "notesTimeline": "Notes & Timeline",
+      "changeHistory": "Change History",
+      "noChangesRecorded": "No changes recorded",
+      "changesWillAppear": "Changes to this client profile will appear here",
+      "tabs": {
+        "overview": "Overview",
+        "contacts": "Contacts",
+        "notes": "Notes",
+        "files": "Files",
+        "history": "History"
+      }
     }
   },
   "contacts": {

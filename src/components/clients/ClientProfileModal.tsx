@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Sheet,
   SheetContent,
@@ -45,6 +46,7 @@ interface ClientProfileModalProps {
 }
 
 export function ClientProfileModal({ client, open, onOpenChange, onSave }: ClientProfileModalProps) {
+  const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [editedClient, setEditedClient] = useState<Client | null>(null);
 
@@ -102,23 +104,23 @@ export function ClientProfileModal({ client, open, onOpenChange, onSave }: Clien
       <SheetContent className="w-full sm:max-w-2xl overflow-y-auto">
         <SheetHeader className="space-y-6">
           <div className="flex items-center justify-between">
-            <SheetTitle>Client Profile</SheetTitle>
+            <SheetTitle>{t('clients.profile.title')}</SheetTitle>
             <div className="flex gap-2">
               {isEditing ? (
                 <>
                   <Button size="sm" onClick={handleSave} className="gap-2">
                     <Save size={16} />
-                    Save
+                    {t('clients.profile.save')}
                   </Button>
                   <Button size="sm" variant="outline" onClick={handleCancel} className="gap-2">
                     <X size={16} />
-                    Cancel
+                    {t('clients.profile.cancel')}
                   </Button>
                 </>
               ) : (
                 <Button size="sm" onClick={() => setIsEditing(true)} className="gap-2">
                   <Edit size={16} />
-                  Edit
+                  {t('clients.profile.edit')}
                 </Button>
               )}
             </div>
@@ -188,7 +190,7 @@ export function ClientProfileModal({ client, open, onOpenChange, onSave }: Clien
                 </div>
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span>Member since {new Date(client.createdDate).toLocaleDateString()}</span>
+                  <span>{t('clients.profile.memberSince')} {new Date(client.createdDate).toLocaleDateString()}</span>
                 </div>
               </div>
             </div>
@@ -199,19 +201,19 @@ export function ClientProfileModal({ client, open, onOpenChange, onSave }: Clien
             <Card>
               <CardContent className="p-4 text-center">
                 <p className="text-2xl font-bold text-primary">{formatCurrency(client.totalDealValue)}</p>
-                <p className="text-xs text-muted-foreground">Total Deal Value</p>
+                <p className="text-xs text-muted-foreground">{t('clients.profile.totalDealValue')}</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4 text-center">
                 <p className="text-2xl font-bold">{client.contactsCount}</p>
-                <p className="text-xs text-muted-foreground">Contacts</p>
+                <p className="text-xs text-muted-foreground">{t('clients.table.contacts')}</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4 text-center">
                 <p className="text-2xl font-bold">3</p>
-                <p className="text-xs text-muted-foreground">Active Deals</p>
+                <p className="text-xs text-muted-foreground">{t('clients.profile.activeDeals')}</p>
               </CardContent>
             </Card>
           </div>
@@ -220,21 +222,21 @@ export function ClientProfileModal({ client, open, onOpenChange, onSave }: Clien
         {/* Tabs */}
         <Tabs defaultValue="overview" className="mt-6">
           <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="contacts">Contacts</TabsTrigger>
-            <TabsTrigger value="notes">Notes</TabsTrigger>
-            <TabsTrigger value="files">Files</TabsTrigger>
-            <TabsTrigger value="history">History</TabsTrigger>
+            <TabsTrigger value="overview">{t('clients.profile.tabs.overview')}</TabsTrigger>
+            <TabsTrigger value="contacts">{t('clients.profile.tabs.contacts')}</TabsTrigger>
+            <TabsTrigger value="notes">{t('clients.profile.tabs.notes')}</TabsTrigger>
+            <TabsTrigger value="files">{t('clients.profile.tabs.files')}</TabsTrigger>
+            <TabsTrigger value="history">{t('clients.profile.tabs.history')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>Company Information</CardTitle>
+                <CardTitle>{t('clients.profile.companyInformation')}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label>Industry</Label>
+                  <Label>{t('clients.table.industry')}</Label>
                   {isEditing ? (
                     <Select
                       value={editedClient.industry}
@@ -244,11 +246,11 @@ export function ClientProfileModal({ client, open, onOpenChange, onSave }: Clien
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Technology">Technology</SelectItem>
-                        <SelectItem value="Healthcare">Healthcare</SelectItem>
-                        <SelectItem value="Finance">Finance</SelectItem>
-                        <SelectItem value="Retail">Retail</SelectItem>
-                        <SelectItem value="Manufacturing">Manufacturing</SelectItem>
+                        <SelectItem value="Technology">{t('industries.technology')}</SelectItem>
+                        <SelectItem value="Healthcare">{t('industries.healthcare')}</SelectItem>
+                        <SelectItem value="Finance">{t('industries.finance')}</SelectItem>
+                        <SelectItem value="Retail">{t('industries.retail')}</SelectItem>
+                        <SelectItem value="Manufacturing">{t('industries.manufacturing')}</SelectItem>
                       </SelectContent>
                     </Select>
                   ) : (
@@ -257,7 +259,7 @@ export function ClientProfileModal({ client, open, onOpenChange, onSave }: Clien
                 </div>
                 
                 <div>
-                  <Label>Owner</Label>
+                  <Label>{t('clients.table.owner')}</Label>
                   {isEditing ? (
                     <Input
                       value={editedClient.owner}
@@ -269,7 +271,7 @@ export function ClientProfileModal({ client, open, onOpenChange, onSave }: Clien
                 </div>
                 
                 <div>
-                  <Label>Tags</Label>
+                  <Label>{t('clients.table.tags')}</Label>
                   <div className="flex gap-2 flex-wrap mt-1">
                     {client.tags.map((tag, index) => (
                       <Badge key={index} variant="secondary">{tag}</Badge>
@@ -278,12 +280,12 @@ export function ClientProfileModal({ client, open, onOpenChange, onSave }: Clien
                 </div>
                 
                 <div>
-                  <Label>Notes</Label>
+                  <Label>{t('addClientModal.notesLabel')}</Label>
                   {isEditing ? (
                     <Textarea
                       value={editedClient.notes || ''}
                       onChange={(e) => setEditedClient({ ...editedClient, notes: e.target.value })}
-                      placeholder="Add notes about this client..."
+                      placeholder={t('addClientModal.notesPlaceholder')}
                       rows={4}
                     />
                   ) : (
@@ -300,9 +302,9 @@ export function ClientProfileModal({ client, open, onOpenChange, onSave }: Clien
                 <CardTitle className="flex items-center justify-between">
                   <span className="flex items-center gap-2">
                     <Users size={20} />
-                    Company Contacts
+                    {t('clients.profile.companyContacts')}
                   </span>
-                  <Button size="sm">Add Contact</Button>
+                  <Button size="sm">{t('clients.profile.addContact')}</Button>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -315,7 +317,7 @@ export function ClientProfileModal({ client, open, onOpenChange, onSave }: Clien
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <p className="font-medium">{contact.name}</p>
-                          {contact.primary && <Badge variant="default">Primary</Badge>}
+                          {contact.primary && <Badge variant="default">{t('clients.profile.primary')}</Badge>}
                         </div>
                         <p className="text-sm text-muted-foreground">{contact.role}</p>
                         <div className="flex gap-4 text-xs text-muted-foreground mt-1">
@@ -335,7 +337,7 @@ export function ClientProfileModal({ client, open, onOpenChange, onSave }: Clien
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <FileText size={20} />
-                  Notes & Timeline
+                  {t('clients.profile.notesTimeline')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -364,17 +366,17 @@ export function ClientProfileModal({ client, open, onOpenChange, onSave }: Clien
                 <CardTitle className="flex items-center justify-between">
                   <span className="flex items-center gap-2">
                     <Upload size={20} />
-                    Files & Documents
+                    {t('clients.profile.filesDocuments')}
                   </span>
-                  <Button size="sm">Upload File</Button>
+                  <Button size="sm">{t('clients.profile.uploadFile')}</Button>
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-center py-12">
                   <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="font-medium text-lg mb-2">No files uploaded</h3>
-                  <p className="text-muted-foreground mb-4">Upload contracts, proposals, or other important documents</p>
-                  <Button>Upload First Document</Button>
+                  <h3 className="font-medium text-lg mb-2">{t('clients.profile.noFilesUploaded')}</h3>
+                  <p className="text-muted-foreground mb-4">{t('clients.profile.uploadContracts')}</p>
+                  <Button>{t('clients.profile.uploadFirstDocument')}</Button>
                 </div>
               </CardContent>
             </Card>
@@ -385,14 +387,14 @@ export function ClientProfileModal({ client, open, onOpenChange, onSave }: Clien
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <History size={20} />
-                  Change History
+                  {t('clients.profile.changeHistory')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-center py-12">
                   <History className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="font-medium text-lg mb-2">No changes recorded</h3>
-                  <p className="text-muted-foreground">Changes to this client profile will appear here</p>
+                  <h3 className="font-medium text-lg mb-2">{t('clients.profile.noChangesRecorded')}</h3>
+                  <p className="text-muted-foreground">{t('clients.profile.changesWillAppear')}</p>
                 </div>
               </CardContent>
             </Card>

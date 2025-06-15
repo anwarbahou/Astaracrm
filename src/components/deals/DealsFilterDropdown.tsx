@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Filter, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface DealsFilterDropdownProps {
   filters: DealFilters;
@@ -22,6 +23,7 @@ interface DealsFilterDropdownProps {
 }
 
 export function DealsFilterDropdown({ filters, onFiltersChange, onClearFilters }: DealsFilterDropdownProps) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
   const stages: DealStage[] = ['Prospect', 'Lead', 'Qualified', 'Negotiation', 'Won/Lost'];
@@ -52,7 +54,7 @@ export function DealsFilterDropdown({ filters, onFiltersChange, onClearFilters }
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="gap-2 bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700">
           <Filter className="h-4 w-4" />
-          Filters
+          {t('deals.filters')}
           {hasActiveFilters && (
             <span className="bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
               {filters.stages.length + filters.owners.length}
@@ -65,7 +67,7 @@ export function DealsFilterDropdown({ filters, onFiltersChange, onClearFilters }
         align="end"
       >
         <DropdownMenuLabel className="flex items-center justify-between text-gray-100">
-          Filter Deals
+          {t('deals.filtersDropdown.title')}
           {hasActiveFilters && (
             <Button
               variant="ghost"
@@ -74,7 +76,7 @@ export function DealsFilterDropdown({ filters, onFiltersChange, onClearFilters }
               className="h-6 px-2 text-xs text-gray-400 hover:text-gray-100"
             >
               <X className="h-3 w-3 mr-1" />
-              Clear
+              {t('deals.filtersDropdown.clear')}
             </Button>
           )}
         </DropdownMenuLabel>
@@ -82,7 +84,7 @@ export function DealsFilterDropdown({ filters, onFiltersChange, onClearFilters }
 
         {/* Stages Filter */}
         <div className="p-3 space-y-2">
-          <Label className="text-sm font-medium text-gray-200">Stages</Label>
+          <Label className="text-sm font-medium text-gray-200">{t('deals.filtersDropdown.stagesLabel')}</Label>
           {stages.map((stage) => (
             <div key={stage} className="flex items-center space-x-2">
               <Checkbox
@@ -95,7 +97,7 @@ export function DealsFilterDropdown({ filters, onFiltersChange, onClearFilters }
                 htmlFor={`stage-${stage}`} 
                 className="text-sm text-gray-300 cursor-pointer"
               >
-                {stage}
+                {t(`deals.stages.${stage.toLowerCase().replace('/', '-')}`)}
               </Label>
             </div>
           ))}
@@ -105,7 +107,7 @@ export function DealsFilterDropdown({ filters, onFiltersChange, onClearFilters }
 
         {/* Owners Filter */}
         <div className="p-3 space-y-2">
-          <Label className="text-sm font-medium text-gray-200">Owners</Label>
+          <Label className="text-sm font-medium text-gray-200">{t('deals.filtersDropdown.ownersLabel')}</Label>
           <div className="max-h-32 overflow-y-auto space-y-2">
             {owners.map((owner) => (
               <div key={owner} className="flex items-center space-x-2">
@@ -130,11 +132,11 @@ export function DealsFilterDropdown({ filters, onFiltersChange, onClearFilters }
 
         {/* Value Range */}
         <div className="p-3 space-y-2">
-          <Label className="text-sm font-medium text-gray-200">Value Range (MAD)</Label>
+          <Label className="text-sm font-medium text-gray-200">{t('deals.filtersDropdown.valueLabel')}</Label>
           <div className="grid grid-cols-2 gap-2">
             <Input
               type="number"
-              placeholder="Min"
+              placeholder={t('deals.filtersDropdown.minPlaceholder')}
               value={filters.valueRange[0] || ''}
               onChange={(e) => onFiltersChange({
                 ...filters,
@@ -144,7 +146,7 @@ export function DealsFilterDropdown({ filters, onFiltersChange, onClearFilters }
             />
             <Input
               type="number"
-              placeholder="Max"
+              placeholder={t('deals.filtersDropdown.maxPlaceholder')}
               value={filters.valueRange[1] === 1000000 ? '' : filters.valueRange[1]}
               onChange={(e) => onFiltersChange({
                 ...filters,
@@ -159,7 +161,7 @@ export function DealsFilterDropdown({ filters, onFiltersChange, onClearFilters }
 
         {/* Date Range */}
         <div className="p-3 space-y-2">
-          <Label className="text-sm font-medium text-gray-200">Expected Close Date</Label>
+          <Label className="text-sm font-medium text-gray-200">{t('deals.filtersDropdown.dateLabel')}</Label>
           <div className="grid grid-cols-2 gap-2">
             <Input
               type="date"

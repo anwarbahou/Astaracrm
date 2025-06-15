@@ -167,6 +167,37 @@
         "title": "تم إنشاء الصفقة",
         "description": "تمت إضافة صفقة جديدة إلى مرحلة {{stage}}"
       }
+    },
+    "pipeline": {
+      "dropDeal": "أفلت الصفقة هنا",
+      "noDeals": "لا توجد صفقات في هذه المرحلة",
+      "addFirstDeal": "أضف صفقتك الأولى",
+      "addDeal": "إضافة صفقة"
+    },
+    "board": {
+      "noDeals": "لا توجد صفقات في هذه المرحلة"
+    },
+    "filtersDropdown": {
+      "title": "تصفية الصفقات",
+      "clear": "مسح",
+      "stagesLabel": "المراحل",
+      "ownersLabel": "المالكون",
+      "valueLabel": "نطاق القيمة (درهم)",
+      "minPlaceholder": "الحد الأدنى",
+      "maxPlaceholder": "الحد الأقصى",
+      "dateLabel": "تاريخ الإغلاق المتوقع"
+    },
+    "filtersPanel": {
+      "sourcesLabel": "المصادر",
+      "clearAll": "مسح الكل",
+      "apply": "تطبيق الفلاتر"
+    },
+    "sources": {
+      "website": "موقع إلكتروني",
+      "referral": "إحالة",
+      "coldOutreach": "تواصل بارد",
+      "linkedIn": "لينكدإن",
+      "existingClient": "عميل حالي"
     }
   },
   "activityLogs": {

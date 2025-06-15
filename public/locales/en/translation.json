@@ -167,6 +167,37 @@
         "title": "Deal created",
         "description": "New deal added to {{stage}} stage"
       }
+    },
+    "pipeline": {
+      "dropDeal": "Drop deal here",
+      "noDeals": "No deals in this stage",
+      "addFirstDeal": "Add your first deal",
+      "addDeal": "Add Deal"
+    },
+    "board": {
+      "noDeals": "No deals in this stage"
+    },
+    "filtersDropdown": {
+      "title": "Filter Deals",
+      "clear": "Clear",
+      "stagesLabel": "Stages",
+      "ownersLabel": "Owners",
+      "valueLabel": "Value Range (MAD)",
+      "minPlaceholder": "Min",
+      "maxPlaceholder": "Max",
+      "dateLabel": "Expected Close Date"
+    },
+    "filtersPanel": {
+      "sourcesLabel": "Sources",
+      "clearAll": "Clear All",
+      "apply": "Apply Filters"
+    },
+    "sources": {
+      "website": "Website",
+      "referral": "Referral",
+      "coldOutreach": "Cold Outreach",
+      "linkedIn": "LinkedIn",
+      "existingClient": "Existing Client"
     }
   },
   "activityLogs": {

@@ -53,7 +53,7 @@ export function DealsBoard({ deals, onDealClick, onDealEdit, onDealDelete }: Dea
                 ))}
                 {stageDeals.length === 0 && (
                   <div className="text-center py-8 text-muted-foreground text-sm">
-                    No deals in this stage
+                    {t('deals.board.noDeals')}
                   </div>
                 )}
               </div>

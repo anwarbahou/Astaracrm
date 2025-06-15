@@ -100,7 +100,7 @@ export function PipelineColumn({
       {isDropTarget && isDragging && (
         <div className="mx-4 mb-4 border-2 border-dashed border-primary bg-primary/10 rounded-lg p-4 text-center text-primary animate-pulse">
           <Plus className="h-6 w-6 mx-auto mb-2" />
-          Drop deal here
+          {t('deals.pipeline.dropDeal')}
         </div>
       )}
 
@@ -120,14 +120,14 @@ export function PipelineColumn({
           {deals.length === 0 && !isDropTarget && (
             <div className="text-center py-12 text-muted-foreground">
               <div className="text-4xl mb-2">📋</div>
-              <p className="text-sm">No deals in this stage</p>
+              <p className="text-sm">{t('deals.pipeline.noDeals')}</p>
               <Button 
                 variant="ghost" 
                 size="sm"
                 onClick={onAddDeal}
                 className="mt-2 text-xs hover:bg-muted/50"
               >
-                Add your first deal
+                {t('deals.pipeline.addFirstDeal')}
               </Button>
             </div>
           )}
@@ -141,7 +141,7 @@ export function PipelineColumn({
             className="mt-4 w-full crm-button-secondary hover:bg-muted/50"
           >
             <Plus className="h-4 w-4 mr-2" />
-            Add Deal
+            {t('deals.pipeline.addDeal')}
           </Button>
         )}
       </CardContent>

@@ -1,3 +1,4 @@
+
 import { DealFilters, DealStage } from '@/types/deal';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -13,6 +14,7 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { X, Filter } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface FiltersPanelProps {
   filters: DealFilters;
@@ -29,11 +31,13 @@ export function FiltersPanel({
   open, 
   onOpenChange 
 }: FiltersPanelProps) {
+  const { t } = useTranslation();
   const [localFilters, setLocalFilters] = useState<DealFilters>(filters);
 
   const stages: DealStage[] = ['Prospect', 'Lead', 'Qualified', 'Negotiation', 'Won/Lost'];
   const owners = ['John Doe', 'Sarah Smith', 'Mike Johnson', 'Emily Davis', 'David Wilson'];
   const sources = ['Website', 'Referral', 'Cold Outreach', 'LinkedIn', 'Existing Client'];
+  const sourceKeys = ['website', 'referral', 'coldOutreach', 'linkedIn', 'existingClient'];
 
   const updateLocalFilters = (field: keyof DealFilters, value: any) => {
     setLocalFilters(prev => ({ ...prev, [field]: value }));
@@ -85,7 +89,7 @@ export function FiltersPanel({
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-lg font-semibold flex items-center gap-2">
           <Filter className="h-5 w-5" />
-          Filters
+          {t('deals.filters')}
         </CardTitle>
         <Button variant="ghost" size="sm" onClick={() => onOpenChange(false)}>
           <X className="h-4 w-4" />
@@ -95,17 +99,17 @@ export function FiltersPanel({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Stages Filter */}
           <div>
-            <Label className="text-sm font-medium">Stages</Label>
+            <Label className="text-sm font-medium">{t('deals.filtersDropdown.stagesLabel')}</Label>
             <div className="space-y-2 mt-2">
               {stages.map((stage) => (
                 <div key={stage} className="flex items-center space-x-2">
                   <Checkbox
-                    id={`stage-${stage}`}
+                    id={`stage-filter-panel-${stage}`}
                     checked={localFilters.stages.includes(stage)}
                     onCheckedChange={(checked) => handleStageChange(stage, !!checked)}
                   />
-                  <Label htmlFor={`stage-${stage}`} className="text-sm">
-                    {stage}
+                  <Label htmlFor={`stage-filter-panel-${stage}`} className="text-sm">
+                    {t(`deals.stages.${stage.toLowerCase().replace('/', '-')}`)}
                   </Label>
                 </div>
               ))}
@@ -114,16 +118,16 @@ export function FiltersPanel({
 
           {/* Owners Filter */}
           <div>
-            <Label className="text-sm font-medium">Owners</Label>
+            <Label className="text-sm font-medium">{t('deals.filtersDropdown.ownersLabel')}</Label>
             <div className="space-y-2 mt-2">
               {owners.map((owner) => (
                 <div key={owner} className="flex items-center space-x-2">
                   <Checkbox
-                    id={`owner-${owner}`}
+                    id={`owner-filter-panel-${owner}`}
                     checked={localFilters.owners.includes(owner)}
                     onCheckedChange={(checked) => handleOwnerChange(owner, !!checked)}
                   />
-                  <Label htmlFor={`owner-${owner}`} className="text-sm">
+                  <Label htmlFor={`owner-filter-panel-${owner}`} className="text-sm">
                     {owner}
                   </Label>
                 </div>
@@ -133,17 +137,17 @@ export function FiltersPanel({
 
           {/* Sources Filter */}
           <div>
-            <Label className="text-sm font-medium">Sources</Label>
+            <Label className="text-sm font-medium">{t('deals.filtersPanel.sourcesLabel')}</Label>
             <div className="space-y-2 mt-2">
-              {sources.map((source) => (
+              {sources.map((source, index) => (
                 <div key={source} className="flex items-center space-x-2">
                   <Checkbox
-                    id={`source-${source}`}
+                    id={`source-filter-panel-${source}`}
                     checked={localFilters.sources.includes(source)}
                     onCheckedChange={(checked) => handleSourceChange(source, !!checked)}
                   />
-                  <Label htmlFor={`source-${source}`} className="text-sm">
-                    {source}
+                  <Label htmlFor={`source-filter-panel-${source}`} className="text-sm">
+                    {t(`deals.sources.${sourceKeys[index]}`)}
                   </Label>
                 </div>
               ))}
@@ -153,11 +157,11 @@ export function FiltersPanel({
           {/* Value Range & Date Range */}
           <div className="space-y-4">
             <div>
-              <Label className="text-sm font-medium">Value Range (MAD)</Label>
+              <Label className="text-sm font-medium">{t('deals.filtersDropdown.valueLabel')}</Label>
               <div className="flex items-center space-x-2 mt-2">
                 <Input
                   type="number"
-                  placeholder="Min"
+                  placeholder={t('deals.filtersDropdown.minPlaceholder')}
                   value={localFilters.valueRange[0]}
                   onChange={(e) => updateLocalFilters('valueRange', [parseInt(e.target.value) || 0, localFilters.valueRange[1]])}
                   className="w-20"
@@ -165,7 +169,7 @@ export function FiltersPanel({
                 <span>-</span>
                 <Input
                   type="number"
-                  placeholder="Max"
+                  placeholder={t('deals.filtersDropdown.maxPlaceholder')}
                   value={localFilters.valueRange[1]}
                   onChange={(e) => updateLocalFilters('valueRange', [localFilters.valueRange[0], parseInt(e.target.value) || 1000000])}
                   className="w-20"
@@ -174,7 +178,7 @@ export function FiltersPanel({
             </div>
 
             <div>
-              <Label className="text-sm font-medium">Expected Close Date</Label>
+              <Label className="text-sm font-medium">{t('deals.filtersDropdown.dateLabel')}</Label>
               <div className="space-y-2 mt-2">
                 <Input
                   type="date"
@@ -194,10 +198,10 @@ export function FiltersPanel({
         {/* Action Buttons */}
         <div className="flex justify-between pt-4 border-t">
           <Button variant="outline" onClick={clearFilters}>
-            Clear All
+            {t('deals.filtersPanel.clearAll')}
           </Button>
           <Button onClick={applyFilters}>
-            Apply Filters
+            {t('deals.filtersPanel.apply')}
           </Button>
         </div>
       </CardContent>

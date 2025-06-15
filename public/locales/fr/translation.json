@@ -167,6 +167,37 @@
         "title": "Opportunité créée",
         "description": "Nouvelle opportunité ajoutée à l'étape {{stage}}"
       }
+    },
+    "pipeline": {
+      "dropDeal": "Déposer l'opportunité ici",
+      "noDeals": "Aucune opportunité à cette étape",
+      "addFirstDeal": "Ajoutez votre première opportunité",
+      "addDeal": "Ajouter une opportunité"
+    },
+    "board": {
+      "noDeals": "Aucune opportunité à cette étape"
+    },
+    "filtersDropdown": {
+      "title": "Filtrer les opportunités",
+      "clear": "Effacer",
+      "stagesLabel": "Étapes",
+      "ownersLabel": "Propriétaires",
+      "valueLabel": "Plage de valeurs (MAD)",
+      "minPlaceholder": "Min",
+      "maxPlaceholder": "Max",
+      "dateLabel": "Date de clôture prévue"
+    },
+    "filtersPanel": {
+      "sourcesLabel": "Sources",
+      "clearAll": "Tout effacer",
+      "apply": "Appliquer les filtres"
+    },
+    "sources": {
+      "website": "Site web",
+      "referral": "Référence",
+      "coldOutreach": "Démarchage à froid",
+      "linkedIn": "LinkedIn",
+      "existingClient": "Client existant"
     }
   },
   "activityLogs": {

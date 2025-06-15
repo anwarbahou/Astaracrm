@@ -79,7 +79,7 @@ type SortDirection = 'asc' | 'desc';
 
 const FilterSection: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <div className="space-y-2">
-    <Label className="text-sm font-medium text-gray-200">{title}</Label>
+    <Label className="text-sm font-medium text-muted-foreground">{title}</Label>
     {children}
   </div>
 );
@@ -87,6 +87,16 @@ const FilterSection: React.FC<{ title: string; children: React.ReactNode }> = ({
 const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: { filters: ClientFilters; onFiltersChange: (f: ClientFilters) => void; onClose: () => void }) => {
   const { t } = useTranslation();
   const [localFilters, setLocalFilters] = useState<ClientFilters>(filters);
+  const [showMore, setShowMore] = useState({
+    owner: false,
+    stage: false,
+    industry: false,
+    country: false,
+  });
+
+  const toggleShowMore = (section: keyof typeof showMore) => {
+    setShowMore(prev => ({ ...prev, [section]: !prev[section] }));
+  };
 
   const owners = useMemo(() => ["John Smith", "Sarah Johnson", "Mike Wilson", "Emily Davis"], []);
   const stages = useMemo(() => ["Lead", "Prospect", "Active", "Inactive"], []);
@@ -134,9 +144,9 @@ const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: { filters:
   };
 
   return (
-    <Card className="w-[380px] bg-gray-800 border-gray-700 text-gray-200 shadow-lg">
-      <CardHeader className="border-b border-gray-700 p-4">
-        <CardTitle className="flex items-center justify-between text-lg text-gray-100">
+    <Card className="w-[380px] bg-card border-border text-card-foreground shadow-lg">
+      <CardHeader className="border-b border-border p-4">
+        <CardTitle className="flex items-center justify-between text-lg text-foreground">
           <span className="flex items-center gap-2">
             <Filter size={20} />
             {t('clients.filtersPanel.title')}
@@ -145,7 +155,7 @@ const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: { filters:
             variant="ghost"
             size="sm"
             onClick={handleClearFilters}
-            className="h-7 px-2 text-xs text-gray-400 hover:text-gray-100 hover:bg-gray-700"
+            className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground hover:bg-accent"
           >
             <X className="h-3 w-3 mr-1" />
             {t('clients.filtersPanel.clearAll')}
@@ -160,13 +170,18 @@ const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: { filters:
                 <RadioGroupItem value="" id="owner-all" />
                 <Label htmlFor="owner-all" className="cursor-pointer">{t('clients.filtersPanel.allOwners')}</Label>
               </div>
-              {owners.map(owner => (
+              {(showMore.owner ? owners : owners.slice(0, 3)).map(owner => (
                 <div key={owner} className="flex items-center space-x-2">
                   <RadioGroupItem value={owner} id={`owner-${owner}`} />
                   <Label htmlFor={`owner-${owner}`} className="cursor-pointer">{owner}</Label>
                 </div>
               ))}
             </RadioGroup>
+            {owners.length > 3 && (
+              <Button variant="link" size="sm" onClick={() => toggleShowMore('owner')} className="p-0 h-auto text-blue-400 hover:text-blue-500 mt-2 justify-start">
+                {showMore.owner ? 'Show Less' : 'Show More'}
+              </Button>
+            )}
           </FilterSection>
 
           <FilterSection title={t('clients.filtersPanel.stage')}>
@@ -175,13 +190,18 @@ const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: { filters:
                 <RadioGroupItem value="" id="stage-all" />
                 <Label htmlFor="stage-all" className="cursor-pointer">{t('clients.filtersPanel.allStages')}</Label>
               </div>
-              {stages.map(stage => (
+              {(showMore.stage ? stages : stages.slice(0, 3)).map(stage => (
                 <div key={stage} className="flex items-center space-x-2">
                   <RadioGroupItem value={stage} id={`stage-${stage}`} />
                   <Label htmlFor={`stage-${stage}`} className="cursor-pointer">{stage}</Label>
                 </div>
               ))}
             </RadioGroup>
+            {stages.length > 3 && (
+              <Button variant="link" size="sm" onClick={() => toggleShowMore('stage')} className="p-0 h-auto text-blue-400 hover:text-blue-500 mt-2 justify-start">
+                {showMore.stage ? 'Show Less' : 'Show More'}
+              </Button>
+            )}
           </FilterSection>
           
           <FilterSection title={t('clients.filtersPanel.industry')}>
@@ -190,13 +210,18 @@ const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: { filters:
                 <RadioGroupItem value="" id="industry-all" />
                 <Label htmlFor="industry-all" className="cursor-pointer">{t('clients.filtersPanel.allIndustries')}</Label>
               </div>
-              {industries.map(industry => (
+              {(showMore.industry ? industries : industries.slice(0, 3)).map(industry => (
                 <div key={industry} className="flex items-center space-x-2">
                   <RadioGroupItem value={industry} id={`industry-${industry}`} />
                   <Label htmlFor={`industry-${industry}`} className="cursor-pointer">{industry}</Label>
                 </div>
               ))}
             </RadioGroup>
+             {industries.length > 3 && (
+              <Button variant="link" size="sm" onClick={() => toggleShowMore('industry')} className="p-0 h-auto text-blue-400 hover:text-blue-500 mt-2 justify-start">
+                {showMore.industry ? 'Show Less' : 'Show More'}
+              </Button>
+            )}
           </FilterSection>
 
           <FilterSection title={t('clients.filtersPanel.location')}>
@@ -205,13 +230,18 @@ const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: { filters:
                 <RadioGroupItem value="" id="country-all" />
                 <Label htmlFor="country-all" className="cursor-pointer">{t('clients.filtersPanel.allLocations')}</Label>
               </div>
-              {countries.map(country => (
+              {(showMore.country ? countries : countries.slice(0, 3)).map(country => (
                 <div key={country} className="flex items-center space-x-2">
                   <RadioGroupItem value={country} id={`country-${country}`} />
                   <Label htmlFor={`country-${country}`} className="cursor-pointer">{country}</Label>
                 </div>
               ))}
             </RadioGroup>
+            {countries.length > 3 && (
+              <Button variant="link" size="sm" onClick={() => toggleShowMore('country')} className="p-0 h-auto text-blue-400 hover:text-blue-500 mt-2 justify-start">
+                {showMore.country ? 'Show Less' : 'Show More'}
+              </Button>
+            )}
           </FilterSection>
 
           <FilterSection title={t('clients.filtersPanel.status')}>
@@ -232,10 +262,10 @@ const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: { filters:
           <FilterSection title={t('clients.filtersPanel.tags')}>
             <div className="space-y-2">
               <Select onValueChange={(value) => addTag(value)}>
-                <SelectTrigger className="bg-gray-700 border-gray-600">
+                <SelectTrigger className="bg-input border-input">
                   <SelectValue placeholder={t('clients.filtersPanel.addTag')} />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-gray-700 text-gray-200">
+                <SelectContent className="bg-popover border-border text-popover-foreground">
                   {availableTags.map(tag => (
                     <SelectItem key={tag} value={tag}>{tag}</SelectItem>
                   ))}
@@ -244,7 +274,7 @@ const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: { filters:
               {localFilters.tags.length > 0 && (
                 <div className="flex gap-1 flex-wrap">
                   {localFilters.tags.map((tag, index) => (
-                    <Badge key={index} variant="secondary" className="gap-1 bg-gray-600 text-gray-100">
+                    <Badge key={index} variant="secondary" className="gap-1">
                       {tag}
                       <X 
                         size={12} 
@@ -266,7 +296,7 @@ const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: { filters:
                   type="date"
                   value={localFilters.dateCreatedFrom}
                   onChange={(e) => setLocalFilters({ ...localFilters, dateCreatedFrom: e.target.value })}
-                  className="bg-gray-700 border-gray-600"
+                  className="bg-input border-input"
                 />
               </div>
               <div>
@@ -275,7 +305,7 @@ const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: { filters:
                   type="date"
                   value={localFilters.dateCreatedTo}
                   onChange={(e) => setLocalFilters({ ...localFilters, dateCreatedTo: e.target.value })}
-                  className="bg-gray-700 border-gray-600"
+                  className="bg-input border-input"
                 />
               </div>
             </div>
@@ -289,7 +319,7 @@ const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: { filters:
                   type="date"
                   value={localFilters.lastInteractionFrom}
                   onChange={(e) => setLocalFilters({ ...localFilters, lastInteractionFrom: e.target.value })}
-                  className="bg-gray-700 border-gray-600"
+                  className="bg-input border-input"
                 />
               </div>
               <div>
@@ -298,15 +328,15 @@ const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: { filters:
                   type="date"
                   value={localFilters.lastInteractionTo}
                   onChange={(e) => setLocalFilters({ ...localFilters, lastInteractionTo: e.target.value })}
-                  className="bg-gray-700 border-gray-600"
+                  className="bg-input border-input"
                 />
               </div>
             </div>
           </FilterSection>
         </div>
       </CardContent>
-      <CardFooter className="flex justify-end gap-2 p-4 border-t border-gray-700">
-        <Button variant="outline" onClick={onClose} className="border-gray-600 hover:bg-gray-700">
+      <CardFooter className="flex justify-end gap-2 p-4 border-t border-border">
+        <Button variant="outline" onClick={onClose}>
           {t('common.cancel')}
         </Button>
         <Button onClick={handleApplyFilters} className="bg-blue-600 hover:bg-blue-700">

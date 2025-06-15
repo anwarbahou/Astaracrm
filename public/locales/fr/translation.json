@@ -124,81 +124,77 @@
       "title": "Contacts",
       "description": "Gérez tous vos contacts et relations d'affaires.",
       "addContact": "Ajouter un contact",
+      "searchPlaceholder": "Rechercher des contacts par nom, e-mail ou entreprise...",
       "stats": {
         "total": "Total des contacts",
         "active": "Contacts actifs",
         "decisionMakers": "Décideurs",
         "companies": "Entreprises"
-      }
-    },
-    "deals": {
-      "title": "Affaires",
-      "description": "Gérez vos opportunités tout au long du processus de vente",
-      "newDeal": "Nouvelle Opportunité",
-      "searchPlaceholder": "Rechercher des affaires...",
-      "filters": "Filtres",
-      "stages": {
-        "prospect": "Prospect",
-        "lead": "Piste",
-        "qualified": "Qualifié",
-        "negotiation": "Négociation",
-        "won-lost": "Gagné/Perdu"
       },
-      "stats": {
-        "active": "Opportunités Actives",
-        "pipelineValue": "Valeur du Pipeline",
-        "won": "Opportunités Gagnées",
-        "avgSize": "Taille Moy. Opp.",
-        "vsLastMonth": "{{change}} vs mois dernier"
-      },
-      "toasts": {
-        "moved": {
-          "title": "Opportunité déplacée",
-          "description": "Opportunité déplacée à l'étape {{stage}}"
+      "table": {
+        "title": "Tous les contacts ({{count}})",
+        "searchPlaceholder": "Rechercher des contacts...",
+        "filtersButton": "Filtres",
+        "lastContacted": "Dernier contact : {{value}}",
+        "header": {
+          "contact": "Contact",
+          "role": "Rôle/Titre",
+          "contactInfo": "Infos contact",
+          "company": "Entreprise",
+          "tags": "Étiquettes",
+          "location": "Lieu",
+          "created": "Créé le",
+          "status": "Statut"
         },
-        "updated": {
-          "title": "Opportunité mise à jour",
-          "description": "L'opportunité a été mise à jour avec succès"
-        },
-        "deleted": {
-          "title": "Opportunité supprimée",
-          "description": "L'opportunité a été supprimée avec succès"
-        },
-        "created": {
-          "title": "Opportunité créée",
-          "description": "Nouvelle opportunité ajoutée à l'étape {{stage}}"
+        "pagination": {
+          "rowsPerPage": "Lignes par page :",
+          "of": "{{start}}-{{end}} sur {{total}}"
         }
       },
-      "pipeline": {
-        "dropDeal": "Déposer l'opportunité ici",
-        "noDeals": "Aucune opportunité à cette étape",
-        "addFirstDeal": "Ajoutez votre première opportunité",
-        "addDeal": "Ajouter une opportunité"
-      },
-      "board": {
-        "noDeals": "Aucune opportunité à cette étape"
-      },
-      "filtersDropdown": {
-        "title": "Filtrer les opportunités",
-        "clear": "Effacer",
-        "stagesLabel": "Étapes",
-        "ownersLabel": "Propriétaires",
-        "valueLabel": "Plage de valeurs (MAD)",
-        "minPlaceholder": "Min",
-        "maxPlaceholder": "Max",
-        "dateLabel": "Date de clôture prévue"
-      },
       "filtersPanel": {
-        "sourcesLabel": "Sources",
+        "title": "Filtres",
         "clearAll": "Tout effacer",
-        "apply": "Appliquer"
+        "company": "Entreprise",
+        "allCompanies": "Toutes les entreprises",
+        "role": "Rôle/Titre",
+        "allRoles": "Tous les rôles",
+        "country": "Pays",
+        "allCountries": "Tous les pays",
+        "status": "Statut",
+        "allStatuses": "Tous les statuts",
+        "createdFrom": "Créé à partir de",
+        "createdTo": "Créé jusqu'au",
+        "lastContactedFrom": "Dernier contact de",
+        "lastContactedTo": "Dernier contact à",
+        "tags": "Étiquettes"
       },
-      "sources": {
-        "website": "Site web",
-        "referral": "Référence",
-        "coldOutreach": "Démarchage à froid",
-        "linkedIn": "LinkedIn",
-        "existingClient": "Client existant"
+      "tags": {
+        "decisionMaker": "Décideur",
+        "vip": "VIP",
+        "technical": "Technique",
+        "founder": "Fondateur",
+        "startup": "Startup",
+        "procurement": "Approvisionnement",
+        "sales": "Ventes"
+      },
+      "companies": {
+        "acme": "Acme Corporation",
+        "tech": "Tech Solutions Ltd",
+        "global": "Global Industries",
+        "startup": "StartupXYZ",
+        "enterprise": "Enterprise Corp"
+      },
+      "roles": {
+        "ceo": "PDG",
+        "cto": "Directeur Technique",
+        "vpSales": "VP des Ventes",
+        "manager": "Manager",
+        "developer": "Développeur",
+        "designer": "Designer"
+      },
+      "statuses": {
+        "active": "Actif",
+        "inactive": "Inactif"
       }
     },
     "activityLogs": {

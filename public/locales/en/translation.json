@@ -222,8 +222,35 @@
   },
   "contacts": {
     "title": "Contacts",
+    "description": "Manage all your contacts and business relationships.",
     "addContact": "Add Contact",
     "searchPlaceholder": "Search contacts by name, email or company...",
+    "stats": {
+      "total": "Total Contacts",
+      "active": "Active Contacts",
+      "decisionMakers": "Decision Makers",
+      "companies": "Companies"
+    },
+    "table": {
+      "title": "All Contacts ({{count}})",
+      "searchPlaceholder": "Search contacts...",
+      "filtersButton": "Filters",
+      "lastContacted": "Last contacted: {{value}}",
+      "header": {
+        "contact": "Contact",
+        "role": "Role/Title",
+        "contactInfo": "Contact Info",
+        "company": "Company",
+        "tags": "Tags",
+        "location": "Location",
+        "created": "Created",
+        "status": "Status"
+      },
+      "pagination": {
+        "rowsPerPage": "Rows per page:",
+        "of": "{{start}}-{{end}} of {{total}}"
+      }
+    },
     "filtersPanel": {
       "title": "Filters",
       "clearAll": "Clear All",

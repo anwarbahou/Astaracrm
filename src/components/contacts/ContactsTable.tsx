@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -60,6 +61,7 @@ export function ContactsTable({
   searchQuery,
   onSearchChange 
 }: ContactsTableProps) {
+  const { t } = useTranslation();
   const [sortField, setSortField] = useState<keyof Contact>('firstName');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [currentPage, setCurrentPage] = useState(1);
@@ -128,12 +130,12 @@ export function ContactsTable({
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>All Contacts ({filteredContacts.length})</CardTitle>
+          <CardTitle>{t('contacts.table.title', { count: filteredContacts.length })}</CardTitle>
           <div className="flex items-center gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
-                placeholder="Search contacts..."
+                placeholder={t('contacts.table.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
                 className="pl-10 w-80"
@@ -141,7 +143,7 @@ export function ContactsTable({
             </div>
             <Button variant="outline" className="gap-2" onClick={onFiltersToggle}>
               <Filter size={16} />
-              Filters
+              {t('contacts.table.filtersButton')}
             </Button>
           </div>
         </div>
@@ -151,33 +153,33 @@ export function ContactsTable({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Contact</TableHead>
+                <TableHead>{t('contacts.table.header.contact')}</TableHead>
                 <TableHead 
                   className="cursor-pointer hover:bg-muted/50"
                   onClick={() => handleSort('role')}
                 >
                   <div className="flex items-center gap-1">
-                    Role/Title
+                    {t('contacts.table.header.role')}
                     <ArrowUpDown className="h-3 w-3" />
                   </div>
                 </TableHead>
-                <TableHead>Contact Info</TableHead>
+                <TableHead>{t('contacts.table.header.contactInfo')}</TableHead>
                 <TableHead 
                   className="cursor-pointer hover:bg-muted/50"
                   onClick={() => handleSort('company')}
                 >
                   <div className="flex items-center gap-1">
-                    Company
+                    {t('contacts.table.header.company')}
                     <ArrowUpDown className="h-3 w-3" />
                   </div>
                 </TableHead>
-                <TableHead>Tags</TableHead>
+                <TableHead>{t('contacts.table.header.tags')}</TableHead>
                 <TableHead 
                   className="cursor-pointer hover:bg-muted/50"
                   onClick={() => handleSort('country')}
                 >
                   <div className="flex items-center gap-1">
-                    Location
+                    {t('contacts.table.header.location')}
                     <ArrowUpDown className="h-3 w-3" />
                   </div>
                 </TableHead>
@@ -186,11 +188,11 @@ export function ContactsTable({
                   onClick={() => handleSort('createdDate')}
                 >
                   <div className="flex items-center gap-1">
-                    Created
+                    {t('contacts.table.header.created')}
                     <ArrowUpDown className="h-3 w-3" />
                   </div>
                 </TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>{t('contacts.table.header.status')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -210,7 +212,7 @@ export function ContactsTable({
                       </Avatar>
                       <div>
                         <p className="font-medium">{contact.firstName} {contact.lastName}</p>
-                        <p className="text-sm text-muted-foreground">Last contacted: {contact.lastContacted}</p>
+                        <p className="text-sm text-muted-foreground">{t('contacts.table.lastContacted', { value: contact.lastContacted })}</p>
                       </div>
                     </div>
                   </TableCell>
@@ -260,7 +262,7 @@ export function ContactsTable({
         {/* Pagination */}
         <div className="flex items-center justify-between mt-4">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Rows per page:</span>
+            <span className="text-sm text-muted-foreground">{t('contacts.table.pagination.rowsPerPage')}</span>
             <Select value={rowsPerPage.toString()} onValueChange={(value) => {
               setRowsPerPage(parseInt(value));
               setCurrentPage(1);
@@ -279,7 +281,7 @@ export function ContactsTable({
           
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">
-              {startIndex + 1}-{Math.min(startIndex + rowsPerPage, filteredContacts.length)} of {filteredContacts.length}
+              {t('contacts.table.pagination.of', { start: startIndex + 1, end: Math.min(startIndex + rowsPerPage, filteredContacts.length), total: filteredContacts.length })}
             </span>
             <Button
               variant="outline"

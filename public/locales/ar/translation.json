@@ -1,3 +1,4 @@
+
 {
   "app": {
     "sidebar": {
@@ -213,6 +214,14 @@
   "contacts": {
     "title": "جهات الاتصال",
     "description": "إدارة جميع جهات الاتصال والعلاقات التجارية الخاصة بك.",
+    "addContact": "إضافة جهة اتصال",
+    "searchPlaceholder": "ابحث في جهات الاتصال بالاسم أو البريد الإلكتروني أو الشركة...",
+    "stats": {
+      "total": "إجمالي جهات الاتصال",
+      "active": "جهات الاتصال النشطة",
+      "decisionMakers": "صناع القرار",
+      "companies": "الشركات"
+    },
     "table": {
       "title": "كل جهات الاتصال ({{count}})",
       "searchPlaceholder": "ابحث في جهات الاتصال...",
@@ -351,7 +360,9 @@
   },
   "deals": {
     "title": "الصفقات",
-    "addDeal": "Add Deal",
+    "description": "إدارة صفقاتك من خلال عملية المبيعات وتتبع خط أنابيب الإيرادات.",
+    "newDeal": "صفقة جديدة",
+    "addDeal": "إضافة صفقة",
     "searchPlaceholder": "البحث عن صفقات...",
     "filters": "الفلاتر",
     "stages": {
@@ -404,8 +415,8 @@
       "minPlaceholder": "الحد الأدنى",
       "maxPlaceholder": "الحد الأقصى",
       "dateLabel": "تاريخ الإغلاق المتوقع",
-      "showMore": "Show more",
-      "showLess": "Show less"
+      "showMore": "عرض المزيد",
+      "showLess": "عرض أقل"
     },
     "filtersPanel": {
       "sourcesLabel": "المصادر",

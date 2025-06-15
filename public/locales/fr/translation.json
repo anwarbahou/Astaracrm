@@ -423,7 +423,8 @@
     "unassigned": "Non assigné",
     "sendEmail": "Envoyer un e-mail",
     "callLead": "Appeler le lead",
-    "assign": "Assigner"
+    "assign": "Assigner",
+    "at": "chez"
   },
   "countries": {
     "morocco": "Maroc",
@@ -523,7 +524,7 @@
       "analytics": "Analyses",
       "export": "Exporter",
       "actionsGroupees": "Actions groupées",
-      "filtresAvances": "Filtres avancés",
+      "filtresAvancés": "Filtres avancés",
       "filtresRapides": "Filtres rapides"
     },
     "insights": {
@@ -611,6 +612,107 @@
       "froids": "Froids",
       "tiedesWarm": "Tièdes",
       "chauds": "Chauds"
+    }
+  },
+  "researchAssistant": {
+    "title": "Assistant Recherche",
+    "header": {
+      "title": "Assistant Recherche IA - MENA & Europe",
+      "description": "Génération avancée de leads avec IA pour les marchés MENA et Europe"
+    },
+    "searchParams": {
+      "title": "Paramètres de Recherche",
+      "industry": "Secteur d'Activité",
+      "industryPlaceholder": "Sélectionner un secteur...",
+      "country": "Pays/Région",
+      "countryPlaceholder": "Sélectionner un pays...",
+      "jobTitle": "Poste/Fonction",
+      "jobTitlePlaceholder": "Sélectionner un poste...",
+      "companySize": "Taille Entreprise",
+      "companySizePlaceholder": "Sélectionner une taille...",
+      "keywords": "Mots-clés Additionnels",
+      "keywordsPlaceholder": "Critères supplémentaires, technologies, etc...",
+      "deepEnrichment": "Enrichissement Avancé",
+      "deepEnrichmentDescription": "Inclure profils sociaux, données de financement, et stack technologique"
+    },
+    "buttons": {
+      "generating": "Génération en cours...",
+      "generateLeads": "Générer des Leads",
+      "refine": "Affiner",
+      "exportToCRM": "Exporter vers CRM"
+    },
+    "generation": {
+      "title": "Recherche IA en Cours",
+      "description": "Analyse des bases de données et enrichissement des profils...",
+      "step1": "Recherche profils LinkedIn MENA",
+      "step2": "Analyse données entreprises",
+      "step3": "Enrichissement informations contact"
+    },
+    "results": {
+      "title": "Leads Générés ({{count}})",
+      "score": "Score",
+      "enrichmentData": "Données Enrichissement",
+      "funding": "Financement",
+      "news": "Actualités"
+    },
+    "empty": {
+      "title": "Prêt à Générer des Leads",
+      "description": "Configurez vos paramètres de recherche et cliquez sur \"Générer des Leads\" pour démarrer la recherche IA."
+    },
+    "industries": {
+      "techIA": "Tech & IA",
+      "fintech": "Fintech",
+      "ecommerce": "E-commerce",
+      "tourisme": "Tourisme",
+      "immobilier": "Immobilier",
+      "education": "Éducation",
+      "sante": "Santé",
+      "automobile": "Automobile"
+    },
+    "countries": {
+      "maroc": "Maroc",
+      "eae": "Émirats Arabes Unis",
+      "arabieSaoudite": "Arabie Saoudite",
+      "egypte": "Égypte",
+      "jordanie": "Jordanie",
+      "liban": "Liban",
+      "tunisie": "Tunisie",
+      "algerie": "Algérie"
+    },
+    "jobTitles": {
+      "pdgCeo": "PDG/CEO",
+      "directeurGeneral": "Directeur Général",
+      "cto": "CTO",
+      "cmo": "CMO",
+      "directeurMarketing": "Directeur Marketing",
+      "directeurCommercial": "Directeur Commercial",
+      "fondateur": "Fondateur"
+    },
+    "companySizes": {
+      "110": "1-10 employés",
+      "1150": "11-50 employés",
+      "51200": "51-200 employés",
+      "100200": "100-200 employés",
+      "201500": "201-500 employés",
+      "50100": "50-100 employés",
+      "5011000": "501-1000 employés",
+      "1000plus": "1000+ employés",
+      "200plus": "200+ employés"
+    },
+    "fundingStages": {
+      "serieA": "Série A",
+      "serieB": "Série B",
+      "seed": "Seed"
+    },
+    "recentNews": {
+      "funding15M": "Levée de fonds 15M MAD",
+      "expansionAfrique": "Expansion vers l'Afrique du Nord",
+      "partnershipBOA": "Partenariat avec Bank of Africa"
+    },
+    "mockData": {
+      "positions": {
+        "directeurGeneral": "Directeur Général"
+      }
     }
   }
 }

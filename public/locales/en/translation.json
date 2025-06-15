@@ -533,7 +533,8 @@
     "unassigned": "Unassigned",
     "sendEmail": "Send Email",
     "callLead": "Call Lead",
-    "assign": "Assign"
+    "assign": "Assign",
+    "at": "at"
   },
   "countries": {
     "morocco": "Morocco",
@@ -745,6 +746,107 @@
       "froids": "Cold",
       "tiedesWarm": "Warm",
       "chauds": "Hot"
+    }
+  },
+  "researchAssistant": {
+    "title": "Research Assistant",
+    "header": {
+      "title": "AI Research Assistant - MENA & Europe",
+      "description": "Advanced AI-powered lead generation for MENA and European markets"
+    },
+    "searchParams": {
+      "title": "Search Parameters",
+      "industry": "Industry Sector",
+      "industryPlaceholder": "Select an industry...",
+      "country": "Country/Region",
+      "countryPlaceholder": "Select a country...",
+      "jobTitle": "Job Title/Position",
+      "jobTitlePlaceholder": "Select a position...",
+      "companySize": "Company Size",
+      "companySizePlaceholder": "Select a size...",
+      "keywords": "Additional Keywords",
+      "keywordsPlaceholder": "Additional criteria, technologies, etc...",
+      "deepEnrichment": "Advanced Enrichment",
+      "deepEnrichmentDescription": "Include social profiles, funding data, and technology stack"
+    },
+    "buttons": {
+      "generating": "Generating...",
+      "generateLeads": "Generate Leads",
+      "refine": "Refine",
+      "exportToCRM": "Export to CRM"
+    },
+    "generation": {
+      "title": "AI Research in Progress",
+      "description": "Analyzing databases and enriching profiles...",
+      "step1": "Searching MENA LinkedIn profiles",
+      "step2": "Analyzing company data",
+      "step3": "Enriching contact information"
+    },
+    "results": {
+      "title": "Generated Leads ({{count}})",
+      "score": "Score",
+      "enrichmentData": "Enrichment Data",
+      "funding": "Funding",
+      "news": "News"
+    },
+    "empty": {
+      "title": "Ready to Generate Leads",
+      "description": "Configure your search parameters and click \"Generate Leads\" to start the AI research."
+    },
+    "industries": {
+      "techIA": "Tech & AI",
+      "fintech": "Fintech",
+      "ecommerce": "E-commerce",
+      "tourisme": "Tourism",
+      "immobilier": "Real Estate",
+      "education": "Education",
+      "sante": "Healthcare",
+      "automobile": "Automotive"
+    },
+    "countries": {
+      "maroc": "Morocco",
+      "eae": "United Arab Emirates",
+      "arabieSaoudite": "Saudi Arabia",
+      "egypte": "Egypt",
+      "jordanie": "Jordan",
+      "liban": "Lebanon",
+      "tunisie": "Tunisia",
+      "algerie": "Algeria"
+    },
+    "jobTitles": {
+      "pdgCeo": "CEO/President",
+      "directeurGeneral": "General Director",
+      "cto": "CTO",
+      "cmo": "CMO",
+      "directeurMarketing": "Marketing Director",
+      "directeurCommercial": "Sales Director",
+      "fondateur": "Founder"
+    },
+    "companySizes": {
+      "110": "1-10 employees",
+      "1150": "11-50 employees",
+      "51200": "51-200 employees",
+      "100200": "100-200 employees",
+      "201500": "201-500 employees",
+      "50100": "50-100 employees",
+      "5011000": "501-1000 employees",
+      "1000plus": "1000+ employees",
+      "200plus": "200+ employees"
+    },
+    "fundingStages": {
+      "serieA": "Series A",
+      "serieB": "Series B",
+      "seed": "Seed"
+    },
+    "recentNews": {
+      "funding15M": "15M MAD funding round",
+      "expansionAfrique": "Expansion to North Africa",
+      "partnershipBOA": "Partnership with Bank of Africa"
+    },
+    "mockData": {
+      "positions": {
+        "directeurGeneral": "General Director"
+      }
     }
   }
 }

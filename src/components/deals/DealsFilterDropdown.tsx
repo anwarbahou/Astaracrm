@@ -120,7 +120,7 @@ export function DealsFilterDropdown({ filters, onFiltersChange, onClearFilters }
               className="p-0 h-auto text-xs text-blue-400 hover:text-blue-300"
               onClick={(e) => { e.preventDefault(); setShowAllStages(!showAllStages); }}
             >
-              {showAllStages ? 'Show less' : 'Show more'}
+              {showAllStages ? t('deals.filtersDropdown.showLess') : t('deals.filtersDropdown.showMore')}
             </Button>
           )}
         </div>
@@ -154,7 +154,7 @@ export function DealsFilterDropdown({ filters, onFiltersChange, onClearFilters }
               className="p-0 h-auto text-xs text-blue-400 hover:text-blue-300"
               onClick={(e) => { e.preventDefault(); setShowAllOwners(!showAllOwners); }}
             >
-              {showAllOwners ? 'Show less' : 'Show more'}
+              {showAllOwners ? t('deals.filtersDropdown.showLess') : t('deals.filtersDropdown.showMore')}
             </Button>
           )}
         </div>

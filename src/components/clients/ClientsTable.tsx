@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -179,7 +180,7 @@ const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: { filters:
             </RadioGroup>
             {owners.length > 3 && (
               <Button variant="link" size="sm" onClick={() => toggleShowMore('owner')} className="p-0 h-auto text-blue-400 hover:text-blue-500 mt-2 justify-start">
-                {showMore.owner ? 'Show Less' : 'Show More'}
+                {showMore.owner ? t('clients.filtersPanel.showLess') : t('clients.filtersPanel.showMore')}
               </Button>
             )}
           </FilterSection>
@@ -199,7 +200,7 @@ const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: { filters:
             </RadioGroup>
             {stages.length > 3 && (
               <Button variant="link" size="sm" onClick={() => toggleShowMore('stage')} className="p-0 h-auto text-blue-400 hover:text-blue-500 mt-2 justify-start">
-                {showMore.stage ? 'Show Less' : 'Show More'}
+                {showMore.stage ? t('clients.filtersPanel.showLess') : t('clients.filtersPanel.showMore')}
               </Button>
             )}
           </FilterSection>
@@ -219,7 +220,7 @@ const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: { filters:
             </RadioGroup>
              {industries.length > 3 && (
               <Button variant="link" size="sm" onClick={() => toggleShowMore('industry')} className="p-0 h-auto text-blue-400 hover:text-blue-500 mt-2 justify-start">
-                {showMore.industry ? 'Show Less' : 'Show More'}
+                {showMore.industry ? t('clients.filtersPanel.showLess') : t('clients.filtersPanel.showMore')}
               </Button>
             )}
           </FilterSection>
@@ -239,7 +240,7 @@ const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: { filters:
             </RadioGroup>
             {countries.length > 3 && (
               <Button variant="link" size="sm" onClick={() => toggleShowMore('country')} className="p-0 h-auto text-blue-400 hover:text-blue-500 mt-2 justify-start">
-                {showMore.country ? 'Show Less' : 'Show More'}
+                {showMore.country ? t('clients.filtersPanel.showLess') : t('clients.filtersPanel.showMore')}
               </Button>
             )}
           </FilterSection>

@@ -43,7 +43,7 @@ export function NewCampaignModal() {
   };
 
   return (
-    <Drawer open={isOpen} onOpenChange={setIsOpen}>
+    <Drawer open={isOpen} onOpenChange={setIsOpen} direction="right">
       <DrawerTrigger asChild>
         <Button className="gap-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
           <Plus size={16} />
@@ -51,27 +51,39 @@ export function NewCampaignModal() {
         </Button>
       </DrawerTrigger>
       
-      <DrawerContent className="h-[95vh] max-w-4xl mx-auto bg-background border-border">
-        <DrawerHeader className="border-b border-border">
+      <DrawerContent className="h-full w-[600px] ml-auto fixed right-0 top-0 rounded-none bg-background border-l border-border">
+        <DrawerHeader className="border-b border-border bg-background">
           <DrawerTitle className="text-foreground text-xl flex items-center gap-2">
             <Target className="text-blue-400" size={20} />
             {t("campaign.modal.title")}
           </DrawerTitle>
         </DrawerHeader>
 
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-6 bg-background">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-4 bg-muted">
-              <TabsTrigger value="setup" className="data-[state=active]:bg-background data-[state=active]:text-foreground">
+            <TabsList className="grid w-full grid-cols-4 bg-muted/50 border border-border">
+              <TabsTrigger 
+                value="setup" 
+                className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:border-b-2 data-[state=active]:border-blue-500"
+              >
                 {t("campaign.tabs.setup")}
               </TabsTrigger>
-              <TabsTrigger value="audience" className="data-[state=active]:bg-background data-[state=active]:text-foreground">
+              <TabsTrigger 
+                value="audience" 
+                className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:border-b-2 data-[state=active]:border-blue-500"
+              >
                 {t("campaign.tabs.audience")}
               </TabsTrigger>
-              <TabsTrigger value="message" className="data-[state=active]:bg-background data-[state=active]:text-foreground">
+              <TabsTrigger 
+                value="message" 
+                className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:border-b-2 data-[state=active]:border-blue-500"
+              >
                 {t("campaign.tabs.message")}
               </TabsTrigger>
-              <TabsTrigger value="preview" className="data-[state=active]:bg-background data-[state=active]:text-foreground">
+              <TabsTrigger 
+                value="preview" 
+                className="data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:border-b-2 data-[state=active]:border-blue-500"
+              >
                 {t("campaign.tabs.preview")}
               </TabsTrigger>
             </TabsList>

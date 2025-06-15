@@ -1,3 +1,4 @@
+
 {
   "app": {
     "sidebar": {
@@ -658,6 +659,9 @@
     "empty": {
       "title": "Prêt à Générer des Leads",
       "description": "Configurez vos paramètres de recherche et cliquez sur \"Générer des Leads\" pour démarrer la recherche IA."
+    },
+    "pagination": {
+      "showing": "Affichage de {{start}} à {{end}} sur {{total}} résultats"
     },
     "industries": {
       "techIA": "Tech & IA",

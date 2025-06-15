@@ -1,3 +1,4 @@
+
 {
   "app": {
     "sidebar": {
@@ -44,30 +45,30 @@
         "reports": "Reports & Analytics",
         "users": "User Management",
         "workflows": "Workflows",
-        "activityLogs": "Activity Logs & Audit Trail",
+        "activityLogs": "Activity Logs and Audit Trail",
         "settings": "Settings",
         "aiLeads": "AI Lead Intelligence",
         "fallback": "WOLFHUNT CRM"
       },
       "pageDescription": {
-        "dashboard": "An overview of your CRM's performance.",
+        "dashboard": "Overview of your CRM performance",
         "clients": "Manage your client relationships and track business growth.",
         "contacts": "Manage all your contacts and business relationships.",
-        "deals": "Manage your deals through the sales process.",
-        "tasks": "Stay on top of your tasks.",
-        "calendar": "Schedule and manage appointments.",
-        "email": "Communicate with your clients.",
-        "notes": "Capture important information.",
+        "deals": "Manage your opportunities through the sales process",
+        "tasks": "Stay on top of your tasks",
+        "calendar": "Schedule and manage appointments",
+        "email": "Communicate with your clients",
+        "notes": "Capture important information",
         "activityLogs": "Track all system activities and user actions.",
-        "aiLeads": "Advanced MENA and Europe lead generation with AI."
+        "aiLeads": "Advanced AI lead generation for MENA and Europe"
       }
     },
     "languageSwitcher": {
-      "chooseLanguage": "Choose language",
+      "chooseLanguage": "Choose Language",
       "moreComingSoon": "More languages coming soon"
     },
     "indexPage": {
-      "title": "Welcome to your empty application",
+      "title": "Welcome to your blank application",
       "subtitle": "Start building your amazing project here!"
     }
   },
@@ -79,12 +80,12 @@
     "totalRevenue": "Total Revenue",
     "activeClients": "Active Clients",
     "dealsInPipeline": "Deals in Pipeline",
-    "tasksDueToday": "Tasks for Today",
+    "tasksDueToday": "Tasks Due Today",
     "vsYesterday": "vs yesterday",
     "recentDeals": "Recent Deals",
     "upcomingTasks": "Upcoming Tasks",
     "recentActivities": "Recent Activities",
-    "viewAll": "View all",
+    "viewAll": "View All",
     "status": {
       "negotiation": "Negotiation",
       "proposal": "Proposal",
@@ -101,8 +102,8 @@
       "prepareProposal": "Prepare proposal for Tech Solutions",
       "scheduleDemo": "Schedule demo call",
       "sendContract": "Send contract to Global Industries",
-      "dueToday": "Due today",
-      "dueTomorrow": "Due tomorrow"
+      "dueToday": "Today",
+      "dueTomorrow": "Tomorrow"
     },
     "mockActivities": {
       "newDeal": "New deal created",
@@ -142,30 +143,28 @@
       "title": "Advanced Filters",
       "owner": "Owner",
       "ownerPlaceholder": "Select owner",
-      "allOwners": "All Owners",
+      "allOwners": "All owners",
       "stage": "Stage",
       "stagePlaceholder": "Select stage",
-      "allStages": "All Stages",
+      "allStages": "All stages",
       "industry": "Industry",
       "industryPlaceholder": "Select industry",
-      "allIndustries": "All Industries",
+      "allIndustries": "All industries",
       "location": "Location",
       "locationPlaceholder": "Select location",
-      "allLocations": "All Locations",
+      "allLocations": "All locations",
       "status": "Status",
       "statusPlaceholder": "Select status",
-      "allStatuses": "All Statuses",
+      "allStatuses": "All statuses",
       "tags": "Tags",
-      "addTag": "Add tag filter",
-      "dateRanges": "Date Ranges",
-      "dateCreated": "Date Created",
+      "addTag": "Add tag",
+      "dateRanges": "Date ranges",
+      "dateCreated": "Date created",
       "from": "From",
       "to": "To",
-      "lastInteraction": "Last Interaction",
-      "clearAll": "Clear All",
-      "apply": "Apply Filters",
-      "showMore": "Show more",
-      "showLess": "Show less"
+      "lastInteraction": "Last interaction",
+      "clearAll": "Clear all",
+      "apply": "Apply filters"
     },
     "statuses": {
       "active": "Active",
@@ -178,42 +177,13 @@
       "smb": "SMB",
       "urgent": "Urgent",
       "international": "International"
-    },
-    "profile": {
-      "title": "Client Profile",
-      "edit": "Edit",
-      "save": "Save",
-      "cancel": "Cancel",
-      "memberSince": "Member since",
-      "totalDealValue": "Total Deal Value",
-      "activeDeals": "Active Deals",
-      "companyInformation": "Company Information",
-      "companyContacts": "Company Contacts",
-      "addContact": "Add Contact",
-      "primary": "Primary",
-      "uploadFile": "Upload File",
-      "filesDocuments": "Files & Documents",
-      "noFilesUploaded": "No files uploaded",
-      "uploadFirstDocument": "Upload First Document",
-      "uploadContracts": "Upload contracts, proposals, or other important documents",
-      "notesTimeline": "Notes & Timeline",
-      "changeHistory": "Change History",
-      "noChangesRecorded": "No changes recorded",
-      "changesWillAppear": "Changes to this client profile will appear here",
-      "tabs": {
-        "overview": "Overview",
-        "contacts": "Contacts",
-        "notes": "Notes",
-        "files": "Files",
-        "history": "History"
-      }
     }
   },
   "contacts": {
     "title": "Contacts",
     "description": "Manage all your contacts and business relationships.",
     "addContact": "Add Contact",
-    "searchPlaceholder": "Search contacts by name, email or company...",
+    "searchPlaceholder": "Search contacts by name, email, or company...",
     "stats": {
       "total": "Total Contacts",
       "active": "Active Contacts",
@@ -242,7 +212,7 @@
     },
     "filtersPanel": {
       "title": "Filters",
-      "clearAll": "Clear All",
+      "clearAll": "Clear all",
       "company": "Company",
       "allCompanies": "All companies",
       "role": "Role/Title",
@@ -251,81 +221,17 @@
       "allCountries": "All countries",
       "status": "Status",
       "allStatuses": "All statuses",
-      "createdFrom": "Created From",
-      "createdTo": "Created To",
-      "lastContactedFrom": "Last Contacted From",
-      "lastContactedTo": "Last Contacted To",
+      "createdFrom": "Created from",
+      "createdTo": "Created to",
+      "lastContactedFrom": "Last contacted from",
+      "lastContactedTo": "Last contacted to",
       "tags": "Tags",
-      "createdDate": "Date Created",
-      "lastContacted": "Last Contacted",
+      "createdDate": "Created date",
+      "lastContacted": "Last contacted",
       "from": "From",
       "to": "To",
       "showMore": "Show more",
       "showLess": "Show less"
-    },
-    "profile": {
-      "title": "Contact Profile",
-      "edit": "Edit",
-      "save": "Save Changes",
-      "cancel": "Cancel",
-      "delete": "Delete",
-      "deleteContact": "Delete Contact",
-      "contactUpdated": "Contact Updated",
-      "contactUpdatedDescription": "Contact information has been successfully updated.",
-      "contactDeleted": "Contact Deleted",
-      "contactDeletedDescription": "Contact has been successfully deleted.",
-      "contactInformation": "Contact Information",
-      "companyInformation": "Company Information",
-      "activitySummary": "Activity Summary",
-      "created": "Created",
-      "lastContacted": "Last Contacted",
-      "firstName": "First Name",
-      "lastName": "Last Name",
-      "email": "Email",
-      "phone": "Phone",
-      "role": "Role/Title",
-      "company": "Company",
-      "location": "Location",
-      "position": "Position",
-      "joinDate": "Join Date",
-      "tabs": {
-        "overview": "Overview",
-        "notes": "Notes",
-        "files": "Files",
-        "messages": "Messages",
-        "history": "History"
-      },
-      "notes": {
-        "title": "Notes & Comments",
-        "placeholder": "Add a note about this contact...",
-        "recentNotes": "Recent Notes",
-        "note1": "Initial contact made regarding software solutions. Very interested in our CRM platform.",
-        "note2": "Follow-up meeting scheduled for next week. Prepare demo materials.",
-        "timeAgo": {
-          "2days": "2 days ago",
-          "1week": "1 week ago"
-        }
-      },
-      "files": {
-        "title": "Files & Documents",
-        "noFiles": "No files uploaded yet",
-        "uploadFiles": "Upload Files"
-      },
-      "messages": {
-        "title": "Communication History",
-        "noMessages": "No messages yet",
-        "sendMessage": "Send Message"
-      },
-      "history": {
-        "title": "Activity History",
-        "contactCreated": "Contact created",
-        "emailSent": "Email sent",
-        "meetingScheduled": "Meeting scheduled",
-        "timeAgo": {
-          "3days": "3 days ago",
-          "1week": "1 week ago"
-        }
-      }
     },
     "tags": {
       "decisionMaker": "Decision Maker",
@@ -372,24 +278,24 @@
       "active": "Active Deals",
       "pipelineValue": "Pipeline Value",
       "won": "Deals Won",
-      "avgSize": "Avg. Deal Size",
-      "vsLastMonth": "{{change}} from last month"
+      "avgSize": "Avg Deal Size",
+      "vsLastMonth": "{{change}} vs last month"
     },
     "toasts": {
       "moved": {
-        "title": "Deal Moved",
-        "description": "Moved deal to {{stage}} stage"
+        "title": "Deal moved",
+        "description": "Deal moved to {{stage}} stage"
       },
       "updated": {
-        "title": "Deal Updated",
-        "description": "Deal updated successfully"
+        "title": "Deal updated",
+        "description": "Deal has been updated successfully"
       },
       "deleted": {
-        "title": "Deal Deleted",
-        "description": "Deal deleted successfully"
+        "title": "Deal deleted",
+        "description": "Deal has been deleted successfully"
       },
       "created": {
-        "title": "Deal Created",
+        "title": "Deal created",
         "description": "New deal added to {{stage}} stage"
       }
     },
@@ -403,21 +309,21 @@
       "noDeals": "No deals in this stage."
     },
     "filtersDropdown": {
-      "title": "Filter Deals",
+      "title": "Filter deals",
       "clear": "Clear",
       "stagesLabel": "Stages",
       "ownersLabel": "Owners",
-      "valueLabel": "Value Range ($)",
+      "valueLabel": "Value range (€)",
       "minPlaceholder": "Min",
       "maxPlaceholder": "Max",
-      "dateLabel": "Expected Close Date",
+      "dateLabel": "Expected close date",
       "showMore": "Show more",
       "showLess": "Show less"
     },
     "filtersPanel": {
       "sourcesLabel": "Sources",
-      "clearAll": "Clear All",
-      "apply": "Apply Filters"
+      "clearAll": "Clear all",
+      "apply": "Apply"
     },
     "sources": {
       "website": "Website",
@@ -428,7 +334,7 @@
     }
   },
   "activityLogs": {
-    "title": "Activity Logs & Audit Trail",
+    "title": "Activity Logs and Audit Trail",
     "description": "Track all system activities and user actions.",
     "filter": "Filter",
     "export": "Export Logs",
@@ -445,7 +351,7 @@
     },
     "filters": {
       "button": "Filters",
-      "title": "Filter Notes",
+      "title": "Filter notes",
       "sortBy": {
         "label": "Sort by",
         "modified": "Last modified",
@@ -476,8 +382,8 @@
       "private": "Private"
     },
     "modal": {
-      "createTitle": "Create New Note",
-      "editTitle": "Edit Note",
+      "createTitle": "Create new note",
+      "editTitle": "Edit note",
       "titleLabel": "Title",
       "titlePlaceholder": "Enter note title...",
       "typeLabel": "Type",
@@ -487,13 +393,13 @@
       "contentLabel": "Content",
       "contentPlaceholder": "Write your note content...",
       "pinNote": "Pin this note",
-      "setReminder": "Set a reminder",
+      "setReminder": "Set reminder",
       "reminderDate": "Reminder date",
-      "selectDate": "Select a date",
+      "selectDate": "Select date",
       "attachmentsLabel": "Attachments",
       "attachmentsPlaceholder": "Drag and drop files here or click to browse",
-      "updateButton": "Update Note",
-      "createButton": "Create Note"
+      "updateButton": "Update note",
+      "createButton": "Create note"
     },
     "detail": {
       "linkedTo": "Linked to:",
@@ -507,29 +413,14 @@
     }
   },
   "common": {
-    "save": "Save",
+    "add": "Add",
     "cancel": "Cancel",
+    "save": "Save",
     "edit": "Edit",
     "delete": "Delete",
-    "add": "Add",
-    "search": "Search",
-    "filter": "Filter",
-    "clear": "Clear",
-    "apply": "Apply",
     "close": "Close",
-    "back": "Back",
-    "next": "Next",
-    "previous": "Previous",
-    "loading": "Loading...",
-    "error": "Error",
-    "success": "Success",
-    "warning": "Warning",
-    "info": "Info",
-    "yes": "Yes",
-    "no": "No",
-    "ok": "OK",
-    "showMore": "Show More",
-    "showLess": "Show Less",
+    "showMore": "Show more",
+    "showLess": "Show less",
     "unassigned": "Unassigned",
     "sendEmail": "Send Email",
     "callLead": "Call Lead",
@@ -540,9 +431,9 @@
     "morocco": "Morocco",
     "france": "France",
     "spain": "Spain",
-    "usa": "USA",
-    "uae": "UAE",
-    "uk": "UK",
+    "usa": "United States",
+    "uae": "United Arab Emirates",
+    "uk": "United Kingdom",
     "germany": "Germany"
   },
   "industries": {
@@ -574,27 +465,25 @@
     "title": "Add New Client",
     "profilePicture": "Profile Picture",
     "uploadPhoto": "Upload Photo",
-    "uploadHint": "Optional: Upload the client's logo or picture",
+    "uploadHint": "Optional: Upload client logo or photo",
     "nameLabel": "Company/Client Name *",
     "namePlaceholder": "Enter company name",
     "emailLabel": "Email Address *",
     "emailPlaceholder": "contact@company.com",
     "phoneLabel": "Phone Number",
-    "phonePlaceholder": "+1 555 123 4567",
+    "phonePlaceholder": "+1 555 XXX XXXX",
     "countryLabel": "Country/Location",
-    "countryPlaceholder": "Select a location",
+    "countryPlaceholder": "Select location",
     "industryLabel": "Industry",
-    "industryPlaceholder": "Select an industry",
+    "industryPlaceholder": "Select industry",
     "stageLabel": "Client Stage",
-    "stagePlaceholder": "Select a stage",
+    "stagePlaceholder": "Select stage",
     "ownerLabel": "Account Owner",
-    "ownerPlaceholder": "Assign an account owner",
+    "ownerPlaceholder": "Assign account owner",
     "tagsLabel": "Tags",
     "tagsPlaceholder": "Add a tag and press Enter",
-    "addTagButton": "Add",
     "notesLabel": "Notes",
-    "notesPlaceholder": "Add any additional notes about this client...",
-    "submitButton": "Add Client"
+    "notesPlaceholder": "Add additional notes about this client..."
   },
   "addContactModal": {
     "title": "Add New Contact",
@@ -608,7 +497,7 @@
     "emailLabel": "Email *",
     "emailPlaceholder": "john@example.com",
     "phoneLabel": "Phone Number",
-    "phonePlaceholder": "+1 (555) 123-4567",
+    "phonePlaceholder": "+1 555 XXX XXXX",
     "roleLabel": "Role/Title",
     "rolePlaceholder": "CEO, Manager, Developer...",
     "companyLabel": "Company",
@@ -621,36 +510,14 @@
     "tagsPlaceholder": "Add a tag and press Enter",
     "addTagButton": "Add",
     "notesLabel": "Notes",
-    "notesPlaceholder": "Add any additional notes about this contact...",
+    "notesPlaceholder": "Add additional notes about this contact...",
     "submitButton": "Add Contact",
     "successTitle": "Success!",
     "successDescription": "Contact added successfully."
   },
-  "addDealModal": {
-    "title": "Add New Deal",
-    "description": "Create a new deal in your sales pipeline",
-    "dealNameLabel": "Deal Name *",
-    "dealNamePlaceholder": "Enter deal name",
-    "clientLabel": "Client *",
-    "clientPlaceholder": "Enter client name",
-    "valueLabel": "Value (MAD) *",
-    "stageLabel": "Stage",
-    "stagePlaceholder": "Select stage",
-    "probabilityLabel": "Probability (%)",
-    "expectedCloseDateLabel": "Expected Close Date *",
-    "sourceLabel": "Source",
-    "sourcePlaceholder": "e.g., Website, Referral, Cold Call",
-    "ownerLabel": "Owner",
-    "ownerPlaceholder": "Select owner",
-    "priorityLabel": "Priority",
-    "priorityPlaceholder": "Select priority",
-    "notesLabel": "Notes",
-    "notesPlaceholder": "Add any additional notes about this deal...",
-    "submitButton": "Create Deal"
-  },
   "aiLeads": {
     "title": "AI Lead Intelligence",
-    "subtitle": "Advanced MENA and Europe lead generation with AI.",
+    "subtitle": "Advanced AI lead generation for MENA and Europe.",
     "buttons": {
       "newCampaign": "New Campaign",
       "aiInsights": "AI Insights",
@@ -658,24 +525,24 @@
       "analytics": "Analytics",
       "export": "Export",
       "actionsGroupees": "Bulk Actions",
-      "filtresAvances": "Advanced Filters",
+      "filtresAvancés": "Advanced Filters",
       "filtresRapides": "Quick Filters"
     },
     "insights": {
       "title": "AI Insights & Recommendations",
       "hotLeads": "🎯 4 hot leads ready for immediate contact",
       "bestSource": "🚀 Best source: LinkedIn Morocco AI",
-      "recommendation": "💡 Recommended: Follow up on Enterprise prospects within 2h",
+      "recommendation": "💡 Recommended: Follow up Enterprise prospects within 2h",
       "pipelineRevenue": "📈 Pipeline revenue +45% vs last month",
       "activeCampaigns": "🎉 8 active campaigns generating qualified leads",
       "aiAutomation": "⚡ AI automation: 19h saved this week",
-      "highIntentLeads": "🔥 High-intent leads +28% this week",
-      "avgDealSize": "💼 Average deal size: 195,000 MAD",
+      "highIntentLeads": "🔥 High intent leads +28% this week",
+      "avgDealSize": "💼 Average deal size: $195,000",
       "conversionRate": "📊 Conversion rate improved to 38.7%"
     },
     "recommendation": {
       "title": "AI Recommendation:",
-      "message": "Focus on Aicha Bennani and Mehdi Tazi within the next 2 hours for optimal conversion rate."
+      "message": "Focus on Aicha Bennani and Mehdi Tazi within the next 2 hours for optimal conversion rates."
     },
     "stats": {
       "activeCampaigns": "Active Campaigns",
@@ -739,7 +606,7 @@
     "pipelineTitle": "Lead Pipeline ({{count}})",
     "statusCounts": {
       "hot": "{{count}} Hot",
-      "warm": "{{count}} Warm", 
+      "warm": "{{count}} Warm",
       "cold": "{{count}} Cold"
     },
     "tabs": {
@@ -791,7 +658,10 @@
     },
     "empty": {
       "title": "Ready to Generate Leads",
-      "description": "Configure your search parameters and click \"Generate Leads\" to start the AI research."
+      "description": "Configure your search parameters and click \"Generate Leads\" to start AI research."
+    },
+    "pagination": {
+      "showing": "Showing {{start}} to {{end}} of {{total}} results"
     },
     "industries": {
       "techIA": "Tech & AI",

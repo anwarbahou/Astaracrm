@@ -22,6 +22,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { 
   Search, 
   Brain, 
@@ -37,13 +45,16 @@ import {
   MapPin,
   Briefcase,
   Phone,
-  Mail
+  Mail,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 
 export function ResearchAssistant() {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const [searchParams, setSearchParams] = useState({
     industry: "",
     country: "",
@@ -53,12 +64,14 @@ export function ResearchAssistant() {
     deepEnrichment: true
   });
 
-  const [generatedLeads, setGeneratedLeads] = useState<any[]>([]);
+  const [allGeneratedLeads, setAllGeneratedLeads] = useState<any[]>([]);
+  const leadsPerPage = 3;
 
   const handleGenerate = async () => {
     setIsGenerating(true);
+    setCurrentPage(1);
     
-    // Simulate AI lead generation with regional data
+    // Simulate AI lead generation with more regional data
     setTimeout(() => {
       const mockLeads = [
         {
@@ -117,16 +130,140 @@ export function ResearchAssistant() {
             recentNews: t("researchAssistant.recentNews.partnershipBOA"),
             technologies: ["Python", "Django", "PostgreSQL"]
           }
+        },
+        {
+          id: 4,
+          name: "Yasmin Al-Mahmood",
+          company: "Riyadh Tech Ventures",
+          position: "VP of Innovation",
+          email: "yasmin@riyadhtech.sa",
+          phone: "+966 50 123 4567",
+          location: "Riyadh, Saudi Arabia",
+          score: 92,
+          industry: t("researchAssistant.industries.techIA"),
+          companySize: t("researchAssistant.companySizes.200plus"),
+          country: "Saudi Arabia",
+          enrichment: {
+            linkedin: "linkedin.com/in/yasminmahmood",
+            fundingStage: t("researchAssistant.fundingStages.serieA"),
+            recentNews: "Launched $50M innovation fund",
+            technologies: ["Cloud", "DevOps", "Kubernetes"]
+          }
+        },
+        {
+          id: 5,
+          name: "Mohamed Trabelsi",
+          company: "Tunis Blockchain Hub",
+          position: "CTO",
+          email: "m.trabelsi@tunisblockchain.tn",
+          phone: "+216 98 765 432",
+          location: "Tunis, Tunisia",
+          score: 86,
+          industry: t("researchAssistant.industries.fintech"),
+          companySize: t("researchAssistant.companySizes.50100"),
+          country: "Tunisia",
+          enrichment: {
+            linkedin: "linkedin.com/in/trabelsi",
+            fundingStage: t("researchAssistant.fundingStages.seed"),
+            recentNews: "Partnership with European banks",
+            technologies: ["Solidity", "Web3", "Smart Contracts"]
+          }
+        },
+        {
+          id: 6,
+          name: "Layla Mansour",
+          company: "Beirut E-commerce Solutions",
+          position: "Founder & CEO",
+          email: "layla@beirutecom.lb",
+          phone: "+961 3 987 654",
+          location: "Beirut, Lebanon",
+          score: 89,
+          industry: t("researchAssistant.industries.ecommerce"),
+          companySize: t("researchAssistant.companySizes.1150"),
+          country: "Lebanon",
+          enrichment: {
+            linkedin: "linkedin.com/in/laylamansour",
+            fundingStage: t("researchAssistant.fundingStages.serieA"),
+            recentNews: "Expansion to Gulf markets",
+            technologies: ["Shopify", "React", "AWS"]
+          }
+        },
+        {
+          id: 7,
+          name: "Fouad El-Amrani",
+          company: "Agadir Tourism Tech",
+          position: "Digital Director",
+          email: "fouad@agadirtech.ma",
+          phone: "+212 6 99 88 77 66",
+          location: "Agadir, Morocco",
+          score: 84,
+          industry: t("researchAssistant.industries.tourisme"),
+          companySize: t("researchAssistant.companySizes.1150"),
+          country: "Morocco",
+          enrichment: {
+            linkedin: "linkedin.com/in/fouadelamrani",
+            fundingStage: "Bootstrap",
+            recentNews: "Digital transformation initiative",
+            technologies: ["Vue.js", "Laravel", "MySQL"]
+          }
+        },
+        {
+          id: 8,
+          name: "Nour Al-Rashid",
+          company: "Abu Dhabi PropTech",
+          position: "Head of Technology",
+          email: "nour@adproptech.ae",
+          phone: "+971 50 876 5432",
+          location: "Abu Dhabi, UAE",
+          score: 90,
+          industry: t("researchAssistant.industries.immobilier"),
+          companySize: t("researchAssistant.companySizes.100200"),
+          country: "UAE",
+          enrichment: {
+            linkedin: "linkedin.com/in/nouralrashid",
+            fundingStage: t("researchAssistant.fundingStages.serieB"),
+            recentNews: "AI-powered property platform launch",
+            technologies: ["React Native", "TensorFlow", "GraphQL"]
+          }
+        },
+        {
+          id: 9,
+          name: "Rim Chakroun",
+          company: "Tunis EdTech Solutions",
+          position: "Product Manager",
+          email: "rim@tunisedtech.tn",
+          phone: "+216 22 345 678",
+          location: "Tunis, Tunisia",
+          score: 87,
+          industry: t("researchAssistant.industries.education"),
+          companySize: t("researchAssistant.companySizes.50100"),
+          country: "Tunisia",
+          enrichment: {
+            linkedin: "linkedin.com/in/rimchakroun",
+            fundingStage: t("researchAssistant.fundingStages.seed"),
+            recentNews: "Partnership with Ministry of Education",
+            technologies: ["Flutter", "Firebase", "Machine Learning"]
+          }
         }
       ];
       
-      setGeneratedLeads(mockLeads);
+      setAllGeneratedLeads(mockLeads);
       setIsGenerating(false);
     }, 3000);
   };
 
   const handleExport = () => {
-    console.log("Exporting leads to CRM:", generatedLeads);
+    console.log("Exporting leads to CRM:", currentLeads);
+  };
+
+  // Pagination logic
+  const totalPages = Math.ceil(allGeneratedLeads.length / leadsPerPage);
+  const startIndex = (currentPage - 1) * leadsPerPage;
+  const endIndex = startIndex + leadsPerPage;
+  const currentLeads = allGeneratedLeads.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
   return (
@@ -138,7 +275,7 @@ export function ResearchAssistant() {
         </Button>
       </SheetTrigger>
       
-      <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
+      <SheetContent side="right" className="w-full sm:max-w-3xl overflow-y-auto">
         <SheetHeader className="pb-6">
           <SheetTitle className="text-foreground text-xl flex items-center gap-2">
             <Search className="text-purple-500" size={20} />
@@ -158,77 +295,81 @@ export function ResearchAssistant() {
             </h3>
 
             <div className="space-y-4">
-              <div>
-                <Label className="text-foreground">{t("researchAssistant.searchParams.industry")}</Label>
-                <Select value={searchParams.industry} onValueChange={(value) => setSearchParams(prev => ({ ...prev, industry: value }))}>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder={t("researchAssistant.searchParams.industryPlaceholder")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="tech-ia">{t("researchAssistant.industries.techIA")}</SelectItem>
-                    <SelectItem value="fintech">{t("researchAssistant.industries.fintech")}</SelectItem>
-                    <SelectItem value="ecommerce">{t("researchAssistant.industries.ecommerce")}</SelectItem>
-                    <SelectItem value="tourisme">{t("researchAssistant.industries.tourisme")}</SelectItem>
-                    <SelectItem value="immobilier">{t("researchAssistant.industries.immobilier")}</SelectItem>
-                    <SelectItem value="education">{t("researchAssistant.industries.education")}</SelectItem>
-                    <SelectItem value="sante">{t("researchAssistant.industries.sante")}</SelectItem>
-                    <SelectItem value="automobile">{t("researchAssistant.industries.automobile")}</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-foreground">{t("researchAssistant.searchParams.industry")}</Label>
+                  <Select value={searchParams.industry} onValueChange={(value) => setSearchParams(prev => ({ ...prev, industry: value }))}>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder={t("researchAssistant.searchParams.industryPlaceholder")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="tech-ia">{t("researchAssistant.industries.techIA")}</SelectItem>
+                      <SelectItem value="fintech">{t("researchAssistant.industries.fintech")}</SelectItem>
+                      <SelectItem value="ecommerce">{t("researchAssistant.industries.ecommerce")}</SelectItem>
+                      <SelectItem value="tourisme">{t("researchAssistant.industries.tourisme")}</SelectItem>
+                      <SelectItem value="immobilier">{t("researchAssistant.industries.immobilier")}</SelectItem>
+                      <SelectItem value="education">{t("researchAssistant.industries.education")}</SelectItem>
+                      <SelectItem value="sante">{t("researchAssistant.industries.sante")}</SelectItem>
+                      <SelectItem value="automobile">{t("researchAssistant.industries.automobile")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label className="text-foreground">{t("researchAssistant.searchParams.country")}</Label>
+                  <Select value={searchParams.country} onValueChange={(value) => setSearchParams(prev => ({ ...prev, country: value }))}>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder={t("researchAssistant.searchParams.countryPlaceholder")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="maroc">{t("researchAssistant.countries.maroc")}</SelectItem>
+                      <SelectItem value="eae">{t("researchAssistant.countries.eae")}</SelectItem>
+                      <SelectItem value="arabie-saoudite">{t("researchAssistant.countries.arabieSaoudite")}</SelectItem>
+                      <SelectItem value="egypte">{t("researchAssistant.countries.egypte")}</SelectItem>
+                      <SelectItem value="jordanie">{t("researchAssistant.countries.jordanie")}</SelectItem>
+                      <SelectItem value="liban">{t("researchAssistant.countries.liban")}</SelectItem>
+                      <SelectItem value="tunisie">{t("researchAssistant.countries.tunisie")}</SelectItem>
+                      <SelectItem value="algerie">{t("researchAssistant.countries.algerie")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
-              <div>
-                <Label className="text-foreground">{t("researchAssistant.searchParams.country")}</Label>
-                <Select value={searchParams.country} onValueChange={(value) => setSearchParams(prev => ({ ...prev, country: value }))}>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder={t("researchAssistant.searchParams.countryPlaceholder")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="maroc">{t("researchAssistant.countries.maroc")}</SelectItem>
-                    <SelectItem value="eae">{t("researchAssistant.countries.eae")}</SelectItem>
-                    <SelectItem value="arabie-saoudite">{t("researchAssistant.countries.arabieSaoudite")}</SelectItem>
-                    <SelectItem value="egypte">{t("researchAssistant.countries.egypte")}</SelectItem>
-                    <SelectItem value="jordanie">{t("researchAssistant.countries.jordanie")}</SelectItem>
-                    <SelectItem value="liban">{t("researchAssistant.countries.liban")}</SelectItem>
-                    <SelectItem value="tunisie">{t("researchAssistant.countries.tunisie")}</SelectItem>
-                    <SelectItem value="algerie">{t("researchAssistant.countries.algerie")}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-foreground">{t("researchAssistant.searchParams.jobTitle")}</Label>
+                  <Select value={searchParams.jobTitle} onValueChange={(value) => setSearchParams(prev => ({ ...prev, jobTitle: value }))}>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder={t("researchAssistant.searchParams.jobTitlePlaceholder")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pdg-ceo">{t("researchAssistant.jobTitles.pdgCeo")}</SelectItem>
+                      <SelectItem value="directeur-general">{t("researchAssistant.jobTitles.directeurGeneral")}</SelectItem>
+                      <SelectItem value="cto">{t("researchAssistant.jobTitles.cto")}</SelectItem>
+                      <SelectItem value="cmo">{t("researchAssistant.jobTitles.cmo")}</SelectItem>
+                      <SelectItem value="directeur-marketing">{t("researchAssistant.jobTitles.directeurMarketing")}</SelectItem>
+                      <SelectItem value="directeur-commercial">{t("researchAssistant.jobTitles.directeurCommercial")}</SelectItem>
+                      <SelectItem value="fondateur">{t("researchAssistant.jobTitles.fondateur")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              <div>
-                <Label className="text-foreground">{t("researchAssistant.searchParams.jobTitle")}</Label>
-                <Select value={searchParams.jobTitle} onValueChange={(value) => setSearchParams(prev => ({ ...prev, jobTitle: value }))}>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder={t("researchAssistant.searchParams.jobTitlePlaceholder")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="pdg-ceo">{t("researchAssistant.jobTitles.pdgCeo")}</SelectItem>
-                    <SelectItem value="directeur-general">{t("researchAssistant.jobTitles.directeurGeneral")}</SelectItem>
-                    <SelectItem value="cto">{t("researchAssistant.jobTitles.cto")}</SelectItem>
-                    <SelectItem value="cmo">{t("researchAssistant.jobTitles.cmo")}</SelectItem>
-                    <SelectItem value="directeur-marketing">{t("researchAssistant.jobTitles.directeurMarketing")}</SelectItem>
-                    <SelectItem value="directeur-commercial">{t("researchAssistant.jobTitles.directeurCommercial")}</SelectItem>
-                    <SelectItem value="fondateur">{t("researchAssistant.jobTitles.fondateur")}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label className="text-foreground">{t("researchAssistant.searchParams.companySize")}</Label>
-                <Select value={searchParams.companySize} onValueChange={(value) => setSearchParams(prev => ({ ...prev, companySize: value }))}>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder={t("researchAssistant.searchParams.companySizePlaceholder")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1-10">{t("researchAssistant.companySizes.110")}</SelectItem>
-                    <SelectItem value="11-50">{t("researchAssistant.companySizes.1150")}</SelectItem>
-                    <SelectItem value="51-200">{t("researchAssistant.companySizes.51200")}</SelectItem>
-                    <SelectItem value="201-500">{t("researchAssistant.companySizes.201500")}</SelectItem>
-                    <SelectItem value="501-1000">{t("researchAssistant.companySizes.5011000")}</SelectItem>
-                    <SelectItem value="1000+">{t("researchAssistant.companySizes.1000plus")}</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div>
+                  <Label className="text-foreground">{t("researchAssistant.searchParams.companySize")}</Label>
+                  <Select value={searchParams.companySize} onValueChange={(value) => setSearchParams(prev => ({ ...prev, companySize: value }))}>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder={t("researchAssistant.searchParams.companySizePlaceholder")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1-10">{t("researchAssistant.companySizes.110")}</SelectItem>
+                      <SelectItem value="11-50">{t("researchAssistant.companySizes.1150")}</SelectItem>
+                      <SelectItem value="51-200">{t("researchAssistant.companySizes.51200")}</SelectItem>
+                      <SelectItem value="201-500">{t("researchAssistant.companySizes.201500")}</SelectItem>
+                      <SelectItem value="501-1000">{t("researchAssistant.companySizes.5011000")}</SelectItem>
+                      <SelectItem value="1000+">{t("researchAssistant.companySizes.1000plus")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <div>
@@ -289,12 +430,12 @@ export function ResearchAssistant() {
                   <div className="text-sm text-muted-foreground">• {t("researchAssistant.generation.step3")}</div>
                 </div>
               </div>
-            ) : generatedLeads.length > 0 ? (
+            ) : allGeneratedLeads.length > 0 ? (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-foreground font-medium flex items-center gap-2">
                     <Users size={16} />
-                    {t("researchAssistant.results.title", { count: generatedLeads.length })}
+                    {t("researchAssistant.results.title", { count: allGeneratedLeads.length })}
                   </h3>
                   <div className="flex gap-2">
                     <Button size="sm" variant="outline" className="gap-2">
@@ -309,7 +450,7 @@ export function ResearchAssistant() {
                 </div>
 
                 <div className="space-y-3">
-                  {generatedLeads.map((lead) => (
+                  {currentLeads.map((lead) => (
                     <div key={lead.id} className="p-4 bg-muted/50 rounded-lg border hover:bg-muted/70 transition-colors">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
@@ -376,6 +517,61 @@ export function ResearchAssistant() {
                     </div>
                   ))}
                 </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex justify-center mt-6">
+                    <Pagination>
+                      <PaginationContent>
+                        <PaginationItem>
+                          <PaginationPrevious 
+                            href="#"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              if (currentPage > 1) handlePageChange(currentPage - 1);
+                            }}
+                            className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                          />
+                        </PaginationItem>
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                          <PaginationItem key={page}>
+                            <PaginationLink
+                              href="#"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handlePageChange(page);
+                              }}
+                              isActive={currentPage === page}
+                            >
+                              {page}
+                            </PaginationLink>
+                          </PaginationItem>
+                        ))}
+                        <PaginationItem>
+                          <PaginationNext
+                            href="#"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              if (currentPage < totalPages) handlePageChange(currentPage + 1);
+                            }}
+                            className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                          />
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
+                  </div>
+                )}
+
+                {/* Results Summary */}
+                {allGeneratedLeads.length > 0 && (
+                  <div className="text-center text-sm text-muted-foreground mt-4">
+                    {t("researchAssistant.pagination.showing", {
+                      start: startIndex + 1,
+                      end: Math.min(endIndex, allGeneratedLeads.length),
+                      total: allGeneratedLeads.length
+                    })}
+                  </div>
+                )}
               </div>
             ) : (
               <div className="p-8 bg-muted/50 rounded-lg border text-center">

@@ -174,15 +174,6 @@ export default function Deals() {
               onFiltersChange={handleFiltersChange}
               onClearFilters={handleClearFilters}
             />
-            <Button variant="outline" className="gap-2 crm-button-secondary">
-              <Filter size={16} />
-              {t('deals.filters')}
-              {(filters.stages.length > 0 || filters.owners.length > 0) && (
-                <Badge variant="secondary" className="ml-1">
-                  {filters.stages.length + filters.owners.length}
-                </Badge>
-              )}
-            </Button>
           </div>
         </CardContent>
       </Card>

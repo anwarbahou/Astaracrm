@@ -25,6 +25,8 @@ interface DealsFilterDropdownProps {
 export function DealsFilterDropdown({ filters, onFiltersChange, onClearFilters }: DealsFilterDropdownProps) {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  const [showAllStages, setShowAllStages] = useState(false);
+  const [showAllOwners, setShowAllOwners] = useState(false);
 
   const stages: DealStage[] = ['Prospect', 'Lead', 'Qualified', 'Negotiation', 'Won/Lost'];
   const owners = ['Sarah Chen', 'Mike Johnson', 'Emma Davis', 'Alex Rivera', 'David Kim', 'Lisa Wang', 'James Liu'];
@@ -48,6 +50,17 @@ export function DealsFilterDropdown({ filters, onFiltersChange, onClearFilters }
   const hasActiveFilters = filters.stages.length > 0 || filters.owners.length > 0 || 
     filters.valueRange[0] > 0 || filters.valueRange[1] < 1000000 ||
     filters.dateRange.start || filters.dateRange.end;
+  
+  const activeFilterCount =
+    filters.stages.length +
+    filters.owners.length +
+    (filters.valueRange[0] > 0 ? 1 : 0) +
+    (filters.valueRange[1] < 1000000 ? 1 : 0) +
+    (filters.dateRange.start ? 1 : 0) +
+    (filters.dateRange.end ? 1 : 0);
+
+  const displayedStages = showAllStages ? stages : stages.slice(0, 3);
+  const displayedOwners = showAllOwners ? owners : owners.slice(0, 3);
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
@@ -57,7 +70,7 @@ export function DealsFilterDropdown({ filters, onFiltersChange, onClearFilters }
           {t('deals.filters')}
           {hasActiveFilters && (
             <span className="bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-              {filters.stages.length + filters.owners.length}
+              {activeFilterCount}
             </span>
           )}
         </Button>
@@ -85,7 +98,7 @@ export function DealsFilterDropdown({ filters, onFiltersChange, onClearFilters }
         {/* Stages Filter */}
         <div className="p-3 space-y-2">
           <Label className="text-sm font-medium text-gray-200">{t('deals.filtersDropdown.stagesLabel')}</Label>
-          {stages.map((stage) => (
+          {displayedStages.map((stage) => (
             <div key={stage} className="flex items-center space-x-2">
               <Checkbox
                 id={`stage-${stage}`}
@@ -101,6 +114,15 @@ export function DealsFilterDropdown({ filters, onFiltersChange, onClearFilters }
               </Label>
             </div>
           ))}
+          {stages.length > 3 && (
+            <Button
+              variant="link"
+              className="p-0 h-auto text-xs text-blue-400 hover:text-blue-300"
+              onClick={(e) => { e.preventDefault(); setShowAllStages(!showAllStages); }}
+            >
+              {showAllStages ? 'Show less' : 'Show more'}
+            </Button>
+          )}
         </div>
 
         <DropdownMenuSeparator className="bg-gray-600" />
@@ -108,8 +130,8 @@ export function DealsFilterDropdown({ filters, onFiltersChange, onClearFilters }
         {/* Owners Filter */}
         <div className="p-3 space-y-2">
           <Label className="text-sm font-medium text-gray-200">{t('deals.filtersDropdown.ownersLabel')}</Label>
-          <div className="max-h-32 overflow-y-auto space-y-2">
-            {owners.map((owner) => (
+          <div className="space-y-2">
+            {displayedOwners.map((owner) => (
               <div key={owner} className="flex items-center space-x-2">
                 <Checkbox
                   id={`owner-${owner}`}
@@ -126,6 +148,15 @@ export function DealsFilterDropdown({ filters, onFiltersChange, onClearFilters }
               </div>
             ))}
           </div>
+          {owners.length > 3 && (
+            <Button
+              variant="link"
+              className="p-0 h-auto text-xs text-blue-400 hover:text-blue-300"
+              onClick={(e) => { e.preventDefault(); setShowAllOwners(!showAllOwners); }}
+            >
+              {showAllOwners ? 'Show less' : 'Show more'}
+            </Button>
+          )}
         </div>
 
         <DropdownMenuSeparator className="bg-gray-600" />

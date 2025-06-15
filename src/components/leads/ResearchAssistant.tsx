@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -313,25 +314,6 @@ export function ResearchAssistant() {
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-foreground font-medium">{t("researchAssistant.searchParams.industry")}</Label>
-                  <Select value={searchParams.industry} onValueChange={(value) => setSearchParams(prev => ({ ...prev, industry: value }))}>
-                    <SelectTrigger className="mt-2">
-                      <SelectValue placeholder={t("researchAssistant.searchParams.industryPlaceholder")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="tech-ia">{t("researchAssistant.industries.techIA")}</SelectItem>
-                      <SelectItem value="fintech">{t("researchAssistant.industries.fintech")}</SelectItem>
-                      <SelectItem value="ecommerce">{t("researchAssistant.industries.ecommerce")}</SelectItem>
-                      <SelectItem value="tourisme">{t("researchAssistant.industries.tourisme")}</SelectItem>
-                      <SelectItem value="immobilier">{t("researchAssistant.industries.immobilier")}</SelectItem>
-                      <SelectItem value="education">{t("researchAssistant.industries.education")}</SelectItem>
-                      <SelectItem value="sante">{t("researchAssistant.industries.sante")}</SelectItem>
-                      <SelectItem value="automobile">{t("researchAssistant.industries.automobile")}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
                   <Label className="text-foreground font-medium">{t("researchAssistant.searchParams.country")}</Label>
                   <Select value={searchParams.country} onValueChange={(value) => setSearchParams(prev => ({ ...prev, country: value }))}>
                     <SelectTrigger className="mt-2">
@@ -349,9 +331,45 @@ export function ResearchAssistant() {
                     </SelectContent>
                   </Select>
                 </div>
+
+                <div>
+                  <Label className="text-foreground font-medium">{t("researchAssistant.searchParams.industry")}</Label>
+                  <Select value={searchParams.industry} onValueChange={(value) => setSearchParams(prev => ({ ...prev, industry: value }))}>
+                    <SelectTrigger className="mt-2">
+                      <SelectValue placeholder={t("researchAssistant.searchParams.industryPlaceholder")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="tech-ia">{t("researchAssistant.industries.techIA")}</SelectItem>
+                      <SelectItem value="fintech">{t("researchAssistant.industries.fintech")}</SelectItem>
+                      <SelectItem value="ecommerce">{t("researchAssistant.industries.ecommerce")}</SelectItem>
+                      <SelectItem value="tourisme">{t("researchAssistant.industries.tourisme")}</SelectItem>
+                      <SelectItem value="immobilier">{t("researchAssistant.industries.immobilier")}</SelectItem>
+                      <SelectItem value="education">{t("researchAssistant.industries.education")}</SelectItem>
+                      <SelectItem value="sante">{t("researchAssistant.industries.sante")}</SelectItem>
+                      <SelectItem value="automobile">{t("researchAssistant.industries.automobile")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-foreground font-medium">{t("researchAssistant.searchParams.companySize")}</Label>
+                  <Select value={searchParams.companySize} onValueChange={(value) => setSearchParams(prev => ({ ...prev, companySize: value }))}>
+                    <SelectTrigger className="mt-2">
+                      <SelectValue placeholder={t("researchAssistant.searchParams.companySizePlaceholder")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1-10">{t("researchAssistant.companySizes.110")}</SelectItem>
+                      <SelectItem value="11-50">{t("researchAssistant.companySizes.1150")}</SelectItem>
+                      <SelectItem value="51-200">{t("researchAssistant.companySizes.51200")}</SelectItem>
+                      <SelectItem value="201-500">{t("researchAssistant.companySizes.201500")}</SelectItem>
+                      <SelectItem value="501-1000">{t("researchAssistant.companySizes.5011000")}</SelectItem>
+                      <SelectItem value="1000+">{t("researchAssistant.companySizes.1000plus")}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div>
                   <Label className="text-foreground font-medium">{t("researchAssistant.searchParams.jobTitle")}</Label>
                   <Select value={searchParams.jobTitle} onValueChange={(value) => setSearchParams(prev => ({ ...prev, jobTitle: value }))}>
@@ -366,23 +384,6 @@ export function ResearchAssistant() {
                       <SelectItem value="directeur-marketing">{t("researchAssistant.jobTitles.directeurMarketing")}</SelectItem>
                       <SelectItem value="directeur-commercial">{t("researchAssistant.jobTitles.directeurCommercial")}</SelectItem>
                       <SelectItem value="fondateur">{t("researchAssistant.jobTitles.fondateur")}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label className="text-foreground font-medium">{t("researchAssistant.searchParams.companySize")}</Label>
-                  <Select value={searchParams.companySize} onValueChange={(value) => setSearchParams(prev => ({ ...prev, companySize: value }))}>
-                    <SelectTrigger className="mt-2">
-                      <SelectValue placeholder={t("researchAssistant.searchParams.companySizePlaceholder")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1-10">{t("researchAssistant.companySizes.110")}</SelectItem>
-                      <SelectItem value="11-50">{t("researchAssistant.companySizes.1150")}</SelectItem>
-                      <SelectItem value="51-200">{t("researchAssistant.companySizes.51200")}</SelectItem>
-                      <SelectItem value="201-500">{t("researchAssistant.companySizes.201500")}</SelectItem>
-                      <SelectItem value="501-1000">{t("researchAssistant.companySizes.5011000")}</SelectItem>
-                      <SelectItem value="1000+">{t("researchAssistant.companySizes.1000plus")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

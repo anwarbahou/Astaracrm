@@ -1,6 +1,5 @@
 
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogContent,
@@ -28,37 +27,44 @@ interface AddContactModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const initialFormData = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  phone: "",
-  role: "",
-  company: "",
-  tags: [] as string[],
-  country: "",
-  status: "",
-  notes: "",
-  avatar: "",
-};
-
 export function AddContactModal({ open, onOpenChange }: AddContactModalProps) {
-  const { t } = useTranslation();
-  const [formData, setFormData] = useState(initialFormData);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    role: "",
+    company: "",
+    tags: [] as string[],
+    country: "",
+    status: "",
+    notes: "",
+    avatar: "",
+  });
   
   const [newTag, setNewTag] = useState("");
   const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, you would handle form submission here
-    console.log("New Contact Data:", formData);
     toast({
-      title: t('addContactModal.toastSuccessTitle'),
-      description: t('addContactModal.toastSuccessDescription'),
+      title: "Success!",
+      description: "Contact added successfully.",
     });
     onOpenChange(false);
-    setFormData(initialFormData);
+    setFormData({
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      role: "",
+      company: "",
+      tags: [],
+      country: "",
+      status: "",
+      notes: "",
+      avatar: "",
+    });
   };
 
   const addTag = () => {
@@ -81,56 +87,52 @@ export function AddContactModal({ open, onOpenChange }: AddContactModalProps) {
       addTag();
     }
   };
-  
-  const companies = ["Acme Corporation", "Tech Solutions Ltd", "Global Industries", "StartupXYZ", "Enterprise Corp"];
-  const companyKeys = ["acme", "tech", "global", "startup", "enterprise"];
-
-  const countries = ["Morocco", "France", "Spain", "USA", "UK", "Germany"];
-  const countryKeys = ["morocco", "france", "spain", "usa", "uk", "germany"];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t('addContactModal.title')}</DialogTitle>
+          <DialogTitle>Add New Contact</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Profile Picture Section */}
           <div className="flex items-center gap-4">
             <Avatar className="h-20 w-20">
               <AvatarImage src={formData.avatar} />
               <AvatarFallback className="text-xl">
-                {formData.firstName?.[0]}{formData.lastName?.[0]}
+                {formData.firstName[0]}{formData.lastName[0]}
               </AvatarFallback>
             </Avatar>
             <div className="space-y-2">
-              <Label>{t('addContactModal.profilePicture')}</Label>
+              <Label>Profile Picture</Label>
               <Button type="button" variant="outline" size="sm" className="gap-2">
                 <Upload size={16} />
-                {t('addContactModal.uploadPhoto')}
+                Upload Photo
               </Button>
-              <p className="text-xs text-muted-foreground">{t('addContactModal.uploadHint')}</p>
+              <p className="text-xs text-muted-foreground">Optional: Upload contact photo</p>
             </div>
           </div>
 
+          {/* Basic Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="firstName">{t('addContactModal.firstNameLabel')}</Label>
+              <Label htmlFor="firstName">First Name *</Label>
               <Input
                 id="firstName"
                 value={formData.firstName}
                 onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                placeholder={t('addContactModal.firstNamePlaceholder')}
+                placeholder="John"
                 required
               />
             </div>
             <div>
-              <Label htmlFor="lastName">{t('addContactModal.lastNameLabel')}</Label>
+              <Label htmlFor="lastName">Last Name *</Label>
               <Input
                 id="lastName"
                 value={formData.lastName}
                 onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                placeholder={t('addContactModal.lastNamePlaceholder')}
+                placeholder="Doe"
                 required
               />
             </div>
@@ -138,104 +140,112 @@ export function AddContactModal({ open, onOpenChange }: AddContactModalProps) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="email">{t('addContactModal.emailLabel')}</Label>
+              <Label htmlFor="email">Email *</Label>
               <Input
                 id="email"
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder={t('addContactModal.emailPlaceholder')}
+                placeholder="john@example.com"
                 required
               />
             </div>
             <div>
-              <Label htmlFor="phone">{t('addContactModal.phoneLabel')}</Label>
+              <Label htmlFor="phone">Phone Number</Label>
               <Input
                 id="phone"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                placeholder={t('addContactModal.phonePlaceholder')}
+                placeholder="+1 (555) 123-4567"
               />
             </div>
           </div>
 
+          {/* Professional Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="role">{t('addContactModal.roleLabel')}</Label>
+              <Label htmlFor="role">Role/Title</Label>
               <Input
                 id="role"
                 value={formData.role}
                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                placeholder={t('addContactModal.rolePlaceholder')}
+                placeholder="CEO, Manager, Developer..."
               />
             </div>
             <div>
-              <Label htmlFor="company">{t('addContactModal.companyLabel')}</Label>
+              <Label htmlFor="company">Company</Label>
               <Select
                 value={formData.company}
                 onValueChange={(value) => setFormData({ ...formData, company: value })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={t('addContactModal.selectCompany')} />
+                  <SelectValue placeholder="Select or enter company" />
                 </SelectTrigger>
                 <SelectContent className="bg-background border">
-                  {companies.map((company, index) => (
-                    <SelectItem key={company} value={company}>{t(`contacts.companies.${companyKeys[index]}`)}</SelectItem>
-                  ))}
-                  <SelectItem value="Other">{t('contacts.companies.other')}</SelectItem>
+                  <SelectItem value="Acme Corporation">Acme Corporation</SelectItem>
+                  <SelectItem value="Tech Solutions Ltd">Tech Solutions Ltd</SelectItem>
+                  <SelectItem value="Global Industries">Global Industries</SelectItem>
+                  <SelectItem value="StartupXYZ">StartupXYZ</SelectItem>
+                  <SelectItem value="Enterprise Corp">Enterprise Corp</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
+          {/* Location and Status */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="country">{t('addContactModal.countryLabel')}</Label>
+              <Label htmlFor="country">Country/Location</Label>
               <Select
                 value={formData.country}
                 onValueChange={(value) => setFormData({ ...formData, country: value })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={t('addContactModal.countryPlaceholder')} />
+                  <SelectValue placeholder="Select location" />
                 </SelectTrigger>
                 <SelectContent className="bg-background border">
-                   {countries.map((country, index) => (
-                      <SelectItem key={country} value={country}>{t(`countries.${countryKeys[index]}`)}</SelectItem>
-                    ))}
-                  <SelectItem value="Other">{t('countries.other')}</SelectItem>
+                  <SelectItem value="Morocco">Morocco</SelectItem>
+                  <SelectItem value="France">France</SelectItem>
+                  <SelectItem value="Spain">Spain</SelectItem>
+                  <SelectItem value="USA">United States</SelectItem>
+                  <SelectItem value="UK">United Kingdom</SelectItem>
+                  <SelectItem value="Germany">Germany</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div>
-              <Label htmlFor="status">{t('addContactModal.statusLabel')}</Label>
+              <Label htmlFor="status">Status</Label>
               <Select
                 value={formData.status}
                 onValueChange={(value) => setFormData({ ...formData, status: value })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder={t('addContactModal.statusPlaceholder')} />
+                  <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent className="bg-background border">
-                  <SelectItem value="Active">{t('contacts.statuses.active')}</SelectItem>
-                  <SelectItem value="Inactive">{t('contacts.statuses.inactive')}</SelectItem>
+                  <SelectItem value="Active">Active</SelectItem>
+                  <SelectItem value="Inactive">Inactive</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
+          {/* Tags Section */}
           <div>
-            <Label>{t('addContactModal.tagsLabel')}</Label>
+            <Label>Tags</Label>
             <div className="space-y-2">
               <div className="flex gap-2">
                 <Input
                   value={newTag}
                   onChange={(e) => setNewTag(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder={t('addContactModal.tagsPlaceholder')}
+                  placeholder="Add a tag and press Enter"
                   className="flex-1"
                 />
                 <Button type="button" onClick={addTag} size="sm">
-                  {t('addContactModal.addTagButton')}
+                  Add
                 </Button>
               </div>
               {formData.tags.length > 0 && (
@@ -255,13 +265,14 @@ export function AddContactModal({ open, onOpenChange }: AddContactModalProps) {
             </div>
           </div>
 
+          {/* Notes Section */}
           <div>
-            <Label htmlFor="notes">{t('addContactModal.notesLabel')}</Label>
+            <Label htmlFor="notes">Notes</Label>
             <Textarea
               id="notes"
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              placeholder={t('addContactModal.notesPlaceholder')}
+              placeholder="Add any additional notes about this contact..."
               rows={4}
             />
           </div>
@@ -272,9 +283,9 @@ export function AddContactModal({ open, onOpenChange }: AddContactModalProps) {
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              {t('common.cancel')}
+              Cancel
             </Button>
-            <Button type="submit">{t('addContactModal.submitButton')}</Button>
+            <Button type="submit">Add Contact</Button>
           </div>
         </form>
       </DialogContent>

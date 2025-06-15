@@ -1,3 +1,4 @@
+
 {
   "app": {
     "sidebar": {
@@ -183,8 +184,7 @@
       "tech": "Tech Solutions Ltd",
       "global": "Global Industries",
       "startup": "StartupXYZ",
-      "enterprise": "Enterprise Corp",
-      "other": "Other"
+      "enterprise": "Enterprise Corp"
     },
     "roles": {
       "ceo": "CEO",
@@ -362,8 +362,7 @@
     "usa": "USA",
     "uae": "UAE",
     "uk": "UK",
-    "germany": "Germany",
-    "other": "Other"
+    "germany": "Germany"
   },
   "industries": {
     "technology": "Technology",
@@ -414,38 +413,5 @@
     "notesLabel": "Notes",
     "notesPlaceholder": "Add any additional notes about this client...",
     "submitButton": "Add Client"
-  },
-  "addContactModal": {
-    "title": "Add New Contact",
-    "profilePicture": "Profile Picture",
-    "uploadPhoto": "Upload Photo",
-    "uploadHint": "Optional: Upload contact photo",
-    "firstNameLabel": "First Name *",
-    "firstNamePlaceholder": "John",
-    "lastNameLabel": "Last Name *",
-    "lastNamePlaceholder": "Doe",
-    "emailLabel": "Email *",
-    "emailPlaceholder": "john@example.com",
-    "phoneLabel": "Phone Number",
-    "phonePlaceholder": "+1 (555) 123-4567",
-    "roleLabel": "Role/Title",
-    "rolePlaceholder": "CEO, Manager, Developer...",
-    "companyLabel": "Company",
-    "companyPlaceholder": "Select or enter company",
-    "selectCompany": "Select a company",
-    "otherCompany": "Other",
-    "countryLabel": "Country/Location",
-    "countryPlaceholder": "Select location",
-    "otherCountry": "Other",
-    "statusLabel": "Status",
-    "statusPlaceholder": "Select status",
-    "tagsLabel": "Tags",
-    "tagsPlaceholder": "Add a tag and press Enter",
-    "addTagButton": "Add",
-    "notesLabel": "Notes",
-    "notesPlaceholder": "Add any additional notes about this contact...",
-    "submitButton": "Add Contact",
-    "toastSuccessTitle": "Success!",
-    "toastSuccessDescription": "Contact added successfully."
   }
 }

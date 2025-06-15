@@ -183,7 +183,8 @@
       "tech": "Tech Solutions Ltd",
       "global": "Global Industries",
       "startup": "StartupXYZ",
-      "enterprise": "Enterprise Corp"
+      "enterprise": "Enterprise Corp",
+      "other": "Autre"
     },
     "roles": {
       "ceo": "PDG",
@@ -361,7 +362,8 @@
     "usa": "États-Unis",
     "uae": "Émirats Arabes Unis",
     "uk": "Royaume-Uni",
-    "germany": "Allemagne"
+    "germany": "Allemagne",
+    "other": "Autre"
   },
   "industries": {
     "technology": "Technologie",
@@ -411,5 +413,38 @@
     "tagsPlaceholder": "Ajoutez une étiquette et appuyez sur Entrée",
     "notesLabel": "Notes",
     "notesPlaceholder": "Ajoutez des notes supplémentaires sur ce client..."
+  },
+  "addContactModal": {
+    "title": "Ajouter un nouveau contact",
+    "profilePicture": "Photo de profil",
+    "uploadPhoto": "Télécharger une photo",
+    "uploadHint": "Optionnel: Téléchargez la photo du contact",
+    "firstNameLabel": "Prénom *",
+    "firstNamePlaceholder": "John",
+    "lastNameLabel": "Nom de famille *",
+    "lastNamePlaceholder": "Doe",
+    "emailLabel": "E-mail *",
+    "emailPlaceholder": "john@example.com",
+    "phoneLabel": "Numéro de téléphone",
+    "phonePlaceholder": "+33 1 23 45 67 89",
+    "roleLabel": "Rôle/Titre",
+    "rolePlaceholder": "PDG, Manager, Développeur...",
+    "companyLabel": "Entreprise",
+    "companyPlaceholder": "Sélectionnez ou entrez une entreprise",
+    "selectCompany": "Sélectionnez une entreprise",
+    "otherCompany": "Autre",
+    "countryLabel": "Pays/Lieu",
+    "countryPlaceholder": "Sélectionnez un lieu",
+    "otherCountry": "Autre",
+    "statusLabel": "Statut",
+    "statusPlaceholder": "Sélectionnez un statut",
+    "tagsLabel": "Étiquettes",
+    "tagsPlaceholder": "Ajoutez une étiquette et appuyez sur Entrée",
+    "addTagButton": "Ajouter",
+    "notesLabel": "Notes",
+    "notesPlaceholder": "Ajoutez des notes supplémentaires sur ce contact...",
+    "submitButton": "Ajouter le contact",
+    "toastSuccessTitle": "Succès!",
+    "toastSuccessDescription": "Contact ajouté avec succès."
   }
 }

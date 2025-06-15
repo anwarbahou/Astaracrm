@@ -1,0 +1,452 @@
+
+{
+  "app": {
+    "sidebar": {
+      "dashboard": "Tablero",
+      "clients": "Clientes",
+      "contacts": "Contactos",
+      "deals": "Tratos",
+      "aiLeads": "Leads IA",
+      "tasks": "Tareas",
+      "calendar": "Calendario",
+      "email": "Centro de Email",
+      "notes": "Notas",
+      "reports": "Informes",
+      "users": "Usuarios",
+      "settings": "Configuración",
+      "workflows": "Flujos de trabajo",
+      "activityLogs": "Registros de actividad",
+      "expand": "Expandir",
+      "collapse": "Contraer"
+    },
+    "topNav": {
+      "searchPlaceholder": "Buscar...",
+      "quickAdd": "Añadir rápido",
+      "notifications": {
+        "ariaLabel": "Notificaciones"
+      },
+      "userMenu": {
+        "name": "John Doe",
+        "email": "john@wolfhunt.com",
+        "profile": "Perfil",
+        "settings": "Configuración",
+        "signOut": "Cerrar sesión",
+        "ariaLabel": "Menú de usuario"
+      },
+      "pageTitle": {
+        "dashboard": "Tablero",
+        "clients": "Gestión de Clientes",
+        "contacts": "Gestión de Contactos",
+        "deals": "Pipeline de Ventas",
+        "tasks": "Gestión de Tareas",
+        "calendar": "Calendario",
+        "email": "Centro de Email",
+        "notes": "Notas",
+        "reports": "Informes y Análisis",
+        "users": "Gestión de Usuarios",
+        "workflows": "Flujos de trabajo",
+        "activityLogs": "Registros de Actividad y Auditoría",
+        "settings": "Configuración",
+        "aiLeads": "Inteligencia de Leads con IA",
+        "fallback": "WOLFHUNT CRM"
+      },
+      "pageDescription": {
+        "dashboard": "Un resumen del rendimiento de tu CRM.",
+        "clients": "Gestiona las relaciones con tus clientes y sigue el crecimiento del negocio.",
+        "contacts": "Gestiona todos tus contactos y relaciones comerciales.",
+        "deals": "Gestiona tus tratos a través del proceso de ventas.",
+        "tasks": "Mantente al día con tus tareas.",
+        "calendar": "Programa y gestiona citas.",
+        "email": "Comunícate con tus clientes.",
+        "notes": "Captura información importante.",
+        "activityLogs": "Rastrea todas las actividades del sistema y acciones de los usuarios.",
+        "aiLeads": "Generación avanzada de leads en MENA y Europa con IA."
+      }
+    },
+    "languageSwitcher": {
+      "chooseLanguage": "Elegir idioma",
+      "moreComingSoon": "Más idiomas próximamente"
+    },
+    "indexPage": {
+      "title": "Bienvenido a tu aplicación vacía",
+      "subtitle": "¡Comienza a construir tu increíble proyecto aquí!"
+    }
+  },
+  "dashboard": {
+    "title": "Tablero",
+    "welcomeMessage": "¡Bienvenido de nuevo! Esto es lo que está sucediendo con tu negocio hoy.",
+    "addContact": "Añadir Contacto",
+    "addClient": "Añadir Cliente",
+    "totalRevenue": "Ingresos Totales",
+    "activeClients": "Clientes Activos",
+    "dealsInPipeline": "Tratos en Proceso",
+    "tasksDueToday": "Tareas para Hoy",
+    "vsLastMonth": "vs el mes pasado",
+    "vsYesterday": "vs ayer",
+    "recentDeals": "Tratos Recientes",
+    "upcomingTasks": "Próximas Tareas",
+    "recentActivities": "Actividades Recientes",
+    "viewAll": "Ver todo",
+    "status": {
+      "negotiation": "Negociación",
+      "proposal": "Propuesta",
+      "qualified": "Cualificado",
+      "discovery": "Descubrimiento"
+    },
+    "priority": {
+      "high": "Alta",
+      "medium": "Media",
+      "low": "Baja"
+    },
+    "mockTasks": {
+      "followUp": "Seguimiento con Acme Corp",
+      "prepareProposal": "Preparar propuesta para Tech Solutions",
+      "scheduleDemo": "Programar llamada de demostración",
+      "sendContract": "Enviar contrato a Global Industries"
+    },
+    "mockActivities": {
+      "newDeal": "Nuevo trato creado",
+      "dealDetails": "Acme Corp - Licencia Empresarial",
+      "contactUpdated": "Contacto actualizado",
+      "contactDetails": "John Smith - Acme Corp",
+      "taskCompleted": "Tarea completada",
+      "taskDetails": "Enviar propuesta a Tech Solutions",
+      "meetingScheduled": "Reunión programada",
+      "meetingDetails": "Llamada de demostración con StartupXYZ"
+    }
+  },
+  "clients": {
+    "addClient": "Añadir Cliente",
+    "totalClients": "Total de Clientes",
+    "activeClients": "Clientes Activos",
+    "prospects": "Prospectos",
+    "totalRevenue": "Ingresos Totales"
+  },
+  "contacts": {
+    "title": "Contactos",
+    "description": "Gestiona todos tus contactos y relaciones comerciales.",
+    "addContact": "Añadir Contacto",
+    "searchPlaceholder": "Buscar contactos por nombre, email o empresa...",
+    "stats": {
+      "total": "Total de Contactos",
+      "active": "Contactos Activos",
+      "decisionMakers": "Decisores",
+      "companies": "Empresas"
+    },
+    "table": {
+      "title": "Todos los Contactos ({{count}})",
+      "searchPlaceholder": "Buscar contactos...",
+      "filtersButton": "Filtros",
+      "lastContacted": "Último contacto: {{value}}",
+      "header": {
+        "contact": "Contacto",
+        "role": "Rol/Cargo",
+        "contactInfo": "Info de Contacto",
+        "company": "Empresa",
+        "tags": "Etiquetas",
+        "location": "Ubicación",
+        "created": "Creado",
+        "status": "Estado"
+      },
+      "pagination": {
+        "rowsPerPage": "Filas por página:",
+        "of": "{{start}}-{{end}} de {{total}}"
+      }
+    },
+    "filtersPanel": {
+      "title": "Filtros",
+      "clearAll": "Limpiar Todo",
+      "company": "Empresa",
+      "allCompanies": "Todas las empresas",
+      "role": "Rol/Cargo",
+      "allRoles": "Todos los roles",
+      "country": "País",
+      "allCountries": "Todos los países",
+      "status": "Estado",
+      "allStatuses": "Todos los estados",
+      "createdFrom": "Creado Desde",
+      "createdTo": "Creado Hasta",
+      "lastContactedFrom": "Último Contacto Desde",
+      "lastContactedTo": "Último Contacto Hasta",
+      "tags": "Etiquetas"
+    },
+    "tags": {
+      "decisionMaker": "Decisor",
+      "vip": "VIP",
+      "technical": "Técnico",
+      "founder": "Fundador",
+      "startup": "Startup",
+      "procurement": "Compras",
+      "sales": "Ventas"
+    },
+    "companies": {
+      "acme": "Acme Corporation",
+      "tech": "Tech Solutions Ltd",
+      "global": "Global Industries",
+      "startup": "StartupXYZ",
+      "enterprise": "Enterprise Corp",
+      "other": "Otro"
+    },
+    "roles": {
+      "ceo": "Director General",
+      "cto": "Director de Tecnología",
+      "vpSales": "VP de Ventas",
+      "manager": "Gerente",
+      "developer": "Desarrollador",
+      "designer": "Diseñador"
+    },
+    "statuses": {
+      "active": "Activo",
+      "inactive": "Inactivo"
+    }
+  },
+  "deals": {
+    "title": "Tratos",
+    "addDeal": "Añadir Trato",
+    "searchPlaceholder": "Buscar tratos...",
+    "filters": "Filtros",
+    "stages": {
+      "prospect": "Prospecto",
+      "lead": "Lead",
+      "qualified": "Cualificado",
+      "negotiation": "Negociación",
+      "won-lost": "Ganado/Perdido"
+    },
+    "stats": {
+      "active": "Tratos Activos",
+      "pipelineValue": "Valor del Pipeline",
+      "won": "Tratos Ganados",
+      "avgSize": "Tamaño Prom. Trato",
+      "vsLastMonth": "{{change}} del mes pasado"
+    },
+    "toasts": {
+      "moved": {
+        "title": "Trato Movido",
+        "description": "Trato movido a la etapa {{stage}}"
+      },
+      "updated": {
+        "title": "Trato Actualizado",
+        "description": "Trato actualizado con éxito"
+      },
+      "deleted": {
+        "title": "Trato Eliminado",
+        "description": "Trato eliminado con éxito"
+      },
+      "created": {
+        "title": "Trato Creado",
+        "description": "Nuevo trato añadido a la etapa {{stage}}"
+      }
+    },
+    "pipeline": {
+      "dropDeal": "Suelta el trato aquí",
+      "noDeals": "No hay tratos en esta etapa",
+      "addFirstDeal": "Añade tu primer trato",
+      "addDeal": "Añadir Trato"
+    },
+    "board": {
+      "noDeals": "No hay tratos en esta etapa."
+    },
+    "filtersDropdown": {
+      "title": "Filtrar Tratos",
+      "clear": "Limpiar",
+      "stagesLabel": "Etapas",
+      "ownersLabel": "Propietarios",
+      "valueLabel": "Rango de Valor ($)",
+      "minPlaceholder": "Mín",
+      "maxPlaceholder": "Máx",
+      "dateLabel": "Fecha de Cierre Prevista"
+    },
+    "filtersPanel": {
+      "sourcesLabel": "Fuentes",
+      "clearAll": "Limpiar Todo",
+      "apply": "Aplicar"
+    },
+    "sources": {
+      "website": "Sitio Web",
+      "referral": "Referencia",
+      "coldOutreach": "Contacto en Frío",
+      "linkedIn": "LinkedIn",
+      "existingClient": "Cliente Existente"
+    }
+  },
+  "activityLogs": {
+    "title": "Registros de Actividad y Auditoría",
+    "description": "Rastrea todas las actividades del sistema y acciones de los usuarios.",
+    "filter": "Filtrar",
+    "export": "Exportar Registros",
+    "searchPlaceholder": "Buscar actividades por acción, usuario o entidad..."
+  },
+  "notes": {
+    "grid": {
+      "empty": {
+        "title": "No se encontraron notas",
+        "description": "Comienza a capturar tus ideas, notas de reuniones e información importante creando tu primera nota."
+      },
+      "pinnedNotes": "Notas Fijadas",
+      "allNotes": "Todas las Notas"
+    },
+    "filters": {
+      "button": "Filtros",
+      "title": "Filtrar Notas",
+      "sortBy": {
+        "label": "Ordenar por",
+        "modified": "Última modificación",
+        "created": "Fecha de creación",
+        "title": "Título"
+      },
+      "type": {
+        "label": "Tipo",
+        "all": "Todos los tipos"
+      },
+      "visibility": {
+        "label": "Visibilidad",
+        "all": "Todas"
+      },
+      "tags": {
+        "label": "Etiquetas"
+      }
+    },
+    "noteType": {
+      "general": "General",
+      "meeting": "Reunión",
+      "task": "Tarea",
+      "idea": "Idea"
+    },
+    "visibility": {
+      "public": "Público",
+      "team": "Equipo",
+      "private": "Privado"
+    },
+    "modal": {
+      "createTitle": "Crear Nueva Nota",
+      "editTitle": "Editar Nota",
+      "titleLabel": "Título",
+      "titlePlaceholder": "Introduce el título de la nota...",
+      "typeLabel": "Tipo",
+      "visibilityLabel": "Visibilidad",
+      "tagsLabel": "Etiquetas",
+      "tagsPlaceholder": "Añadir una etiqueta...",
+      "contentLabel": "Contenido",
+      "contentPlaceholder": "Escribe el contenido de tu nota...",
+      "pinNote": "Fijar esta nota",
+      "setReminder": "Establecer un recordatorio",
+      "reminderDate": "Fecha del recordatorio",
+      "selectDate": "Seleccionar una fecha",
+      "attachmentsLabel": "Archivos adjuntos",
+      "attachmentsPlaceholder": "Arrastra y suelta archivos aquí o haz clic para explorar",
+      "updateButton": "Actualizar Nota",
+      "createButton": "Crear Nota"
+    },
+    "detail": {
+      "linkedTo": "Vinculado a:",
+      "tags": "Etiquetas:",
+      "content": "Contenido",
+      "reminder": "Recordatorio",
+      "attachments": "Archivos adjuntos ({{count}})",
+      "author": "Autor",
+      "created": "Creado",
+      "modified": "Modificado"
+    }
+  },
+  "common": {
+    "add": "Añadir",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "close": "Cerrar"
+  },
+  "countries": {
+    "morocco": "Marruecos",
+    "france": "Francia",
+    "spain": "España",
+    "usa": "EE.UU.",
+    "uae": "EAU",
+    "uk": "Reino Unido",
+    "germany": "Alemania",
+    "other": "Otro"
+  },
+  "industries": {
+    "technology": "Tecnología",
+    "healthcare": "Salud",
+    "finance": "Finanzas",
+    "retail": "Venta al por menor",
+    "manufacturing": "Fabricación",
+    "consulting": "Consultoría",
+    "education": "Educación",
+    "real_estate": "Bienes raíces",
+    "other": "Otro"
+  },
+  "clientStages": {
+    "lead": "Lead",
+    "prospect": "Prospecto",
+    "active": "Activo",
+    "inactive": "Inactivo"
+  },
+  "toasts": {
+    "addClient": {
+      "success": {
+        "title": "¡Éxito!",
+        "description": "Cliente añadido con éxito."
+      }
+    }
+  },
+  "addClientModal": {
+    "title": "Añadir Nuevo Cliente",
+    "profilePicture": "Foto de Perfil",
+    "uploadPhoto": "Subir Foto",
+    "uploadHint": "Opcional: Sube el logo o la foto del cliente",
+    "nameLabel": "Nombre de la Empresa/Cliente *",
+    "namePlaceholder": "Introduce el nombre de la empresa",
+    "emailLabel": "Dirección de Email *",
+    "emailPlaceholder": "contacto@empresa.com",
+    "phoneLabel": "Número de Teléfono",
+    "phonePlaceholder": "+34 912 345 678",
+    "countryLabel": "País/Ubicación",
+    "countryPlaceholder": "Selecciona una ubicación",
+    "industryLabel": "Industria",
+    "industryPlaceholder": "Selecciona una industria",
+    "stageLabel": "Etapa del Cliente",
+    "stagePlaceholder": "Selecciona una etapa",
+    "ownerLabel": "Propietario de la Cuenta",
+    "ownerPlaceholder": "Asignar un propietario de cuenta",
+    "tagsLabel": "Etiquetas",
+    "tagsPlaceholder": "Añade una etiqueta y presiona Enter",
+    "notesLabel": "Notas",
+    "notesPlaceholder": "Añade cualquier nota adicional sobre este cliente...",
+    "submitButton": "Añadir Cliente"
+  },
+  "addContactModal": {
+    "title": "Añadir Nuevo Contacto",
+    "profilePicture": "Foto de Perfil",
+    "uploadPhoto": "Subir Foto",
+    "uploadHint": "Opcional: Sube la foto del contacto",
+    "firstNameLabel": "Nombre *",
+    "firstNamePlaceholder": "John",
+    "lastNameLabel": "Apellido *",
+    "lastNamePlaceholder": "Doe",
+    "emailLabel": "Email *",
+    "emailPlaceholder": "john@example.com",
+    "phoneLabel": "Número de Teléfono",
+    "phonePlaceholder": "+34 912 345 678",
+    "roleLabel": "Rol/Cargo",
+    "rolePlaceholder": "Director General, Gerente, Desarrollador...",
+    "companyLabel": "Empresa",
+    "companyPlaceholder": "Selecciona o introduce una empresa",
+    "selectCompany": "Selecciona una empresa",
+    "otherCompany": "Otro",
+    "countryLabel": "País/Ubicación",
+    "countryPlaceholder": "Selecciona una ubicación",
+    "otherCountry": "Otro",
+    "statusLabel": "Estado",
+    "statusPlaceholder": "Selecciona un estado",
+    "tagsLabel": "Etiquetas",
+    "tagsPlaceholder": "Añade una etiqueta y presiona Enter",
+    "addTagButton": "Añadir",
+    "notesLabel": "Notas",
+    "notesPlaceholder": "Añade cualquier nota adicional sobre este contacto...",
+    "submitButton": "Añadir Contacto",
+    "toastSuccessTitle": "¡Éxito!",
+    "toastSuccessDescription": "Contacto añadido con éxito."
+  }
+}

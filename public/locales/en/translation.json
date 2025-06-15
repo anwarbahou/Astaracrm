@@ -164,7 +164,9 @@
       "to": "To",
       "lastInteraction": "Last Interaction",
       "clearAll": "Clear All",
-      "apply": "Apply Filters"
+      "apply": "Apply Filters",
+      "showMore": "Show more",
+      "showLess": "Show less"
     }
   },
   "contacts": {
@@ -298,12 +300,14 @@
       "valueLabel": "Value Range ($)",
       "minPlaceholder": "Min",
       "maxPlaceholder": "Max",
-      "dateLabel": "Expected Close Date"
+      "dateLabel": "Expected Close Date",
+      "showMore": "Show more",
+      "showLess": "Show less"
     },
     "filtersPanel": {
       "sourcesLabel": "Sources",
       "clearAll": "Clear All",
-      "apply": "Apply"
+      "apply": "Apply Filters"
     },
     "sources": {
       "website": "Website",

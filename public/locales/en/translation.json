@@ -511,5 +511,107 @@
     "submitButton": "Add Contact",
     "successTitle": "Success!",
     "successDescription": "Contact added successfully."
+  },
+  "landingPage": {
+    "hero": {
+      "title": "Wolfhunt CRM – The AI-Powered Sales Platform for Modern Business",
+      "subtitle": "Close more deals, faster — with intelligent lead generation, smart prioritization, and unified sales automation.",
+      "getStarted": "Get Started Free",
+      "signIn": "Sign In"
+    },
+    "features": {
+      "title": "Everything you need to hunt down success",
+      "subtitle": "A powerful suite of tools designed to amplify your sales strategy.",
+      "aiLeads": {
+        "title": "AI Lead Intelligence",
+        "description": "Instantly generate lists of highly-qualified B2B leads tailored to your ideal customer profile.",
+        "points": [
+          "Define precise criteria to find perfect-fit prospects.",
+          "Enrich leads with deep business intelligence.",
+          "Access a dedicated Research Assistant."
+        ]
+      },
+      "leadScoring": {
+        "title": "Automated Lead Scoring",
+        "description": "Our AI analyzes and ranks every lead, so your team knows exactly who to contact next.",
+        "points": [
+          "Focus energy on high-potential opportunities.",
+          "Receive AI-driven recommendations.",
+          "Prioritize your pipeline with data-backed scores."
+        ]
+      },
+      "campaigns": {
+        "title": "Multi-Channel Campaigns",
+        "description": "Design, launch, and manage outreach campaigns across email, LinkedIn, and more.",
+        "points": [
+          "Build coordinated outreach sequences.",
+          "Personalize communication at scale.",
+          "Track performance from a single dashboard."
+        ]
+      },
+      "aiMessaging": {
+        "title": "AI-Powered Messaging",
+        "description": "Generate persuasive and personalized emails and messages with a single click.",
+        "points": [
+          "Craft effective outreach messages instantly.",
+          "Use AI-generated templates and best practices.",
+          "Increase reply rates with better copy."
+        ]
+      },
+      "crmHub": {
+        "title": "Unified CRM & Sales Hub",
+        "description": "The central source of truth for all your client, contact, and deal information.",
+        "points": [
+          "Organize contacts in a filterable database.",
+          "Visualize your pipeline with a drag-and-drop board.",
+          "Log activities, notes, and tasks seamlessly."
+        ]
+      },
+      "analytics": {
+        "title": "Insightful Analytics",
+        "description": "Get a real-time, visual overview of your business performance and team progress.",
+        "points": [
+          "Monitor key metrics like revenue and active clients.",
+          "Track team activities and upcoming tasks.",
+          "Identify opportunities for growth."
+        ]
+      }
+    },
+    "credibility": {
+      "title": "Trusted by top sales teams across MENA & Europe",
+      "testimonial": "“Wolfhunt CRM transformed our prospecting. The AI-generated leads are consistently high-quality, and our team is closing deals 40% faster. It's an essential part of our tech stack.”",
+      "author": "Ali Khan, Head of Sales, Tech Innovate"
+    },
+    "footer": {
+      "tagline": "Hunt down success.",
+      "features": "Features",
+      "pricing": "Pricing",
+      "contact": "Contact",
+      "support": "Support",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "rights": "© {{year}} Wolfhunt. All rights reserved."
+    },
+    "auth": {
+      "signInTitle": "Welcome Back",
+      "signInSubtitle": "Sign in to access your dashboard.",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "forgotPassword": "Forgot password?",
+      "signInButton": "Sign In",
+      "noAccount": "Don't have an account?",
+      "signUpHere": "Sign up here",
+      "signUpTitle": "Create Your Account",
+      "signUpSubtitle": "Join Wolfhunt and start closing more deals today.",
+      "nameLabel": "Full Name",
+      "companyNameLabel": "Company Name",
+      "regionLabel": "Market Region",
+      "regionPlaceholder": "Select your region",
+      "regionMena": "MENA",
+      "regionEurope": "Europe",
+      "signUpButton": "Create Account",
+      "hasAccount": "Already have an account?",
+      "signInHere": "Sign in here"
+    }
   }
 }

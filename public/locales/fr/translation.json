@@ -508,5 +508,107 @@
     "submitButton": "Ajouter le contact",
     "successTitle": "Succès !",
     "successDescription": "Contact ajouté avec succès."
+  },
+  "landingPage": {
+    "hero": {
+      "title": "Wolfhunt CRM – La Plateforme de Vente IA pour les Entreprises Modernes",
+      "subtitle": "Concluez plus d'affaires, plus rapidement — avec la génération de leads intelligente, la priorisation et l'automatisation des ventes.",
+      "getStarted": "Commencer Gratuitement",
+      "signIn": "Se Connecter"
+    },
+    "features": {
+      "title": "Tout ce dont vous avez besoin pour chasser le succès",
+      "subtitle": "Une suite d'outils puissants conçus pour amplifier votre stratégie de vente.",
+      "aiLeads": {
+        "title": "Intelligence des Leads par IA",
+        "description": "Générez instantanément des listes de prospects B2B hautement qualifiés et adaptés à votre profil client idéal.",
+        "points": [
+          "Définissez des critères précis pour trouver les prospects parfaits.",
+          "Enrichissez les leads avec des informations commerciales.",
+          "Accédez à un assistant de recherche dédié."
+        ]
+      },
+      "leadScoring": {
+        "title": "Scoring Automatisé des Leads",
+        "description": "Notre IA analyse et classe chaque prospect, afin que votre équipe sache exactement qui contacter ensuite.",
+        "points": [
+          "Concentrez votre énergie sur les opportunités à fort potentiel.",
+          "Recevez des recommandations basées sur l'IA.",
+          "Priorisez votre pipeline avec des scores fiables."
+        ]
+      },
+      "campaigns": {
+        "title": "Campagnes Multi-Canaux",
+        "description": "Concevez, lancez et gérez des campagnes de prospection par e-mail, LinkedIn, et plus encore.",
+        "points": [
+          "Créez des séquences de contact coordonnées.",
+          "Personnalisez la communication à grande échelle.",
+          "Suivez les performances depuis un tableau de bord unique."
+        ]
+      },
+      "aiMessaging": {
+        "title": "Messagerie Assistée par IA",
+        "description": "Générez des e-mails et des messages persuasifs et personnalisés en un seul clic.",
+        "points": [
+          "Rédigez des messages de prospection efficaces instantanément.",
+          "Utilisez des modèles et des bonnes pratiques de l'IA.",
+          "Augmentez les taux de réponse avec un meilleur texte."
+        ]
+      },
+      "crmHub": {
+        "title": "CRM & Hub de Ventes Unifié",
+        "description": "La source d'information centrale pour tous vos clients, contacts et affaires.",
+        "points": [
+          "Organisez les contacts dans une base de données filtrable.",
+          "Visualisez votre pipeline avec un tableau glisser-déposer.",
+          "Enregistrez les activités, notes et tâches de manière fluide."
+        ]
+      },
+      "analytics": {
+        "title": "Analyses Pertinentes",
+        "description": "Obtenez un aperçu visuel en temps réel des performances de votre entreprise et de l'avancement de votre équipe.",
+        "points": [
+          "Surveillez les indicateurs clés comme les revenus et les clients actifs.",
+          "Suivez les activités de l'équipe et les tâches à venir.",
+          "Identifiez les opportunités de croissance."
+        ]
+      }
+    },
+    "credibility": {
+      "title": "Approuvé par les meilleures équipes de vente au MENA et en Europe",
+      "testimonial": "« Wolfhunt CRM a transformé notre prospection. Les leads générés par l'IA sont de haute qualité et notre équipe conclut des affaires 40% plus rapidement. C'est un élément essentiel de notre arsenal technologique. »",
+      "author": "Ali Khan, Directeur des Ventes, Tech Innovate"
+    },
+    "footer": {
+      "tagline": "Chassez le succès.",
+      "features": "Fonctionnalités",
+      "pricing": "Tarifs",
+      "contact": "Contact",
+      "support": "Support",
+      "privacy": "Politique de confidentialité",
+      "terms": "Conditions d'utilisation",
+      "rights": "© {{year}} Wolfhunt. Tous droits réservés."
+    },
+    "auth": {
+      "signInTitle": "Bon Retour",
+      "signInSubtitle": "Connectez-vous pour accéder à votre tableau de bord.",
+      "emailLabel": "E-mail",
+      "passwordLabel": "Mot de passe",
+      "forgotPassword": "Mot de passe oublié ?",
+      "signInButton": "Se connecter",
+      "noAccount": "Vous n'avez pas de compte ?",
+      "signUpHere": "Inscrivez-vous ici",
+      "signUpTitle": "Créez Votre Compte",
+      "signUpSubtitle": "Rejoignez Wolfhunt et commencez à conclure plus d'affaires dès aujourd'hui.",
+      "nameLabel": "Nom complet",
+      "companyNameLabel": "Nom de l'entreprise",
+      "regionLabel": "Région du marché",
+      "regionPlaceholder": "Sélectionnez votre région",
+      "regionMena": "MENA",
+      "regionEurope": "Europe",
+      "signUpButton": "Créer un compte",
+      "hasAccount": "Vous avez déjà un compte ?",
+      "signInHere": "Connectez-vous ici"
+    }
   }
 }

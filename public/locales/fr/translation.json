@@ -1,3 +1,4 @@
+
 {
   "app": {
     "sidebar": {
@@ -411,5 +412,35 @@
     "tagsPlaceholder": "Ajoutez une étiquette et appuyez sur Entrée",
     "notesLabel": "Notes",
     "notesPlaceholder": "Ajoutez des notes supplémentaires sur ce client..."
+  },
+  "addContactModal": {
+    "title": "Ajouter un nouveau contact",
+    "profilePicture": "Photo de profil",
+    "uploadPhoto": "Télécharger une photo",
+    "uploadHint": "Optionnel : Téléchargez la photo du contact",
+    "firstNameLabel": "Prénom *",
+    "firstNamePlaceholder": "Jean",
+    "lastNameLabel": "Nom de famille *",
+    "lastNamePlaceholder": "Dupont",
+    "emailLabel": "E-mail *",
+    "emailPlaceholder": "jean@example.com",
+    "phoneLabel": "Numéro de téléphone",
+    "phonePlaceholder": "+33 6 12 34 56 78",
+    "roleLabel": "Rôle/Titre",
+    "rolePlaceholder": "PDG, Manager, Développeur...",
+    "companyLabel": "Entreprise",
+    "companyPlaceholder": "Sélectionnez ou entrez une entreprise",
+    "countryLabel": "Pays/Lieu",
+    "countryPlaceholder": "Sélectionnez un lieu",
+    "statusLabel": "Statut",
+    "statusPlaceholder": "Sélectionnez un statut",
+    "tagsLabel": "Étiquettes",
+    "tagsPlaceholder": "Ajoutez une étiquette et appuyez sur Entrée",
+    "addTagButton": "Ajouter",
+    "notesLabel": "Notes",
+    "notesPlaceholder": "Ajoutez des notes supplémentaires sur ce contact...",
+    "submitButton": "Ajouter le contact",
+    "successTitle": "Succès !",
+    "successDescription": "Contact ajouté avec succès."
   }
 }

@@ -141,6 +141,7 @@
     },
     "filtersPanel": {
       "title": "Advanced Filters",
+      "advancedTitle": "Advanced Filters",
       "owner": "Owner",
       "ownerPlaceholder": "Select owner",
       "allOwners": "All Owners",
@@ -155,7 +156,7 @@
       "allLocations": "All Locations",
       "status": "Status",
       "statusPlaceholder": "Select status",
-      "allStatuses": "All Status",
+      "allStatuses": "All Statuses",
       "tags": "Tags",
       "addTag": "Add tag filter",
       "dateRanges": "Date Ranges",
@@ -167,6 +168,18 @@
       "apply": "Apply Filters",
       "showMore": "Show more",
       "showLess": "Show less"
+    },
+    "statuses": {
+      "active": "Active",
+      "archived": "Archived"
+    },
+    "tags": {
+      "vip": "VIP",
+      "high_value": "High Value",
+      "enterprise": "Enterprise",
+      "smb": "SMB",
+      "urgent": "Urgent",
+      "international": "International"
     }
   },
   "contacts": {

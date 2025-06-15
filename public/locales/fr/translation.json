@@ -138,6 +138,48 @@
       "status": "Statut",
       "rowsPerPage": "Lignes par page :",
       "of": "{{start}}-{{end}} sur {{total}}"
+    },
+    "filtersPanel": {
+      "title": "Filtres avancés",
+      "advancedTitle": "Filtres avancés",
+      "owner": "Propriétaire",
+      "ownerPlaceholder": "Sélectionner un propriétaire",
+      "allOwners": "Tous les propriétaires",
+      "stage": "Étape",
+      "stagePlaceholder": "Sélectionner une étape",
+      "allStages": "Toutes les étapes",
+      "industry": "Secteur",
+      "industryPlaceholder": "Sélectionner un secteur",
+      "allIndustries": "Tous les secteurs",
+      "location": "Lieu",
+      "locationPlaceholder": "Sélectionner un lieu",
+      "allLocations": "Tous les lieux",
+      "status": "Statut",
+      "statusPlaceholder": "Sélectionner un statut",
+      "allStatuses": "Tous les statuts",
+      "tags": "Étiquettes",
+      "addTag": "Ajouter une étiquette",
+      "dateRanges": "Plages de dates",
+      "dateCreated": "Date de création",
+      "from": "De",
+      "to": "À",
+      "lastInteraction": "Dernière interaction",
+      "clearAll": "Tout effacer",
+      "apply": "Appliquer les filtres",
+      "showMore": "Afficher plus",
+      "showLess": "Afficher moins"
+    },
+    "statuses": {
+      "active": "Actif",
+      "archived": "Archivé"
+    },
+    "tags": {
+      "vip": "VIP",
+      "high_value": "Haute valeur",
+      "enterprise": "Entreprise",
+      "smb": "PME",
+      "urgent": "Urgent",
+      "international": "International"
     }
   },
   "contacts": {

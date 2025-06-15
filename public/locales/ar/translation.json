@@ -137,6 +137,48 @@
       "status": "الحالة",
       "rowsPerPage": "صفوف لكل صفحة:",
       "of": "{{start}}-{{end}} من {{total}}"
+    },
+    "filtersPanel": {
+      "title": "فلاتر متقدمة",
+      "advancedTitle": "فلاتر متقدمة",
+      "owner": "المالك",
+      "ownerPlaceholder": "اختر المالك",
+      "allOwners": "كل المالكين",
+      "stage": "المرحلة",
+      "stagePlaceholder": "اختر المرحلة",
+      "allStages": "كل المراحل",
+      "industry": "الصناعة",
+      "industryPlaceholder": "اختر الصناعة",
+      "allIndustries": "كل الصناعات",
+      "location": "الموقع",
+      "locationPlaceholder": "اختر الموقع",
+      "allLocations": "كل المواقع",
+      "status": "الحالة",
+      "statusPlaceholder": "اختر الحالة",
+      "allStatuses": "كل الحالات",
+      "tags": "العلامات",
+      "addTag": "إضافة علامة",
+      "dateRanges": "نطاقات التاريخ",
+      "dateCreated": "تاريخ الإنشاء",
+      "from": "من",
+      "to": "إلى",
+      "lastInteraction": "آخر تفاعل",
+      "clearAll": "مسح الكل",
+      "apply": "تطبيق الفلاتر",
+      "showMore": "عرض المزيد",
+      "showLess": "عرض أقل"
+    },
+    "statuses": {
+      "active": "نشط",
+      "archived": "مؤرشف"
+    },
+    "tags": {
+      "vip": "VIP",
+      "high_value": "قيمة عالية",
+      "enterprise": "مؤسسة",
+      "smb": "شركات صغيرة ومتوسطة",
+      "urgent": "عاجل",
+      "international": "دولي"
     }
   },
   "contacts": {

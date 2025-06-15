@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from "@/components/ui/button";
@@ -44,25 +45,25 @@ export const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: Fil
     { value: "Emily Davis", label: "Emily Davis" }
   ], []);
   const stages = useMemo(() => [
-    { value: "Lead", label: t('clients.stages.lead') },
-    { value: "Prospect", label: t('clients.stages.prospect') },
-    { value: "Active", label: t('clients.stages.active') },
-    { value: "Inactive", label: t('clients.stages.inactive') }
+    { value: "Lead", label: t('clientStages.lead') },
+    { value: "Prospect", label: t('clientStages.prospect') },
+    { value: "Active", label: t('clientStages.active') },
+    { value: "Inactive", label: t('clientStages.inactive') }
   ], [t]);
   const industries = useMemo(() => [
-    { value: "Technology", label: t('clients.industries.technology') },
-    { value: "Healthcare", label: t('clients.industries.healthcare') },
-    { value: "Finance", label: t('clients.industries.finance') },
-    { value: "Manufacturing", label: t('clients.industries.manufacturing') },
-    { value: "Retail", label: t('clients.industries.retail') },
-    { value: "Consulting", label: t('clients.industries.consulting') }
+    { value: "Technology", label: t('industries.technology') },
+    { value: "Healthcare", label: t('industries.healthcare') },
+    { value: "Finance", label: t('industries.finance') },
+    { value: "Manufacturing", label: t('industries.manufacturing') },
+    { value: "Retail", label: t('industries.retail') },
+    { value: "Consulting", label: t('industries.consulting') }
   ], [t]);
   const countries = useMemo(() => [
-    { value: "Morocco", label: t('clients.countries.morocco') },
-    { value: "France", label: t('clients.countries.france') },
-    { value: "Spain", label: t('clients.countries.spain') },
-    { value: "USA", label: t('clients.countries.usa') },
-    { value: "UAE", label: t('clients.countries.uae') }
+    { value: "Morocco", label: t('countries.morocco') },
+    { value: "France", label: t('countries.france') },
+    { value: "Spain", label: t('countries.spain') },
+    { value: "USA", label: t('countries.usa') },
+    { value: "UAE", label: t('countries.uae') }
   ], [t]);
   const statuses = useMemo(() => [
       { value: 'Active', label: t('clients.statuses.active') },

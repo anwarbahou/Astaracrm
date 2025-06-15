@@ -1,349 +1,351 @@
 {
-  "sidebar": {
-    "dashboard": "Tableau de bord",
-    "clients": "Clients",
-    "contacts": "Contacts",
-    "deals": "Opportunités",
-    "aiLeads": "Leads IA",
-    "tasks": "Tâches",
-    "calendar": "Calendrier",
-    "email": "Centre E-mail",
-    "notes": "Notes",
-    "reports": "Rapports",
-    "users": "Utilisateurs",
-    "settings": "Paramètres",
-    "workflows": "Workflows",
-    "activityLogs": "Journaux d'activité",
-    "expand": "Agrandir",
-    "collapse": "Réduire"
-  },
-  "topNav": {
-    "searchPlaceholder": "Rechercher...",
-    "quickAdd": "Ajout rapide",
-    "notifications": {
-      "ariaLabel": "Notifications"
-    },
-    "userMenu": {
-      "name": "John Doe",
-      "email": "john@wolfhunt.com",
-      "profile": "Profil",
-      "settings": "Paramètres",
-      "signOut": "Se déconnecter",
-      "ariaLabel": "Menu utilisateur"
-    },
-    "pageTitle": {
+  "app": {
+    "sidebar": {
       "dashboard": "Tableau de bord",
-      "clients": "Gestion des clients",
-      "contacts": "Gestion des contacts",
-      "deals": "Pipeline de Ventes",
-      "tasks": "Gestion des tâches",
+      "clients": "Clients",
+      "contacts": "Contacts",
+      "deals": "Affaires",
+      "aiLeads": "Leads IA",
+      "tasks": "Tâches",
       "calendar": "Calendrier",
       "email": "Centre E-mail",
       "notes": "Notes",
-      "reports": "Rapports & Analyses",
-      "users": "Gestion des utilisateurs",
-      "workflows": "Workflows",
-      "activityLogs": "Journaux d'activité et piste d'audit",
+      "reports": "Rapports",
+      "users": "Utilisateurs",
       "settings": "Paramètres",
-      "aiLeads": "Intelligence des leads par IA",
-      "fallback": "WOLFHUNT CRM"
+      "workflows": "Workflows",
+      "activityLogs": "Journaux d'activité",
+      "expand": "Agrandir",
+      "collapse": "Réduire"
     },
-    "pageDescription": {
-      "dashboard": "Aperçu des performances de votre CRM",
-      "clients": "Gérez vos relations clients et suivez la croissance de votre entreprise.",
-      "contacts": "Gérez tous vos contacts et relations d'affaires.",
-      "deals": "Gérez vos opportunités tout au long du processus de vente",
-      "tasks": "Restez au top de vos tâches",
-      "calendar": "Planifiez et gérez les rendez-vous",
-      "email": "Communiquez avec vos clients",
-      "notes": "Capturez les informations importantes",
-      "activityLogs": "Suivez toutes les activités du système et les actions des utilisateurs.",
-      "aiLeads": "Génération de leads MENA et Europe avec IA avancée"
-    }
-  },
-  "languageSwitcher": {
-    "chooseLanguage": "Choisir la langue",
-    "moreComingSoon": "Plus de langues bientôt disponibles"
-  },
-  "indexPage": {
-    "title": "Bienvenue dans votre application vide",
-    "subtitle": "Commencez à construire votre projet incroyable ici !"
-  },
-  "dashboard": {
-    "title": "Tableau de bord",
-    "welcomeMessage": "Bon retour ! Voici ce qui se passe avec votre entreprise aujourd'hui.",
-    "addContact": "Ajouter un contact",
-    "addClient": "Ajouter un client",
-    "totalRevenue": "Revenu total",
-    "activeClients": "Clients actifs",
-    "dealsInPipeline": "Affaires en cours",
-    "tasksDueToday": "Tâches pour aujourd'hui",
-    "vsLastMonth": "vs le mois dernier",
-    "vsYesterday": "vs hier",
-    "recentDeals": "Affaires récentes",
-    "upcomingTasks": "Tâches à venir",
-    "recentActivities": "Activités récentes",
-    "viewAll": "Voir tout",
-    "status": {
-      "negotiation": "Négociation",
-      "proposal": "Proposition",
-      "qualified": "Qualifié",
-      "discovery": "Découverte"
-    },
-    "priority": {
-      "high": "Haute",
-      "medium": "Moyenne",
-      "low": "Basse"
-    },
-    "mockTasks": {
-      "followUp": "Suivi avec Acme Corp",
-      "prepareProposal": "Préparer la proposition pour Tech Solutions",
-      "scheduleDemo": "Planifier un appel de démo",
-      "sendContract": "Envoyer le contrat à Global Industries"
-    },
-    "mockActivities": {
-      "newDeal": "Nouvelle affaire créée",
-      "dealDetails": "Acme Corp - Licence Entreprise",
-      "contactUpdated": "Contact mis à jour",
-      "contactDetails": "John Smith - Acme Corp",
-      "taskCompleted": "Tâche terminée",
-      "taskDetails": "Envoyer la proposition à Tech Solutions",
-      "meetingScheduled": "Réunion planifiée",
-      "meetingDetails": "Appel de démo with StartupXYZ"
-    }
-  },
-  "clients": {
-    "addClient": "Ajouter un client",
-    "totalClients": "Total des clients",
-    "activeClients": "Clients actifs",
-    "prospects": "Prospects",
-    "totalRevenue": "Revenu total"
-  },
-  "contacts": {
-    "title": "Gestion des contacts",
-    "description": "Gérez tous vos contacts et relations d'affaires.",
-    "addContact": "Ajouter un contact",
-    "stats": {
-      "total": "Total des contacts",
-      "active": "Contacts actifs",
-      "decisionMakers": "Décideurs",
-      "companies": "Entreprises"
-    }
-  },
-  "deals": {
-    "title": "Pipeline de Ventes",
-    "description": "Gérez vos opportunités tout au long du processus de vente",
-    "newDeal": "Nouvelle Opportunité",
-    "searchPlaceholder": "Rechercher des opportunités...",
-    "filters": "Filtres",
-    "stages": {
-      "prospect": "Prospect",
-      "lead": "Piste",
-      "qualified": "Qualifié",
-      "negotiation": "Négociation",
-      "won-lost": "Gagné/Perdu"
-    },
-    "stats": {
-      "active": "Opportunités Actives",
-      "pipelineValue": "Valeur du Pipeline",
-      "won": "Opportunités Gagnées",
-      "avgSize": "Taille Moy. Opp.",
-      "vsLastMonth": "{{change}} vs mois dernier"
-    },
-    "toasts": {
-      "moved": {
-        "title": "Opportunité déplacée",
-        "description": "Opportunité déplacée à l'étape {{stage}}"
+    "topNav": {
+      "searchPlaceholder": "Rechercher...",
+      "quickAdd": "Ajout rapide",
+      "notifications": {
+        "ariaLabel": "Notifications"
       },
-      "updated": {
-        "title": "Opportunité mise à jour",
-        "description": "L'opportunité a été mise à jour avec succès"
+      "userMenu": {
+        "name": "John Doe",
+        "email": "john@wolfhunt.com",
+        "profile": "Profil",
+        "settings": "Paramètres",
+        "signOut": "Se déconnecter",
+        "ariaLabel": "Menu utilisateur"
       },
-      "deleted": {
-        "title": "Opportunité supprimée",
-        "description": "L'opportunité a été supprimée avec succès"
+      "pageTitle": {
+        "dashboard": "Tableau de bord",
+        "clients": "Gestion des clients",
+        "contacts": "Gestion des contacts",
+        "deals": "Pipeline de Ventes",
+        "tasks": "Gestion des tâches",
+        "calendar": "Calendrier",
+        "email": "Centre E-mail",
+        "notes": "Notes",
+        "reports": "Rapports & Analyses",
+        "users": "Gestion des utilisateurs",
+        "workflows": "Workflows",
+        "activityLogs": "Journaux d'activité et piste d'audit",
+        "settings": "Paramètres",
+        "aiLeads": "Intelligence des leads par IA",
+        "fallback": "WOLFHUNT CRM"
       },
-      "created": {
-        "title": "Opportunité créée",
-        "description": "Nouvelle opportunité ajoutée à l'étape {{stage}}"
+      "pageDescription": {
+        "dashboard": "Aperçu des performances de votre CRM",
+        "clients": "Gérez vos relations clients et suivez la croissance de votre entreprise.",
+        "contacts": "Gérez tous vos contacts et relations d'affaires.",
+        "deals": "Gérez vos opportunités tout au long du processus de vente",
+        "tasks": "Restez au top de vos tâches",
+        "calendar": "Planifiez et gérez les rendez-vous",
+        "email": "Communiquez avec vos clients",
+        "notes": "Capturez les informations importantes",
+        "activityLogs": "Suivez toutes les activités du système et les actions des utilisateurs.",
+        "aiLeads": "Génération de leads MENA et Europe avec IA avancée"
       }
     },
-    "pipeline": {
-      "dropDeal": "Déposer l'opportunité ici",
-      "noDeals": "Aucune opportunité à cette étape",
-      "addFirstDeal": "Ajoutez votre première opportunité",
-      "addDeal": "Ajouter une opportunité"
+    "languageSwitcher": {
+      "chooseLanguage": "Choisir la langue",
+      "moreComingSoon": "Plus de langues bientôt disponibles"
     },
-    "board": {
-      "noDeals": "Aucune opportunité à cette étape"
+    "indexPage": {
+      "title": "Bienvenue dans votre application vide",
+      "subtitle": "Commencez à construire votre projet incroyable ici !"
     },
-    "filtersDropdown": {
-      "title": "Filtrer les opportunités",
-      "clear": "Effacer",
-      "stagesLabel": "Étapes",
-      "ownersLabel": "Propriétaires",
-      "valueLabel": "Plage de valeurs (MAD)",
-      "minPlaceholder": "Min",
-      "maxPlaceholder": "Max",
-      "dateLabel": "Date de clôture prévue"
-    },
-    "filtersPanel": {
-      "sourcesLabel": "Sources",
-      "clearAll": "Tout effacer",
-      "apply": "Appliquer les filtres"
-    },
-    "sources": {
-      "website": "Site web",
-      "referral": "Référence",
-      "coldOutreach": "Démarchage à froid",
-      "linkedIn": "LinkedIn",
-      "existingClient": "Client existant"
-    }
-  },
-  "activityLogs": {
-    "title": "Journaux d'activité et piste d'audit",
-    "description": "Suivez toutes les activités du système et les actions des utilisateurs.",
-    "filter": "Filtrer",
-    "export": "Exporter les journaux",
-    "searchPlaceholder": "Rechercher des activités par action, utilisateur ou entité..."
-  },
-  "notes": {
-    "grid": {
-      "empty": {
-        "title": "Aucune note trouvée",
-        "description": "Commencez à capturer vos idées, notes de réunion et informations importantes en créant votre première note."
+    "dashboard": {
+      "title": "Tableau de bord",
+      "welcomeMessage": "Bon retour ! Voici ce qui se passe avec votre entreprise aujourd'hui.",
+      "addContact": "Ajouter un contact",
+      "addClient": "Ajouter un client",
+      "totalRevenue": "Revenu total",
+      "activeClients": "Clients actifs",
+      "dealsInPipeline": "Affaires en cours",
+      "tasksDueToday": "Tâches pour aujourd'hui",
+      "vsLastMonth": "vs le mois dernier",
+      "vsYesterday": "vs hier",
+      "recentDeals": "Affaires récentes",
+      "upcomingTasks": "Tâches à venir",
+      "recentActivities": "Activités récentes",
+      "viewAll": "Voir tout",
+      "status": {
+        "negotiation": "Négociation",
+        "proposal": "Proposition",
+        "qualified": "Qualifié",
+        "discovery": "Découverte"
       },
-      "pinnedNotes": "Notes épinglées",
-      "allNotes": "Toutes les notes"
-    },
-    "filters": {
-      "button": "Filtres",
-      "title": "Filtrer les notes",
-      "sortBy": {
-        "label": "Trier par",
-        "modified": "Dernière modification",
-        "created": "Date de création",
-        "title": "Titre"
+      "priority": {
+        "high": "Haute",
+        "medium": "Moyenne",
+        "low": "Basse"
       },
-      "type": {
-        "label": "Type",
-        "all": "Tous les types"
+      "mockTasks": {
+        "followUp": "Suivi avec Acme Corp",
+        "prepareProposal": "Préparer la proposition pour Tech Solutions",
+        "scheduleDemo": "Planifier un appel de démo",
+        "sendContract": "Envoyer le contrat à Global Industries"
+      },
+      "mockActivities": {
+        "newDeal": "Nouvelle affaire créée",
+        "dealDetails": "Acme Corp - Licence Entreprise",
+        "contactUpdated": "Contact mis à jour",
+        "contactDetails": "John Smith - Acme Corp",
+        "taskCompleted": "Tâche terminée",
+        "taskDetails": "Envoyer la proposition à Tech Solutions",
+        "meetingScheduled": "Réunion planifiée",
+        "meetingDetails": "Appel de démo with StartupXYZ"
+      }
+    },
+    "clients": {
+      "addClient": "Ajouter un client",
+      "totalClients": "Total des clients",
+      "activeClients": "Clients actifs",
+      "prospects": "Prospects",
+      "totalRevenue": "Revenu total"
+    },
+    "contacts": {
+      "title": "Contacts",
+      "description": "Gérez tous vos contacts et relations d'affaires.",
+      "addContact": "Ajouter un contact",
+      "stats": {
+        "total": "Total des contacts",
+        "active": "Contacts actifs",
+        "decisionMakers": "Décideurs",
+        "companies": "Entreprises"
+      }
+    },
+    "deals": {
+      "title": "Affaires",
+      "description": "Gérez vos opportunités tout au long du processus de vente",
+      "newDeal": "Nouvelle Opportunité",
+      "searchPlaceholder": "Rechercher des affaires...",
+      "filters": "Filtres",
+      "stages": {
+        "prospect": "Prospect",
+        "lead": "Piste",
+        "qualified": "Qualifié",
+        "negotiation": "Négociation",
+        "won-lost": "Gagné/Perdu"
+      },
+      "stats": {
+        "active": "Opportunités Actives",
+        "pipelineValue": "Valeur du Pipeline",
+        "won": "Opportunités Gagnées",
+        "avgSize": "Taille Moy. Opp.",
+        "vsLastMonth": "{{change}} vs mois dernier"
+      },
+      "toasts": {
+        "moved": {
+          "title": "Opportunité déplacée",
+          "description": "Opportunité déplacée à l'étape {{stage}}"
+        },
+        "updated": {
+          "title": "Opportunité mise à jour",
+          "description": "L'opportunité a été mise à jour avec succès"
+        },
+        "deleted": {
+          "title": "Opportunité supprimée",
+          "description": "L'opportunité a été supprimée avec succès"
+        },
+        "created": {
+          "title": "Opportunité créée",
+          "description": "Nouvelle opportunité ajoutée à l'étape {{stage}}"
+        }
+      },
+      "pipeline": {
+        "dropDeal": "Déposer l'opportunité ici",
+        "noDeals": "Aucune opportunité à cette étape",
+        "addFirstDeal": "Ajoutez votre première opportunité",
+        "addDeal": "Ajouter une opportunité"
+      },
+      "board": {
+        "noDeals": "Aucune opportunité à cette étape"
+      },
+      "filtersDropdown": {
+        "title": "Filtrer les opportunités",
+        "clear": "Effacer",
+        "stagesLabel": "Étapes",
+        "ownersLabel": "Propriétaires",
+        "valueLabel": "Plage de valeurs (MAD)",
+        "minPlaceholder": "Min",
+        "maxPlaceholder": "Max",
+        "dateLabel": "Date de clôture prévue"
+      },
+      "filtersPanel": {
+        "sourcesLabel": "Sources",
+        "clearAll": "Tout effacer",
+        "apply": "Appliquer"
+      },
+      "sources": {
+        "website": "Site web",
+        "referral": "Référence",
+        "coldOutreach": "Démarchage à froid",
+        "linkedIn": "LinkedIn",
+        "existingClient": "Client existant"
+      }
+    },
+    "activityLogs": {
+      "title": "Journaux d'activité et piste d'audit",
+      "description": "Suivez toutes les activités du système et les actions des utilisateurs.",
+      "filter": "Filtrer",
+      "export": "Exporter les journaux",
+      "searchPlaceholder": "Rechercher des activités par action, utilisateur ou entité..."
+    },
+    "notes": {
+      "grid": {
+        "empty": {
+          "title": "Aucune note trouvée",
+          "description": "Commencez à capturer vos idées, notes de réunion et informations importantes en créant votre première note."
+        },
+        "pinnedNotes": "Notes épinglées",
+        "allNotes": "Toutes les notes"
+      },
+      "filters": {
+        "button": "Filtres",
+        "title": "Filtrer les notes",
+        "sortBy": {
+          "label": "Trier par",
+          "modified": "Dernière modification",
+          "created": "Date de création",
+          "title": "Titre"
+        },
+        "type": {
+          "label": "Type",
+          "all": "Tous les types"
+        },
+        "visibility": {
+          "label": "Visibilité",
+          "all": "Toutes"
+        },
+        "tags": {
+          "label": "Étiquettes"
+        }
+      },
+      "noteType": {
+        "general": "Général",
+        "meeting": "Réunion",
+        "task": "Tâche",
+        "idea": "Idée"
       },
       "visibility": {
-        "label": "Visibilité",
-        "all": "Toutes"
+        "public": "Public",
+        "team": "Équipe",
+        "private": "Privé"
       },
-      "tags": {
-        "label": "Étiquettes"
+      "modal": {
+        "createTitle": "Créer une nouvelle note",
+        "editTitle": "Modifier la note",
+        "titleLabel": "Titre",
+        "titlePlaceholder": "Saisir le titre de la note...",
+        "typeLabel": "Type",
+        "visibilityLabel": "Visibilité",
+        "tagsLabel": "Étiquettes",
+        "tagsPlaceholder": "Ajouter une étiquette...",
+        "contentLabel": "Contenu",
+        "contentPlaceholder": "Rédigez le contenu de votre note...",
+        "pinNote": "Épingler cette note",
+        "setReminder": "Définir un rappel",
+        "reminderDate": "Date du rappel",
+        "selectDate": "Sélectionner une date",
+        "attachmentsLabel": "Pièces jointes",
+        "attachmentsPlaceholder": "Glissez-déposez des fichiers ici ou cliquez pour parcourir",
+        "updateButton": "Mettre à jour la note",
+        "createButton": "Créer la note"
+      },
+      "detail": {
+        "linkedTo": "Lié à :",
+        "tags": "Étiquettes :",
+        "content": "Contenu",
+        "reminder": "Rappel",
+        "attachments": "Pièces jointes ({{count}})",
+        "author": "Auteur",
+        "created": "Créé le",
+        "modified": "Modifié le"
       }
     },
-    "noteType": {
-      "general": "Général",
-      "meeting": "Réunion",
-      "task": "Tâche",
-      "idea": "Idée"
+    "common": {
+      "add": "Ajouter",
+      "cancel": "Annuler",
+      "save": "Enregistrer",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "close": "Fermer"
     },
-    "visibility": {
-      "public": "Public",
-      "team": "Équipe",
-      "private": "Privé"
+    "countries": {
+      "morocco": "Maroc",
+      "france": "France",
+      "spain": "Espagne",
+      "usa": "États-Unis",
+      "uae": "Émirats Arabes Unis",
+      "uk": "Royaume-Uni",
+      "germany": "Allemagne"
     },
-    "modal": {
-      "createTitle": "Créer une nouvelle note",
-      "editTitle": "Modifier la note",
-      "titleLabel": "Titre",
-      "titlePlaceholder": "Saisir le titre de la note...",
-      "typeLabel": "Type",
-      "visibilityLabel": "Visibilité",
+    "industries": {
+      "technology": "Technologie",
+      "healthcare": "Santé",
+      "finance": "Finance",
+      "retail": "Vente au détail",
+      "manufacturing": "Industrie",
+      "consulting": "Conseil",
+      "education": "Éducation",
+      "real_estate": "Immobilier",
+      "other": "Autre"
+    },
+    "clientStages": {
+      "lead": "Lead",
+      "prospect": "Prospect",
+      "active": "Actif",
+      "inactive": "Inactif"
+    },
+    "toasts": {
+      "addClient": {
+        "success": {
+          "title": "Succès !",
+          "description": "Client ajouté avec succès."
+        }
+      }
+    },
+    "addClientModal": {
+      "title": "Ajouter un nouveau client",
+      "profilePicture": "Photo de profil",
+      "uploadPhoto": "Télécharger une photo",
+      "uploadHint": "Optionnel : Téléchargez le logo ou la photo du client",
+      "nameLabel": "Nom de l'entreprise/client *",
+      "namePlaceholder": "Entrez le nom de l'entreprise",
+      "emailLabel": "Adresse e-mail *",
+      "emailPlaceholder": "contact@entreprise.com",
+      "phoneLabel": "Numéro de téléphone",
+      "phonePlaceholder": "+212 6XX XXX XXX",
+      "countryLabel": "Pays/Lieu",
+      "countryPlaceholder": "Sélectionnez un lieu",
+      "industryLabel": "Secteur d'activité",
+      "industryPlaceholder": "Sélectionnez un secteur",
+      "stageLabel": "Étape du client",
+      "stagePlaceholder": "Sélectionnez une étape",
+      "ownerLabel": "Propriétaire du compte",
+      "ownerPlaceholder": "Attribuer un propriétaire de compte",
       "tagsLabel": "Étiquettes",
-      "tagsPlaceholder": "Ajouter une étiquette...",
-      "contentLabel": "Contenu",
-      "contentPlaceholder": "Rédigez le contenu de votre note...",
-      "pinNote": "Épingler cette note",
-      "setReminder": "Définir un rappel",
-      "reminderDate": "Date du rappel",
-      "selectDate": "Sélectionner une date",
-      "attachmentsLabel": "Pièces jointes",
-      "attachmentsPlaceholder": "Glissez-déposez des fichiers ici ou cliquez pour parcourir",
-      "updateButton": "Mettre à jour la note",
-      "createButton": "Créer la note"
-    },
-    "detail": {
-      "linkedTo": "Lié à :",
-      "tags": "Étiquettes :",
-      "content": "Contenu",
-      "reminder": "Rappel",
-      "attachments": "Pièces jointes ({{count}})",
-      "author": "Auteur",
-      "created": "Créé le",
-      "modified": "Modifié le"
+      "tagsPlaceholder": "Ajoutez une étiquette et appuyez sur Entrée",
+      "notesLabel": "Notes",
+      "notesPlaceholder": "Ajoutez des notes supplémentaires sur ce client...",
+      "submitButton": "Ajouter le client"
     }
-  },
-  "common": {
-    "add": "Ajouter",
-    "cancel": "Annuler",
-    "save": "Enregistrer",
-    "edit": "Modifier",
-    "delete": "Supprimer",
-    "close": "Fermer"
-  },
-  "countries": {
-    "morocco": "Maroc",
-    "france": "France",
-    "spain": "Espagne",
-    "usa": "États-Unis",
-    "uae": "Émirats Arabes Unis",
-    "uk": "Royaume-Uni",
-    "germany": "Allemagne"
-  },
-  "industries": {
-    "technology": "Technologie",
-    "healthcare": "Santé",
-    "finance": "Finance",
-    "retail": "Vente au détail",
-    "manufacturing": "Industrie",
-    "consulting": "Conseil",
-    "education": "Éducation",
-    "real_estate": "Immobilier",
-    "other": "Autre"
-  },
-  "clientStages": {
-    "lead": "Lead",
-    "prospect": "Prospect",
-    "active": "Actif",
-    "inactive": "Inactif"
-  },
-  "toasts": {
-    "addClient": {
-      "success": {
-        "title": "Succès !",
-        "description": "Client ajouté avec succès."
-      }
-    }
-  },
-  "addClientModal": {
-    "title": "Ajouter un nouveau client",
-    "profilePicture": "Photo de profil",
-    "uploadPhoto": "Télécharger une photo",
-    "uploadHint": "Optionnel : Téléchargez le logo ou la photo du client",
-    "nameLabel": "Nom de l'entreprise/client *",
-    "namePlaceholder": "Entrez le nom de l'entreprise",
-    "emailLabel": "Adresse e-mail *",
-    "emailPlaceholder": "contact@entreprise.com",
-    "phoneLabel": "Numéro de téléphone",
-    "phonePlaceholder": "+212 6XX XXX XXX",
-    "countryLabel": "Pays/Lieu",
-    "countryPlaceholder": "Sélectionnez un lieu",
-    "industryLabel": "Secteur d'activité",
-    "industryPlaceholder": "Sélectionnez un secteur",
-    "stageLabel": "Étape du client",
-    "stagePlaceholder": "Sélectionnez une étape",
-    "ownerLabel": "Propriétaire du compte",
-    "ownerPlaceholder": "Attribuer un propriétaire de compte",
-    "tagsLabel": "Étiquettes",
-    "tagsPlaceholder": "Ajoutez une étiquette et appuyez sur Entrée",
-    "notesLabel": "Notes",
-    "notesPlaceholder": "Ajoutez des notes supplémentaires sur ce client...",
-    "submitButton": "Ajouter le client"
   }
 }

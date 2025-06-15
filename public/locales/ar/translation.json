@@ -120,20 +120,57 @@
     "totalRevenue": "إجمالي الإيرادات"
   },
   "contacts": {
-    "title": "إدارة جهات الاتصال",
-    "description": "إدارة جميع جهات الاتصال والعلاقات التجارية الخاصة بك.",
+    "title": "جهات الاتصال",
     "addContact": "إضافة جهة اتصال",
-    "stats": {
-      "total": "إجمالي جهات الاتصال",
-      "active": "جهات الاتصال النشطة",
-      "decisionMakers": "صناع القرار",
-      "companies": "الشركات"
+    "searchPlaceholder": "البحث عن جهات الاتصال بالاسم أو البريد الإلكتروني أو الشركة...",
+    "filtersPanel": {
+      "title": "الفلاتر",
+      "clearAll": "مسح الكل",
+      "company": "الشركة",
+      "allCompanies": "كل الشركات",
+      "role": "الدور/المنصب",
+      "allRoles": "كل الأدوار",
+      "country": "البلد",
+      "allCountries": "كل البلدان",
+      "status": "الحالة",
+      "allStatuses": "كل الحالات",
+      "createdFrom": "تاريخ الإنشاء من",
+      "createdTo": "تاريخ الإنشاء إلى",
+      "lastContactedFrom": "آخر تواصل من",
+      "lastContactedTo": "آخر تواصل إلى",
+      "tags": "الوسوم"
+    },
+    "tags": {
+      "decisionMaker": "صانع قرار",
+      "vip": "VIP",
+      "technical": "تقني",
+      "founder": "مؤسس",
+      "startup": "شركة ناشئة",
+      "procurement": "مشتريات",
+      "sales": "مبيعات"
+    },
+    "companies": {
+      "acme": "Acme Corporation",
+      "tech": "Tech Solutions Ltd",
+      "global": "Global Industries",
+      "startup": "StartupXYZ",
+      "enterprise": "Enterprise Corp"
+    },
+    "roles": {
+      "ceo": "المدير التنفيذي",
+      "cto": "المدير التقني",
+      "vpSales": "نائب رئيس المبيعات",
+      "manager": "مدير",
+      "developer": "مطور",
+      "designer": "مصمم"
+    },
+    "statuses": {
+      "active": "نشط",
+      "inactive": "غير نشط"
     }
   },
   "deals": {
-    "title": "خط أنابيب المبيعات",
-    "description": "إدارة صفقاتك خلال عملية البيع",
-    "newDeal": "صفقة جديدة",
+    "title": "الصفقات",
     "searchPlaceholder": "البحث عن صفقات...",
     "filters": "الفلاتر",
     "stages": {
@@ -190,7 +227,7 @@
     "filtersPanel": {
       "sourcesLabel": "المصادر",
       "clearAll": "مسح الكل",
-      "apply": "تطبيق الفلاتر"
+      "apply": "تطبيق"
     },
     "sources": {
       "website": "موقع إلكتروني",

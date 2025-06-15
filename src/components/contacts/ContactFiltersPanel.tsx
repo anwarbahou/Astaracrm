@@ -13,6 +13,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { X, FilterX } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { useTranslation } from "react-i18next";
 
 interface ContactFilters {
   company: string;
@@ -39,6 +40,8 @@ export function ContactFiltersPanel({
   filters, 
   onFiltersChange 
 }: ContactFiltersPanelProps) {
+  const { t } = useTranslation();
+
   const handleFilterChange = (key: keyof ContactFilters, value: string | string[]) => {
     onFiltersChange({
       ...filters,
@@ -74,6 +77,21 @@ export function ContactFiltersPanel({
     Array.isArray(value) ? value.length > 0 : value !== ''
   ).length;
 
+  const companies = ["Acme Corporation", "Tech Solutions Ltd", "Global Industries", "StartupXYZ", "Enterprise Corp"];
+  const companyKeys = ["acme", "tech", "global", "startup", "enterprise"];
+  
+  const roles = ["CEO", "CTO", "VP Sales", "Manager", "Developer", "Designer"];
+  const roleKeys = ["ceo", "cto", "vpSales", "manager", "developer", "designer"];
+
+  const countries = ["Morocco", "France", "Spain", "USA", "UK", "Germany"];
+  const countryKeys = ["morocco", "france", "spain", "usa", "uk", "germany"];
+
+  const statuses = ["Active", "Inactive"];
+  const statusKeys = ["active", "inactive"];
+
+  const tags = ['Decision Maker', 'VIP', 'Technical', 'Founder', 'Startup', 'Procurement', 'Sales'];
+  const tagKeys = ['decisionMaker', 'vip', 'technical', 'founder', 'startup', 'procurement', 'sales'];
+
   return (
     <Collapsible open={isOpen}>
       <CollapsibleContent>
@@ -81,7 +99,7 @@ export function ContactFiltersPanel({
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg">
-                Filters {activeFiltersCount > 0 && (
+                {t('contacts.filtersPanel.title')} {activeFiltersCount > 0 && (
                   <Badge variant="secondary" className="ml-2">
                     {activeFiltersCount}
                   </Badge>
@@ -90,7 +108,7 @@ export function ContactFiltersPanel({
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" onClick={clearFilters}>
                   <FilterX className="h-4 w-4 mr-2" />
-                  Clear All
+                  {t('contacts.filtersPanel.clearAll')}
                 </Button>
                 <Button variant="ghost" size="sm" onClick={onClose}>
                   <X className="h-4 w-4" />
@@ -102,90 +120,79 @@ export function ContactFiltersPanel({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Company Filter */}
               <div className="space-y-2">
-                <Label htmlFor="company">Company</Label>
+                <Label htmlFor="company">{t('contacts.filtersPanel.company')}</Label>
                 <Select
                   value={filters.company}
                   onValueChange={(value) => handleFilterChange('company', value)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="All companies" />
+                    <SelectValue placeholder={t('contacts.filtersPanel.allCompanies')} />
                   </SelectTrigger>
                   <SelectContent className="bg-background border">
-                    <SelectItem value="">All companies</SelectItem>
-                    <SelectItem value="Acme Corporation">Acme Corporation</SelectItem>
-                    <SelectItem value="Tech Solutions Ltd">Tech Solutions Ltd</SelectItem>
-                    <SelectItem value="Global Industries">Global Industries</SelectItem>
-                    <SelectItem value="StartupXYZ">StartupXYZ</SelectItem>
-                    <SelectItem value="Enterprise Corp">Enterprise Corp</SelectItem>
+                    {companies.map((company, index) => (
+                      <SelectItem key={company} value={company}>{t(`contacts.companies.${companyKeys[index]}`)}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
 
               {/* Role Filter */}
               <div className="space-y-2">
-                <Label htmlFor="role">Role/Title</Label>
+                <Label htmlFor="role">{t('contacts.filtersPanel.role')}</Label>
                 <Select
                   value={filters.role}
                   onValueChange={(value) => handleFilterChange('role', value)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="All roles" />
+                    <SelectValue placeholder={t('contacts.filtersPanel.allRoles')} />
                   </SelectTrigger>
                   <SelectContent className="bg-background border">
-                    <SelectItem value="">All roles</SelectItem>
-                    <SelectItem value="CEO">CEO</SelectItem>
-                    <SelectItem value="CTO">CTO</SelectItem>
-                    <SelectItem value="VP Sales">VP Sales</SelectItem>
-                    <SelectItem value="Manager">Manager</SelectItem>
-                    <SelectItem value="Developer">Developer</SelectItem>
-                    <SelectItem value="Designer">Designer</SelectItem>
+                    {roles.map((role, index) => (
+                      <SelectItem key={role} value={role}>{t(`contacts.roles.${roleKeys[index]}`)}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
 
               {/* Country Filter */}
               <div className="space-y-2">
-                <Label htmlFor="country">Country</Label>
+                <Label htmlFor="country">{t('contacts.filtersPanel.country')}</Label>
                 <Select
                   value={filters.country}
                   onValueChange={(value) => handleFilterChange('country', value)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="All countries" />
+                    <SelectValue placeholder={t('contacts.filtersPanel.allCountries')} />
                   </SelectTrigger>
                   <SelectContent className="bg-background border">
-                    <SelectItem value="">All countries</SelectItem>
-                    <SelectItem value="Morocco">Morocco</SelectItem>
-                    <SelectItem value="France">France</SelectItem>
-                    <SelectItem value="Spain">Spain</SelectItem>
-                    <SelectItem value="USA">United States</SelectItem>
-                    <SelectItem value="UK">United Kingdom</SelectItem>
-                    <SelectItem value="Germany">Germany</SelectItem>
+                    {countries.map((country, index) => (
+                      <SelectItem key={country} value={country}>{t(`countries.${countryKeys[index]}`)}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
 
               {/* Status Filter */}
               <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
+                <Label htmlFor="status">{t('contacts.filtersPanel.status')}</Label>
                 <Select
                   value={filters.status}
                   onValueChange={(value) => handleFilterChange('status', value)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="All statuses" />
+                    <SelectValue placeholder={t('contacts.filtersPanel.allStatuses')} />
                   </SelectTrigger>
                   <SelectContent className="bg-background border">
-                    <SelectItem value="">All statuses</SelectItem>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="Inactive">Inactive</SelectItem>
+                    {statuses.map((status, index) => (
+                      <SelectItem key={status} value={status}>{t(`contacts.statuses.${statusKeys[index]}`)}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
 
               {/* Date Created From */}
               <div className="space-y-2">
-                <Label htmlFor="dateCreatedFrom">Created From</Label>
+                <Label htmlFor="dateCreatedFrom">{t('contacts.filtersPanel.createdFrom')}</Label>
                 <Input
                   id="dateCreatedFrom"
                   type="date"
@@ -196,7 +203,7 @@ export function ContactFiltersPanel({
 
               {/* Date Created To */}
               <div className="space-y-2">
-                <Label htmlFor="dateCreatedTo">Created To</Label>
+                <Label htmlFor="dateCreatedTo">{t('contacts.filtersPanel.createdTo')}</Label>
                 <Input
                   id="dateCreatedTo"
                   type="date"
@@ -207,7 +214,8 @@ export function ContactFiltersPanel({
 
               {/* Last Contacted From */}
               <div className="space-y-2">
-                <Label htmlFor="lastContactedFrom">Last Contacted From</Label>
+                <Label htmlFor="lastContactedFrom">{t('contacts.filtersPanel.lastContactedFrom')}</Label>
+
                 <Input
                   id="lastContactedFrom"
                   type="date"
@@ -218,7 +226,7 @@ export function ContactFiltersPanel({
 
               {/* Last Contacted To */}
               <div className="space-y-2">
-                <Label htmlFor="lastContactedTo">Last Contacted To</Label>
+                <Label htmlFor="lastContactedTo">{t('contacts.filtersPanel.lastContactedTo')}</Label>
                 <Input
                   id="lastContactedTo"
                   type="date"
@@ -230,16 +238,16 @@ export function ContactFiltersPanel({
 
             {/* Tags Section */}
             <div className="mt-6 space-y-2">
-              <Label>Tags</Label>
+              <Label>{t('contacts.filtersPanel.tags')}</Label>
               <div className="flex flex-wrap gap-2">
-                {['Decision Maker', 'VIP', 'Technical', 'Founder', 'Startup', 'Procurement', 'Sales'].map((tag) => (
+                {tags.map((tag, index) => (
                   <Badge
                     key={tag}
                     variant={filters.tags.includes(tag) ? "default" : "outline"}
                     className="cursor-pointer"
                     onClick={() => filters.tags.includes(tag) ? removeTag(tag) : addTag(tag)}
                   >
-                    {tag}
+                    {t(`contacts.tags.${tagKeys[index]}`)}
                     {filters.tags.includes(tag) && <X className="h-3 w-3 ml-1" />}
                   </Badge>
                 ))}

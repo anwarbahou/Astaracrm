@@ -13,64 +13,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { useLocation } from "react-router-dom";
 import { QuickAddModal } from "@/components/modals/QuickAddModal";
 import { NotificationSidebar } from "./NotificationSidebar";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ThemeToggle } from "./ThemeToggle";
-import { buttonVariants, fadeVariants, springConfig } from "@/lib/animations";
+import { buttonVariants, springConfig } from "@/lib/animations";
 import { useTranslation } from "react-i18next";
-import { navigationItems } from "@/data/navigationData";
 
 export function TopNavigation() {
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [notificationCount] = useState(3); // Mock unread count
-  const location = useLocation();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   
-  const getPageTitle = () => {
-    const path = location.pathname;
-
-    if (path === '/') {
-      return t('app.topNav.pageTitle.dashboard');
-    }
-
-    const currentNavItem = navigationItems
-      .filter(item => item.path !== '/' && path.startsWith(item.path))
-      .sort((a, b) => b.path.length - a.path.length)[0];
-
-    if (currentNavItem) {
-      const key = `app.topNav.pageTitle.${currentNavItem.labelKey}`;
-      if (i18n.exists(key)) {
-        return t(key);
-      }
-    }
-    
-    return t("app.topNav.pageTitle.fallback");
-  };
-
-  const getPageDescription = () => {
-    const path = location.pathname;
-
-    if (path === '/') {
-      return t('app.topNav.pageDescription.dashboard');
-    }
-
-    const currentNavItem = navigationItems
-      .filter(item => item.path !== '/' && path.startsWith(item.path))
-      .sort((a, b) => b.path.length - a.path.length)[0];
-
-    if (currentNavItem) {
-      const key = `app.topNav.pageDescription.${currentNavItem.labelKey}`;
-      if (i18n.exists(key)) {
-        return t(key);
-      }
-    }
-
-    return "";
-  };
-
   return (
     <>
       <motion.header 
@@ -80,37 +35,7 @@ export function TopNavigation() {
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
         <div className="flex h-16 items-center px-6 gap-4">
-          <div className="flex-1 flex items-center justify-between">
-            <motion.div 
-              key={location.pathname}
-              variants={fadeVariants}
-              initial="initial"
-              animate="animate"
-              transition={{ duration: 0.4 }}
-              className="space-y-1"
-            >
-              <motion.h1 
-                className="text-xl font-semibold text-foreground"
-                layoutId="pageTitle"
-              >
-                {getPageTitle()}
-              </motion.h1>
-              <AnimatePresence mode="wait">
-                {getPageDescription() && (
-                  <motion.p 
-                    key={getPageDescription()}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.3 }}
-                    className="text-sm text-muted-foreground"
-                  >
-                    {getPageDescription()}
-                  </motion.p>
-                )}
-              </AnimatePresence>
-            </motion.div>
-            
+          <div className="flex-1 flex items-center justify-end">
             <motion.div 
               className="flex items-center gap-3"
               initial={{ opacity: 0, x: 50 }}

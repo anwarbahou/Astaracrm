@@ -1,4 +1,3 @@
-
 {
   "app": {
     "sidebar": {
@@ -339,6 +338,28 @@
     "view": {
       "pipeline": "Pipeline",
       "list": "List"
+    },
+    "addDealModal": {
+      "title": "Add New Deal",
+      "description": "Create a new deal in your sales pipeline",
+      "dealNameLabel": "Deal Name *",
+      "dealNamePlaceholder": "Enter deal name",
+      "clientLabel": "Client *",
+      "clientPlaceholder": "Enter client name",
+      "valueLabel": "Value (MAD) *",
+      "stageLabel": "Stage",
+      "stagePlaceholder": "Select stage",
+      "probabilityLabel": "Probability (%)",
+      "closeDateLabel": "Expected Close Date *",
+      "sourceLabel": "Source",
+      "sourcePlaceholder": "e.g., Website, Referral, Cold Call",
+      "ownerLabel": "Owner",
+      "ownerPlaceholder": "Select owner",
+      "priorityLabel": "Priority",
+      "priorityPlaceholder": "Select priority",
+      "notesLabel": "Notes",
+      "notesPlaceholder": "Add any additional notes about this deal...",
+      "createButton": "Create Deal"
     }
   },
   "activityLogs": {

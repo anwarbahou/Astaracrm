@@ -1,4 +1,3 @@
-
 {
   "app": {
     "sidebar": {
@@ -332,6 +331,28 @@
     "view": {
       "pipeline": "خط الأنابيب",
       "list": "قائمة"
+    },
+    "addDealModal": {
+      "title": "إضافة صفقة جديدة",
+      "description": "إنشاء صفقة جديدة في خط أنابيب المبيعات الخاص بك",
+      "dealNameLabel": "اسم الصفقة *",
+      "dealNamePlaceholder": "أدخل اسم الصفقة",
+      "clientLabel": "العميل *",
+      "clientPlaceholder": "أدخل اسم العميل",
+      "valueLabel": "القيمة (درهم) *",
+      "stageLabel": "المرحلة",
+      "stagePlaceholder": "اختر المرحلة",
+      "probabilityLabel": "الاحتمالية (%)",
+      "closeDateLabel": "تاريخ الإغلاق المتوقع *",
+      "sourceLabel": "المصدر",
+      "sourcePlaceholder": "مثال: موقع إلكتروني، إحالة، اتصال بارد",
+      "ownerLabel": "المالك",
+      "ownerPlaceholder": "اختر المالك",
+      "priorityLabel": "الأولوية",
+      "priorityPlaceholder": "اختر الأولوية",
+      "notesLabel": "ملاحظات",
+      "notesPlaceholder": "أضف أي ملاحظات إضافية حول هذه الصفقة...",
+      "createButton": "إنشاء صفقة"
     }
   },
   "activityLogs": {

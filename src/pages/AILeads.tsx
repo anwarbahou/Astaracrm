@@ -1,5 +1,5 @@
-
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -63,6 +63,8 @@ interface FilterState {
 }
 
 export default function AILeads() {
+  const { t } = useTranslation();
+  
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLeads, setSelectedLeads] = useState<number[]>([]);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
@@ -82,7 +84,7 @@ export default function AILeads() {
   // Enhanced lead stats with regional focus
   const leadStats = [
     { 
-      label: "AI-Generated Leads", 
+      label: t("aiLeads.stats.aiGeneratedLeads"), 
       value: "1,247", 
       change: "+18%",
       icon: Bot, 
@@ -91,7 +93,7 @@ export default function AILeads() {
       trend: "up"
     },
     { 
-      label: "MENA Qualified", 
+      label: t("aiLeads.stats.menaQualified"), 
       value: "423", 
       change: "+25%",
       icon: Brain, 
@@ -100,7 +102,7 @@ export default function AILeads() {
       trend: "up"
     },
     { 
-      label: "Conversion Rate", 
+      label: t("aiLeads.stats.conversionRate"), 
       value: "38.7%", 
       change: "+6.3%",
       icon: TrendingUp, 
@@ -109,7 +111,7 @@ export default function AILeads() {
       trend: "up"
     },
     { 
-      label: "Active Campaigns", 
+      label: t("aiLeads.stats.activeCampaigns"), 
       value: "8", 
       change: "+2",
       icon: Target, 
@@ -294,10 +296,10 @@ export default function AILeads() {
           </div>
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-              AI Lead Intelligence
+              {t("aiLeads.title")}
             </h1>
             <p className="text-muted-foreground mt-1">
-              Génération de leads MENA et Europe avec IA avancée
+              {t("aiLeads.subtitle")}
             </p>
           </div>
         </div>
@@ -309,7 +311,7 @@ export default function AILeads() {
             onClick={() => setAiInsightsVisible(!aiInsightsVisible)}
           >
             <Brain size={16} />
-            AI Insights
+            {t("aiLeads.buttons.aiInsights")}
           </Button>
           <NewCampaignModal />
         </div>
@@ -380,7 +382,7 @@ export default function AILeads() {
               <div className="relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Rechercher par nom, entreprise, ou email..."
+                  placeholder={t("aiLeads.searchPlaceholder")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10"
@@ -389,12 +391,12 @@ export default function AILeads() {
             </div>
             <Button variant="outline" className="gap-2">
               <BarChart3 size={16} />
-              Analytics
+              {t("aiLeads.buttons.analytics")}
             </Button>
             {selectedLeads.length > 0 && (
               <Button onClick={handleBulkExport} variant="outline" className="gap-2">
                 <Download size={16} />
-                Exporter ({selectedLeads.length})
+                {t("aiLeads.buttons.export")} ({selectedLeads.length})
               </Button>
             )}
           </div>
@@ -412,17 +414,17 @@ export default function AILeads() {
           <div className="flex items-center justify-between">
             <CardTitle className="text-foreground flex items-center gap-2">
               <Users size={20} />
-              Pipeline Leads ({filteredLeads.length})
+              {t("aiLeads.pipelineTitle", { count: filteredLeads.length })}
             </CardTitle>
             <div className="flex items-center gap-2">
               <Badge variant="secondary" className="bg-red-500/10 text-red-400 border-red-500/20">
-                {filteredLeads.filter(l => l.status === 'Hot').length} Chauds
+                {t("aiLeads.statusCounts.hot", { count: filteredLeads.filter(l => l.status === 'Hot').length })}
               </Badge>
               <Badge variant="secondary" className="bg-amber-500/10 text-amber-400 border-amber-500/20">
-                {filteredLeads.filter(l => l.status === 'Warm').length} Tièdes
+                {t("aiLeads.statusCounts.warm", { count: filteredLeads.filter(l => l.status === 'Warm').length })}
               </Badge>
               <Badge variant="secondary" className="bg-blue-500/10 text-blue-400 border-blue-500/20">
-                {filteredLeads.filter(l => l.status === 'Cold').length} Froids
+                {t("aiLeads.statusCounts.cold", { count: filteredLeads.filter(l => l.status === 'Cold').length })}
               </Badge>
             </div>
           </div>

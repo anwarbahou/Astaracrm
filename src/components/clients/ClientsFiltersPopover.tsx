@@ -29,13 +29,6 @@ export interface ClientFilters {
   lastInteractionTo: string;
 }
 
-const FilterSection: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
-  <div className="space-y-2">
-    <Label className="text-sm font-medium text-muted-foreground">{title}</Label>
-    {children}
-  </div>
-);
-
 interface FiltersPopoverContentProps {
     filters: ClientFilters;
     onFiltersChange: (f: ClientFilters) => void;

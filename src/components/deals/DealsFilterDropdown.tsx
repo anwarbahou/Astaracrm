@@ -12,19 +12,13 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Filter, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import FilterSection from '../clients/FilterSection';
 
 interface DealsFilterDropdownProps {
   filters: DealFilters;
   onFiltersChange: (filters: DealFilters) => void;
   onClearFilters: () => void;
 }
-
-const FilterSection: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
-    <div className="space-y-3">
-      <Label className="text-sm font-medium text-gray-200">{title}</Label>
-      <div className="space-y-2">{children}</div>
-    </div>
-);
 
 interface DealsFilterPopoverContentProps {
     filters: DealFilters;

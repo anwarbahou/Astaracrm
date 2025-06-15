@@ -1,6 +1,5 @@
-
 import { DealFilters, DealStage } from '@/types/deal';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +16,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 interface DealsFilterDropdownProps {
   filters: DealFilters;
   onFiltersChange: (filters: DealFilters) => void;
+  onClearFilters: () => void;
 }
 
 const FilterSection: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
@@ -30,13 +30,18 @@ interface DealsFilterPopoverContentProps {
     filters: DealFilters;
     onFiltersChange: (filters: DealFilters) => void;
     onClose: () => void;
+    onClearFilters: () => void;
 }
 
-const DealsFilterPopoverContent = ({ filters, onFiltersChange, onClose }: DealsFilterPopoverContentProps) => {
+const DealsFilterPopoverContent = ({ filters, onFiltersChange, onClose, onClearFilters }: DealsFilterPopoverContentProps) => {
     const { t } = useTranslation();
     const [localFilters, setLocalFilters] = useState<DealFilters>(filters);
     const [showAllStages, setShowAllStages] = useState(false);
     const [showAllOwners, setShowAllOwners] = useState(false);
+
+    useEffect(() => {
+        setLocalFilters(filters);
+    }, [filters]);
 
     const stages: DealStage[] = ['Prospect', 'Lead', 'Qualified', 'Negotiation', 'Won/Lost'];
     const owners = ['Sarah Chen', 'Mike Johnson', 'Emma Davis', 'Alex Rivera', 'David Kim', 'Lisa Wang', 'James Liu'];
@@ -47,15 +52,7 @@ const DealsFilterPopoverContent = ({ filters, onFiltersChange, onClose }: DealsF
     };
 
     const handleClearFilters = () => {
-        const emptyFilters: DealFilters = {
-          stages: [],
-          owners: [],
-          valueRange: [0, 1000000],
-          dateRange: { start: '', end: '' },
-          sources: [],
-        };
-        setLocalFilters(emptyFilters);
-        onFiltersChange(emptyFilters);
+        onClearFilters();
     };
 
     const handleStageChange = (stage: DealStage, checked: boolean) => {
@@ -203,7 +200,7 @@ const DealsFilterPopoverContent = ({ filters, onFiltersChange, onClose }: DealsF
     );
 };
 
-export function DealsFilterDropdown({ filters, onFiltersChange }: DealsFilterDropdownProps) {
+export function DealsFilterDropdown({ filters, onFiltersChange, onClearFilters }: DealsFilterDropdownProps) {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   
@@ -236,7 +233,7 @@ export function DealsFilterDropdown({ filters, onFiltersChange }: DealsFilterDro
         className="w-auto p-0 border-none bg-transparent" 
         align="end"
       >
-        <DealsFilterPopoverContent filters={filters} onFiltersChange={onFiltersChange} onClose={() => setIsOpen(false)} />
+        <DealsFilterPopoverContent filters={filters} onFiltersChange={onFiltersChange} onClose={() => setIsOpen(false)} onClearFilters={onClearFilters} />
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from "@/components/ui/button";
@@ -15,6 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import { Filter, X } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import FilterSection from './FilterSection';
 
 export interface ClientFilters {
   owner: string;

@@ -17,7 +17,7 @@ import { AddClientModal } from "@/components/modals/AddClientModal";
 import { AddContactModal } from "@/components/modals/AddContactModal";
 
 export default function Dashboard() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [addClientOpen, setAddClientOpen] = useState(false);
   const [addContactOpen, setAddContactOpen] = useState(false);
 
@@ -67,11 +67,39 @@ export default function Dashboard() {
     { id: 4, title: t("dashboard.mockTasks.sendContract"), due: "Dec 17, 9:00 AM", priority: "high" }
   ];
 
+  const formatTimeAgo = (date: Date) => {
+    const now = new Date();
+    const diffInSeconds = (now.getTime() - date.getTime()) / 1000;
+    
+    const rtf = new Intl.RelativeTimeFormat(i18n.language, { numeric: 'auto' });
+
+    const diffInDays = diffInSeconds / (60 * 60 * 24);
+    if (diffInDays > 7) {
+      return date.toLocaleDateString(i18n.language);
+    }
+    if (diffInDays >= 1) {
+      return rtf.format(-Math.floor(diffInDays), 'day');
+    }
+    
+    const diffInHours = diffInSeconds / (60 * 60);
+    if (diffInHours >= 1) {
+      return rtf.format(-Math.floor(diffInHours), 'hour');
+    }
+
+    const diffInMinutes = diffInSeconds / 60;
+    if (diffInMinutes >= 1) {
+      return rtf.format(-Math.floor(diffInMinutes), 'minute');
+    }
+    
+    return rtf.format(-Math.floor(diffInSeconds), 'second');
+  };
+
+  const now = new Date();
   const recentActivities = [
-    { id: 1, action: t("dashboard.mockActivities.newDeal"), details: t("dashboard.mockActivities.dealDetails"), time: "2 hours ago" },
-    { id: 2, action: t("dashboard.mockActivities.contactUpdated"), details: t("dashboard.mockActivities.contactDetails"), time: "4 hours ago" },
-    { id: 3, action: t("dashboard.mockActivities.taskCompleted"), details: t("dashboard.mockActivities.taskDetails"), time: "6 hours ago" },
-    { id: 4, action: t("dashboard.mockActivities.meetingScheduled"), details: t("dashboard.mockActivities.meetingDetails"), time: "1 day ago" }
+    { id: 1, action: t("dashboard.mockActivities.newDeal"), details: t("dashboard.mockActivities.dealDetails"), timestamp: new Date(now.getTime() - (2 * 60 * 60 * 1000)) },
+    { id: 2, action: t("dashboard.mockActivities.contactUpdated"), details: t("dashboard.mockActivities.contactDetails"), timestamp: new Date(now.getTime() - (4 * 60 * 60 * 1000)) },
+    { id: 3, action: t("dashboard.mockActivities.taskCompleted"), details: t("dashboard.mockActivities.taskDetails"), timestamp: new Date(now.getTime() - (6 * 60 * 60 * 1000)) },
+    { id: 4, action: t("dashboard.mockActivities.meetingScheduled"), details: t("dashboard.mockActivities.meetingDetails"), timestamp: new Date(now.getTime() - (1 * 24 * 60 * 60 * 1000)) }
   ];
 
   const getStatusColor = (status: string) => {
@@ -233,7 +261,7 @@ export default function Dashboard() {
                     <p className="font-medium">{activity.action}</p>
                     <p className="text-sm text-muted-foreground">{activity.details}</p>
                   </div>
-                  <span className="text-xs text-muted-foreground">{activity.time}</span>
+                  <span className="text-xs text-muted-foreground">{formatTimeAgo(activity.timestamp)}</span>
                 </div>
               ))}
             </div>

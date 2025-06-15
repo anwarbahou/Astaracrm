@@ -4,6 +4,7 @@ import { DealCard } from './DealCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { dealStages } from '@/data/mockDeals';
+import { useTranslation } from 'react-i18next';
 
 interface DealsBoardProps {
   deals: Deal[];
@@ -13,6 +14,7 @@ interface DealsBoardProps {
 }
 
 export function DealsBoard({ deals, onDealClick, onDealEdit, onDealDelete }: DealsBoardProps) {
+  const { t } = useTranslation();
   const getStageDeals = (stage: DealStage) => {
     return deals.filter(deal => deal.stage === stage);
   };
@@ -31,7 +33,7 @@ export function DealsBoard({ deals, onDealClick, onDealEdit, onDealDelete }: Dea
           <Card key={stage.name} className={`${stage.color} min-h-[600px]`}>
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-medium">{stage.name}</CardTitle>
+                <CardTitle className="text-sm font-medium">{t(`deals.stages.${stage.name.toLowerCase().replace('/', '-')}`)}</CardTitle>
                 <Badge variant="secondary">{stageDeals.length}</Badge>
               </div>
               <p className="text-xs text-muted-foreground">

@@ -136,6 +136,13 @@
     "newDeal": "New Deal",
     "searchPlaceholder": "Search deals...",
     "filters": "Filters",
+    "stages": {
+      "prospect": "Prospect",
+      "lead": "Lead",
+      "qualified": "Qualified",
+      "negotiation": "Negotiation",
+      "won-lost": "Won/Lost"
+    },
     "stats": {
       "active": "Active Deals",
       "pipelineValue": "Pipeline Value",

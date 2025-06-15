@@ -136,6 +136,13 @@
     "newDeal": "صفقة جديدة",
     "searchPlaceholder": "البحث عن صفقات...",
     "filters": "الفلاتر",
+    "stages": {
+      "prospect": "عميل محتمل",
+      "lead": "مهتم",
+      "qualified": "مؤهل",
+      "negotiation": "تفاوض",
+      "won-lost": "فوز / خسارة"
+    },
     "stats": {
       "active": "الصفقات النشطة",
       "pipelineValue": "قيمة خط الأنابيب",

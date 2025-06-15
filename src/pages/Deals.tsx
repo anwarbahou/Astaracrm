@@ -76,7 +76,7 @@ export default function Deals() {
     
     toast({
       title: t('deals.toasts.moved.title'),
-      description: t('deals.toasts.moved.description', { stage: newStage }),
+      description: t('deals.toasts.moved.description', { stage: t(`deals.stages.${newStage.toLowerCase().replace('/', '-')}`) }),
     });
   };
 
@@ -112,7 +112,7 @@ export default function Deals() {
     
     toast({
       title: t('deals.toasts.created.title'),
-      description: t('deals.toasts.created.description', { stage: addDealStage }),
+      description: t('deals.toasts.created.description', { stage: t(`deals.stages.${addDealStage.toLowerCase().replace('/', '-')}`) }),
     });
   };
 

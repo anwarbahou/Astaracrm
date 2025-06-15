@@ -6,6 +6,7 @@ import { Plus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface PipelineColumnProps {
   stage: PipelineStage;
@@ -32,6 +33,7 @@ export function PipelineColumn({
   isDropTarget,
   isDragging
 }: PipelineColumnProps) {
+  const { t } = useTranslation();
   const totalValue = deals.reduce((sum, deal) => sum + deal.value, 0);
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -71,7 +73,7 @@ export function PipelineColumn({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className={cn("w-3 h-3 rounded-full", getStageColor(stage.name))} />
-            <h3 className="font-semibold text-foreground text-base">{stage.name}</h3>
+            <h3 className="font-semibold text-foreground text-base">{t(`deals.stages.${stage.name.toLowerCase().replace('/', '-')}`)}</h3>
           </div>
           <div className="flex items-center gap-2">
             <Badge variant="secondary" className="bg-muted text-muted-foreground">

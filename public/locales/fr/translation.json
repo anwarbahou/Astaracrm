@@ -136,6 +136,13 @@
     "newDeal": "Nouvelle Opportunité",
     "searchPlaceholder": "Rechercher des opportunités...",
     "filters": "Filtres",
+    "stages": {
+      "prospect": "Prospect",
+      "lead": "Piste",
+      "qualified": "Qualifié",
+      "negotiation": "Négociation",
+      "won-lost": "Gagné/Perdu"
+    },
     "stats": {
       "active": "Opportunités Actives",
       "pipelineValue": "Valeur du Pipeline",

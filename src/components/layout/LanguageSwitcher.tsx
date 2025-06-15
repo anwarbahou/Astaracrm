@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +26,10 @@ const languages: Language[] = [
 export function LanguageSwitcher() {
   const { i18n, t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.dir = i18n.dir(i18n.language);
+  }, [i18n, i18n.language]);
 
   const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
 
@@ -60,7 +64,7 @@ export function LanguageSwitcher() {
       >
         <div className="p-2">
           <div className="text-xs text-muted-foreground mb-2 px-2">
-            {t('languageSwitcher.chooseLanguage')}
+            {t('app.languageSwitcher.chooseLanguage')}
           </div>
           
           {languages.map((language) => (
@@ -98,7 +102,7 @@ export function LanguageSwitcher() {
         
         <div className="border-t border-border mt-2 pt-2 px-2">
           <div className="text-xs text-muted-foreground px-2 py-1">
-            {t('languageSwitcher.moreComingSoon')}
+            {t('app.languageSwitcher.moreComingSoon')}
           </div>
         </div>
       </DropdownMenuContent>

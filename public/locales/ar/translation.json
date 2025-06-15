@@ -182,14 +182,6 @@
   "contacts": {
     "title": "جهات الاتصال",
     "description": "إدارة جميع جهات الاتصال والعلاقات التجارية الخاصة بك.",
-    "addContact": "إضافة جهة اتصال",
-    "searchPlaceholder": "البحث عن جهات الاتصال بالاسم أو البريد الإلكتروني أو الشركة...",
-    "stats": {
-      "total": "إجمالي جهات الاتصال",
-      "active": "جهات الاتصال النشطة",
-      "decisionMakers": "صناع القرار",
-      "companies": "الشركات"
-    },
     "table": {
       "title": "كل جهات الاتصال ({{count}})",
       "searchPlaceholder": "ابحث في جهات الاتصال...",
@@ -225,7 +217,11 @@
       "createdTo": "تاريخ الإنشاء إلى",
       "lastContactedFrom": "آخر تواصل من",
       "lastContactedTo": "آخر تواصل إلى",
-      "tags": "الوسوم"
+      "tags": "الوسوم",
+      "createdDate": "تاريخ الإنشاء",
+      "lastContacted": "آخر تواصل",
+      "from": "من",
+      "to": "إلى"
     },
     "tags": {
       "decisionMaker": "صانع قرار",
@@ -449,31 +445,6 @@
         "description": "تمت إضافة العميل بنجاح."
       }
     }
-  },
-  "addClientModal": {
-    "title": "إضافة عميل جديد",
-    "profilePicture": "صورة الملف الشخصي",
-    "uploadPhoto": "تحميل صورة",
-    "uploadHint": "اختياري: قم بتحميل شعار العميل أو صورته",
-    "nameLabel": "اسم الشركة/العميل *",
-    "namePlaceholder": "أدخل اسم الشركة",
-    "emailLabel": "عنوان البريد الإلكتروني *",
-    "emailPlaceholder": "contact@company.com",
-    "phoneLabel": "رقم الهاتف",
-    "phonePlaceholder": "+212 6XX XXX XXX",
-    "countryLabel": "البلد/الموقع",
-    "countryPlaceholder": "اختر الموقع",
-    "industryLabel": "الصناعة",
-    "industryPlaceholder": "اختر الصناعة",
-    "stageLabel": "مرحلة العميل",
-    "stagePlaceholder": "اختر المرحلة",
-    "ownerLabel": "مالك الحساب",
-    "ownerPlaceholder": "تعيين مالك الحساب",
-    "tagsLabel": "العلامات",
-    "tagsPlaceholder": "أضف علامة واضغط على إدخال",
-    "notesLabel": "ملاحظات",
-    "notesPlaceholder": "أضف أي ملاحظات إضافية حول هذا العميل...",
-    "submitButton": "إضافة عميل"
   },
     "addContactModal": {
         "title": "إضافة جهة اتصال جديدة",

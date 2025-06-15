@@ -226,7 +226,11 @@
       "createdTo": "Created To",
       "lastContactedFrom": "Last Contacted From",
       "lastContactedTo": "Last Contacted To",
-      "tags": "Tags"
+      "tags": "Tags",
+      "createdDate": "Date Created",
+      "lastContacted": "Last Contacted",
+      "from": "From",
+      "to": "To"
     },
     "tags": {
       "decisionMaker": "Decision Maker",

@@ -224,7 +224,11 @@
       "createdTo": "Créé jusqu'au",
       "lastContactedFrom": "Dernier contact de",
       "lastContactedTo": "Dernier contact à",
-      "tags": "Étiquettes"
+      "tags": "Étiquettes",
+      "createdDate": "Date de création",
+      "lastContacted": "Dernier contact",
+      "from": "De",
+      "to": "À"
     },
     "tags": {
       "decisionMaker": "Décideur",

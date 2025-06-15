@@ -264,6 +264,7 @@
   "deals": {
     "title": "Affaires",
     "addDeal": "Ajouter une affaire",
+    "newDeal": "Nouvelle Affaire",
     "searchPlaceholder": "Rechercher des affaires...",
     "filters": "Filtres",
     "stages": {
@@ -331,6 +332,28 @@
       "linkedIn": "LinkedIn",
       "existingClient": "Client existant"
     }
+  },
+  "addDealModal": {
+    "title": "Ajouter une Nouvelle Affaire",
+    "description": "Créer une nouvelle affaire et l'ajouter à votre pipeline de ventes.",
+    "dealNameLabel": "Nom de l'Affaire",
+    "dealNamePlaceholder": "Entrez le nom de l'affaire",
+    "clientLabel": "Client",
+    "clientPlaceholder": "Entrez le nom du client",
+    "valueLabel": "Valeur de l'Affaire (MAD)",
+    "stageLabel": "Étape",
+    "stagePlaceholder": "Sélectionner une étape",
+    "probabilityLabel": "Probabilité (%)",
+    "expectedCloseDateLabel": "Date de Clôture Prévue",
+    "sourceLabel": "Source",
+    "sourcePlaceholder": "Entrez la source",
+    "ownerLabel": "Propriétaire de l'Affaire",
+    "ownerPlaceholder": "Sélectionner le propriétaire",
+    "priorityLabel": "Priorité",
+    "priorityPlaceholder": "Sélectionner la priorité",
+    "notesLabel": "Notes",
+    "notesPlaceholder": "Ajoutez des notes supplémentaires sur cette affaire...",
+    "submitButton": "Créer l'Affaire"
   },
   "activityLogs": {
     "title": "Journaux d'activité et piste d'audit",

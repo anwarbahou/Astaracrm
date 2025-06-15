@@ -264,6 +264,7 @@
   "deals": {
     "title": "Deals",
     "addDeal": "Add Deal",
+    "newDeal": "New Deal",
     "searchPlaceholder": "Search deals...",
     "filters": "Filters",
     "stages": {
@@ -331,6 +332,28 @@
       "linkedIn": "LinkedIn",
       "existingClient": "Existing Client"
     }
+  },
+  "addDealModal": {
+    "title": "Add New Deal",
+    "description": "Create a new deal and add it to your sales pipeline.",
+    "dealNameLabel": "Deal Name",
+    "dealNamePlaceholder": "Enter deal name",
+    "clientLabel": "Client",
+    "clientPlaceholder": "Enter client name",
+    "valueLabel": "Deal Value (MAD)",
+    "stageLabel": "Stage",
+    "stagePlaceholder": "Select stage",
+    "probabilityLabel": "Probability (%)",
+    "expectedCloseDateLabel": "Expected Close Date",
+    "sourceLabel": "Source",
+    "sourcePlaceholder": "Enter source",
+    "ownerLabel": "Deal Owner",
+    "ownerPlaceholder": "Select owner",
+    "priorityLabel": "Priority",
+    "priorityPlaceholder": "Select priority",
+    "notesLabel": "Notes",
+    "notesPlaceholder": "Add additional notes about this deal...",
+    "submitButton": "Create Deal"
   },
   "activityLogs": {
     "title": "Activity Logs and Audit Trail",

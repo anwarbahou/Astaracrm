@@ -19,15 +19,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import {
   ChevronUp,
   ChevronDown,
   Search,
   Filter,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  X,
 } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 export interface Client {
   id: number;
@@ -48,29 +52,285 @@ export interface Client {
   notes?: string;
 }
 
+interface ClientFilters {
+  owner: string;
+  stage: string;
+  industry: string;
+  country: string;
+  status: string;
+  tags: string[];
+  dateCreatedFrom: string;
+  dateCreatedTo: string;
+  lastInteractionFrom: string;
+  lastInteractionTo: string;
+}
+
 interface ClientsTableProps {
   clients: Client[];
   onClientClick: (client: Client) => void;
-  onFiltersToggle: () => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
+  filters: ClientFilters;
+  onFiltersChange: (filters: ClientFilters) => void;
 }
 
 type SortField = keyof Client;
 type SortDirection = 'asc' | 'desc';
 
+const FilterSection: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
+  <div className="space-y-2">
+    <Label className="text-sm font-medium text-gray-200">{title}</Label>
+    {children}
+  </div>
+);
+
+const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: { filters: ClientFilters; onFiltersChange: (f: ClientFilters) => void; onClose: () => void }) => {
+  const { t } = useTranslation();
+  const [localFilters, setLocalFilters] = useState<ClientFilters>(filters);
+
+  const owners = useMemo(() => ["John Smith", "Sarah Johnson", "Mike Wilson", "Emily Davis"], []);
+  const stages = useMemo(() => ["Lead", "Prospect", "Active", "Inactive"], []);
+  const industries = useMemo(() => ["Technology", "Healthcare", "Finance", "Manufacturing", "Retail", "Consulting"], []);
+  const countries = useMemo(() => ["Morocco", "France", "Spain", "USA", "UAE"], []);
+  const statuses = useMemo(() => ["Active", "Archived"], []);
+  const availableTags = useMemo(() => ["VIP", "High Value", "Enterprise", "SMB", "Urgent", "International"], []);
+
+  const handleApplyFilters = () => {
+    onFiltersChange(localFilters);
+    onClose();
+  };
+
+  const handleClearFilters = () => {
+    const emptyFilters: ClientFilters = {
+      owner: '',
+      stage: '',
+      industry: '',
+      country: '',
+      status: '',
+      tags: [],
+      dateCreatedFrom: '',
+      dateCreatedTo: '',
+      lastInteractionFrom: '',
+      lastInteractionTo: '',
+    };
+    setLocalFilters(emptyFilters);
+    onFiltersChange(emptyFilters);
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    setLocalFilters({
+      ...localFilters,
+      tags: localFilters.tags.filter(tag => tag !== tagToRemove)
+    });
+  };
+
+  const addTag = (newTag: string) => {
+    if (newTag && !localFilters.tags.includes(newTag)) {
+      setLocalFilters({
+        ...localFilters,
+        tags: [...localFilters.tags, newTag]
+      });
+    }
+  };
+
+  return (
+    <Card className="w-[380px] bg-gray-800 border-gray-700 text-gray-200 shadow-lg">
+      <CardHeader className="border-b border-gray-700 p-4">
+        <CardTitle className="flex items-center justify-between text-lg text-gray-100">
+          <span className="flex items-center gap-2">
+            <Filter size={20} />
+            {t('clients.filtersPanel.title')}
+          </span>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleClearFilters}
+            className="h-7 px-2 text-xs text-gray-400 hover:text-gray-100 hover:bg-gray-700"
+          >
+            <X className="h-3 w-3 mr-1" />
+            {t('clients.filtersPanel.clearAll')}
+          </Button>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-4 space-y-6 max-h-[calc(100vh-250px)] overflow-y-auto">
+        <div className="grid grid-cols-1 gap-6">
+          <FilterSection title={t('clients.filtersPanel.owner')}>
+            <RadioGroup value={localFilters.owner} onValueChange={(value) => setLocalFilters({ ...localFilters, owner: value })}>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="" id="owner-all" />
+                <Label htmlFor="owner-all" className="cursor-pointer">{t('clients.filtersPanel.allOwners')}</Label>
+              </div>
+              {owners.map(owner => (
+                <div key={owner} className="flex items-center space-x-2">
+                  <RadioGroupItem value={owner} id={`owner-${owner}`} />
+                  <Label htmlFor={`owner-${owner}`} className="cursor-pointer">{owner}</Label>
+                </div>
+              ))}
+            </RadioGroup>
+          </FilterSection>
+
+          <FilterSection title={t('clients.filtersPanel.stage')}>
+            <RadioGroup value={localFilters.stage} onValueChange={(value) => setLocalFilters({ ...localFilters, stage: value })}>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="" id="stage-all" />
+                <Label htmlFor="stage-all" className="cursor-pointer">{t('clients.filtersPanel.allStages')}</Label>
+              </div>
+              {stages.map(stage => (
+                <div key={stage} className="flex items-center space-x-2">
+                  <RadioGroupItem value={stage} id={`stage-${stage}`} />
+                  <Label htmlFor={`stage-${stage}`} className="cursor-pointer">{stage}</Label>
+                </div>
+              ))}
+            </RadioGroup>
+          </FilterSection>
+          
+          <FilterSection title={t('clients.filtersPanel.industry')}>
+            <RadioGroup value={localFilters.industry} onValueChange={(value) => setLocalFilters({ ...localFilters, industry: value })}>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="" id="industry-all" />
+                <Label htmlFor="industry-all" className="cursor-pointer">{t('clients.filtersPanel.allIndustries')}</Label>
+              </div>
+              {industries.map(industry => (
+                <div key={industry} className="flex items-center space-x-2">
+                  <RadioGroupItem value={industry} id={`industry-${industry}`} />
+                  <Label htmlFor={`industry-${industry}`} className="cursor-pointer">{industry}</Label>
+                </div>
+              ))}
+            </RadioGroup>
+          </FilterSection>
+
+          <FilterSection title={t('clients.filtersPanel.location')}>
+            <RadioGroup value={localFilters.country} onValueChange={(value) => setLocalFilters({ ...localFilters, country: value })}>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="" id="country-all" />
+                <Label htmlFor="country-all" className="cursor-pointer">{t('clients.filtersPanel.allLocations')}</Label>
+              </div>
+              {countries.map(country => (
+                <div key={country} className="flex items-center space-x-2">
+                  <RadioGroupItem value={country} id={`country-${country}`} />
+                  <Label htmlFor={`country-${country}`} className="cursor-pointer">{country}</Label>
+                </div>
+              ))}
+            </RadioGroup>
+          </FilterSection>
+
+          <FilterSection title={t('clients.filtersPanel.status')}>
+            <RadioGroup value={localFilters.status} onValueChange={(value) => setLocalFilters({ ...localFilters, status: value })}>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="" id="status-all" />
+                <Label htmlFor="status-all" className="cursor-pointer">{t('clients.filtersPanel.allStatuses')}</Label>
+              </div>
+              {statuses.map(status => (
+                <div key={status} className="flex items-center space-x-2">
+                  <RadioGroupItem value={status} id={`status-${status}`} />
+                  <Label htmlFor={`status-${status}`} className="cursor-pointer">{status}</Label>
+                </div>
+              ))}
+            </RadioGroup>
+          </FilterSection>
+
+          <FilterSection title={t('clients.filtersPanel.tags')}>
+            <div className="space-y-2">
+              <Select onValueChange={(value) => addTag(value)}>
+                <SelectTrigger className="bg-gray-700 border-gray-600">
+                  <SelectValue placeholder={t('clients.filtersPanel.addTag')} />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-800 border-gray-700 text-gray-200">
+                  {availableTags.map(tag => (
+                    <SelectItem key={tag} value={tag}>{tag}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {localFilters.tags.length > 0 && (
+                <div className="flex gap-1 flex-wrap">
+                  {localFilters.tags.map((tag, index) => (
+                    <Badge key={index} variant="secondary" className="gap-1 bg-gray-600 text-gray-100">
+                      {tag}
+                      <X 
+                        size={12} 
+                        className="cursor-pointer hover:text-destructive"
+                        onClick={() => removeTag(tag)}
+                      />
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+          </FilterSection>
+
+          <FilterSection title={t('clients.filtersPanel.dateCreated')}>
+             <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label className="text-xs text-muted-foreground">{t('clients.filtersPanel.from')}</Label>
+                <Input
+                  type="date"
+                  value={localFilters.dateCreatedFrom}
+                  onChange={(e) => setLocalFilters({ ...localFilters, dateCreatedFrom: e.target.value })}
+                  className="bg-gray-700 border-gray-600"
+                />
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">{t('clients.filtersPanel.to')}</Label>
+                <Input
+                  type="date"
+                  value={localFilters.dateCreatedTo}
+                  onChange={(e) => setLocalFilters({ ...localFilters, dateCreatedTo: e.target.value })}
+                  className="bg-gray-700 border-gray-600"
+                />
+              </div>
+            </div>
+          </FilterSection>
+
+          <FilterSection title={t('clients.filtersPanel.lastInteraction')}>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label className="text-xs text-muted-foreground">{t('clients.filtersPanel.from')}</Label>
+                <Input
+                  type="date"
+                  value={localFilters.lastInteractionFrom}
+                  onChange={(e) => setLocalFilters({ ...localFilters, lastInteractionFrom: e.target.value })}
+                  className="bg-gray-700 border-gray-600"
+                />
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">{t('clients.filtersPanel.to')}</Label>
+                <Input
+                  type="date"
+                  value={localFilters.lastInteractionTo}
+                  onChange={(e) => setLocalFilters({ ...localFilters, lastInteractionTo: e.target.value })}
+                  className="bg-gray-700 border-gray-600"
+                />
+              </div>
+            </div>
+          </FilterSection>
+        </div>
+      </CardContent>
+      <CardFooter className="flex justify-end gap-2 p-4 border-t border-gray-700">
+        <Button variant="outline" onClick={onClose} className="border-gray-600 hover:bg-gray-700">
+          {t('common.cancel')}
+        </Button>
+        <Button onClick={handleApplyFilters} className="bg-blue-600 hover:bg-blue-700">
+          {t('clients.filtersPanel.apply')}
+        </Button>
+      </CardFooter>
+    </Card>
+  )
+}
+
 export function ClientsTable({ 
   clients, 
   onClientClick, 
-  onFiltersToggle, 
   searchQuery, 
-  onSearchChange 
+  onSearchChange,
+  filters,
+  onFiltersChange,
 }: ClientsTableProps) {
   const { t, i18n } = useTranslation();
   const [sortField, setSortField] = useState<SortField>('name');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const getStageColor = (stage: string) => {
     switch (stage) {
@@ -109,12 +369,27 @@ export function ClientsTable({
   };
 
   const filteredAndSortedClients = useMemo(() => {
-    let filtered = clients.filter(client =>
-      client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      client.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      client.industry.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      client.owner.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    let filtered = clients.filter(client => {
+      const searchMatch =
+        searchQuery === '' ||
+        client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        client.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        client.industry.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        client.owner.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const ownerMatch = !filters.owner || client.owner === filters.owner;
+      const stageMatch = !filters.stage || client.stage === filters.stage;
+      const industryMatch = !filters.industry || client.industry === filters.industry;
+      const countryMatch = !filters.country || client.country === filters.country;
+      const statusMatch = !filters.status || client.status === filters.status;
+      const tagsMatch = filters.tags.length === 0 || filters.tags.every(tag => client.tags.includes(tag));
+      const createdFromMatch = !filters.dateCreatedFrom || new Date(client.createdDate) >= new Date(filters.dateCreatedFrom);
+      const createdToMatch = !filters.dateCreatedTo || new Date(client.createdDate) <= new Date(filters.dateCreatedTo);
+      const lastInteractionFromMatch = !filters.lastInteractionFrom || new Date(client.lastInteraction) >= new Date(filters.lastInteractionFrom);
+      const lastInteractionToMatch = !filters.lastInteractionTo || new Date(client.lastInteraction) <= new Date(filters.lastInteractionTo);
+
+      return searchMatch && ownerMatch && stageMatch && industryMatch && countryMatch && statusMatch && tagsMatch && createdFromMatch && createdToMatch && lastInteractionFromMatch && lastInteractionToMatch;
+    });
 
     filtered.sort((a, b) => {
       const aValue = a[sortField];
@@ -134,7 +409,7 @@ export function ClientsTable({
     });
 
     return filtered;
-  }, [clients, searchQuery, sortField, sortDirection]);
+  }, [clients, searchQuery, sortField, sortDirection, filters]);
 
   const paginatedClients = useMemo(() => {
     const startIndex = (currentPage - 1) * rowsPerPage;
@@ -180,10 +455,17 @@ export function ClientsTable({
                 className="pl-10"
               />
             </div>
-            <Button variant="outline" onClick={onFiltersToggle} className="gap-2">
-              <Filter size={16} />
-              {t('clients.table.filters')}
-            </Button>
+            <Popover open={filtersOpen} onOpenChange={setFiltersOpen}>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="gap-2">
+                  <Filter size={16} />
+                  {t('clients.table.filters')}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="end">
+                <FiltersPopoverContent filters={filters} onFiltersChange={onFiltersChange} onClose={() => setFiltersOpen(false)} />
+              </PopoverContent>
+            </Popover>
           </div>
         </CardContent>
       </Card>

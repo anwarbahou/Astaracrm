@@ -2,7 +2,6 @@
 import { AddClientModal } from "@/components/modals/AddClientModal";
 import { ClientsTable } from "@/components/clients/ClientsTable";
 import { ClientProfileModal } from "@/components/clients/ClientProfileModal";
-import { ClientFiltersPanel } from "@/components/clients/ClientFiltersPanel";
 import { useClients } from "@/hooks/useClients";
 import { ClientsPageHeader } from "@/components/clients/ClientsPageHeader";
 import { ClientStats } from "@/components/clients/ClientStats";
@@ -17,8 +16,6 @@ export default function Clients() {
     selectedClient,
     profileModalOpen,
     setProfileModalOpen,
-    filtersOpen,
-    setFiltersOpen,
     filters,
     setFilters,
     handleClientClick,
@@ -32,19 +29,13 @@ export default function Clients() {
 
         <ClientStats clients={clients} />
 
-        <ClientFiltersPanel
-          isOpen={filtersOpen}
-          onClose={() => setFiltersOpen(false)}
-          filters={filters}
-          onFiltersChange={setFilters}
-        />
-
         <ClientsTable
           clients={clients}
           onClientClick={handleClientClick}
-          onFiltersToggle={() => setFiltersOpen(!filtersOpen)}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
+          filters={filters}
+          onFiltersChange={setFilters}
         />
       </div>
 

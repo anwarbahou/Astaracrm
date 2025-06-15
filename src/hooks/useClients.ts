@@ -155,7 +155,6 @@ export const useClients = () => {
     const [addClientOpen, setAddClientOpen] = useState(false);
     const [selectedClient, setSelectedClient] = useState<Client | null>(null);
     const [profileModalOpen, setProfileModalOpen] = useState(false);
-    const [filtersOpen, setFiltersOpen] = useState(false);
     const [filters, setFilters] = useState({
         owner: '',
         stage: '',
@@ -188,8 +187,6 @@ export const useClients = () => {
         selectedClient,
         profileModalOpen,
         setProfileModalOpen,
-        filtersOpen,
-        setFiltersOpen,
         filters,
         setFilters,
         handleClientClick,

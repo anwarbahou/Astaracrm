@@ -11,10 +11,8 @@ i18n
   .init({
     fallbackLng: 'en',
     debug: false,
-    ns: ['app', 'dashboard', 'clients', 'contacts', 'deals', 'notes', 'common', 'data', 'modals', 'activityLogs'],
-    defaultNS: 'app',
     backend: {
-      loadPath: '/locales/{{lng}}/{{ns}}.json',
+      loadPath: '/locales/{{lng}}/translation.json',
     },
     detection: {
       order: ['localStorage', 'navigator'],

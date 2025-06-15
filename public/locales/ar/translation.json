@@ -1,3 +1,4 @@
+
 {
   "app": {
     "sidebar": {
@@ -449,6 +450,32 @@
         "description": "تمت إضافة العميل بنجاح."
       }
     }
+  },
+  "addClientModal": {
+    "title": "إضافة عميل جديد",
+    "profilePicture": "الصورة الشخصية",
+    "uploadPhoto": "تحميل صورة",
+    "uploadHint": "اختياري: قم بتحميل شعار العميل أو صورته",
+    "nameLabel": "اسم الشركة/العميل *",
+    "namePlaceholder": "أدخل اسم الشركة",
+    "emailLabel": "البريد الإلكتروني *",
+    "emailPlaceholder": "contact@company.com",
+    "phoneLabel": "رقم الهاتف",
+    "phonePlaceholder": "+966 5X XXX XXXX",
+    "countryLabel": "البلد/الموقع",
+    "countryPlaceholder": "اختر الموقع",
+    "industryLabel": "الصناعة",
+    "industryPlaceholder": "اختر الصناعة",
+    "stageLabel": "مرحلة العميل",
+    "stagePlaceholder": "اختر المرحلة",
+    "ownerLabel": "مالك الحساب",
+    "ownerPlaceholder": "تعيين مالك للحساب",
+    "tagsLabel": "الوسوم",
+    "tagsPlaceholder": "أضف وسمًا واضغط على إدخال",
+    "addTagButton": "إضافة",
+    "notesLabel": "ملاحظات",
+    "notesPlaceholder": "أضف أي ملاحظات إضافية حول هذا العميل...",
+    "submitButton": "إضافة عميل"
   },
     "addContactModal": {
         "title": "إضافة جهة اتصال جديدة",

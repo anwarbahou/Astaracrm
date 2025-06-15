@@ -1,4 +1,3 @@
-
 {
   "app": {
     "sidebar": {
@@ -479,6 +478,7 @@
     "ownerPlaceholder": "Assign an account owner",
     "tagsLabel": "Tags",
     "tagsPlaceholder": "Add a tag and press Enter",
+    "addTagButton": "Add",
     "notesLabel": "Notes",
     "notesPlaceholder": "Add any additional notes about this client...",
     "submitButton": "Add Client"

@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { X, Filter } from 'lucide-react';
+import { X, Filter, ChevronUp } from 'lucide-react';
 
 interface ClientFilters {
   owner: string;
@@ -35,6 +36,7 @@ interface ClientFiltersPanelProps {
 }
 
 export function ClientFiltersPanel({ isOpen, onClose, filters, onFiltersChange }: ClientFiltersPanelProps) {
+  const { t } = useTranslation();
   const [localFilters, setLocalFilters] = useState<ClientFilters>(filters);
 
   const handleApplyFilters = () => {
@@ -83,10 +85,10 @@ export function ClientFiltersPanel({ isOpen, onClose, filters, onFiltersChange }
         <CardTitle className="flex items-center justify-between">
           <span className="flex items-center gap-2">
             <Filter size={20} />
-            Advanced Filters
+            {t('clients.filtersPanel.title')}
           </span>
           <Button variant="ghost" size="sm" onClick={onClose}>
-            <X size={16} />
+            <ChevronUp size={16} />
           </Button>
         </CardTitle>
       </CardHeader>
@@ -94,16 +96,16 @@ export function ClientFiltersPanel({ isOpen, onClose, filters, onFiltersChange }
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Owner Filter */}
           <div>
-            <Label>Owner</Label>
+            <Label>{t('clients.filtersPanel.owner')}</Label>
             <Select
               value={localFilters.owner}
               onValueChange={(value) => setLocalFilters({ ...localFilters, owner: value === 'all' ? '' : value })}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select owner" />
+                <SelectValue placeholder={t('clients.filtersPanel.ownerPlaceholder')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Owners</SelectItem>
+                <SelectItem value="all">{t('clients.filtersPanel.allOwners')}</SelectItem>
                 <SelectItem value="John Smith">John Smith</SelectItem>
                 <SelectItem value="Sarah Johnson">Sarah Johnson</SelectItem>
                 <SelectItem value="Mike Wilson">Mike Wilson</SelectItem>
@@ -114,16 +116,16 @@ export function ClientFiltersPanel({ isOpen, onClose, filters, onFiltersChange }
 
           {/* Stage Filter */}
           <div>
-            <Label>Stage</Label>
+            <Label>{t('clients.filtersPanel.stage')}</Label>
             <Select
               value={localFilters.stage}
               onValueChange={(value) => setLocalFilters({ ...localFilters, stage: value === 'all' ? '' : value })}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select stage" />
+                <SelectValue placeholder={t('clients.filtersPanel.stagePlaceholder')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Stages</SelectItem>
+                <SelectItem value="all">{t('clients.filtersPanel.allStages')}</SelectItem>
                 <SelectItem value="Lead">Lead</SelectItem>
                 <SelectItem value="Prospect">Prospect</SelectItem>
                 <SelectItem value="Active">Active</SelectItem>
@@ -134,16 +136,16 @@ export function ClientFiltersPanel({ isOpen, onClose, filters, onFiltersChange }
 
           {/* Industry Filter */}
           <div>
-            <Label>Industry</Label>
+            <Label>{t('clients.filtersPanel.industry')}</Label>
             <Select
               value={localFilters.industry}
               onValueChange={(value) => setLocalFilters({ ...localFilters, industry: value === 'all' ? '' : value })}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select industry" />
+                <SelectValue placeholder={t('clients.filtersPanel.industryPlaceholder')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Industries</SelectItem>
+                <SelectItem value="all">{t('clients.filtersPanel.allIndustries')}</SelectItem>
                 <SelectItem value="Technology">Technology</SelectItem>
                 <SelectItem value="Healthcare">Healthcare</SelectItem>
                 <SelectItem value="Finance">Finance</SelectItem>
@@ -156,16 +158,16 @@ export function ClientFiltersPanel({ isOpen, onClose, filters, onFiltersChange }
 
           {/* Country Filter */}
           <div>
-            <Label>Location</Label>
+            <Label>{t('clients.filtersPanel.location')}</Label>
             <Select
               value={localFilters.country}
               onValueChange={(value) => setLocalFilters({ ...localFilters, country: value === 'all' ? '' : value })}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select location" />
+                <SelectValue placeholder={t('clients.filtersPanel.locationPlaceholder')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Locations</SelectItem>
+                <SelectItem value="all">{t('clients.filtersPanel.allLocations')}</SelectItem>
                 <SelectItem value="Morocco">Morocco</SelectItem>
                 <SelectItem value="France">France</SelectItem>
                 <SelectItem value="Spain">Spain</SelectItem>
@@ -177,16 +179,16 @@ export function ClientFiltersPanel({ isOpen, onClose, filters, onFiltersChange }
 
           {/* Status Filter */}
           <div>
-            <Label>Status</Label>
+            <Label>{t('clients.filtersPanel.status')}</Label>
             <Select
               value={localFilters.status}
               onValueChange={(value) => setLocalFilters({ ...localFilters, status: value === 'all' ? '' : value })}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select status" />
+                <SelectValue placeholder={t('clients.filtersPanel.statusPlaceholder')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="all">{t('clients.filtersPanel.allStatuses')}</SelectItem>
                 <SelectItem value="Active">Active</SelectItem>
                 <SelectItem value="Archived">Archived</SelectItem>
               </SelectContent>
@@ -195,11 +197,11 @@ export function ClientFiltersPanel({ isOpen, onClose, filters, onFiltersChange }
 
           {/* Tags Filter */}
           <div>
-            <Label>Tags</Label>
+            <Label>{t('clients.filtersPanel.tags')}</Label>
             <div className="space-y-2">
               <Select onValueChange={(value) => addTag(value)}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Add tag filter" />
+                  <SelectValue placeholder={t('clients.filtersPanel.addTag')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="VIP">VIP</SelectItem>
@@ -230,13 +232,13 @@ export function ClientFiltersPanel({ isOpen, onClose, filters, onFiltersChange }
 
         {/* Date Filters */}
         <div className="space-y-4">
-          <h4 className="font-medium">Date Ranges</h4>
+          <h4 className="font-medium">{t('clients.filtersPanel.dateRanges')}</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label>Date Created</Label>
+              <Label>{t('clients.filtersPanel.dateCreated')}</Label>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <Label className="text-xs text-muted-foreground">From</Label>
+                  <Label className="text-xs text-muted-foreground">{t('clients.filtersPanel.from')}</Label>
                   <Input
                     type="date"
                     value={localFilters.dateCreatedFrom}
@@ -244,7 +246,7 @@ export function ClientFiltersPanel({ isOpen, onClose, filters, onFiltersChange }
                   />
                 </div>
                 <div>
-                  <Label className="text-xs text-muted-foreground">To</Label>
+                  <Label className="text-xs text-muted-foreground">{t('clients.filtersPanel.to')}</Label>
                   <Input
                     type="date"
                     value={localFilters.dateCreatedTo}
@@ -255,10 +257,10 @@ export function ClientFiltersPanel({ isOpen, onClose, filters, onFiltersChange }
             </div>
 
             <div className="space-y-2">
-              <Label>Last Interaction</Label>
+              <Label>{t('clients.filtersPanel.lastInteraction')}</Label>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <Label className="text-xs text-muted-foreground">From</Label>
+                  <Label className="text-xs text-muted-foreground">{t('clients.filtersPanel.from')}</Label>
                   <Input
                     type="date"
                     value={localFilters.lastInteractionFrom}
@@ -266,7 +268,7 @@ export function ClientFiltersPanel({ isOpen, onClose, filters, onFiltersChange }
                   />
                 </div>
                 <div>
-                  <Label className="text-xs text-muted-foreground">To</Label>
+                  <Label className="text-xs text-muted-foreground">{t('clients.filtersPanel.to')}</Label>
                   <Input
                     type="date"
                     value={localFilters.lastInteractionTo}
@@ -281,10 +283,10 @@ export function ClientFiltersPanel({ isOpen, onClose, filters, onFiltersChange }
         {/* Action Buttons */}
         <div className="flex justify-end gap-2 pt-4 border-t">
           <Button variant="outline" onClick={handleClearFilters}>
-            Clear All
+            {t('clients.filtersPanel.clearAll')}
           </Button>
           <Button onClick={handleApplyFilters}>
-            Apply Filters
+            {t('clients.filtersPanel.apply')}
           </Button>
         </div>
       </CardContent>

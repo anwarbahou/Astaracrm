@@ -138,6 +138,33 @@
       "status": "Status",
       "rowsPerPage": "Rows per page:",
       "of": "{{start}}-{{end}} of {{total}}"
+    },
+    "filtersPanel": {
+      "title": "Advanced Filters",
+      "owner": "Owner",
+      "ownerPlaceholder": "Select owner",
+      "allOwners": "All Owners",
+      "stage": "Stage",
+      "stagePlaceholder": "Select stage",
+      "allStages": "All Stages",
+      "industry": "Industry",
+      "industryPlaceholder": "Select industry",
+      "allIndustries": "All Industries",
+      "location": "Location",
+      "locationPlaceholder": "Select location",
+      "allLocations": "All Locations",
+      "status": "Status",
+      "statusPlaceholder": "Select status",
+      "allStatuses": "All Status",
+      "tags": "Tags",
+      "addTag": "Add tag filter",
+      "dateRanges": "Date Ranges",
+      "dateCreated": "Date Created",
+      "from": "From",
+      "to": "To",
+      "lastInteraction": "Last Interaction",
+      "clearAll": "Clear All",
+      "apply": "Apply Filters"
     }
   },
   "contacts": {

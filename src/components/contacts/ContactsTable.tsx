@@ -1,7 +1,6 @@
-
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -11,7 +10,8 @@ import {
   Filter,
   ChevronLeft,
   ChevronRight,
-  ArrowUpDown
+  ArrowUpDown,
+  X,
 } from "lucide-react";
 import {
   Table,
@@ -28,6 +28,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 export interface Contact {
   id: number;
@@ -46,26 +49,289 @@ export interface Contact {
   notes?: string;
 }
 
+export interface ContactFilters {
+  company: string;
+  role: string;
+  country: string;
+  status: string;
+  tags: string[];
+  dateCreatedFrom: string;
+  dateCreatedTo: string;
+  lastContactedFrom: string;
+  lastContactedTo: string;
+}
+
 interface ContactsTableProps {
   contacts: Contact[];
   onContactClick: (contact: Contact) => void;
-  onFiltersToggle: () => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
+  filters: ContactFilters;
+  onFiltersChange: (filters: ContactFilters) => void;
 }
+
+const FilterSection: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
+  <div className="space-y-2">
+    <Label className="text-sm font-medium text-muted-foreground">{title}</Label>
+    {children}
+  </div>
+);
+
+const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: { filters: ContactFilters; onFiltersChange: (f: ContactFilters) => void; onClose: () => void }) => {
+  const { t } = useTranslation();
+  const [localFilters, setLocalFilters] = useState<ContactFilters>(filters);
+  const [showMore, setShowMore] = useState({
+    company: false,
+    role: false,
+    country: false,
+  });
+
+  const toggleShowMore = (section: keyof typeof showMore) => {
+    setShowMore(prev => ({ ...prev, [section]: !prev[section] }));
+  };
+
+  const companies = useMemo(() => ["Acme Corporation", "Tech Solutions Ltd", "Global Industries", "StartupXYZ", "Enterprise Corp", "Consulting Pro", "HealthCare Plus", "Retail Masters", "FinTech Solutions"], []);
+  const roles = useMemo(() => ["CEO", "CTO", "Procurement Manager", "Founder", "VP Sales", "Senior Consultant", "IT Director", "Operations Manager", "Product Manager"], []);
+  const countries = useMemo(() => ["Morocco", "France", "Spain", "USA", "UAE", "UK", "Germany", "Switzerland"], []);
+  const statuses = useMemo(() => ["Active", "Inactive"], []);
+  const availableTags = useMemo(() => ["Decision Maker", "VIP", "Technical", "Procurement", "Founder", "Startup", "Sales", "Consulting", "Healthcare", "Retail", "Operations", "Finance", "Product"], []);
+
+  const handleApplyFilters = () => {
+    onFiltersChange(localFilters);
+    onClose();
+  };
+
+  const handleClearFilters = () => {
+    const emptyFilters: ContactFilters = {
+      company: '',
+      role: '',
+      country: '',
+      status: '',
+      tags: [],
+      dateCreatedFrom: '',
+      dateCreatedTo: '',
+      lastContactedFrom: '',
+      lastContactedTo: '',
+    };
+    setLocalFilters(emptyFilters);
+    onFiltersChange(emptyFilters);
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    setLocalFilters({
+      ...localFilters,
+      tags: localFilters.tags.filter(tag => tag !== tagToRemove)
+    });
+  };
+
+  const addTag = (newTag: string) => {
+    if (newTag && !localFilters.tags.includes(newTag)) {
+      setLocalFilters({
+        ...localFilters,
+        tags: [...localFilters.tags, newTag]
+      });
+    }
+  };
+
+  return (
+    <Card className="w-[380px] bg-card border-border text-card-foreground shadow-lg">
+      <CardHeader className="border-b border-border p-4">
+        <CardTitle className="flex items-center justify-between text-lg text-foreground">
+          <span className="flex items-center gap-2">
+            <Filter size={20} />
+            {t('contacts.filtersPanel.title')}
+          </span>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleClearFilters}
+            className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground hover:bg-accent"
+          >
+            <X className="h-3 w-3 mr-1" />
+            {t('contacts.filtersPanel.clearAll')}
+          </Button>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-4 space-y-6 max-h-[calc(100vh-250px)] overflow-y-auto">
+        <div className="grid grid-cols-1 gap-6">
+          <FilterSection title={t('contacts.filtersPanel.company')}>
+            <RadioGroup value={localFilters.company} onValueChange={(value) => setLocalFilters({ ...localFilters, company: value })}>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="" id="company-all" />
+                <Label htmlFor="company-all" className="cursor-pointer">{t('contacts.filtersPanel.allCompanies')}</Label>
+              </div>
+              {(showMore.company ? companies : companies.slice(0, 3)).map(company => (
+                <div key={company} className="flex items-center space-x-2">
+                  <RadioGroupItem value={company} id={`company-${company}`} />
+                  <Label htmlFor={`company-${company}`} className="cursor-pointer">{company}</Label>
+                </div>
+              ))}
+            </RadioGroup>
+            {companies.length > 3 && (
+              <Button variant="link" size="sm" onClick={() => toggleShowMore('company')} className="p-0 h-auto text-blue-400 hover:text-blue-500 mt-2 justify-start">
+                {showMore.company ? 'Show Less' : 'Show More'}
+              </Button>
+            )}
+          </FilterSection>
+
+          <FilterSection title={t('contacts.filtersPanel.role')}>
+            <RadioGroup value={localFilters.role} onValueChange={(value) => setLocalFilters({ ...localFilters, role: value })}>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="" id="role-all" />
+                <Label htmlFor="role-all" className="cursor-pointer">{t('contacts.filtersPanel.allRoles')}</Label>
+              </div>
+              {(showMore.role ? roles : roles.slice(0, 3)).map(role => (
+                <div key={role} className="flex items-center space-x-2">
+                  <RadioGroupItem value={role} id={`role-${role}`} />
+                  <Label htmlFor={`role-${role}`} className="cursor-pointer">{role}</Label>
+                </div>
+              ))}
+            </RadioGroup>
+            {roles.length > 3 && (
+              <Button variant="link" size="sm" onClick={() => toggleShowMore('role')} className="p-0 h-auto text-blue-400 hover:text-blue-500 mt-2 justify-start">
+                {showMore.role ? 'Show Less' : 'Show More'}
+              </Button>
+            )}
+          </FilterSection>
+
+          <FilterSection title={t('contacts.filtersPanel.country')}>
+            <RadioGroup value={localFilters.country} onValueChange={(value) => setLocalFilters({ ...localFilters, country: value })}>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="" id="country-all" />
+                <Label htmlFor="country-all" className="cursor-pointer">{t('contacts.filtersPanel.allCountries')}</Label>
+              </div>
+              {(showMore.country ? countries : countries.slice(0, 3)).map(country => (
+                <div key={country} className="flex items-center space-x-2">
+                  <RadioGroupItem value={country} id={`country-${country}`} />
+                  <Label htmlFor={`country-${country}`} className="cursor-pointer">{country}</Label>
+                </div>
+              ))}
+            </RadioGroup>
+            {countries.length > 3 && (
+              <Button variant="link" size="sm" onClick={() => toggleShowMore('country')} className="p-0 h-auto text-blue-400 hover:text-blue-500 mt-2 justify-start">
+                {showMore.country ? 'Show Less' : 'Show More'}
+              </Button>
+            )}
+          </FilterSection>
+
+          <FilterSection title={t('contacts.filtersPanel.status')}>
+            <RadioGroup value={localFilters.status} onValueChange={(value) => setLocalFilters({ ...localFilters, status: value })}>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="" id="status-all" />
+                <Label htmlFor="status-all" className="cursor-pointer">{t('contacts.filtersPanel.allStatuses')}</Label>
+              </div>
+              {statuses.map(status => (
+                <div key={status} className="flex items-center space-x-2">
+                  <RadioGroupItem value={status} id={`status-${status}`} />
+                  <Label htmlFor={`status-${status}`} className="cursor-pointer">{status}</Label>
+                </div>
+              ))}
+            </RadioGroup>
+          </FilterSection>
+
+          <FilterSection title={t('contacts.filtersPanel.tags')}>
+            <div className="space-y-2">
+              <Select onValueChange={(value) => addTag(value)}>
+                <SelectTrigger className="bg-input border-input">
+                  <SelectValue placeholder={t('clients.filtersPanel.addTag')} />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border-border text-popover-foreground">
+                  {availableTags.map(tag => (
+                    <SelectItem key={tag} value={tag}>{tag}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {localFilters.tags.length > 0 && (
+                <div className="flex gap-1 flex-wrap">
+                  {localFilters.tags.map((tag, index) => (
+                    <Badge key={index} variant="secondary" className="gap-1">
+                      {tag}
+                      <X 
+                        size={12} 
+                        className="cursor-pointer hover:text-destructive"
+                        onClick={() => removeTag(tag)}
+                      />
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+          </FilterSection>
+
+          <FilterSection title={t('contacts.filtersPanel.createdDate')}>
+             <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label className="text-xs text-muted-foreground">{t('contacts.filtersPanel.from')}</Label>
+                <Input
+                  type="date"
+                  value={localFilters.dateCreatedFrom}
+                  onChange={(e) => setLocalFilters({ ...localFilters, dateCreatedFrom: e.target.value })}
+                  className="bg-input border-input"
+                />
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">{t('contacts.filtersPanel.to')}</Label>
+                <Input
+                  type="date"
+                  value={localFilters.dateCreatedTo}
+                  onChange={(e) => setLocalFilters({ ...localFilters, dateCreatedTo: e.target.value })}
+                  className="bg-input border-input"
+                />
+              </div>
+            </div>
+          </FilterSection>
+
+          <FilterSection title={t('contacts.filtersPanel.lastContacted')}>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label className="text-xs text-muted-foreground">{t('contacts.filtersPanel.from')}</Label>
+                <Input
+                  type="date"
+                  value={localFilters.lastContactedFrom}
+                  onChange={(e) => setLocalFilters({ ...localFilters, lastContactedFrom: e.target.value })}
+                  className="bg-input border-input"
+                />
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">{t('contacts.filtersPanel.to')}</Label>
+                <Input
+                  type="date"
+                  value={localFilters.lastContactedTo}
+                  onChange={(e) => setLocalFilters({ ...localFilters, lastContactedTo: e.target.value })}
+                  className="bg-input border-input"
+                />
+              </div>
+            </div>
+          </FilterSection>
+        </div>
+      </CardContent>
+      <CardFooter className="flex justify-end gap-2 p-4 border-t border-border">
+        <Button variant="outline" onClick={onClose}>
+          {t('common.cancel')}
+        </Button>
+        <Button onClick={handleApplyFilters} className="bg-blue-600 hover:bg-blue-700">
+          {t('clients.filtersPanel.apply')}
+        </Button>
+      </CardFooter>
+    </Card>
+  )
+}
+
 
 export function ContactsTable({ 
   contacts, 
   onContactClick, 
-  onFiltersToggle,
   searchQuery,
-  onSearchChange 
+  onSearchChange,
+  filters,
+  onFiltersChange,
 }: ContactsTableProps) {
   const { t } = useTranslation();
   const [sortField, setSortField] = useState<keyof Contact>('firstName');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -86,13 +352,30 @@ export function ContactsTable({
     }
   };
 
-  // Filter contacts based on search query
-  const filteredContacts = contacts.filter(contact =>
-    `${contact.firstName} ${contact.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    contact.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    contact.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    contact.role.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredContacts = useMemo(() => {
+    return contacts.filter(contact => {
+      const searchMatch =
+        searchQuery === '' ||
+        `${contact.firstName} ${contact.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        contact.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        contact.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        contact.role.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const companyMatch = !filters.company || contact.company === filters.company;
+      const roleMatch = !filters.role || contact.role === filters.role;
+      const countryMatch = !filters.country || contact.country === filters.country;
+      const statusMatch = !filters.status || contact.status === filters.status;
+      const tagsMatch = filters.tags.length === 0 || filters.tags.every(tag => contact.tags.includes(tag));
+      const createdFromMatch = !filters.dateCreatedFrom || new Date(contact.createdDate) >= new Date(filters.dateCreatedFrom);
+      const createdToMatch = !filters.dateCreatedTo || new Date(contact.createdDate) <= new Date(filters.dateCreatedTo);
+      
+      // Note: Filtering by 'last contacted' date is not implemented due to mock data format.
+      const lastContactedFromMatch = true; 
+      const lastContactedToMatch = true;
+
+      return searchMatch && companyMatch && roleMatch && countryMatch && statusMatch && tagsMatch && createdFromMatch && createdToMatch && lastContactedFromMatch && lastContactedToMatch;
+    });
+  }, [contacts, searchQuery, filters]);
 
   // Sort contacts
   const sortedContacts = [...filteredContacts].sort((a, b) => {
@@ -141,10 +424,17 @@ export function ContactsTable({
                 className="pl-10 w-80"
               />
             </div>
-            <Button variant="outline" className="gap-2" onClick={onFiltersToggle}>
-              <Filter size={16} />
-              {t('contacts.table.filtersButton')}
-            </Button>
+            <Popover open={filtersOpen} onOpenChange={setFiltersOpen}>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="gap-2">
+                  <Filter size={16} />
+                  {t('contacts.table.filtersButton')}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="end">
+                <FiltersPopoverContent filters={filters} onFiltersChange={onFiltersChange} onClose={() => setFiltersOpen(false)} />
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
       </CardHeader>

@@ -6,7 +6,6 @@ import { Plus } from "lucide-react";
 import { AddContactModal } from "@/components/modals/AddContactModal";
 import { ContactsTable, Contact } from "@/components/contacts/ContactsTable";
 import { ContactProfileModal } from "@/components/contacts/ContactProfileModal";
-import { ContactFiltersPanel } from "@/components/contacts/ContactFiltersPanel";
 
 export default function Contacts() {
   const { t } = useTranslation();
@@ -14,7 +13,6 @@ export default function Contacts() {
   const [addContactOpen, setAddContactOpen] = useState(false);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
-  const [filtersOpen, setFiltersOpen] = useState(false);
   const [filters, setFilters] = useState({
     company: '',
     role: '',
@@ -254,21 +252,14 @@ export default function Contacts() {
           </Card>
         </div>
 
-        {/* Filters Panel */}
-        <ContactFiltersPanel
-          isOpen={filtersOpen}
-          onClose={() => setFiltersOpen(false)}
-          filters={filters}
-          onFiltersChange={setFilters}
-        />
-
         {/* Contacts Table */}
         <ContactsTable
           contacts={contacts}
           onContactClick={handleContactClick}
-          onFiltersToggle={() => setFiltersOpen(!filtersOpen)}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
+          filters={filters}
+          onFiltersChange={setFilters}
         />
       </div>
 

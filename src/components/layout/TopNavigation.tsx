@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,7 @@ import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ThemeToggle } from "./ThemeToggle";
 import { buttonVariants, fadeVariants, springConfig } from "@/lib/animations";
 import { useTranslation } from "react-i18next";
+import { navigationItems } from "@/data/navigationData";
 
 export function TopNavigation() {
   const [quickAddOpen, setQuickAddOpen] = useState(false);
@@ -29,17 +31,43 @@ export function TopNavigation() {
   
   const getPageTitle = () => {
     const path = location.pathname;
-    const key = `topNav.pageTitle.${path.replace('/', '') || 'dashboard'}`;
-    if (path.startsWith("/clients")) return t("topNav.pageTitle.clients");
-    if (i18n.exists(key)) return t(key);
+
+    if (path === '/') {
+      return t('topNav.pageTitle.dashboard');
+    }
+
+    const currentNavItem = navigationItems
+      .filter(item => item.path !== '/' && path.startsWith(item.path))
+      .sort((a, b) => b.path.length - a.path.length)[0];
+
+    if (currentNavItem) {
+      const key = `topNav.pageTitle.${currentNavItem.labelKey}`;
+      if (i18n.exists(key)) {
+        return t(key);
+      }
+    }
+    
     return t("topNav.pageTitle.fallback");
   };
 
   const getPageDescription = () => {
     const path = location.pathname;
-    const key = `topNav.pageDescription.${path.replace('/', '') || 'dashboard'}`;
-     if (path.startsWith("/clients")) return t("topNav.pageDescription.clients");
-    if (i18n.exists(key)) return t(key);
+
+    if (path === '/') {
+      return t('topNav.pageDescription.dashboard');
+    }
+
+    const currentNavItem = navigationItems
+      .filter(item => item.path !== '/' && path.startsWith(item.path))
+      .sort((a, b) => b.path.length - a.path.length)[0];
+
+    if (currentNavItem) {
+      const key = `topNav.pageDescription.${currentNavItem.labelKey}`;
+      if (i18n.exists(key)) {
+        return t(key);
+      }
+    }
+
     return "";
   };
 

@@ -351,6 +351,8 @@
   },
   "deals": {
     "title": "الصفقات",
+    "description": "تتبع وإدارة مسار المبيعات بفعالية.",
+    "newDeal": "صفقة جديدة",
     "addDeal": "Add Deal",
     "searchPlaceholder": "البحث عن صفقات...",
     "filters": "الفلاتر",

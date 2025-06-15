@@ -358,6 +358,8 @@
   },
   "deals": {
     "title": "Deals",
+    "description": "Track and manage your sales pipeline effectively.",
+    "newDeal": "New Deal",
     "addDeal": "Add Deal",
     "searchPlaceholder": "Search deals...",
     "filters": "Filters",

@@ -227,7 +227,9 @@
       "createdTo": "تاريخ الإنشاء إلى",
       "lastContactedFrom": "آخر تواصل من",
       "lastContactedTo": "آخر تواصل إلى",
-      "tags": "الوسوم"
+      "tags": "الوسوم",
+      "showMore": "عرض المزيد",
+      "showLess": "عرض أقل"
     },
     "tags": {
       "decisionMaker": "صانع قرار",

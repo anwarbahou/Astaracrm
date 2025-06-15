@@ -226,7 +226,9 @@
       "createdTo": "Créé jusqu'au",
       "lastContactedFrom": "Dernier contact de",
       "lastContactedTo": "Dernier contact à",
-      "tags": "Étiquettes"
+      "tags": "Étiquettes",
+      "showMore": "Afficher plus",
+      "showLess": "Afficher moins"
     },
     "tags": {
       "decisionMaker": "Décideur",

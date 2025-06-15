@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -47,7 +46,8 @@ import {
   Phone,
   Mail,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  X
 } from "lucide-react";
 
 export function ResearchAssistant() {
@@ -275,31 +275,47 @@ export function ResearchAssistant() {
         </Button>
       </SheetTrigger>
       
-      <SheetContent side="right" className="w-full sm:max-w-3xl overflow-y-auto">
-        <SheetHeader className="pb-6">
-          <SheetTitle className="text-foreground text-xl flex items-center gap-2">
-            <Search className="text-purple-500" size={20} />
-            {t("researchAssistant.header.title")}
-          </SheetTitle>
-          <p className="text-muted-foreground text-sm">
-            {t("researchAssistant.header.description")}
-          </p>
+      <SheetContent side="right" className="w-full sm:max-w-4xl overflow-y-auto">
+        <SheetHeader className="pb-6 border-b">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-gradient-to-r from-purple-500/10 to-blue-500/10">
+                <Brain className="text-purple-500" size={24} />
+              </div>
+              <div>
+                <SheetTitle className="text-foreground text-xl">
+                  {t("researchAssistant.header.title")}
+                </SheetTitle>
+                <p className="text-muted-foreground text-sm mt-1">
+                  {t("researchAssistant.header.description")}
+                </p>
+              </div>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsOpen(false)}
+              className="h-8 w-8 p-0"
+            >
+              <X size={16} />
+            </Button>
+          </div>
         </SheetHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-6 mt-6">
           {/* Search Parameters */}
-          <div className="p-4 bg-muted/50 rounded-lg border">
+          <div className="p-6 bg-gradient-to-r from-muted/50 to-muted/30 rounded-lg border">
             <h3 className="text-foreground font-medium mb-4 flex items-center gap-2">
-              <Target size={16} />
+              <Target size={16} className="text-purple-500" />
               {t("researchAssistant.searchParams.title")}
             </h3>
 
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-foreground">{t("researchAssistant.searchParams.industry")}</Label>
+                  <Label className="text-foreground font-medium">{t("researchAssistant.searchParams.industry")}</Label>
                   <Select value={searchParams.industry} onValueChange={(value) => setSearchParams(prev => ({ ...prev, industry: value }))}>
-                    <SelectTrigger className="mt-1">
+                    <SelectTrigger className="mt-2">
                       <SelectValue placeholder={t("researchAssistant.searchParams.industryPlaceholder")} />
                     </SelectTrigger>
                     <SelectContent>
@@ -316,9 +332,9 @@ export function ResearchAssistant() {
                 </div>
 
                 <div>
-                  <Label className="text-foreground">{t("researchAssistant.searchParams.country")}</Label>
+                  <Label className="text-foreground font-medium">{t("researchAssistant.searchParams.country")}</Label>
                   <Select value={searchParams.country} onValueChange={(value) => setSearchParams(prev => ({ ...prev, country: value }))}>
-                    <SelectTrigger className="mt-1">
+                    <SelectTrigger className="mt-2">
                       <SelectValue placeholder={t("researchAssistant.searchParams.countryPlaceholder")} />
                     </SelectTrigger>
                     <SelectContent>
@@ -337,9 +353,9 @@ export function ResearchAssistant() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-foreground">{t("researchAssistant.searchParams.jobTitle")}</Label>
+                  <Label className="text-foreground font-medium">{t("researchAssistant.searchParams.jobTitle")}</Label>
                   <Select value={searchParams.jobTitle} onValueChange={(value) => setSearchParams(prev => ({ ...prev, jobTitle: value }))}>
-                    <SelectTrigger className="mt-1">
+                    <SelectTrigger className="mt-2">
                       <SelectValue placeholder={t("researchAssistant.searchParams.jobTitlePlaceholder")} />
                     </SelectTrigger>
                     <SelectContent>
@@ -355,9 +371,9 @@ export function ResearchAssistant() {
                 </div>
 
                 <div>
-                  <Label className="text-foreground">{t("researchAssistant.searchParams.companySize")}</Label>
+                  <Label className="text-foreground font-medium">{t("researchAssistant.searchParams.companySize")}</Label>
                   <Select value={searchParams.companySize} onValueChange={(value) => setSearchParams(prev => ({ ...prev, companySize: value }))}>
-                    <SelectTrigger className="mt-1">
+                    <SelectTrigger className="mt-2">
                       <SelectValue placeholder={t("researchAssistant.searchParams.companySizePlaceholder")} />
                     </SelectTrigger>
                     <SelectContent>
@@ -373,35 +389,38 @@ export function ResearchAssistant() {
               </div>
 
               <div>
-                <Label className="text-foreground">{t("researchAssistant.searchParams.keywords")}</Label>
+                <Label className="text-foreground font-medium">{t("researchAssistant.searchParams.keywords")}</Label>
                 <Textarea
                   placeholder={t("researchAssistant.searchParams.keywordsPlaceholder")}
                   value={searchParams.keywords}
                   onChange={(e) => setSearchParams(prev => ({ ...prev, keywords: e.target.value }))}
-                  className="mt-1"
+                  className="mt-2"
                   rows={3}
                 />
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-3 p-4 bg-muted/50 rounded-lg">
                 <Switch
                   id="deep-enrichment"
                   checked={searchParams.deepEnrichment}
                   onCheckedChange={(checked) => setSearchParams(prev => ({ ...prev, deepEnrichment: checked }))}
                 />
-                <Label htmlFor="deep-enrichment" className="text-foreground text-sm">
-                  {t("researchAssistant.searchParams.deepEnrichment")}
-                </Label>
+                <div className="flex-1">
+                  <Label htmlFor="deep-enrichment" className="text-foreground text-sm font-medium">
+                    {t("researchAssistant.searchParams.deepEnrichment")}
+                  </Label>
+                  <p className="text-muted-foreground text-xs mt-1">
+                    {t("researchAssistant.searchParams.deepEnrichmentDescription")}
+                  </p>
+                </div>
               </div>
-              <p className="text-muted-foreground text-xs">
-                {t("researchAssistant.searchParams.deepEnrichmentDescription")}
-              </p>
             </div>
 
             <Button
               onClick={handleGenerate}
               disabled={isGenerating}
               className="w-full mt-6 gap-2 bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700"
+              size="lg"
             >
               {isGenerating ? (
                 <>
@@ -420,21 +439,30 @@ export function ResearchAssistant() {
           {/* Results */}
           <div className="space-y-4">
             {isGenerating ? (
-              <div className="p-8 bg-muted/50 rounded-lg border text-center">
-                <RefreshCw size={32} className="mx-auto text-purple-500 animate-spin mb-4" />
+              <div className="p-8 bg-gradient-to-r from-muted/50 to-muted/30 rounded-lg border text-center">
+                <RefreshCw size={48} className="mx-auto text-purple-500 animate-spin mb-4" />
                 <h3 className="text-foreground font-medium mb-2">{t("researchAssistant.generation.title")}</h3>
-                <p className="text-muted-foreground">{t("researchAssistant.generation.description")}</p>
-                <div className="mt-4 space-y-2">
-                  <div className="text-sm text-muted-foreground">• {t("researchAssistant.generation.step1")}</div>
-                  <div className="text-sm text-muted-foreground">• {t("researchAssistant.generation.step2")}</div>
-                  <div className="text-sm text-muted-foreground">• {t("researchAssistant.generation.step3")}</div>
+                <p className="text-muted-foreground mb-6">{t("researchAssistant.generation.description")}</p>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+                    {t("researchAssistant.generation.step1")}
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                    {t("researchAssistant.generation.step2")}
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    {t("researchAssistant.generation.step3")}
+                  </div>
                 </div>
               </div>
             ) : allGeneratedLeads.length > 0 ? (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <h3 className="text-foreground font-medium flex items-center gap-2">
-                    <Users size={16} />
+                    <Users size={16} className="text-purple-500" />
                     {t("researchAssistant.results.title", { count: allGeneratedLeads.length })}
                   </h3>
                   <div className="flex gap-2">
@@ -451,11 +479,16 @@ export function ResearchAssistant() {
 
                 <div className="space-y-3">
                   {currentLeads.map((lead) => (
-                    <div key={lead.id} className="p-4 bg-muted/50 rounded-lg border hover:bg-muted/70 transition-colors">
+                    <div key={lead.id} className="p-6 bg-gradient-to-r from-muted/50 to-muted/30 rounded-lg border hover:from-muted/70 hover:to-muted/50 transition-all duration-200">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <div>
+                          <div className="flex items-center gap-3 mb-3">
+                            <div className="w-10 h-10 bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-full flex items-center justify-center">
+                              <span className="text-purple-600 font-medium text-sm">
+                                {lead.name.split(' ').map((n: string) => n[0]).join('')}
+                              </span>
+                            </div>
+                            <div className="flex-1">
                               <h4 className="text-foreground font-medium">{lead.name}</h4>
                               <p className="text-muted-foreground text-sm">{lead.position} {t("common.at")} {lead.company}</p>
                             </div>
@@ -463,49 +496,55 @@ export function ResearchAssistant() {
                               lead.score >= 90 ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' :
                               lead.score >= 80 ? 'bg-green-500/10 text-green-600 border-green-500/20' :
                               'bg-amber-500/10 text-amber-600 border-amber-500/20'
-                            } border`}>
+                            } border font-medium`}>
                               {t("researchAssistant.results.score")}: {lead.score}
                             </Badge>
                           </div>
 
-                          <div className="grid grid-cols-1 gap-2 text-sm mb-3">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm mb-4">
                             <div className="flex items-center gap-2 text-muted-foreground">
-                              <MapPin size={12} />
+                              <MapPin size={14} className="text-purple-500" />
                               {lead.location}
                             </div>
                             <div className="flex items-center gap-2 text-muted-foreground">
-                              <Building size={12} />
+                              <Building size={14} className="text-blue-500" />
                               {lead.companySize}
                             </div>
                             <div className="flex items-center gap-2 text-muted-foreground">
-                              <Mail size={12} />
-                              {lead.email}
+                              <Mail size={14} className="text-green-500" />
+                              <a href={`mailto:${lead.email}`} className="hover:text-foreground transition-colors">
+                                {lead.email}
+                              </a>
                             </div>
                             <div className="flex items-center gap-2 text-muted-foreground">
-                              <Phone size={12} />
-                              {lead.phone}
+                              <Phone size={14} className="text-orange-500" />
+                              <a href={`tel:${lead.phone}`} className="hover:text-foreground transition-colors">
+                                {lead.phone}
+                              </a>
                             </div>
                           </div>
 
                           {searchParams.deepEnrichment && lead.enrichment && (
-                            <div className="pt-3 border-t">
-                              <div className="flex items-center gap-2 mb-2">
+                            <div className="pt-4 border-t border-muted">
+                              <div className="flex items-center gap-2 mb-3">
                                 <Zap size={14} className="text-purple-500" />
                                 <span className="text-purple-600 text-sm font-medium">{t("researchAssistant.results.enrichmentData")}</span>
                               </div>
-                              <div className="grid grid-cols-1 gap-2 text-xs">
-                                <div>
-                                  <span className="text-muted-foreground">{t("researchAssistant.results.funding")}:</span>
-                                  <span className="text-foreground ml-2">{lead.enrichment.fundingStage}</span>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs mb-3">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-muted-foreground font-medium">{t("researchAssistant.results.funding")}:</span>
+                                  <Badge variant="outline" className="text-xs">
+                                    {lead.enrichment.fundingStage}
+                                  </Badge>
                                 </div>
-                                <div>
-                                  <span className="text-muted-foreground">{t("researchAssistant.results.news")}:</span>
-                                  <span className="text-foreground ml-2">{lead.enrichment.recentNews}</span>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-muted-foreground font-medium">{t("researchAssistant.results.news")}:</span>
+                                  <span className="text-foreground text-xs">{lead.enrichment.recentNews}</span>
                                 </div>
                               </div>
-                              <div className="flex gap-1 flex-wrap mt-2">
+                              <div className="flex gap-1 flex-wrap">
                                 {lead.enrichment.technologies.map((tech: string) => (
-                                  <Badge key={tech} variant="outline" className="text-xs">
+                                  <Badge key={tech} variant="secondary" className="text-xs">
                                     {tech}
                                   </Badge>
                                 ))}
@@ -564,7 +603,7 @@ export function ResearchAssistant() {
 
                 {/* Results Summary */}
                 {allGeneratedLeads.length > 0 && (
-                  <div className="text-center text-sm text-muted-foreground mt-4">
+                  <div className="text-center text-sm text-muted-foreground mt-4 p-3 bg-muted/30 rounded-lg">
                     {t("researchAssistant.pagination.showing", {
                       start: startIndex + 1,
                       end: Math.min(endIndex, allGeneratedLeads.length),
@@ -574,8 +613,8 @@ export function ResearchAssistant() {
                 )}
               </div>
             ) : (
-              <div className="p-8 bg-muted/50 rounded-lg border text-center">
-                <Brain size={32} className="mx-auto text-purple-500 mb-4" />
+              <div className="p-12 bg-gradient-to-r from-muted/50 to-muted/30 rounded-lg border text-center">
+                <Brain size={48} className="mx-auto text-purple-500 mb-4" />
                 <h3 className="text-foreground font-medium mb-2">{t("researchAssistant.empty.title")}</h3>
                 <p className="text-muted-foreground">{t("researchAssistant.empty.description")}</p>
               </div>

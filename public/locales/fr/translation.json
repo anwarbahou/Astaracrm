@@ -419,7 +419,11 @@
     "delete": "Supprimer",
     "close": "Fermer",
     "showMore": "Afficher plus",
-    "showLess": "Afficher moins"
+    "showLess": "Afficher moins",
+    "unassigned": "Non assigné",
+    "sendEmail": "Envoyer un e-mail",
+    "callLead": "Appeler le lead",
+    "assign": "Assigner"
   },
   "countries": {
     "morocco": "Maroc",

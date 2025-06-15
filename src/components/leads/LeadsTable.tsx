@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Table,
   TableBody,
@@ -66,6 +67,7 @@ interface LeadsTableProps {
 }
 
 export function LeadsTable({ leads, onLeadClick, selectedLeads, onSelectionChange }: LeadsTableProps) {
+  const { t } = useTranslation();
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const leadsPerPage = 10;
@@ -145,18 +147,18 @@ export function LeadsTable({ leads, onLeadClick, selectedLeads, onSelectionChang
                   onClick={() => handleSort('name')}
                   className="text-white hover:bg-white/10 gap-1"
                 >
-                  Lead Name
+                  {t("aiLeads.table.headers.leadName")}
                   <ArrowUpDown size={14} />
                 </Button>
               </TableHead>
-              <TableHead className="text-white">Company</TableHead>
+              <TableHead className="text-white">{t("aiLeads.table.headers.company")}</TableHead>
               <TableHead className="text-white">
                 <Button
                   variant="ghost"
                   onClick={() => handleSort('status')}
                   className="text-white hover:bg-white/10 gap-1"
                 >
-                  Status
+                  {t("aiLeads.table.headers.status")}
                   <ArrowUpDown size={14} />
                 </Button>
               </TableHead>
@@ -166,20 +168,20 @@ export function LeadsTable({ leads, onLeadClick, selectedLeads, onSelectionChang
                   onClick={() => handleSort('score')}
                   className="text-white hover:bg-white/10 gap-1"
                 >
-                  AI Score
+                  {t("aiLeads.table.headers.aiScore")}
                   <ArrowUpDown size={14} />
                 </Button>
               </TableHead>
-              <TableHead className="text-white">Source</TableHead>
-              <TableHead className="text-white">Tags</TableHead>
-              <TableHead className="text-white">Assigned To</TableHead>
+              <TableHead className="text-white">{t("aiLeads.table.headers.source")}</TableHead>
+              <TableHead className="text-white">{t("aiLeads.table.headers.tags")}</TableHead>
+              <TableHead className="text-white">{t("aiLeads.table.headers.assignedTo")}</TableHead>
               <TableHead className="text-white">
                 <Button
                   variant="ghost"
                   onClick={() => handleSort('dateAdded')}
                   className="text-white hover:bg-white/10 gap-1"
                 >
-                  Date Added
+                  {t("aiLeads.table.headers.dateAdded")}
                   <ArrowUpDown size={14} />
                 </Button>
               </TableHead>
@@ -227,7 +229,7 @@ export function LeadsTable({ leads, onLeadClick, selectedLeads, onSelectionChang
                 </TableCell>
                 <TableCell>
                   <Badge className={`${getStatusColor(lead.status)} border`}>
-                    {lead.status}
+                    {t(`aiLeads.table.statusLabels.${lead.status.toLowerCase()}`)}
                   </Badge>
                 </TableCell>
                 <TableCell>
@@ -264,7 +266,7 @@ export function LeadsTable({ leads, onLeadClick, selectedLeads, onSelectionChang
                   </div>
                 </TableCell>
                 <TableCell>
-                  <div className="text-sm text-gray-300">{lead.assignedTo || "Unassigned"}</div>
+                  <div className="text-sm text-gray-300">{lead.assignedTo || t("common.unassigned")}</div>
                 </TableCell>
                 <TableCell>
                   <div className="text-sm text-gray-300">{lead.dateAdded}</div>
@@ -279,23 +281,23 @@ export function LeadsTable({ leads, onLeadClick, selectedLeads, onSelectionChang
                     <DropdownMenuContent className="bg-slate-800 border-white/20">
                       <DropdownMenuItem className="text-white hover:bg-white/10 gap-2">
                         <Mail size={14} />
-                        Send Email
+                        {t("common.sendEmail")}
                       </DropdownMenuItem>
                       <DropdownMenuItem className="text-white hover:bg-white/10 gap-2">
                         <Phone size={14} />
-                        Call Lead
+                        {t("common.callLead")}
                       </DropdownMenuItem>
                       <DropdownMenuItem className="text-white hover:bg-white/10 gap-2">
                         <UserPlus size={14} />
-                        Assign
+                        {t("common.assign")}
                       </DropdownMenuItem>
                       <DropdownMenuItem className="text-white hover:bg-white/10 gap-2">
                         <Edit size={14} />
-                        Edit
+                        {t("common.edit")}
                       </DropdownMenuItem>
                       <DropdownMenuItem className="text-red-400 hover:bg-red-500/20 gap-2">
                         <Trash2 size={14} />
-                        Delete
+                        {t("common.delete")}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>

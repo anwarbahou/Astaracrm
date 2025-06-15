@@ -529,7 +529,11 @@
     "no": "No",
     "ok": "OK",
     "showMore": "Show More",
-    "showLess": "Show Less"
+    "showLess": "Show Less",
+    "unassigned": "Unassigned",
+    "sendEmail": "Send Email",
+    "callLead": "Call Lead",
+    "assign": "Assign"
   },
   "countries": {
     "morocco": "Morocco",

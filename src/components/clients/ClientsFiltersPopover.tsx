@@ -37,12 +37,45 @@ export const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: Fil
     setShowMore(prev => ({ ...prev, [section]: !prev[section] }));
   };
 
-  const owners = useMemo(() => ["John Smith", "Sarah Johnson", "Mike Wilson", "Emily Davis"], []);
-  const stages = useMemo(() => ["Lead", "Prospect", "Active", "Inactive"], []);
-  const industries = useMemo(() => ["Technology", "Healthcare", "Finance", "Manufacturing", "Retail", "Consulting"], []);
-  const countries = useMemo(() => ["Morocco", "France", "Spain", "USA", "UAE"], []);
-  const statuses = useMemo(() => ["Active", "Archived"], []);
-  const availableTags = useMemo(() => ["VIP", "High Value", "Enterprise", "SMB", "Urgent", "International"], []);
+  const owners = useMemo(() => [
+    { value: "John Smith", label: "John Smith" },
+    { value: "Sarah Johnson", label: "Sarah Johnson" },
+    { value: "Mike Wilson", label: "Mike Wilson" },
+    { value: "Emily Davis", label: "Emily Davis" }
+  ], []);
+  const stages = useMemo(() => [
+    { value: "Lead", label: t('clients.stages.lead') },
+    { value: "Prospect", label: t('clients.stages.prospect') },
+    { value: "Active", label: t('clients.stages.active') },
+    { value: "Inactive", label: t('clients.stages.inactive') }
+  ], [t]);
+  const industries = useMemo(() => [
+    { value: "Technology", label: t('clients.industries.technology') },
+    { value: "Healthcare", label: t('clients.industries.healthcare') },
+    { value: "Finance", label: t('clients.industries.finance') },
+    { value: "Manufacturing", label: t('clients.industries.manufacturing') },
+    { value: "Retail", label: t('clients.industries.retail') },
+    { value: "Consulting", label: t('clients.industries.consulting') }
+  ], [t]);
+  const countries = useMemo(() => [
+    { value: "Morocco", label: t('clients.countries.morocco') },
+    { value: "France", label: t('clients.countries.france') },
+    { value: "Spain", label: t('clients.countries.spain') },
+    { value: "USA", label: t('clients.countries.usa') },
+    { value: "UAE", label: t('clients.countries.uae') }
+  ], [t]);
+  const statuses = useMemo(() => [
+      { value: 'Active', label: t('clients.statuses.active') },
+      { value: 'Archived', label: t('clients.statuses.archived') },
+  ], [t]);
+  const availableTags = useMemo(() => [
+    { value: "VIP", label: t('clients.tags.vip') },
+    { value: "High Value", label: t('clients.tags.high_value') },
+    { value: "Enterprise", label: t('clients.tags.enterprise') },
+    { value: "SMB", label: t('clients.tags.smb') },
+    { value: "Urgent", label: t('clients.tags.urgent') },
+    { value: "International", label: t('clients.tags.international') }
+  ], [t]);
 
   const handleApplyFilters = () => {
     onFiltersChange(localFilters);
@@ -88,7 +121,7 @@ export const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: Fil
         <CardTitle className="flex items-center justify-between text-lg text-foreground">
           <span className="flex items-center gap-2">
             <Filter size={20} />
-            {t('clients.filtersPanel.title')}
+            {t('clients.filtersPanel.advancedTitle')}
           </span>
           <Button
             variant="ghost"
@@ -110,9 +143,9 @@ export const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: Fil
                 <Label htmlFor="owner-all" className="cursor-pointer">{t('clients.filtersPanel.allOwners')}</Label>
               </div>
               {(showMore.owner ? owners : owners.slice(0, 3)).map(owner => (
-                <div key={owner} className="flex items-center space-x-2">
-                  <RadioGroupItem value={owner} id={`owner-${owner}`} />
-                  <Label htmlFor={`owner-${owner}`} className="cursor-pointer">{owner}</Label>
+                <div key={owner.value} className="flex items-center space-x-2">
+                  <RadioGroupItem value={owner.value} id={`owner-${owner.value}`} />
+                  <Label htmlFor={`owner-${owner.value}`} className="cursor-pointer">{owner.label}</Label>
                 </div>
               ))}
             </RadioGroup>
@@ -130,9 +163,9 @@ export const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: Fil
                 <Label htmlFor="stage-all" className="cursor-pointer">{t('clients.filtersPanel.allStages')}</Label>
               </div>
               {(showMore.stage ? stages : stages.slice(0, 3)).map(stage => (
-                <div key={stage} className="flex items-center space-x-2">
-                  <RadioGroupItem value={stage} id={`stage-${stage}`} />
-                  <Label htmlFor={`stage-${stage}`} className="cursor-pointer">{stage}</Label>
+                <div key={stage.value} className="flex items-center space-x-2">
+                  <RadioGroupItem value={stage.value} id={`stage-${stage.value}`} />
+                  <Label htmlFor={`stage-${stage.value}`} className="cursor-pointer">{stage.label}</Label>
                 </div>
               ))}
             </RadioGroup>
@@ -150,9 +183,9 @@ export const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: Fil
                 <Label htmlFor="industry-all" className="cursor-pointer">{t('clients.filtersPanel.allIndustries')}</Label>
               </div>
               {(showMore.industry ? industries : industries.slice(0, 3)).map(industry => (
-                <div key={industry} className="flex items-center space-x-2">
-                  <RadioGroupItem value={industry} id={`industry-${industry}`} />
-                  <Label htmlFor={`industry-${industry}`} className="cursor-pointer">{industry}</Label>
+                <div key={industry.value} className="flex items-center space-x-2">
+                  <RadioGroupItem value={industry.value} id={`industry-${industry.value}`} />
+                  <Label htmlFor={`industry-${industry.value}`} className="cursor-pointer">{industry.label}</Label>
                 </div>
               ))}
             </RadioGroup>
@@ -170,9 +203,9 @@ export const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: Fil
                 <Label htmlFor="country-all" className="cursor-pointer">{t('clients.filtersPanel.allLocations')}</Label>
               </div>
               {(showMore.country ? countries : countries.slice(0, 3)).map(country => (
-                <div key={country} className="flex items-center space-x-2">
-                  <RadioGroupItem value={country} id={`country-${country}`} />
-                  <Label htmlFor={`country-${country}`} className="cursor-pointer">{country}</Label>
+                <div key={country.value} className="flex items-center space-x-2">
+                  <RadioGroupItem value={country.value} id={`country-${country.value}`} />
+                  <Label htmlFor={`country-${country.value}`} className="cursor-pointer">{country.label}</Label>
                 </div>
               ))}
             </RadioGroup>
@@ -190,9 +223,9 @@ export const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: Fil
                 <Label htmlFor="status-all" className="cursor-pointer">{t('clients.filtersPanel.allStatuses')}</Label>
               </div>
               {statuses.map(status => (
-                <div key={status} className="flex items-center space-x-2">
-                  <RadioGroupItem value={status} id={`status-${status}`} />
-                  <Label htmlFor={`status-${status}`} className="cursor-pointer">{status}</Label>
+                <div key={status.value} className="flex items-center space-x-2">
+                  <RadioGroupItem value={status.value} id={`status-${status.value}`} />
+                  <Label htmlFor={`status-${status.value}`} className="cursor-pointer">{status.label}</Label>
                 </div>
               ))}
             </RadioGroup>
@@ -206,22 +239,25 @@ export const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: Fil
                 </SelectTrigger>
                 <SelectContent className="bg-popover border-border text-popover-foreground">
                   {availableTags.map(tag => (
-                    <SelectItem key={tag} value={tag}>{tag}</SelectItem>
+                    <SelectItem key={tag.value} value={tag.value}>{tag.label}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               {localFilters.tags.length > 0 && (
                 <div className="flex gap-1 flex-wrap">
-                  {localFilters.tags.map((tag, index) => (
-                    <Badge key={index} variant="secondary" className="gap-1">
-                      {tag}
-                      <X 
-                        size={12} 
-                        className="cursor-pointer hover:text-destructive"
-                        onClick={() => removeTag(tag)}
-                      />
-                    </Badge>
-                  ))}
+                  {localFilters.tags.map((tag, index) => {
+                    const tagObject = availableTags.find(t => t.value === tag);
+                    return (
+                      <Badge key={index} variant="secondary" className="gap-1">
+                        {tagObject ? tagObject.label : tag}
+                        <X 
+                          size={12} 
+                          className="cursor-pointer hover:text-destructive"
+                          onClick={() => removeTag(tag)}
+                        />
+                      </Badge>
+                    )
+                  })}
                 </div>
               )}
             </div>

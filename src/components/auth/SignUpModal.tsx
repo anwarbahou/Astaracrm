@@ -26,7 +26,7 @@ interface SignUpModalProps {
 }
 
 export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onOpenChange, onSignUp, onSwitchToSignIn }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('landingPage');
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
     defaultValues: { fullName: '', companyName: '', email: '', password: '' },
@@ -43,8 +43,8 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onOpenChange, 
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="text-2xl">{t('landingPage.auth.signUpTitle')}</DialogTitle>
-          <DialogDescription>{t('landingPage.auth.signUpSubtitle')}</DialogDescription>
+          <DialogTitle className="text-2xl">{t('auth.signUpTitle')}</DialogTitle>
+          <DialogDescription>{t('auth.signUpSubtitle')}</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -53,7 +53,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onOpenChange, 
               name="fullName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('landingPage.auth.nameLabel')}</FormLabel>
+                  <FormLabel>{t('auth.nameLabel')}</FormLabel>
                   <FormControl>
                     <Input placeholder="John Doe" {...field} />
                   </FormControl>
@@ -66,7 +66,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onOpenChange, 
               name="companyName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('landingPage.auth.companyNameLabel')}</FormLabel>
+                  <FormLabel>{t('auth.companyNameLabel')}</FormLabel>
                   <FormControl>
                     <Input placeholder="Acme Inc." {...field} />
                   </FormControl>
@@ -79,7 +79,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onOpenChange, 
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('landingPage.auth.emailLabel')}</FormLabel>
+                  <FormLabel>{t('auth.emailLabel')}</FormLabel>
                   <FormControl>
                     <Input placeholder="john@example.com" {...field} />
                   </FormControl>
@@ -92,7 +92,7 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onOpenChange, 
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('landingPage.auth.passwordLabel')}</FormLabel>
+                  <FormLabel>{t('auth.passwordLabel')}</FormLabel>
                   <FormControl>
                     <Input type="password" placeholder="••••••••" {...field} />
                   </FormControl>
@@ -105,29 +105,29 @@ export const SignUpModal: React.FC<SignUpModalProps> = ({ isOpen, onOpenChange, 
               name="region"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('landingPage.auth.regionLabel')}</FormLabel>
+                  <FormLabel>{t('auth.regionLabel')}</FormLabel>
                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={t('landingPage.auth.regionPlaceholder')} />
+                        <SelectValue placeholder={t('auth.regionPlaceholder')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="mena">{t('landingPage.auth.regionMena')}</SelectItem>
-                      <SelectItem value="europe">{t('landingPage.auth.regionEurope')}</SelectItem>
+                      <SelectItem value="mena">{t('auth.regionMena')}</SelectItem>
+                      <SelectItem value="europe">{t('auth.regionEurope')}</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full">{t('landingPage.auth.signUpButton')}</Button>
+            <Button type="submit" className="w-full">{t('auth.signUpButton')}</Button>
           </form>
         </Form>
         <div className="text-center text-sm text-muted-foreground">
-          {t('landingPage.auth.hasAccount')}{' '}
+          {t('auth.hasAccount')}{' '}
           <Button variant="link" className="p-0 h-auto" onClick={onSwitchToSignIn}>
-            {t('landingPage.auth.signInHere')}
+            {t('auth.signInHere')}
           </Button>
         </div>
       </DialogContent>

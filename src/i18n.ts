@@ -18,7 +18,7 @@ i18n
     fallbackLng: 'en',
     debug: false,
     ns: namespaces,
-    defaultNS: namespaces,
+    defaultNS: 'common',
     backend: {
       loadPath: '/locales/{{lng}}/{{ns}}.json',
     },

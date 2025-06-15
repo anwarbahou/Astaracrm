@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -22,7 +21,7 @@ interface SignInModalProps {
 }
 
 export const SignInModal: React.FC<SignInModalProps> = ({ isOpen, onOpenChange, onSignIn, onSwitchToSignUp }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('landingPage');
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
     defaultValues: { email: '', password: '' },
@@ -39,8 +38,8 @@ export const SignInModal: React.FC<SignInModalProps> = ({ isOpen, onOpenChange, 
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="text-2xl">{t('landingPage.auth.signInTitle')}</DialogTitle>
-          <DialogDescription>{t('landingPage.auth.signInSubtitle')}</DialogDescription>
+          <DialogTitle className="text-2xl">{t('auth.signInTitle')}</DialogTitle>
+          <DialogDescription>{t('auth.signInSubtitle')}</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -49,7 +48,7 @@ export const SignInModal: React.FC<SignInModalProps> = ({ isOpen, onOpenChange, 
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('landingPage.auth.emailLabel')}</FormLabel>
+                  <FormLabel>{t('auth.emailLabel')}</FormLabel>
                   <FormControl>
                     <Input placeholder="john@example.com" {...field} />
                   </FormControl>
@@ -62,7 +61,7 @@ export const SignInModal: React.FC<SignInModalProps> = ({ isOpen, onOpenChange, 
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('landingPage.auth.passwordLabel')}</FormLabel>
+                  <FormLabel>{t('auth.passwordLabel')}</FormLabel>
                   <FormControl>
                     <Input type="password" placeholder="••••••••" {...field} />
                   </FormControl>
@@ -72,16 +71,16 @@ export const SignInModal: React.FC<SignInModalProps> = ({ isOpen, onOpenChange, 
             />
             <div className="flex justify-end">
               <Button type="button" variant="link" className="p-0 h-auto text-sm">
-                {t('landingPage.auth.forgotPassword')}
+                {t('auth.forgotPassword')}
               </Button>
             </div>
-            <Button type="submit" className="w-full">{t('landingPage.auth.signInButton')}</Button>
+            <Button type="submit" className="w-full">{t('auth.signInButton')}</Button>
           </form>
         </Form>
         <div className="text-center text-sm text-muted-foreground">
-          {t('landingPage.auth.noAccount')}{' '}
+          {t('auth.noAccount')}{' '}
           <Button variant="link" className="p-0 h-auto" onClick={onSwitchToSignUp}>
-            {t('landingPage.auth.signUpHere')}
+            {t('auth.signUpHere')}
           </Button>
         </div>
       </DialogContent>

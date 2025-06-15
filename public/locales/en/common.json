@@ -1,13 +1,11 @@
 
 {
-  "common": {
-    "add": "Add",
-    "cancel": "Cancel",
-    "save": "Save",
-    "edit": "Edit",
-    "delete": "Delete",
-    "close": "Close",
-    "showMore": "Show more",
-    "showLess": "Show less"
-  }
+  "add": "Add",
+  "cancel": "Cancel",
+  "save": "Save",
+  "edit": "Edit",
+  "delete": "Delete",
+  "close": "Close",
+  "showMore": "Show more",
+  "showLess": "Show less"
 }

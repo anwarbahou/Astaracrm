@@ -1,12 +1,10 @@
 
 {
-  "countries": {
-    "morocco": "Morocco",
-    "france": "France",
-    "spain": "Spain",
-    "usa": "USA",
-    "uae": "UAE",
-    "uk": "UK",
-    "germany": "Germany"
-  }
+  "morocco": "Morocco",
+  "france": "France",
+  "spain": "Spain",
+  "usa": "USA",
+  "uae": "UAE",
+  "uk": "UK",
+  "germany": "Germany"
 }

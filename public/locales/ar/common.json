@@ -1,13 +1,11 @@
 
 {
-  "common": {
-    "add": "إضافة",
-    "cancel": "إلغاء",
-    "save": "حفظ",
-    "edit": "تعديل",
-    "delete": "حذف",
-    "close": "إغلاق",
-    "showMore": "عرض المزيد",
-    "showLess": "عرض أقل"
-  }
+  "add": "إضافة",
+  "cancel": "إلغاء",
+  "save": "حفظ",
+  "edit": "تعديل",
+  "delete": "حذف",
+  "close": "إغلاق",
+  "showMore": "عرض المزيد",
+  "showLess": "عرض أقل"
 }

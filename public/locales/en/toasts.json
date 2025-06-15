@@ -1,11 +1,9 @@
 
 {
-  "toasts": {
-    "addClient": {
-      "success": {
-        "title": "Success!",
-        "description": "Client added successfully."
-      }
+  "addClient": {
+    "success": {
+      "title": "Success!",
+      "description": "Client added successfully."
     }
   }
 }

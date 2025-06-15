@@ -1,9 +1,7 @@
 
 {
-  "clientStages": {
-    "lead": "عميل محتمل",
-    "prospect": "مرشح",
-    "active": "نشط",
-    "inactive": "غير نشط"
-  }
+  "lead": "عميل محتمل",
+  "prospect": "مرشح",
+  "active": "نشط",
+  "inactive": "غير نشط"
 }

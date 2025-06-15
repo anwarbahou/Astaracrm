@@ -4,7 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 export const CredibilitySection = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('landingPage');
   
   const partnerLogos = ['TechCrunch', 'Forbes', 'FastCompany', 'Inc.', 'Wired'];
 
@@ -12,13 +12,13 @@ export const CredibilitySection = () => {
     <section className="py-12 md:py-24 bg-secondary">
       <div className="container mx-auto px-4 text-center">
         <h2 className="text-3xl font-bold tracking-tight md:text-4xl mb-4">
-          {t('landingPage.credibility.title')}
+          {t('credibility.title')}
         </h2>
         <div className="max-w-3xl mx-auto mt-8">
             <Card className="bg-background text-left shadow-lg">
                 <CardContent className="p-8">
                     <p className="text-lg md:text-xl font-medium text-foreground mb-6">
-                        {t('landingPage.credibility.testimonial')}
+                        {t('credibility.testimonial')}
                     </p>
                     <div className="flex items-center">
                         <Avatar>
@@ -26,7 +26,7 @@ export const CredibilitySection = () => {
                             <AvatarFallback>AK</AvatarFallback>
                         </Avatar>
                         <div className="ml-4">
-                            <p className="font-semibold">{t('landingPage.credibility.author')}</p>
+                            <p className="font-semibold">{t('credibility.author')}</p>
                             <p className="text-sm text-muted-foreground">Tech Innovate</p>
                         </div>
                     </div>

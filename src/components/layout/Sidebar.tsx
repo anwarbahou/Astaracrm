@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
@@ -45,7 +46,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
           )}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          aria-label={isCollapsed ? t('sidebar.expand') : t('sidebar.collapse')}
+          aria-label={isCollapsed ? t('app.sidebar.expand') : t('app.sidebar.collapse')}
         >
           {isRtl ? (
             isCollapsed ? (
@@ -115,8 +116,8 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                     isCollapsed ? "justify-center" : "",
                     isActive && "bg-muted text-foreground"
                   )}
-                  title={isCollapsed ? t(item.labelKey) : undefined}
-                  aria-label={isCollapsed ? t(item.labelKey) : undefined}
+                  title={isCollapsed ? t(`app.sidebar.${item.labelKey}`) : undefined}
+                  aria-label={isCollapsed ? t(`app.sidebar.${item.labelKey}`) : undefined}
                 >
                   {/* Active indicator */}
                   {isActive && (
@@ -152,7 +153,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                           isActive ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"
                         )}
                       >
-                        {t(item.labelKey)}
+                        {t(`app.sidebar.${item.labelKey}`)}
                       </motion.span>
                     )}
                   </AnimatePresence>
@@ -160,7 +161,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                   {/* Tooltip for collapsed state */}
                   {isCollapsed && (
                     <div className="absolute left-full ml-2 px-2 py-1 bg-popover text-popover-foreground text-xs rounded-md opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-50 border border-border shadow-md">
-                      {t(item.labelKey)}
+                      {t(`app.sidebar.${item.labelKey}`)}
                     </div>
                   )}
                 </Link>

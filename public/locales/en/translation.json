@@ -1,3 +1,4 @@
+
 {
   "app": {
     "sidebar": {
@@ -373,23 +374,23 @@
       "pipelineValue": "Pipeline Value",
       "won": "Deals Won",
       "avgSize": "Avg. Deal Size",
-      "vsLastMonth": "{{change}} from last month"
+      "vsLastMonth": "{{change}} vs last month"
     },
     "toasts": {
       "moved": {
-        "title": "Deal Moved",
-        "description": "Moved deal to {{stage}} stage"
+        "title": "Deal moved",
+        "description": "Deal moved to {{stage}} stage"
       },
       "updated": {
-        "title": "Deal Updated",
-        "description": "Deal updated successfully"
+        "title": "Deal updated",
+        "description": "Deal has been successfully updated"
       },
       "deleted": {
-        "title": "Deal Deleted",
-        "description": "Deal deleted successfully"
+        "title": "Deal deleted",
+        "description": "Deal has been successfully deleted"
       },
       "created": {
-        "title": "Deal Created",
+        "title": "Deal created",
         "description": "New deal added to {{stage}} stage"
       }
     },
@@ -403,7 +404,7 @@
       "noDeals": "No deals in this stage."
     },
     "filtersDropdown": {
-      "title": "Filter Deals",
+      "title": "Filter deals",
       "clear": "Clear",
       "stagesLabel": "Stages",
       "ownersLabel": "Owners",
@@ -417,7 +418,7 @@
     "filtersPanel": {
       "sourcesLabel": "Sources",
       "clearAll": "Clear All",
-      "apply": "Apply Filters"
+      "apply": "Apply"
     },
     "sources": {
       "website": "Website",
@@ -448,13 +449,13 @@
       "title": "Filter Notes",
       "sortBy": {
         "label": "Sort by",
-        "modified": "Last modified",
-        "created": "Date created",
+        "modified": "Last Modified",
+        "created": "Date Created",
         "title": "Title"
       },
       "type": {
         "label": "Type",
-        "all": "All types"
+        "all": "All Types"
       },
       "visibility": {
         "label": "Visibility",
@@ -487,9 +488,9 @@
       "contentLabel": "Content",
       "contentPlaceholder": "Write your note content...",
       "pinNote": "Pin this note",
-      "setReminder": "Set a reminder",
-      "reminderDate": "Reminder date",
-      "selectDate": "Select a date",
+      "setReminder": "Set reminder",
+      "reminderDate": "Reminder Date",
+      "selectDate": "Select date",
       "attachmentsLabel": "Attachments",
       "attachmentsPlaceholder": "Drag and drop files here or click to browse",
       "updateButton": "Update Note",
@@ -507,29 +508,14 @@
     }
   },
   "common": {
-    "save": "Save",
+    "add": "Add",
     "cancel": "Cancel",
+    "save": "Save",
     "edit": "Edit",
     "delete": "Delete",
-    "add": "Add",
-    "search": "Search",
-    "filter": "Filter",
-    "clear": "Clear",
-    "apply": "Apply",
     "close": "Close",
-    "back": "Back",
-    "next": "Next",
-    "previous": "Previous",
-    "loading": "Loading...",
-    "error": "Error",
-    "success": "Success",
-    "warning": "Warning",
-    "info": "Info",
-    "yes": "Yes",
-    "no": "No",
-    "ok": "OK",
-    "showMore": "Show More",
-    "showLess": "Show Less",
+    "showMore": "Show more",
+    "showLess": "Show less",
     "unassigned": "Unassigned",
     "sendEmail": "Send Email",
     "callLead": "Call Lead",
@@ -539,9 +525,9 @@
     "morocco": "Morocco",
     "france": "France",
     "spain": "Spain",
-    "usa": "USA",
-    "uae": "UAE",
-    "uk": "UK",
+    "usa": "United States",
+    "uae": "United Arab Emirates",
+    "uk": "United Kingdom",
     "germany": "Germany"
   },
   "industries": {
@@ -573,27 +559,25 @@
     "title": "Add New Client",
     "profilePicture": "Profile Picture",
     "uploadPhoto": "Upload Photo",
-    "uploadHint": "Optional: Upload the client's logo or picture",
+    "uploadHint": "Optional: Upload client logo or photo",
     "nameLabel": "Company/Client Name *",
     "namePlaceholder": "Enter company name",
     "emailLabel": "Email Address *",
     "emailPlaceholder": "contact@company.com",
     "phoneLabel": "Phone Number",
-    "phonePlaceholder": "+1 555 123 4567",
+    "phonePlaceholder": "+1 (555) 123-4567",
     "countryLabel": "Country/Location",
-    "countryPlaceholder": "Select a location",
+    "countryPlaceholder": "Select location",
     "industryLabel": "Industry",
-    "industryPlaceholder": "Select an industry",
+    "industryPlaceholder": "Select industry",
     "stageLabel": "Client Stage",
-    "stagePlaceholder": "Select a stage",
+    "stagePlaceholder": "Select stage",
     "ownerLabel": "Account Owner",
-    "ownerPlaceholder": "Assign an account owner",
+    "ownerPlaceholder": "Assign account owner",
     "tagsLabel": "Tags",
-    "tagsPlaceholder": "Add a tag and press Enter",
-    "addTagButton": "Add",
+    "tagsPlaceholder": "Add tag and press Enter",
     "notesLabel": "Notes",
-    "notesPlaceholder": "Add any additional notes about this client...",
-    "submitButton": "Add Client"
+    "notesPlaceholder": "Add additional notes about this client..."
   },
   "addContactModal": {
     "title": "Add New Contact",
@@ -617,35 +601,13 @@
     "statusLabel": "Status",
     "statusPlaceholder": "Select status",
     "tagsLabel": "Tags",
-    "tagsPlaceholder": "Add a tag and press Enter",
+    "tagsPlaceholder": "Add tag and press Enter",
     "addTagButton": "Add",
     "notesLabel": "Notes",
-    "notesPlaceholder": "Add any additional notes about this contact...",
+    "notesPlaceholder": "Add additional notes about this contact...",
     "submitButton": "Add Contact",
     "successTitle": "Success!",
     "successDescription": "Contact added successfully."
-  },
-  "addDealModal": {
-    "title": "Add New Deal",
-    "description": "Create a new deal in your sales pipeline",
-    "dealNameLabel": "Deal Name *",
-    "dealNamePlaceholder": "Enter deal name",
-    "clientLabel": "Client *",
-    "clientPlaceholder": "Enter client name",
-    "valueLabel": "Value (MAD) *",
-    "stageLabel": "Stage",
-    "stagePlaceholder": "Select stage",
-    "probabilityLabel": "Probability (%)",
-    "expectedCloseDateLabel": "Expected Close Date *",
-    "sourceLabel": "Source",
-    "sourcePlaceholder": "e.g., Website, Referral, Cold Call",
-    "ownerLabel": "Owner",
-    "ownerPlaceholder": "Select owner",
-    "priorityLabel": "Priority",
-    "priorityPlaceholder": "Select priority",
-    "notesLabel": "Notes",
-    "notesPlaceholder": "Add any additional notes about this deal...",
-    "submitButton": "Create Deal"
   },
   "aiLeads": {
     "title": "AI Lead Intelligence",
@@ -664,12 +626,12 @@
       "title": "AI Insights & Recommendations",
       "hotLeads": "🎯 4 hot leads ready for immediate contact",
       "bestSource": "🚀 Best source: LinkedIn Morocco AI",
-      "recommendation": "💡 Recommended: Follow up on Enterprise prospects within 2h",
+      "recommendation": "💡 Recommended: Follow up Enterprise prospects within 2h",
       "pipelineRevenue": "📈 Pipeline revenue +45% vs last month",
       "activeCampaigns": "🎉 8 active campaigns generating qualified leads",
-      "aiAutomation": "⚡ AI automation: 19h saved this week",
-      "highIntentLeads": "🔥 High-intent leads +28% this week",
-      "avgDealSize": "💼 Average deal size: 195,000 MAD",
+      "aiAutomation": "⚡ AI Automation: 19h saved this week",
+      "highIntentLeads": "🔥 High intent leads +28% this week",
+      "avgDealSize": "💼 Average deal size: $195,000",
       "conversionRate": "📊 Conversion rate improved to 38.7%"
     },
     "recommendation": {
@@ -745,6 +707,97 @@
       "froids": "Cold",
       "tiedesWarm": "Warm",
       "chauds": "Hot"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "researchAssistant": {
+      "title": "Research Assistant",
+      "modalTitle": "AI Research Assistant - MENA & Europe",
+      "searchParameters": "Search Parameters",
+      "industry": "Industry",
+      "industryPlaceholder": "Select an industry...",
+      "countryRegion": "Country/Region",
+      "countryPlaceholder": "Select a country...",
+      "jobTitle": "Job Title/Position",
+      "jobTitlePlaceholder": "Select a position...",
+      "companySize": "Company Size",
+      "companySizePlaceholder": "Select a size...",
+      "additionalKeywords": "Additional Keywords",
+      "keywordsPlaceholder": "Additional criteria, technologies, etc...",
+      "advancedEnrichment": "Advanced Enrichment",
+      "enrichmentDescription": "Include social profiles, funding data, and technology stack",
+      "generating": "Generating...",
+      "generateLeads": "Generate Leads",
+      "searchInProgress": "AI Search in Progress",
+      "searchDescription": "Analyzing databases and enriching profiles...",
+      "searchSteps": {
+        "linkedin": "Searching LinkedIn MENA profiles",
+        "companyData": "Analyzing company data",
+        "enrichment": "Enriching contact information"
+      },
+      "leadsGenerated": "Leads Generated ({{count}})",
+      "refine": "Refine",
+      "exportToCRM": "Export to CRM",
+      "at": "at",
+      "score": "Score",
+      "enrichmentData": "Enrichment Data",
+      "funding": "Funding",
+      "news": "News",
+      "readyToGenerate": "Ready to Generate Leads",
+      "configureAndGenerate": "Configure your search parameters and click \"Generate Leads\" to start the AI search.",
+      "industries": {
+        "techAI": "Tech & AI",
+        "fintech": "Fintech",
+        "ecommerce": "E-commerce",
+        "tourism": "Tourism",
+        "realEstate": "Real Estate",
+        "education": "Education",
+        "healthcare": "Healthcare"
+      },
+      "countries": {
+        "morocco": "Morocco",
+        "uae": "United Arab Emirates",
+        "saudi": "Saudi Arabia",
+        "egypt": "Egypt",
+        "jordan": "Jordan",
+        "lebanon": "Lebanon",
+        "tunisia": "Tunisia",
+        "france": "France",
+        "spain": "Spain"
+      },
+      "jobTitles": {
+        "ceo": "CEO",
+        "director": "General Director",
+        "cto": "CTO",
+        "cmo": "CMO",
+        "marketingDirector": "Marketing Director",
+        "salesDirector": "Sales Director",
+        "founder": "Founder"
+      },
+      "companySizes": {
+        "micro": "1-10 employees",
+        "small": "11-50 employees",
+        "medium": "51-200 employees",
+        "large": "201-500 employees",
+        "enterprise": "1000+ employees"
+      },
+      "mockLeads": {
+        "director": "General Director",
+        "cio": "Chief Innovation Officer",
+        "ceoFounder": "CEO & Founder"
+      },
+      "fundingStages": {
+        "seriesA": "Series A",
+        "seriesB": "Series B",
+        "seed": "Seed"
+      },
+      "news": {
+        "funding": "15M MAD funding round",
+        "expansion": "Expansion to North Africa",
+        "partnership": "Partnership with Bank of Africa"
+      }
     }
   }
 }

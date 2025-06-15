@@ -1,3 +1,4 @@
+
 {
   "app": {
     "sidebar": {
@@ -611,6 +612,97 @@
       "froids": "Froids",
       "tiedesWarm": "Tièdes",
       "chauds": "Chauds"
+    },
+    "pagination": {
+      "previous": "Précédent",
+      "next": "Suivant"
+    },
+    "researchAssistant": {
+      "title": "Assistant de recherche",
+      "modalTitle": "Assistant Recherche IA - MENA & Europe",
+      "searchParameters": "Paramètres de Recherche",
+      "industry": "Secteur d'Activité",
+      "industryPlaceholder": "Sélectionner un secteur...",
+      "countryRegion": "Pays/Région",
+      "countryPlaceholder": "Sélectionner un pays...",
+      "jobTitle": "Poste/Fonction",
+      "jobTitlePlaceholder": "Sélectionner un poste...",
+      "companySize": "Taille Entreprise",
+      "companySizePlaceholder": "Sélectionner une taille...",
+      "additionalKeywords": "Mots-clés Additionnels",
+      "keywordsPlaceholder": "Critères supplémentaires, technologies, etc...",
+      "advancedEnrichment": "Enrichissement Avancé",
+      "enrichmentDescription": "Inclure profils sociaux, données de financement, et stack technologique",
+      "generating": "Génération en cours...",
+      "generateLeads": "Générer des Leads",
+      "searchInProgress": "Recherche IA en Cours",
+      "searchDescription": "Analyse des bases de données et enrichissement des profils...",
+      "searchSteps": {
+        "linkedin": "Recherche profils LinkedIn MENA",
+        "companyData": "Analyse données entreprises",
+        "enrichment": "Enrichissement informations contact"
+      },
+      "leadsGenerated": "Leads Générés ({{count}})",
+      "refine": "Affiner",
+      "exportToCRM": "Exporter vers CRM",
+      "at": "chez",
+      "score": "Score",
+      "enrichmentData": "Données Enrichissement",
+      "funding": "Financement",
+      "news": "Actualités",
+      "readyToGenerate": "Prêt à Générer des Leads",
+      "configureAndGenerate": "Configurez vos paramètres de recherche et cliquez sur \"Générer des Leads\" pour démarrer la recherche IA.",
+      "industries": {
+        "techAI": "Tech & IA",
+        "fintech": "Fintech",
+        "ecommerce": "E-commerce",
+        "tourism": "Tourisme",
+        "realEstate": "Immobilier",
+        "education": "Éducation",
+        "healthcare": "Santé"
+      },
+      "countries": {
+        "morocco": "Maroc",
+        "uae": "Émirats Arabes Unis",
+        "saudi": "Arabie Saoudite",
+        "egypt": "Égypte",
+        "jordan": "Jordanie",
+        "lebanon": "Liban",
+        "tunisia": "Tunisie",
+        "france": "France",
+        "spain": "Espagne"
+      },
+      "jobTitles": {
+        "ceo": "PDG/CEO",
+        "director": "Directeur Général",
+        "cto": "CTO",
+        "cmo": "CMO",
+        "marketingDirector": "Directeur Marketing",
+        "salesDirector": "Directeur Commercial",
+        "founder": "Fondateur"
+      },
+      "companySizes": {
+        "micro": "1-10 employés",
+        "small": "11-50 employés",
+        "medium": "51-200 employés",
+        "large": "201-500 employés",
+        "enterprise": "1000+ employés"
+      },
+      "mockLeads": {
+        "director": "Directeur Général",
+        "cio": "Directrice Innovation",
+        "ceoFounder": "PDG & Fondateur"
+      },
+      "fundingStages": {
+        "seriesA": "Série A",
+        "seriesB": "Série B",
+        "seed": "Seed"
+      },
+      "news": {
+        "funding": "Levée de fonds 15M MAD",
+        "expansion": "Expansion vers l'Afrique du Nord",
+        "partnership": "Partenariat avec Bank of Africa"
+      }
     }
   }
 }

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -317,7 +316,9 @@ export function LeadsTable({ leads, onLeadClick, selectedLeads, onSelectionChang
                 href="#" 
                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                 className="text-white hover:bg-white/10 border-white/20"
-              />
+              >
+                {t("aiLeads.pagination.previous")}
+              </PaginationPrevious>
             </PaginationItem>
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <PaginationItem key={page}>
@@ -336,7 +337,9 @@ export function LeadsTable({ leads, onLeadClick, selectedLeads, onSelectionChang
                 href="#" 
                 onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                 className="text-white hover:bg-white/10 border-white/20"
-              />
+              >
+                {t("aiLeads.pagination.next")}
+              </PaginationNext>
             </PaginationItem>
           </PaginationContent>
         </Pagination>

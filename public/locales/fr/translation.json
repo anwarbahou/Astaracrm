@@ -1,4 +1,3 @@
-
 {
   "app": {
     "sidebar": {
@@ -81,7 +80,6 @@
     "activeClients": "Clients actifs",
     "dealsInPipeline": "Affaires en cours",
     "tasksDueToday": "Tâches pour aujourd'hui",
-    "vsLastMonth": "vs le mois dernier",
     "vsYesterday": "vs hier",
     "recentDeals": "Affaires récentes",
     "upcomingTasks": "Tâches à venir",
@@ -102,7 +100,9 @@
       "followUp": "Suivi avec Acme Corp",
       "prepareProposal": "Préparer la proposition pour Tech Solutions",
       "scheduleDemo": "Planifier un appel de démo",
-      "sendContract": "Envoyer le contrat à Global Industries"
+      "sendContract": "Envoyer le contrat à Global Industries",
+      "dueToday": "Aujourd'hui",
+      "dueTomorrow": "Demain"
     },
     "mockActivities": {
       "newDeal": "Nouvelle affaire créée",

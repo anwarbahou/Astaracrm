@@ -80,7 +80,6 @@
     "activeClients": "Active Clients",
     "dealsInPipeline": "Deals in Pipeline",
     "tasksDueToday": "Tasks for Today",
-    "vsLastMonth": "vs last month",
     "vsYesterday": "vs yesterday",
     "recentDeals": "Recent Deals",
     "upcomingTasks": "Upcoming Tasks",
@@ -101,7 +100,9 @@
       "followUp": "Follow up with Acme Corp",
       "prepareProposal": "Prepare proposal for Tech Solutions",
       "scheduleDemo": "Schedule demo call",
-      "sendContract": "Send contract to Global Industries"
+      "sendContract": "Send contract to Global Industries",
+      "dueToday": "Due today",
+      "dueTomorrow": "Due tomorrow"
     },
     "mockActivities": {
       "newDeal": "New deal created",

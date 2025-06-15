@@ -15,6 +15,9 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AddClientModal } from "@/components/modals/AddClientModal";
 import { AddContactModal } from "@/components/modals/AddContactModal";
+import { format, isToday, isTomorrow } from 'date-fns';
+import { fr } from 'date-fns/locale/fr';
+import { arSA } from 'date-fns/locale/ar-SA';
 
 export default function Dashboard() {
   const { t, i18n } = useTranslation();
@@ -60,11 +63,15 @@ export default function Dashboard() {
     { id: 4, client: "StartupXYZ", value: "52,000 MAD", status: t("dashboard.status.discovery"), probability: 40 }
   ];
 
+  const taskDate = new Date();
+  const tomorrow = new Date(taskDate);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
   const upcomingTasks = [
-    { id: 1, title: t("dashboard.mockTasks.followUp"), due: t("dashboard.mockTasks.dueToday"), priority: "high" },
-    { id: 2, title: t("dashboard.mockTasks.prepareProposal"), due: t("dashboard.mockTasks.dueTomorrow"), priority: "medium" },
-    { id: 3, title: t("dashboard.mockTasks.scheduleDemo"), due: "Dec 16, 3:00 PM", priority: "low" },
-    { id: 4, title: t("dashboard.mockTasks.sendContract"), due: "Dec 17, 9:00 AM", priority: "high" }
+    { id: 1, title: t("dashboard.mockTasks.followUp"), due: taskDate, priority: "high" },
+    { id: 2, title: t("dashboard.mockTasks.prepareProposal"), due: tomorrow, priority: "medium" },
+    { id: 3, title: t("dashboard.mockTasks.scheduleDemo"), due: new Date(2025, 11, 16, 15, 0), priority: "low" },
+    { id: 4, title: t("dashboard.mockTasks.sendContract"), due: new Date(2025, 11, 17, 9, 0), priority: "high" }
   ];
 
   const formatTimeAgo = (date: Date) => {
@@ -129,6 +136,28 @@ export default function Dashboard() {
       default: return priority;
     }
   }
+
+  const getLocale = () => {
+    const lang = i18n.language;
+    if (lang.startsWith('fr')) return fr;
+    if (lang.startsWith('ar')) return arSA;
+    return undefined;
+  };
+
+  const formatDueDate = (date: Date) => {
+    if (isToday(date)) {
+      return t("dashboard.mockTasks.dueToday");
+    }
+    if (isTomorrow(date)) {
+      return t("dashboard.mockTasks.dueTomorrow");
+    }
+    try {
+      return format(date, 'PPp', { locale: getLocale() });
+    } catch (e) {
+      console.error("Error formatting date:", e);
+      return date.toLocaleDateString();
+    }
+  };
 
   return (
     <>
@@ -232,7 +261,7 @@ export default function Dashboard() {
                   <div key={task.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
                     <div className="flex-1">
                       <p className="font-medium">{task.title}</p>
-                      <p className="text-sm text-muted-foreground">{task.due}</p>
+                      <p className="text-sm text-muted-foreground">{formatDueDate(task.due)}</p>
                     </div>
                     <Badge className={getPriorityColor(task.priority)} variant="secondary">
                       {getPriorityText(task.priority)}

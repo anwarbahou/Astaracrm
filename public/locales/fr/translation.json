@@ -311,7 +311,9 @@
       "valueLabel": "Plage de valeurs (€)",
       "minPlaceholder": "Min",
       "maxPlaceholder": "Max",
-      "dateLabel": "Date de clôture prévue"
+      "dateLabel": "Date de clôture prévue",
+      "showMore": "Afficher plus",
+      "showLess": "Afficher moins"
     },
     "filtersPanel": {
       "sourcesLabel": "Sources",

@@ -228,7 +228,9 @@
       "createdDate": "Date de création",
       "lastContacted": "Dernier contact",
       "from": "De",
-      "to": "À"
+      "to": "À",
+      "showMore": "Afficher plus",
+      "showLess": "Afficher moins"
     },
     "tags": {
       "decisionMaker": "Décideur",

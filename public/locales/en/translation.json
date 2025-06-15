@@ -230,7 +230,9 @@
       "createdDate": "Date Created",
       "lastContacted": "Last Contacted",
       "from": "From",
-      "to": "To"
+      "to": "To",
+      "showMore": "Show more",
+      "showLess": "Show less"
     },
     "tags": {
       "decisionMaker": "Decision Maker",
@@ -417,7 +419,9 @@
     "save": "Save",
     "edit": "Edit",
     "delete": "Delete",
-    "close": "Close"
+    "close": "Close",
+    "showMore": "Show more",
+    "showLess": "Show less"
   },
   "countries": {
     "morocco": "Morocco",

@@ -164,7 +164,9 @@
       "to": "إلى",
       "lastInteraction": "آخر تفاعل",
       "clearAll": "مسح الكل",
-      "apply": "تطبيق الفلاتر"
+      "apply": "تطبيق الفلاتر",
+      "showMore": "عرض المزيد",
+      "showLess": "عرض أقل"
     },
     "statuses": {
       "active": "نشط",
@@ -221,7 +223,9 @@
       "createdDate": "تاريخ الإنشاء",
       "lastContacted": "آخر تواصل",
       "from": "من",
-      "to": "إلى"
+      "to": "إلى",
+      "showMore": "عرض المزيد",
+      "showLess": "عرض أقل"
     },
     "tags": {
       "decisionMaker": "صانع قرار",
@@ -475,197 +479,5 @@
         "submitButton": "إضافة جهة اتصال",
         "successTitle": "نجاح!",
         "successDescription": "تمت إضافة جهة الاتصال بنجاح."
-    },
-  "deals": {
-    "title": "الصفقات",
-    "addDeal": "إضافة صفقة",
-    "searchPlaceholder": "البحث عن صفقات...",
-    "filters": "الفلاتر",
-    "stages": {
-      "prospect": "عميل محتمل",
-      "lead": "مهتم",
-      "qualified": "مؤهل",
-      "negotiation": "تفاوض",
-      "won-lost": "فوز / خسارة"
-    },
-    "stats": {
-      "active": "الصفقات النشطة",
-      "pipelineValue": "قيمة خط الأنابيب",
-      "won": "الصفقات المربوحة",
-      "avgSize": "متوسط حجم الصفقة",
-      "vsLastMonth": "{{change}} عن الشهر الماضي"
-    },
-    "toasts": {
-      "moved": {
-        "title": "تم نقل الصفقة",
-        "description": "تم نقل الصفقة إلى مرحلة {{stage}}"
-      },
-      "updated": {
-        "title": "تم تحديث الصفقة",
-        "description": "تم تحديث الصفقة بنجاح"
-      },
-      "deleted": {
-        "title": "تم حذف الصفقة",
-        "description": "تم حذف الصفقة بنجاح"
-      },
-      "created": {
-        "title": "تم إنشاء الصفقة",
-        "description": "تمت إضافة صفقة جديدة إلى مرحلة {{stage}}"
-      }
-    },
-    "pipeline": {
-      "dropDeal": "أفلت الصفقة هنا",
-      "noDeals": "لا توجد صفقات في هذه المرحلة",
-      "addFirstDeal": "أضف صفقتك الأولى",
-      "addDeal": "إضافة صفقة"
-    },
-    "board": {
-      "noDeals": "لا توجد صفقات في هذه المرحلة"
-    },
-    "filtersDropdown": {
-      "title": "تصفية الصفقات",
-      "clear": "مسح",
-      "stagesLabel": "المراحل",
-      "ownersLabel": "المالكون",
-      "valueLabel": "نطاق القيمة (درهم)",
-      "minPlaceholder": "الحد الأدنى",
-      "maxPlaceholder": "الحد الأقصى",
-      "dateLabel": "تاريخ الإغلاق المتوقع"
-    },
-    "filtersPanel": {
-      "sourcesLabel": "المصادر",
-      "clearAll": "مسح الكل",
-      "apply": "تطبيق"
-    },
-    "sources": {
-      "website": "موقع إلكتروني",
-      "referral": "إحالة",
-      "coldOutreach": "تواصل بارد",
-      "linkedIn": "لينكدإن",
-      "existingClient": "عميل حالي"
     }
-  },
-  "activityLogs": {
-    "title": "سجلات النشاط ومسار التدقيق",
-    "description": "تتبع جميع أنشطة النظام وإجراءات المستخدمين.",
-    "filter": "تصفية",
-    "export": "تصدير السجلات",
-    "searchPlaceholder": "ابحث في الأنشطة حسب الإجراء أو المستخدم أو الكيان ذي الصلة..."
-  },
-  "notes": {
-    "grid": {
-      "empty": {
-        "title": "لم يتم العثور على ملاحظات",
-        "description": "ابدأ بتدوين أفكارك وملاحظات الاجتماعات والمعلومات المهمة عن طريق إنشاء ملاحظتك الأولى."
-      },
-      "pinnedNotes": "الملاحظات المثبتة",
-      "allNotes": "كل الملاحظات"
-    },
-    "filters": {
-      "button": "الفلاتر",
-      "title": "تصفية الملاحظات",
-      "sortBy": {
-        "label": "فرز حسب",
-        "modified": "آخر تعديل",
-        "created": "تاريخ الإنشاء",
-        "title": "العنوان"
-      },
-      "type": {
-        "label": "النوع",
-        "all": "كل الأنواع"
-      },
-      "visibility": {
-        "label": "الرؤية",
-        "all": "الكل"
-      },
-      "tags": {
-        "label": "العلامات"
-      }
-    },
-    "noteType": {
-      "general": "عام",
-      "meeting": "اجتماع",
-      "task": "مهمة",
-      "idea": "فكرة"
-    },
-    "visibility": {
-      "public": "عام",
-      "team": "الفريق",
-      "private": "خاص"
-    },
-    "modal": {
-      "createTitle": "إنشاء ملاحظة جديدة",
-      "editTitle": "تعديل الملاحظة",
-      "titleLabel": "العنوان",
-      "titlePlaceholder": "أدخل عنوان الملاحظة...",
-      "typeLabel": "النوع",
-      "visibilityLabel": "الرؤية",
-      "tagsLabel": "العلامات",
-      "tagsPlaceholder": "أضف علامة...",
-      "contentLabel": "المحتوى",
-      "contentPlaceholder": "اكتب محتوى ملاحظتك...",
-      "pinNote": "تثبيت هذه الملاحظة",
-      "setReminder": "تعيين تذكير",
-      "reminderDate": "تاريخ التذكير",
-      "selectDate": "اختر تاريخًا",
-      "attachmentsLabel": "المرفقات",
-      "attachmentsPlaceholder": "اسحب وأفلت الملفات هنا أو انقر للتصفح",
-      "updateButton": "تحديث الملاحظة",
-      "createButton": "إنشاء الملاحظة"
-    },
-    "detail": {
-      "linkedTo": "مرتبط بـ:",
-      "tags": "العلامات:",
-      "content": "المحتوى",
-      "reminder": "تذكير",
-      "attachments": "المرفقات ({{count}})",
-      "author": "المؤلف",
-      "created": "أُنشئت في",
-      "modified": "عُدلت في"
-    }
-  },
-  "common": {
-    "add": "إضافة",
-    "cancel": "إلغاء",
-    "save": "حفظ",
-    "edit": "تعديل",
-    "delete": "حذف",
-    "close": "إغلاق",
-    "showMore": "عرض المزيد",
-    "showLess": "عرض أقل"
-  },
-  "countries": {
-    "morocco": "المغرب",
-    "france": "فرنسا",
-    "spain": "إسبانيا",
-    "usa": "الولايات المتحدة",
-    "uae": "الإمارات العربية المتحدة",
-    "uk": "المملكة المتحدة",
-    "germany": "ألمانيا"
-  },
-  "industries": {
-    "technology": "التكنولوجيا",
-    "healthcare": "الرعاية الصحية",
-    "finance": "المالية",
-    "retail": "التجزئة",
-    "manufacturing": "الصناعة",
-    "consulting": "الاستشارات",
-    "education": "التعليم",
-    "real_estate": "العقارات",
-    "other": "أخرى"
-  },
-  "clientStages": {
-    "lead": "عميل محتمل",
-    "prospect": "مرشح",
-    "active": "نشط",
-    "inactive": "غير نشط"
-  },
-  "toasts": {
-    "addClient": {
-      "success": {
-        "title": "نجاح!",
-        "description": "تمت إضافة العميل بنجاح."
-      }
-    }
-  }
 }

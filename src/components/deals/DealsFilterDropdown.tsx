@@ -32,11 +32,11 @@ export function DealsFilterDropdown({ filters, onFiltersChange, onClearFilters }
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="gap-2 bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700">
+        <Button variant="outline" className="gap-2 bg-background border-border text-foreground hover:bg-accent hover:text-accent-foreground">
           <Filter className="h-4 w-4" />
           {t('deals.filters')}
           {activeFilterCount > 0 && (
-            <span className="bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+            <span className="bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
               {activeFilterCount}
             </span>
           )}

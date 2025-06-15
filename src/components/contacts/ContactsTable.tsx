@@ -169,7 +169,7 @@ const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: { filters:
             </RadioGroup>
             {companies.length > 3 && (
               <Button variant="link" size="sm" onClick={() => toggleShowMore('company')} className="p-0 h-auto text-blue-400 hover:text-blue-500 mt-2 justify-start">
-                {showMore.company ? 'Show Less' : 'Show More'}
+                {showMore.company ? t('common.showLess') : t('common.showMore')}
               </Button>
             )}
           </FilterSection>
@@ -189,7 +189,7 @@ const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: { filters:
             </RadioGroup>
             {roles.length > 3 && (
               <Button variant="link" size="sm" onClick={() => toggleShowMore('role')} className="p-0 h-auto text-blue-400 hover:text-blue-500 mt-2 justify-start">
-                {showMore.role ? 'Show Less' : 'Show More'}
+                {showMore.role ? t('common.showLess') : t('common.showMore')}
               </Button>
             )}
           </FilterSection>
@@ -209,7 +209,7 @@ const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: { filters:
             </RadioGroup>
             {countries.length > 3 && (
               <Button variant="link" size="sm" onClick={() => toggleShowMore('country')} className="p-0 h-auto text-blue-400 hover:text-blue-500 mt-2 justify-start">
-                {showMore.country ? 'Show Less' : 'Show More'}
+                {showMore.country ? t('common.showLess') : t('common.showMore')}
               </Button>
             )}
           </FilterSection>

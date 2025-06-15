@@ -507,14 +507,29 @@
     }
   },
   "common": {
-    "add": "Add",
-    "cancel": "Cancel",
     "save": "Save",
+    "cancel": "Cancel",
     "edit": "Edit",
     "delete": "Delete",
+    "add": "Add",
+    "search": "Search",
+    "filter": "Filter",
+    "clear": "Clear",
+    "apply": "Apply",
     "close": "Close",
-    "showMore": "Show more",
-    "showLess": "Show less"
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning",
+    "info": "Info",
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK",
+    "showMore": "Show More",
+    "showLess": "Show Less"
   },
   "countries": {
     "morocco": "Morocco",

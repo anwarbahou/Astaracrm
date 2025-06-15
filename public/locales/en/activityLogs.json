@@ -1,8 +1,0 @@
-
-{
-  "title": "Activity Logs & Audit Trail",
-  "description": "Track all system activities and user actions.",
-  "filter": "Filter",
-  "export": "Export Logs",
-  "searchPlaceholder": "Search activities by action, user, or entity..."
-}

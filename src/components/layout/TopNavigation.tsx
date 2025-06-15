@@ -20,11 +20,7 @@ import { ThemeToggle } from "./ThemeToggle";
 import { buttonVariants, springConfig } from "@/lib/animations";
 import { useTranslation } from "react-i18next";
 
-interface TopNavigationProps {
-  onSignOut: () => void;
-}
-
-export function TopNavigation({ onSignOut }: TopNavigationProps) {
+export function TopNavigation() {
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [notificationCount] = useState(3); // Mock unread count
@@ -166,10 +162,7 @@ export function TopNavigation({ onSignOut }: TopNavigationProps) {
                       {t('app.topNav.userMenu.settings')}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem 
-                      className="hover:bg-destructive/10 text-destructive focus:text-destructive transition-colors duration-200 rounded-lg mx-1"
-                      onClick={onSignOut}
-                    >
+                    <DropdownMenuItem className="hover:bg-destructive/10 text-destructive focus:text-destructive transition-colors duration-200 rounded-lg mx-1">
                       {t('app.topNav.userMenu.signOut')}
                     </DropdownMenuItem>
                   </motion.div>

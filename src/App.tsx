@@ -10,34 +10,53 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { pageVariants } from "@/lib/animations";
 import { useTranslation } from "react-i18next";
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { cn } from "@/lib/utils";
 
 // Stagewise toolbar imports
 import { StagewiseToolbar } from "@stagewise/toolbar-react";
 import { ReactPlugin } from "@stagewise-plugins/react";
 
-// Pages
-import Dashboard from "./pages/Dashboard";
-import Clients from "./pages/Clients";
-import ClientProfile from "./pages/ClientProfile";
-import Contacts from "./pages/Contacts";
-import Deals from "./pages/Deals";
-import AILeads from "./pages/AILeads";
-import Tasks from "./pages/Tasks";
-import Calendar from "./pages/Calendar";
-import EmailCenter from "./pages/EmailCenter";
-import Notes from "./pages/Notes";
-import Reports from "./pages/Reports";
-import Users from "./pages/Users";
-import Settings from "./pages/Settings";
-import Workflows from "./pages/Workflows";
-import ActivityLogs from "./pages/ActivityLogs";
-import NotFound from "./pages/NotFound";
+// Lazy load pages for code splitting
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Clients = lazy(() => import("./pages/Clients"));
+const ClientProfile = lazy(() => import("./pages/ClientProfile"));
+const Contacts = lazy(() => import("./pages/Contacts"));
+const Deals = lazy(() => import("./pages/Deals"));
+const AILeads = lazy(() => import("./pages/AILeads"));
+const Tasks = lazy(() => import("./pages/Tasks"));
+const Calendar = lazy(() => import("./pages/Calendar"));
+const EmailCenter = lazy(() => import("./pages/EmailCenter"));
+const Notes = lazy(() => import("./pages/Notes"));
+const Reports = lazy(() => import("./pages/Reports"));
+const Users = lazy(() => import("./pages/Users"));
+const Settings = lazy(() => import("./pages/Settings"));
+const Workflows = lazy(() => import("./pages/Workflows"));
+const ActivityLogs = lazy(() => import("./pages/ActivityLogs"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+
+// Keep login pages as regular imports since they're needed immediately
 import LoginPage from "./pages/LoginPage";
 import SIgnupPage from "./pages/SIgnupPage";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { AdminOnlyRoute, AdminManagerRoute } from "@/components/RoleBasedRoute";
+
+// Enhanced loading component
+const PageLoader = () => (
+  <div className="flex items-center justify-center min-h-[400px]">
+    <div className="flex flex-col items-center gap-4">
+      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+      <p className="text-sm text-muted-foreground">Loading...</p>
+    </div>
+  </div>
+);
+
+// Wrapper component for lazy loaded pages
+const LazyWrapper = ({ children }: { children: React.ReactNode }) => (
+  <Suspense fallback={<PageLoader />}>
+    {children}
+  </Suspense>
+);
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -66,16 +85,16 @@ function AnimatedRoutes() {
           <Route path="/signup" element={<SIgnupPage />} />
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard">
-            <Route index element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="clients" element={<ProtectedRoute><Clients /></ProtectedRoute>} />
-            <Route path="clients/:id" element={<ProtectedRoute><ClientProfile /></ProtectedRoute>} />
-            <Route path="contacts" element={<ProtectedRoute><Contacts /></ProtectedRoute>} />
-            <Route path="deals" element={<ProtectedRoute><Deals /></ProtectedRoute>} />
-            <Route path="ai-leads" element={<ProtectedRoute><AILeads /></ProtectedRoute>} />
-            <Route path="tasks" element={<ProtectedRoute><Tasks /></ProtectedRoute>} />
-            <Route path="calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
-            <Route path="email" element={<ProtectedRoute><EmailCenter /></ProtectedRoute>} />
-            <Route path="notes" element={<ProtectedRoute><Notes /></ProtectedRoute>} />
+            <Route index element={<ProtectedRoute><LazyWrapper><Dashboard /></LazyWrapper></ProtectedRoute>} />
+            <Route path="clients" element={<ProtectedRoute><LazyWrapper><Clients /></LazyWrapper></ProtectedRoute>} />
+            <Route path="clients/:id" element={<ProtectedRoute><LazyWrapper><ClientProfile /></LazyWrapper></ProtectedRoute>} />
+            <Route path="contacts" element={<ProtectedRoute><LazyWrapper><Contacts /></LazyWrapper></ProtectedRoute>} />
+            <Route path="deals" element={<ProtectedRoute><LazyWrapper><Deals /></LazyWrapper></ProtectedRoute>} />
+            <Route path="ai-leads" element={<ProtectedRoute><LazyWrapper><AILeads /></LazyWrapper></ProtectedRoute>} />
+            <Route path="tasks" element={<ProtectedRoute><LazyWrapper><Tasks /></LazyWrapper></ProtectedRoute>} />
+            <Route path="calendar" element={<ProtectedRoute><LazyWrapper><Calendar /></LazyWrapper></ProtectedRoute>} />
+            <Route path="email" element={<ProtectedRoute><LazyWrapper><EmailCenter /></LazyWrapper></ProtectedRoute>} />
+            <Route path="notes" element={<ProtectedRoute><LazyWrapper><Notes /></LazyWrapper></ProtectedRoute>} />
             
             {/* Manager and Admin only routes */}
             <Route 
@@ -83,7 +102,7 @@ function AnimatedRoutes() {
               element={
                 <ProtectedRoute>
                   <AdminManagerRoute>
-                    <Reports />
+                    <LazyWrapper><Reports /></LazyWrapper>
                   </AdminManagerRoute>
                 </ProtectedRoute>
               } 
@@ -93,7 +112,7 @@ function AnimatedRoutes() {
               element={
                 <ProtectedRoute>
                   <AdminManagerRoute>
-                    <Workflows />
+                    <LazyWrapper><Workflows /></LazyWrapper>
                   </AdminManagerRoute>
                 </ProtectedRoute>
               } 
@@ -103,7 +122,7 @@ function AnimatedRoutes() {
               element={
                 <ProtectedRoute>
                   <AdminManagerRoute>
-                    <ActivityLogs />
+                    <LazyWrapper><ActivityLogs /></LazyWrapper>
                   </AdminManagerRoute>
                 </ProtectedRoute>
               } 
@@ -115,7 +134,7 @@ function AnimatedRoutes() {
               element={
                 <ProtectedRoute>
                   <AdminOnlyRoute>
-                    <Users />
+                    <LazyWrapper><Users /></LazyWrapper>
                   </AdminOnlyRoute>
                 </ProtectedRoute>
               } 
@@ -125,13 +144,13 @@ function AnimatedRoutes() {
               element={
                 <ProtectedRoute>
                   <AdminOnlyRoute>
-                    <Settings />
+                    <LazyWrapper><Settings /></LazyWrapper>
                   </AdminOnlyRoute>
                 </ProtectedRoute>
               } 
             />
           </Route>
-          <Route path="*" element={<NotFound />} />
+          <Route path="*" element={<LazyWrapper><NotFound /></LazyWrapper>} />
         </Routes>
       </motion.div>
     </AnimatePresence>

@@ -34,5 +34,39 @@ export default defineConfig(({ mode }) => {
       'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''),
     },
     envPrefix: ['VITE_', 'NEXT_PUBLIC_'], // This tells Vite to also load NEXT_PUBLIC_ variables
+    build: {
+      // Optimize chunk size
+      chunkSizeWarningLimit: 1000,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            // Split vendor libraries into separate chunks
+            'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+            'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-select', '@radix-ui/react-tabs'],
+            'query-vendor': ['@tanstack/react-query'],
+            'animation-vendor': ['framer-motion'],
+            'supabase-vendor': ['@supabase/supabase-js'],
+            'form-vendor': ['react-hook-form', '@hookform/resolvers', 'zod'],
+            'chart-vendor': ['recharts'],
+            'i18n-vendor': ['i18next', 'react-i18next', 'i18next-browser-languagedetector'],
+          },
+        },
+      },
+      // Enable source maps for better debugging in production
+      sourcemap: false,
+      // Optimize build performance
+      target: 'esnext',
+      minify: 'esbuild',
+    },
+    optimizeDeps: {
+      include: [
+        'react',
+        'react-dom',
+        'react-router-dom',
+        '@tanstack/react-query',
+        'framer-motion',
+        '@supabase/supabase-js',
+      ],
+    },
   };
 });

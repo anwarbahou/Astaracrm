@@ -176,7 +176,96 @@
       "smb": "PME",
       "urgent": "Urgent",
       "international": "International"
-    }
+    },
+    "profile": {
+      "title": "Profil Client",
+      "description": "Consultez et gérez les informations client, contacts, affaires et activités",
+      "loading": "Chargement du profil client...",
+      "notFound": "Client introuvable",
+      "save": "Enregistrer",
+      "saving": "Enregistrement...",
+      "cancel": "Annuler",
+      "edit": "Modifier",
+      "memberSince": "Membre depuis",
+      "totalDealValue": "Valeur totale des affaires",
+      "activeDeals": "Affaires actives",
+      "companyInformation": "Informations de l'entreprise",
+      "companyContacts": "Contacts de l'entreprise",
+      "addContact": "Ajouter un contact",
+      "primary": "Principal",
+      "filesDocuments": "Fichiers et documents",
+      "uploadFile": "Télécharger un fichier",
+      "noFilesUploaded": "Aucun fichier téléchargé",
+      "uploadContracts": "Téléchargez des contrats, propositions ou autres fichiers importants",
+      "uploadFirstDocument": "Télécharger le premier document",
+      "tabs": {
+        "overview": "Aperçu",
+        "contacts": "Contacts",
+        "deals": "Affaires",
+        "notes": "Notes",
+        "files": "Fichiers"
+      },
+      "fields": {
+        "owner": "Propriétaire",
+        "noEmail": "Aucun e-mail",
+        "noPhone": "Aucun téléphone",
+        "noCountry": "Aucun pays",
+        "noIndustrySpecified": "Aucune industrie spécifiée",
+        "noOwnerAssigned": "Aucun propriétaire assigné",
+        "noTags": "Aucune étiquette",
+        "noNotesAvailable": "Aucune note disponible",
+        "noRoleSpecified": "Aucun rôle spécifié",
+        "notAvailable": "Non disponible"
+      },
+      "deals": {
+        "title": "Affaires et opportunités",
+        "addDeal": "Ajouter une affaire",
+        "addFirstDeal": "Ajouter la première affaire",
+        "noDealsYet": "Aucune affaire pour le moment",
+        "createDealsToTrack": "Créez des affaires pour suivre les opportunités",
+        "closeDate": "Date de clôture :",
+        "notSet": "Non définie",
+        "probability": "probabilité"
+      },
+      "contacts": {
+        "noContactsYet": "Aucun contact pour le moment",
+        "addContactsToStart": "Ajoutez des contacts pour commencer à créer des relations"
+      },
+      "activities": {
+        "title": "Chronologie des activités",
+        "noActivitiesYet": "Aucune activité pour le moment",
+        "activitiesWillAppear": "Les activités apparaîtront ici lorsque vous interagirez avec ce client",
+        "by": "par",
+        "unknown": "Inconnu"
+      },
+      "stages": {
+        "lead": "Prospect",
+        "active": "Actif", 
+        "inactive": "Inactif",
+        "prospect": "Prospect potentiel",
+        "unknown": "Inconnu"
+      }
+    },
+
+      "toasts": {
+        "addClient": {
+          "success": {
+            "title": "Client ajouté avec succès",
+            "description": "Le client a été ajouté à votre CRM."
+          },
+          "error": {
+            "title": "Erreur lors de l'ajout du client",
+            "missingFields": "Le nom et l'e-mail sont obligatoires.",
+            "unexpected": "Une erreur inattendue s'est produite."
+          }
+        }
+      },
+      "addClientModal": {
+        "creating": "Création en cours...",
+        "submit": "Ajouter le client"
+      }
+    
+    
   },
   "contacts": {
     "title": "Contacts",

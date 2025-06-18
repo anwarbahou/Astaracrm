@@ -161,139 +161,143 @@ export default function Dashboard() {
 
   return (
     <>
-      <div className="space-y-6 animate-in">
+      <div className="space-y-4 sm:space-y-6 animate-in px-1 sm:px-0">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">{t("dashboard.title")}</h1>
-            <p className="text-muted-foreground mt-1">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-2xl sm:text-3xl font-bold truncate">{t("dashboard.title")}</h1>
+            <p className="text-muted-foreground mt-1 text-sm sm:text-base">
               {t("dashboard.welcomeMessage")}
             </p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => setAddContactOpen(true)}>
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-2 w-full sm:w-auto">
+            <Button 
+              variant="outline" 
+              onClick={() => setAddContactOpen(true)}
+              className="w-full sm:w-auto text-sm"
+            >
               <Plus size={16} className="mr-2 rtl:ml-2 rtl:mr-0" />
-              {t("dashboard.addContact")}
+              <span className="sm:hidden">{t("dashboard.addContact")}</span>
+              <span className="hidden sm:inline">{t("dashboard.addContact")}</span>
             </Button>
-            <Button onClick={() => setAddClientOpen(true)}>
+            <Button 
+              onClick={() => setAddClientOpen(true)}
+              className="w-full sm:w-auto text-sm"
+            >
               <Plus size={16} className="mr-2 rtl:ml-2 rtl:mr-0" />
-              {t("dashboard.addClient")}
+              <span className="sm:hidden">{t("dashboard.addClient")}</span>
+              <span className="hidden sm:inline">{t("dashboard.addClient")}</span>
             </Button>
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {/* Stats Cards - Responsive Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {stats.map((stat, index) => (
-            <Card key={index}>
-              <CardContent className="p-6">
+            <Card key={index} className="hover:shadow-md transition-shadow duration-200">
+              <CardContent className="p-4 sm:p-6">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
-                    <p className="text-2xl font-bold">{stat.value}</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">{stat.title}</p>
+                    <p className="text-xl sm:text-2xl font-bold mt-1">{stat.value}</p>
                   </div>
-                  <div className={`p-2 rounded-full ${stat.trend === 'up' ? 'bg-green-100' : 'bg-red-100'}`}>
+                  <div className={`p-2 rounded-full flex-shrink-0 ${stat.trend === 'up' ? 'bg-green-100' : 'bg-red-100'}`}>
                     {stat.trend === 'up' ? 
-                      <ArrowUpRight className="h-4 w-4 text-green-600" /> : 
-                      <ArrowDownRight className="h-4 w-4 text-red-600" />
+                      <ArrowUpRight className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" /> : 
+                      <ArrowDownRight className="h-3 w-3 sm:h-4 sm:w-4 text-red-600" />
                     }
                   </div>
                 </div>
-                <div className="mt-4 flex items-center gap-2">
+                <div className="mt-3 sm:mt-4 flex items-center gap-2">
                   <span className={`text-xs font-medium ${stat.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
                     {stat.change}
                   </span>
-                  <span className="text-xs text-muted-foreground">{stat.description}</span>
+                  <span className="text-xs text-muted-foreground truncate">{stat.description}</span>
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2">
+        {/* Main Content Grid - Responsive Layout */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
           {/* Recent Deals */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <DollarSign className="h-5 w-5" />
+          <Card className="w-full">
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0 pb-4">
+              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                <DollarSign className="h-4 w-4 sm:h-5 sm:w-5" />
                 {t("dashboard.recentDeals")}
               </CardTitle>
-              <Button variant="ghost" size="sm">
-                <Eye className="h-4 w-4 mr-2 rtl:ml-2 rtl:mr-0" />
+              <Button variant="ghost" size="sm" className="w-fit text-xs sm:text-sm">
+                <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-2 rtl:ml-2 rtl:mr-0" />
                 {t("dashboard.viewAll")}
               </Button>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {recentDeals.map((deal) => (
-                  <div key={deal.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
-                    <div className="flex-1">
-                      <p className="font-medium">{deal.client}</p>
-                      <p className="text-sm text-muted-foreground">{deal.value}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge className={getStatusColor(deal.status)} variant="secondary">
-                        {deal.status}
-                      </Badge>
-                      <span className="text-xs text-muted-foreground">{deal.probability}%</span>
-                    </div>
+            <CardContent className="space-y-3 sm:space-y-4">
+              {recentDeals.map((deal) => (
+                <div key={deal.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-lg border border-border gap-3 sm:gap-2">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate text-sm sm:text-base">{deal.client}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">{deal.value}</p>
                   </div>
-                ))}
-              </div>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                    <Badge className={`${getStatusColor(deal.status)} text-xs`} variant="secondary">
+                      {deal.status}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground">{deal.probability}%</span>
+                  </div>
+                </div>
+              ))}
             </CardContent>
           </Card>
 
           {/* Upcoming Tasks */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="flex items-center gap-2">
-                <Calendar className="h-5 w-5" />
+          <Card className="w-full">
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0 pb-4">
+              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                <Calendar className="h-4 w-4 sm:h-5 sm:w-5" />
                 {t("dashboard.upcomingTasks")}
               </CardTitle>
-              <Button variant="ghost" size="sm">
-                <Eye className="h-4 w-4 mr-2 rtl:ml-2 rtl:mr-0" />
+              <Button variant="ghost" size="sm" className="w-fit text-xs sm:text-sm">
+                <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-2 rtl:ml-2 rtl:mr-0" />
                 {t("dashboard.viewAll")}
               </Button>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {upcomingTasks.map((task) => (
-                  <div key={task.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
-                    <div className="flex-1">
-                      <p className="font-medium">{task.title}</p>
-                      <p className="text-sm text-muted-foreground">{formatDueDate(task.due)}</p>
-                    </div>
-                    <Badge className={getPriorityColor(task.priority)} variant="secondary">
-                      {getPriorityText(task.priority)}
-                    </Badge>
+            <CardContent className="space-y-3 sm:space-y-4">
+              {upcomingTasks.map((task) => (
+                <div key={task.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-lg border border-border gap-3 sm:gap-2">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm sm:text-base leading-tight">{task.title}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground mt-1">{formatDueDate(task.due)}</p>
                   </div>
-                ))}
-              </div>
+                  <Badge className={`${getPriorityColor(task.priority)} text-xs w-fit`} variant="secondary">
+                    {getPriorityText(task.priority)}
+                  </Badge>
+                </div>
+              ))}
             </CardContent>
           </Card>
         </div>
 
-        {/* Recent Activities */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
+        {/* Recent Activities - Full Width */}
+        <Card className="w-full">
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+              <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
               {t("dashboard.recentActivities")}
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentActivities.map((activity) => (
-                <div key={activity.id} className="flex items-center gap-4 p-3 rounded-lg border border-border">
-                  <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
-                  <div className="flex-1">
-                    <p className="font-medium">{activity.action}</p>
-                    <p className="text-sm text-muted-foreground">{activity.details}</p>
-                  </div>
-                  <span className="text-xs text-muted-foreground">{formatTimeAgo(activity.timestamp)}</span>
+          <CardContent className="space-y-3 sm:space-y-4">
+            {recentActivities.map((activity) => (
+              <div key={activity.id} className="flex items-start gap-3 sm:gap-4 p-3 rounded-lg border border-border">
+                <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0 mt-2"></div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-sm sm:text-base leading-tight">{activity.action}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground mt-1 break-words">{activity.details}</p>
                 </div>
-              ))}
-            </div>
+                <span className="text-xs text-muted-foreground flex-shrink-0 mt-1">{formatTimeAgo(activity.timestamp)}</span>
+              </div>
+            ))}
           </CardContent>
         </Card>
       </div>

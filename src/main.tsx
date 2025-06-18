@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
+import { BrowserRouter } from 'react-router-dom';
 import './index.css';
 import './i18n';
 
@@ -13,6 +13,8 @@ const Loader = () => (
 
 createRoot(document.getElementById("root")!).render(
   <React.Suspense fallback={<Loader />}>
-    <App />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </React.Suspense>
 );

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -75,7 +74,7 @@ export default function ClientProfile() {
     <div className="space-y-6 animate-in">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Link to="/clients">
+        <Link to="/dashboard/clients">
           <Button variant="ghost" size="sm" className="gap-2">
             <ArrowLeft size={16} />
             Back to Clients

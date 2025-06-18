@@ -1,5 +1,3 @@
-
-export * from './ProfileSection';
 export * from './BasicInfoSection';
 export * from './BusinessInfoSection';
 export * from './TagsSection';

@@ -53,7 +53,7 @@
         "dashboard": "نظرة عامة على أداء CRM الخاص بك",
         "clients": "إدارة علاقات العملاء الخاصة بك وتتبع نمو الأعمال.",
         "contacts": "إدارة جميع جهات الاتصال والعلاقات التجارية الخاصة بك.",
-        "deals": "إدارة صفقاتك خلال عملية البيع",
+        "deals": "إدارة صفقاتك من خلال عملية المبيعات",
         "tasks": "ابق على اطلاع بمهامك",
         "calendar": "جدولة وإدارة المواعيد",
         "email": "تواصل مع عملائك",
@@ -173,42 +173,100 @@
       "archived": "مؤرشف"
     },
     "tags": {
-      "vip": "VIP",
+      "vip": "مميز",
       "high_value": "قيمة عالية",
       "enterprise": "مؤسسة",
-      "smb": "شركات صغيرة ومتوسطة",
+      "smb": "أعمال صغيرة ومتوسطة",
       "urgent": "عاجل",
       "international": "دولي"
     },
     "profile": {
       "title": "ملف العميل",
-      "edit": "تعديل",
+      "description": "عرض وإدارة معلومات العميل والاتصالات والصفقات والأنشطة",
+      "loading": "جاري تحميل ملف العميل...",
+      "notFound": "العميل غير موجود",
       "save": "حفظ",
+      "saving": "جاري الحفظ...",
       "cancel": "إلغاء",
+      "edit": "تعديل",
       "memberSince": "عضو منذ",
       "totalDealValue": "إجمالي قيمة الصفقات",
       "activeDeals": "الصفقات النشطة",
       "companyInformation": "معلومات الشركة",
       "companyContacts": "جهات اتصال الشركة",
       "addContact": "إضافة جهة اتصال",
-      "primary": "رئيسي",
-      "uploadFile": "تحميل ملف",
-      "filesDocuments": "الملفات والوثائق",
-      "noFilesUploaded": "لم يتم تحميل ملفات",
-      "uploadFirstDocument": "تحميل أول وثيقة",
-      "uploadContracts": "تحميل العقود والمقترحات أو الوثائق المهمة الأخرى",
-      "notesTimeline": "الملاحظات والجدول الزمني",
-      "changeHistory": "تاريخ التغييرات",
-      "noChangesRecorded": "لم يتم تسجيل تغييرات",
-      "changesWillAppear": "ستظهر التغييرات على ملف العميل هنا",
+      "primary": "أساسي",
+      "filesDocuments": "الملفات والمستندات",
+      "uploadFile": "رفع ملف",
+      "noFilesUploaded": "لم يتم رفع أي ملفات",
+      "uploadContracts": "رفع العقود أو العروض أو الملفات المهمة الأخرى",
+      "uploadFirstDocument": "رفع المستند الأول",
       "tabs": {
         "overview": "نظرة عامة",
         "contacts": "جهات الاتصال",
-        "notes": "ملاحظات",
-        "files": "ملفات",
-        "history": "تاريخ"
+        "deals": "الصفقات",
+        "notes": "الملاحظات",
+        "files": "الملفات"
+      },
+      "fields": {
+        "owner": "المالك",
+        "noEmail": "لا يوجد بريد إلكتروني",
+        "noPhone": "لا يوجد هاتف",
+        "noCountry": "لا يوجد بلد",
+        "noIndustrySpecified": "لم يتم تحديد الصناعة",
+        "noOwnerAssigned": "لم يتم تعيين مالك",
+        "noTags": "لا توجد علامات",
+        "noNotesAvailable": "لا توجد ملاحظات متاحة",
+        "noRoleSpecified": "لم يتم تحديد دور",
+        "notAvailable": "غير متاح"
+      },
+      "deals": {
+        "title": "الصفقات والفرص",
+        "addDeal": "إضافة صفقة",
+        "addFirstDeal": "إضافة الصفقة الأولى",
+        "noDealsYet": "لا توجد صفقات بعد",
+        "createDealsToTrack": "إنشاء صفقات لتتبع الفرص",
+        "closeDate": "تاريخ الإغلاق:",
+        "notSet": "غير محدد",
+        "probability": "الاحتمالية"
+      },
+      "contacts": {
+        "noContactsYet": "لا توجد جهات اتصال بعد",
+        "addContactsToStart": "إضافة جهات الاتصال لبدء بناء العلاقات"
+      },
+      "activities": {
+        "title": "جدول الأنشطة",
+        "noActivitiesYet": "لا توجد أنشطة بعد",
+        "activitiesWillAppear": "ستظهر الأنشطة هنا عند التفاعل مع هذا العميل",
+        "by": "بواسطة",
+        "unknown": "غير معروف"
+      },
+      "stages": {
+        "lead": "عميل محتمل",
+        "active": "نشط",
+        "inactive": "غير نشط",
+        "prospect": "فرصة",
+        "unknown": "غير معروف"
       }
-    }
+    },
+      "toasts": {
+        "addClient": {
+          "success": {
+            "title": "تمت إضافة العميل بنجاح",
+            "description": "تمت إضافة العميل إلى نظام إدارة علاقات العملاء الخاص بك."
+          },
+          "error": {
+            "title": "حدث خطأ أثناء إضافة العميل",
+            "missingFields": "الاسم والبريد الإلكتروني مطلوبان.",
+            "unexpected": "حدث خطأ غير متوقع."
+          }
+        }
+      },
+      "addClientModal": {
+        "creating": "جاري الإنشاء...",
+        "submit": "إضافة العميل"
+      }
+        
   },
   "contacts": {
     "title": "جهات الاتصال",

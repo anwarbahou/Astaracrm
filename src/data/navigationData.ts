@@ -1,4 +1,3 @@
-
 import {
   LayoutDashboard,
   Users,
@@ -15,20 +14,35 @@ import {
   Zap,
   History,
 } from "lucide-react";
+import { Database } from "@/integrations/supabase/types";
 
-export const navigationItems = [
-  { id: 'dashboard', path: '/', icon: LayoutDashboard, labelKey: 'dashboard' },
-  { id: 'clients', path: '/clients', icon: Users, labelKey: 'clients' },
-  { id: 'contacts', path: '/contacts', icon: Contact, labelKey: 'contacts' },
-  { id: 'deals', path: '/deals', icon: Handshake, labelKey: 'deals' },
-  { id: 'ai-leads', path: '/ai-leads', icon: BrainCircuit, labelKey: 'aiLeads' },
-  { id: 'tasks', path: '/tasks', icon: ListTodo, labelKey: 'tasks' },
-  { id: 'calendar', path: '/calendar', icon: Calendar, labelKey: 'calendar' },
-  { id: 'email', path: '/email', icon: Mail, labelKey: 'email' },
-  { id: 'notes', path: '/notes', icon: Notebook, labelKey: 'notes' },
-  { id: 'reports', path: '/reports', icon: LineChart, labelKey: 'reports' },
-  { id: 'users', path: '/users', icon: UserCog, labelKey: 'users' },
-  { id: 'settings', path: '/settings', icon: Settings, labelKey: 'settings' },
-  { id: 'workflows', path: '/workflows', icon: Zap, labelKey: 'workflows' },
-  { id: 'activity-logs', path: '/activity-logs', icon: History, labelKey: 'activityLogs' },
+type UserRole = Database['public']['Enums']['user_role'];
+
+interface NavigationItem {
+  id: string;
+  path: string;
+  icon: any;
+  labelKey: string;
+  roles?: UserRole[]; // If undefined, accessible to all authenticated users
+}
+
+export const navigationItems: NavigationItem[] = [
+  { id: 'dashboard', path: '/dashboard', icon: LayoutDashboard, labelKey: 'dashboard' },
+  { id: 'clients', path: '/dashboard/clients', icon: Users, labelKey: 'clients' },
+  { id: 'contacts', path: '/dashboard/contacts', icon: Contact, labelKey: 'contacts' },
+  { id: 'deals', path: '/dashboard/deals', icon: Handshake, labelKey: 'deals' },
+  { id: 'ai-leads', path: '/dashboard/ai-leads', icon: BrainCircuit, labelKey: 'aiLeads' },
+  { id: 'tasks', path: '/dashboard/tasks', icon: ListTodo, labelKey: 'tasks' },
+  { id: 'calendar', path: '/dashboard/calendar', icon: Calendar, labelKey: 'calendar' },
+  { id: 'email', path: '/dashboard/email', icon: Mail, labelKey: 'email' },
+  { id: 'notes', path: '/dashboard/notes', icon: Notebook, labelKey: 'notes' },
+  
+  // Manager and Admin only
+  { id: 'reports', path: '/dashboard/reports', icon: LineChart, labelKey: 'reports', roles: ['manager', 'admin'] },
+  { id: 'workflows', path: '/dashboard/workflows', icon: Zap, labelKey: 'workflows', roles: ['manager', 'admin'] },
+  { id: 'activity-logs', path: '/dashboard/activity-logs', icon: History, labelKey: 'activityLogs', roles: ['manager', 'admin'] },
+  
+  // Admin only
+  { id: 'users', path: '/dashboard/users', icon: UserCog, labelKey: 'users', roles: ['admin'] },
+  { id: 'settings', path: '/dashboard/settings', icon: Settings, labelKey: 'settings', roles: ['admin'] },
 ];

@@ -176,7 +176,93 @@
       "smb": "SMB",
       "urgent": "Urgent",
       "international": "International"
+    },
+    "profile": {
+      "title": "Client Profile",
+      "description": "View and manage client information, contacts, deals, and activities",
+      "loading": "Loading client profile...",
+      "notFound": "Client not found",
+      "save": "Save",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "memberSince": "Member since",
+      "totalDealValue": "Total Deal Value",
+      "activeDeals": "Active Deals",
+      "companyInformation": "Company Information",
+      "companyContacts": "Company Contacts",
+      "addContact": "Add Contact",
+      "primary": "Primary",
+      "filesDocuments": "Files & Documents",
+      "uploadFile": "Upload File",
+      "noFilesUploaded": "No files uploaded",
+      "uploadContracts": "Upload contracts, proposals, or other important files",
+      "uploadFirstDocument": "Upload First Document",
+      "tabs": {
+        "overview": "Overview",
+        "contacts": "Contacts",
+        "deals": "Deals",
+        "notes": "Notes",
+        "files": "Files"
+      },
+      "fields": {
+        "owner": "Owner",
+        "noEmail": "No email",
+        "noPhone": "No phone",
+        "noCountry": "No country",
+        "noIndustrySpecified": "No industry specified",
+        "noOwnerAssigned": "No owner assigned",
+        "noTags": "No tags",
+        "noNotesAvailable": "No notes available",
+        "noRoleSpecified": "No role specified",
+        "notAvailable": "N/A"
+      },
+      "deals": {
+        "title": "Deals & Opportunities",
+        "addDeal": "Add Deal",
+        "addFirstDeal": "Add First Deal",
+        "noDealsYet": "No deals yet",
+        "createDealsToTrack": "Create deals to track opportunities",
+        "closeDate": "Date of close:",
+        "notSet": "Not set",
+        "probability": "probability"
+      },
+      "contacts": {
+        "noContactsYet": "No contacts yet",
+        "addContactsToStart": "Add contacts to start building relationships"
+      },
+      "activities": {
+        "title": "Activity Timeline",
+        "noActivitiesYet": "No activities yet",
+        "activitiesWillAppear": "Activities will appear here as you interact with this client",
+        "by": "by",
+        "unknown": "Unknown"
+      },
+      "stages": {
+        "lead": "Lead",
+        "active": "Active", 
+        "inactive": "Inactive",
+        "prospect": "Prospect",
+        "unknown": "Unknown"
+      }
+    },
+    "toasts": {
+    "addClient": {
+      "success": {
+        "title": "Client added successfully",
+        "description": "The client has been added to your CRM."
+      },
+      "error": {
+        "title": "Error adding client",
+        "missingFields": "Name and email are required fields.",
+        "unexpected": "An unexpected error occurred."
+      }
     }
+  },
+  "addClientModal": {
+    "creating": "Creating...",
+    "submit": "Add Client"
+  }
   },
   "contacts": {
     "title": "Contacts",
@@ -259,7 +345,9 @@
     "statuses": {
       "active": "Active",
       "inactive": "Inactive"
-    }
+    },
+    "noContactsYet": "No contacts yet",
+    "addContactsToStart": "Add contacts to start building relationships"
   },
   "deals": {
     "title": "Deals",
@@ -331,7 +419,12 @@
       "coldOutreach": "Cold Outreach",
       "linkedIn": "LinkedIn",
       "existingClient": "Existing Client"
-    }
+    },
+    "noDealsYet": "No deals yet",
+    "createDealsToTrack": "Create deals to track opportunities",
+    "closeDate": "Date of close:",
+    "notSet": "Not set",
+    "probability": "probability"
   },
   "addDealModal": {
     "title": "Add New Deal",
@@ -739,6 +832,18 @@
       "positions": {
         "directeurGeneral": "General Director"
       }
+    },
+    "fields": {
+      "owner": "Owner",
+      "noEmail": "No email",
+      "noPhone": "No phone",
+      "noCountry": "No country",
+      "noIndustrySpecified": "No industry specified",
+      "noOwnerAssigned": "No owner assigned",
+      "noTags": "No tags",
+      "noNotesAvailable": "No notes available",
+      "noRoleSpecified": "No role specified",
+      "notAvailable": "N/A"
     }
   },
   "campaign": {
@@ -791,5 +896,19 @@
       "launch": "Launch Campaign",
       "saveDraft": "Save Draft"
     }
+  },
+  "activities": {
+    "title": "Activity Timeline",
+    "noActivitiesYet": "No activities yet",
+    "activitiesWillAppear": "Activities will appear here as you interact with this client",
+    "by": "by",
+    "unknown": "Unknown"
+  },
+  "stages": {
+    "lead": "Lead",
+    "active": "Active", 
+    "inactive": "Inactive",
+    "prospect": "Prospect",
+    "unknown": "Unknown"
   }
 }

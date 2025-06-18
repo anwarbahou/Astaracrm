@@ -1,6 +1,5 @@
-
 export interface Client {
-  id: number;
+  id: string;
   name: string;
   email: string;
   phone: string;
@@ -14,7 +13,6 @@ export interface Client {
   createdDate: string;
   lastInteraction: string;
   status: 'Active' | 'Archived';
-  avatar?: string;
   notes?: string;
 }
 

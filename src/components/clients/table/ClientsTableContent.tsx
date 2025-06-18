@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -10,8 +9,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ChevronUp, ChevronDown } from 'lucide-react';
+import { ChevronUp, ChevronDown, Calendar, MapPin, Users, DollarSign } from 'lucide-react';
+import { Card, CardContent } from "@/components/ui/card";
 import { Client } from '@/types/client';
 
 type SortField = keyof Client;
@@ -82,76 +81,141 @@ export function ClientsTableContent({
     </TableHead>
   );
 
+  // Mobile Card View Component
+  const MobileClientCard = ({ client }: { client: Client }) => (
+    <Card 
+      className="cursor-pointer hover:shadow-md transition-shadow duration-200 mb-3"
+      onClick={() => onClientClick(client)}
+    >
+      <CardContent className="p-4">
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <div className="min-w-0 flex-1">
+              <h3 className="font-semibold text-base truncate">{client.name}</h3>
+              <p className="text-sm text-muted-foreground truncate">{client.industry}</p>
+            </div>
+          </div>
+          <Badge className={`${getStageColor(client.stage)} text-white text-xs flex-shrink-0`}>
+            {client.stage}
+          </Badge>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 text-sm">
+          <div className="flex items-center gap-2">
+            <MapPin className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+            <span className="text-muted-foreground truncate">{client.country}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Users className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+            <span className="text-muted-foreground">{client.contactsCount}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <DollarSign className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+            <span className="font-medium truncate">{formatCurrency(client.totalDealValue)}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Calendar className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+            <span className="text-muted-foreground truncate">{formatLastInteraction(client.lastInteraction)}</span>
+          </div>
+        </div>
+
+        {client.tags.length > 0 && (
+          <div className="flex gap-1 flex-wrap mt-3">
+            {client.tags.slice(0, 3).map((tag, index) => (
+              <Badge key={index} variant="secondary" className="text-xs">
+                {tag}
+              </Badge>
+            ))}
+            {client.tags.length > 3 && (
+              <Badge variant="outline" className="text-xs">
+                +{client.tags.length - 3}
+              </Badge>
+            )}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+
   return (
-    <div className="overflow-x-auto">
-      <Table>
-        <TableHeader className="sticky top-0 bg-background z-10">
-          <TableRow>
-            <TableHead className="w-16"></TableHead>
-            <SortableHeader field="name">{t('clients.table.clientName')}</SortableHeader>
-            <SortableHeader field="industry">{t('clients.table.industry')}</SortableHeader>
-            <TableHead>{t('clients.table.tags')}</TableHead>
-            <SortableHeader field="stage">{t('clients.table.stage')}</SortableHeader>
-            <SortableHeader field="owner">{t('clients.table.owner')}</SortableHeader>
-            <SortableHeader field="country">{t('clients.table.location')}</SortableHeader>
-            <SortableHeader field="contactsCount">{t('clients.table.contacts')}</SortableHeader>
-            <SortableHeader field="totalDealValue">{t('clients.table.dealValue')}</SortableHeader>
-            <SortableHeader field="createdDate">{t('clients.table.created')}</SortableHeader>
-            <SortableHeader field="lastInteraction">{t('clients.table.lastInteraction')}</SortableHeader>
-            <SortableHeader field="status">{t('clients.table.status')}</SortableHeader>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {clients.map((client) => (
-            <TableRow 
-              key={client.id}
-              className="cursor-pointer hover:bg-muted/50 transition-colors"
-              onClick={() => onClientClick(client)}
-            >
-              <TableCell>
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={client.avatar} />
-                  <AvatarFallback className="text-xs">
-                    {client.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
-                  </AvatarFallback>
-                </Avatar>
-              </TableCell>
-              <TableCell className="font-medium">{client.name}</TableCell>
-              <TableCell>{client.industry}</TableCell>
-              <TableCell>
-                <div className="flex gap-1 flex-wrap">
-                  {client.tags.slice(0, 2).map((tag, index) => (
-                    <Badge key={index} variant="secondary" className="text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
-                  {client.tags.length > 2 && (
-                    <Badge variant="outline" className="text-xs">
-                      +{client.tags.length - 2}
-                    </Badge>
-                  )}
-                </div>
-              </TableCell>
-              <TableCell>
-                <Badge className={`${getStageColor(client.stage)} text-white text-xs`}>
-                  {client.stage}
-                </Badge>
-              </TableCell>
-              <TableCell>{client.owner}</TableCell>
-              <TableCell>{client.country}</TableCell>
-              <TableCell className="text-center">{client.contactsCount}</TableCell>
-              <TableCell className="font-medium">{formatCurrency(client.totalDealValue)}</TableCell>
-              <TableCell>{new Date(client.createdDate).toLocaleDateString()}</TableCell>
-              <TableCell>{formatLastInteraction(client.lastInteraction)}</TableCell>
-              <TableCell>
-                <Badge variant={client.status === 'Active' ? 'default' : 'secondary'}>
-                  {client.status}
-                </Badge>
-              </TableCell>
+    <>
+      {/* Mobile View - Card Layout */}
+      <div className="lg:hidden">
+        {clients.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">{t('clients.table.noClients')}</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {clients.map((client) => (
+              <MobileClientCard key={client.id} client={client} />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Desktop View - Table Layout */}
+      <div className="hidden lg:block overflow-x-auto">
+        <Table>
+          <TableHeader className="sticky top-0 bg-background z-10">
+            <TableRow>
+              <SortableHeader field="name">{t('clients.table.clientName')}</SortableHeader>
+              <SortableHeader field="industry">{t('clients.table.industry')}</SortableHeader>
+              <TableHead>{t('clients.table.tags')}</TableHead>
+              <SortableHeader field="stage">{t('clients.table.stage')}</SortableHeader>
+              <SortableHeader field="owner">{t('clients.table.owner')}</SortableHeader>
+              <SortableHeader field="country">{t('clients.table.location')}</SortableHeader>
+              <SortableHeader field="contactsCount">{t('clients.table.contacts')}</SortableHeader>
+              <SortableHeader field="totalDealValue">{t('clients.table.dealValue')}</SortableHeader>
+              <SortableHeader field="createdDate">{t('clients.table.created')}</SortableHeader>
+              <SortableHeader field="lastInteraction">{t('clients.table.lastInteraction')}</SortableHeader>
+              <SortableHeader field="status">{t('clients.table.status')}</SortableHeader>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+          </TableHeader>
+          <TableBody>
+            {clients.map((client) => (
+              <TableRow 
+                key={client.id}
+                className="cursor-pointer hover:bg-muted/50 transition-colors"
+                onClick={() => onClientClick(client)}
+              >
+                <TableCell className="font-medium">{client.name}</TableCell>
+                <TableCell>{client.industry}</TableCell>
+                <TableCell>
+                  <div className="flex gap-1 flex-wrap">
+                    {client.tags.slice(0, 2).map((tag, index) => (
+                      <Badge key={index} variant="secondary" className="text-xs">
+                        {tag}
+                      </Badge>
+                    ))}
+                    {client.tags.length > 2 && (
+                      <Badge variant="outline" className="text-xs">
+                        +{client.tags.length - 2}
+                      </Badge>
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Badge className={`${getStageColor(client.stage)} text-white text-xs`}>
+                    {client.stage}
+                  </Badge>
+                </TableCell>
+                <TableCell>{client.owner}</TableCell>
+                <TableCell>{client.country}</TableCell>
+                <TableCell className="text-center">{client.contactsCount}</TableCell>
+                <TableCell className="font-medium">{formatCurrency(client.totalDealValue)}</TableCell>
+                <TableCell>{new Date(client.createdDate).toLocaleDateString()}</TableCell>
+                <TableCell>{formatLastInteraction(client.lastInteraction)}</TableCell>
+                <TableCell>
+                  <Badge variant={client.status === 'Active' ? 'default' : 'secondary'}>
+                    {client.status}
+                  </Badge>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </>
   );
 }

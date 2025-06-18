@@ -44,10 +44,10 @@ export const FiltersPopoverContent = ({ filters, onFiltersChange, onClose }: Fil
     { value: "Emily Davis", label: "Emily Davis" }
   ], []);
   const stages = useMemo(() => [
-    { value: "Lead", label: t('clientStages.lead') },
-    { value: "Prospect", label: t('clientStages.prospect') },
-    { value: "Active", label: t('clientStages.active') },
-    { value: "Inactive", label: t('clientStages.inactive') }
+    { value: "lead", label: t('clientStages.lead') },
+    { value: "prospect", label: t('clientStages.prospect') },
+    { value: "active", label: t('clientStages.active') },
+    { value: "inactive", label: t('clientStages.inactive') }
   ], [t]);
   const industries = useMemo(() => [
     { value: "Technology", label: t('industries.technology') },

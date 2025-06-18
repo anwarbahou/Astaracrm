@@ -1,156 +1,35 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Client } from "@/types/client";
+import { supabase } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
 
-// Mock client data with enhanced fields
-const initialClients: Client[] = [
-    {
-      id: 1,
-      name: "Acme Corporation",
-      email: "contact@acme.com",
-      phone: "+212 661 234567",
-      industry: "Technology",
-      stage: "Active",
-      tags: ["VIP", "Enterprise"],
-      owner: "John Smith",
-      country: "Morocco",
-      contactsCount: 5,
-      totalDealValue: 1450000,
-      createdDate: "2023-01-15",
-      lastInteraction: "2025-06-13",
-      status: "Active",
-      avatar: "",
-      notes: "Key client in the technology sector. Interested in expanding their digital infrastructure."
-    },
-    {
-      id: 2,
-      name: "Tech Solutions Ltd",
-      email: "info@techsolutions.com",
-      phone: "+212 661 987654",
-      industry: "Technology",
-      stage: "Active",
-      tags: ["High Value", "SMB"],
-      owner: "Sarah Johnson",
-      country: "France",
-      contactsCount: 3,
-      totalDealValue: 895000,
-      createdDate: "2023-03-20",
-      lastInteraction: "2025-06-08",
-      status: "Active",
-      avatar: "",
-      notes: "Growing tech company looking for innovative solutions."
-    },
-    {
-      id: 3,
-      name: "Global Industries",
-      email: "contact@global.com",
-      phone: "+212 661 456789",
-      industry: "Manufacturing",
-      stage: "Inactive",
-      tags: ["International"],
-      owner: "Mike Wilson",
-      country: "Spain",
-      contactsCount: 2,
-      totalDealValue: 230000,
-      createdDate: "2022-11-10",
-      lastInteraction: "2025-05-25",
-      status: "Active",
-      avatar: "",
-      notes: "Manufacturing company with operations across Europe."
-    },
-    {
-      id: 4,
-      name: "HealthCare Plus",
-      email: "admin@healthcareplus.com",
-      phone: "+212 661 321098",
-      industry: "Healthcare",
-      stage: "Active",
-      tags: ["Healthcare", "Critical"],
-      owner: "Emily Davis",
-      country: "Morocco",
-      contactsCount: 8,
-      totalDealValue: 672000,
-      createdDate: "2023-06-05",
-      lastInteraction: "2025-06-14",
-      status: "Active",
-      avatar: "",
-      notes: "Leading healthcare provider focused on digital transformation."
-    },
-    {
-      id: 5,
-      name: "Financial Services Corp",
-      email: "contact@finserv.com",
-      phone: "+212 661 654321",
-      industry: "Finance",
-      stage: "Prospect",
-      tags: ["Finance", "Urgent"],
-      owner: "David Brown",
-      country: "UAE",
-      contactsCount: 4,
-      totalDealValue: 0,
-      createdDate: "2024-01-12",
-      lastInteraction: "2025-05-15",
-      status: "Active",
-      avatar: "",
-      notes: "Potential client in the financial services sector."
-    },
-    {
-      id: 6,
-      name: "Retail Masters",
-      email: "hello@retailmasters.com",
-      phone: "+212 661 789012",
-      industry: "Retail",
-      stage: "Lead",
-      tags: ["Retail", "SMB"],
-      owner: "John Smith",
-      country: "Morocco",
-      contactsCount: 2,
-      totalDealValue: 125000,
-      createdDate: "2024-02-28",
-      lastInteraction: "2025-06-10",
-      status: "Active",
-      avatar: "",
-      notes: "Retail chain looking to modernize their systems."
-    },
-    {
-      id: 7,
-      name: "Education Excellence",
-      email: "info@eduexcellence.com",
-      phone: "+212 661 345678",
-      industry: "Education",
-      stage: "Active",
-      tags: ["Education", "Non-profit"],
-      owner: "Sarah Johnson",
-      country: "Morocco",
-      contactsCount: 6,
-      totalDealValue: 445000,
-      createdDate: "2023-09-15",
-      lastInteraction: "2025-06-12",
-      status: "Active",
-      avatar: "",
-      notes: "Educational institution focused on improving learning outcomes."
-    },
-    {
-      id: 8,
-      name: "Consulting Pro",
-      email: "team@consultingpro.com",
-      phone: "+212 661 567890",
-      industry: "Consulting",
-      stage: "Active",
-      tags: ["Consulting", "Strategic"],
-      owner: "Mike Wilson",
-      country: "France",
-      contactsCount: 3,
-      totalDealValue: 780000,
-      createdDate: "2023-04-22",
-      lastInteraction: "2025-06-08",
-      status: "Active",
-      avatar: "",
-      notes: "Strategic consulting firm specializing in digital transformation."
-    }
-];
+type SupabaseClient = Database['public']['Tables']['clients']['Row'];
+
+// Function to convert Supabase client to our Client type
+const convertSupabaseClient = (supabaseClient: any): Client => ({
+  id: supabaseClient.id,
+  name: supabaseClient.name,
+  email: supabaseClient.email || '',
+  phone: supabaseClient.phone || '',
+  industry: supabaseClient.industry || '',
+  stage: supabaseClient.stage || 'lead',
+  tags: supabaseClient.tags || [],
+  owner: supabaseClient.owner ? 
+    `${supabaseClient.owner.first_name || ''} ${supabaseClient.owner.last_name || ''}`.trim() || supabaseClient.owner.email 
+    : 'Unassigned',
+  country: supabaseClient.country || '',
+  contactsCount: supabaseClient.contacts_count || 0,
+  totalDealValue: supabaseClient.total_deal_value || 0,
+  createdDate: supabaseClient.created_at ? new Date(supabaseClient.created_at).toISOString().split('T')[0] : '',
+  lastInteraction: supabaseClient.updated_at ? new Date(supabaseClient.updated_at).toISOString().split('T')[0] : '',
+  status: supabaseClient.status === 'active' ? 'Active' : 'Archived',
+  notes: supabaseClient.notes || '',
+});
 
 export const useClients = () => {
-    const [clients] = useState<Client[]>(initialClients);
+    const [clients, setClients] = useState<Client[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [addClientOpen, setAddClientOpen] = useState(false);
     const [selectedClient, setSelectedClient] = useState<Client | null>(null);
@@ -168,6 +47,45 @@ export const useClients = () => {
         lastInteractionTo: '',
     });
 
+    const fetchClients = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            
+            const { data, error: supabaseError } = await supabase
+                .from('clients')
+                .select(`
+                    *,
+                    owner:owner_id (
+                        id,
+                        first_name,
+                        last_name,
+                        email
+                    )
+                `)
+                .order('created_at', { ascending: false });
+
+            if (supabaseError) {
+                console.error('Error fetching clients:', supabaseError);
+                setError(supabaseError.message);
+                return;
+            }
+
+            const convertedClients = data?.map(convertSupabaseClient) || [];
+            setClients(convertedClients);
+            
+        } catch (err) {
+            console.error('Unexpected error fetching clients:', err);
+            setError('An unexpected error occurred');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchClients();
+    }, []);
+
     const handleClientClick = (client: Client) => {
         setSelectedClient(client);
         setProfileModalOpen(true);
@@ -178,8 +96,14 @@ export const useClients = () => {
         console.log('Saving client:', updatedClient);
     };
 
+    const refreshClients = () => {
+        fetchClients();
+    };
+
     return {
         clients,
+        loading,
+        error,
         searchQuery,
         setSearchQuery,
         addClientOpen,
@@ -191,5 +115,6 @@ export const useClients = () => {
         setFilters,
         handleClientClick,
         handleSaveClient,
+        refreshClients,
     };
 }

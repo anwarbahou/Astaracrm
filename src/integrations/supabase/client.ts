@@ -2,8 +2,24 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = "https://onyyuetabxbovxknugfa.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ueXl1ZXRhYnhib3Z4a251Z2ZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4NjU0NzMsImV4cCI6MjA2NTQ0MTQ3M30.IcdJ8ivItWKb_r834UirOmgW--T3lszjHMcx7yBGYus";
+// Debug: Log environment variables
+console.log('=== SUPABASE CLIENT DEBUG ===');
+console.log('VITE_SUPABASE_URL:', import.meta.env.VITE_SUPABASE_URL);
+console.log('VITE_SUPABASE_ANON_KEY:', import.meta.env.VITE_SUPABASE_ANON_KEY);
+console.log('All import.meta.env:', import.meta.env);
+console.log('================================');
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+console.log('Final SUPABASE_URL:', SUPABASE_URL);
+console.log('Final SUPABASE_PUBLISHABLE_KEY:', SUPABASE_PUBLISHABLE_KEY ? 'SET' : 'NOT SET');
+
+if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+  console.error('❌ Missing Supabase environment variables!');
+  console.log('Available env vars:', Object.keys(import.meta.env));
+  throw new Error('Missing Supabase environment variables. Please check your .env file.');
+}
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";

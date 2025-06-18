@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -31,15 +30,7 @@
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
     
-    /* Enhanced sidebar variables */
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 10.6% 64.9%;
+
   }
 
   .dark {
@@ -68,15 +59,7 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
     
-    /* Enhanced dark sidebar variables */
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 224.3 76.3% 94.1%;
-    --sidebar-primary-foreground: 220.9 39.3% 11%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 10.6% 64.9%;
+
   }
 }
 
@@ -114,7 +97,7 @@
   }
   
   .page-container {
-    @apply flex-1 p-4 md:p-6 transition-all duration-300;
+    @apply flex-1 p-3 sm:p-4 md:p-6 transition-all duration-300;
   }
   
   .crm-card {
@@ -131,20 +114,203 @@
   
   /* Enhanced sidebar navigation styling */
   .crm-nav-item {
-    @apply relative rounded-xl transition-all duration-300 ease-in-out;
+    @apply relative rounded-lg transition-all duration-200 ease-in-out;
   }
   
   .crm-nav-item:hover {
-    @apply bg-sidebar-accent/50 transform scale-[1.02] shadow-sm;
+    @apply bg-muted text-foreground;
   }
   
   .crm-nav-item.active {
-    @apply bg-sidebar-accent text-sidebar-accent-foreground shadow-md;
+    @apply bg-primary text-primary-foreground font-medium;
   }
   
   .crm-nav-item.active::before {
     content: '';
-    @apply absolute left-0 top-1/2 w-1 h-6 bg-primary rounded-r-full transform -translate-y-1/2 transition-all duration-300;
+    @apply absolute left-0 top-1/2 w-1 h-6 bg-primary rounded-r-full transform -translate-y-1/2 transition-all duration-200;
+  }
+
+  /* Responsive Layout Classes */
+  .responsive-grid-1-2-4 {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4;
+  }
+
+  .responsive-grid-1-2-3 {
+    @apply grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4;
+  }
+
+  .responsive-grid-1-2 {
+    @apply grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6;
+  }
+
+  .responsive-header {
+    @apply flex flex-col sm:flex-row sm:items-center justify-between gap-4;
+  }
+
+  .responsive-header-content {
+    @apply min-w-0 flex-1;
+  }
+
+  .responsive-title {
+    @apply text-2xl sm:text-3xl font-bold truncate;
+  }
+
+  .responsive-subtitle {
+    @apply text-muted-foreground mt-1 text-sm sm:text-base;
+  }
+
+  .responsive-button {
+    @apply w-full sm:w-auto text-sm;
+  }
+
+  .responsive-card {
+    @apply p-4 sm:p-6;
+  }
+
+  .responsive-spacing {
+    @apply space-y-4 sm:space-y-6 px-1 sm:px-0;
+  }
+
+  /* Mobile-first responsive table alternatives */
+  .mobile-card-view {
+    @apply lg:hidden space-y-3;
+  }
+
+  .desktop-table-view {
+    @apply hidden lg:block overflow-x-auto;
+  }
+
+  /* Touch-friendly button sizes */
+  .touch-button {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
+  /* Responsive text sizing */
+  .responsive-text-sm {
+    @apply text-xs sm:text-sm;
+  }
+
+  .responsive-text-base {
+    @apply text-sm sm:text-base;
+  }
+
+  .responsive-text-lg {
+    @apply text-base sm:text-lg;
+  }
+
+  /* Mobile navigation improvements */
+  .mobile-nav-trigger {
+    @apply md:hidden fixed top-4 left-4 z-50 bg-background shadow-md;
+  }
+
+  /* Responsive padding and margins */
+  .responsive-padding-x {
+    @apply px-3 sm:px-6;
+  }
+
+  .responsive-padding-y {
+    @apply py-3 sm:py-4 md:py-6;
+  }
+
+  .responsive-margin-x {
+    @apply mx-3 sm:mx-6;
+  }
+
+  .responsive-gap {
+    @apply gap-2 sm:gap-3 md:gap-4;
+  }
+
+  /* Responsive flex layouts */
+  .responsive-flex-col {
+    @apply flex flex-col sm:flex-row sm:items-center;
+  }
+
+  .responsive-flex-wrap {
+    @apply flex flex-wrap gap-2 sm:gap-3;
+  }
+
+  /* Responsive overflow handling */
+  .responsive-overflow {
+    @apply overflow-hidden sm:overflow-visible;
+  }
+
+  .responsive-truncate {
+    @apply truncate;
+  }
+
+  /* Mobile menu optimizations */
+  .mobile-menu-item {
+    @apply py-3 px-4 text-base;
+  }
+
+  /* Responsive hover effects (disabled on touch devices) */
+  @media (hover: hover) and (pointer: fine) {
+    .desktop-hover:hover {
+      @apply transform scale-[1.02] transition-transform duration-200;
+    }
+  }
+
+  /* Better touch targets for mobile */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+  }
+
+  /* Responsive search bar */
+  .responsive-search {
+    @apply w-full sm:w-60 lg:w-80;
+  }
+
+  /* Responsive dropdown/modal positioning */
+  .responsive-dropdown {
+    @apply w-48 sm:w-56;
+  }
+
+  /* Mobile-optimized form layouts */
+  .responsive-form-row {
+    @apply grid grid-cols-1 sm:grid-cols-2 gap-4;
+  }
+
+  /* Better responsive spacing for cards */
+  .responsive-card-spacing {
+    @apply space-y-3 sm:space-y-4;
+  }
+
+  /* Responsive icon sizing */
+  .responsive-icon-sm {
+    @apply h-3 w-3 sm:h-4 sm:w-4;
+  }
+
+  .responsive-icon-base {
+    @apply h-4 w-4 sm:h-5 sm:w-5;
+  }
+
+  /* Mobile-first navigation spacing */
+  .responsive-nav-padding {
+    @apply px-3 py-2.5 sm:px-4 sm:py-3;
+  }
+
+  /* Responsive table alternatives */
+  .responsive-table-row {
+    @apply flex flex-col sm:flex-row sm:items-center justify-between p-3 gap-3 sm:gap-2;
+  }
+
+  /* Better responsive modals */
+  .responsive-modal {
+    @apply w-full max-w-lg mx-4 sm:mx-auto;
+  }
+
+  /* Responsive header heights */
+  .responsive-header-height {
+    @apply h-14 sm:h-16;
+  }
+
+  /* Responsive sidebar handling */
+  .responsive-sidebar-margin {
+    @apply ml-0 md:ml-64;
+  }
+
+  .responsive-sidebar-margin-collapsed {
+    @apply ml-0 md:ml-16;
   }
 }
 

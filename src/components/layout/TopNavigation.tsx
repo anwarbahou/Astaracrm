@@ -1,9 +1,8 @@
-
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Plus, User, Bell } from "lucide-react";
+import { Search, Plus, User, Bell, LogOut, RefreshCw } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,12 +18,91 @@ import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ThemeToggle } from "./ThemeToggle";
 import { buttonVariants, springConfig } from "@/lib/animations";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+
+const getRoleIcon = (role: string | null) => {
+  switch (role) {
+    case 'admin':
+      return '👑';
+    case 'manager':
+      return '🛡️';
+    case 'user':
+      return '👤';
+    default:
+      return '👤';
+  }
+};
+
+const getRoleColor = (role: string | null) => {
+  switch (role) {
+    case 'admin':
+      return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+    case 'manager':
+      return 'bg-blue-100 text-blue-800 border-blue-200';
+    case 'user':
+      return 'bg-gray-100 text-gray-800 border-gray-200';
+    default:
+      return 'bg-gray-100 text-gray-800 border-gray-200';
+  }
+};
 
 export function TopNavigation() {
-  const [quickAddOpen, setQuickAddOpen] = useState(false);
-  const [notificationOpen, setNotificationOpen] = useState(false);
-  const [notificationCount] = useState(3); // Mock unread count
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [showQuickAdd, setShowQuickAdd] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const { 
+    user, 
+    userProfile, 
+    signOut, 
+    isAdmin, 
+    isManager,
+    forceRefresh 
+  } = useAuth();
+
+  const handleSignOut = async () => {
+    try {
+      const { error } = await signOut();
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to sign out",
+          variant: "destructive",
+        });
+      } else {
+        navigate("/login");
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to sign out",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const getUserDisplayName = () => {
+    if (userProfile?.first_name && userProfile?.last_name) {
+      return `${userProfile.first_name} ${userProfile.last_name}`;
+    }
+    if (userProfile?.first_name) {
+      return userProfile.first_name;
+    }
+    return user?.email?.split('@')[0] || 'User';
+  };
+
+  const getUserInitials = () => {
+    if (userProfile?.first_name && userProfile?.last_name) {
+      return `${userProfile.first_name[0]}${userProfile.last_name[0]}`.toUpperCase();
+    }
+    if (userProfile?.first_name) {
+      return userProfile.first_name[0].toUpperCase();
+    }
+    return user?.email?.[0].toUpperCase() || 'U';
+  };
   
   return (
     <>
@@ -34,87 +112,126 @@ export function TopNavigation() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
-        <div className="flex h-16 items-center px-6 gap-4">
+        <div className="flex h-14 sm:h-16 items-center px-3 sm:px-6 gap-2 sm:gap-4">
+          {/* Left side - Theme Toggle, Language Switcher, and Notifications */}
+          <motion.div 
+            className="flex items-center gap-2 sm:gap-3"
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            {/* Theme Toggle */}
+            <div className="hidden sm:block">
+              <ThemeToggle />
+            </div>
+            
+            {/* Language Switcher - Hidden on mobile */}
+            <div className="hidden md:block">
+              <LanguageSwitcher />
+            </div>
+            
+            {/* Enhanced Notifications with animated bell */}
+            <motion.div
+              variants={buttonVariants}
+              whileHover="hover"
+              whileTap="tap"
+            >
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="relative h-8 w-8 sm:h-9 sm:w-9 hover:bg-muted/50 transition-colors duration-200 rounded-xl"
+                onClick={() => setShowNotifications(true)}
+                aria-label={t('app.topNav.notifications.ariaLabel')}
+              >
+                <Bell className="h-4 w-4 transition-transform duration-200" />
+                <AnimatePresence>
+                  {showNotifications && (
+                    <motion.div
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0, opacity: 0 }}
+                      transition={springConfig}
+                      className="absolute -top-1 -right-1"
+                    >
+                      <Badge className="h-4 w-4 sm:h-5 sm:w-5 p-0 text-xs bg-red-500 text-white border-0 flex items-center justify-center">
+                        <motion.span
+                          animate={{ scale: [1, 1.1, 1] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                        >
+                          3
+                        </motion.span>
+                      </Badge>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </Button>
+            </motion.div>
+          </motion.div>
+
+          {/* Right side - Search, User Role Badge, Quick Actions, and User Profile */}
           <div className="flex-1 flex items-center justify-end">
             <motion.div 
-              className="flex items-center gap-3"
+              className="flex items-center gap-2 sm:gap-3"
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              {/* Enhanced Search Bar */}
+              {/* Enhanced Search Bar - Responsive */}
               <motion.div 
-                className="relative"
+                className="relative hidden sm:block"
                 whileHover={{ scale: 1.02 }}
                 transition={springConfig}
               >
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 rtl:right-3 rtl:left-auto" />
                 <Input
                   placeholder={t("app.topNav.searchPlaceholder")}
-                  className="pl-10 w-80 border-border/50 focus:border-primary/50 transition-all duration-200 focus:shadow-md rtl:pr-10 rtl:pl-4"
+                  className="pl-10 w-60 lg:w-80 border-border/50 focus:border-primary/50 transition-all duration-200 focus:shadow-md rtl:pr-10 rtl:pl-4 text-sm"
                 />
               </motion.div>
               
-              {/* Theme Toggle */}
-              <ThemeToggle />
+              {/* Mobile Search Button */}
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="sm:hidden h-8 w-8 rounded-lg"
+              >
+                <Search className="h-4 w-4" />
+              </Button>
               
-              {/* Language Switcher */}
-              <LanguageSwitcher />
+              {/* User Role Badge - Hidden on small screens */}
+              {userProfile?.role && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3 }}
+                  className="hidden lg:block"
+                >
+                  <Badge className={`${getRoleColor(userProfile.role)} text-xs px-2 py-1 font-medium`}>
+                    <span className="mr-1">{getRoleIcon(userProfile.role)}</span>
+                    {userProfile.role.charAt(0).toUpperCase() + userProfile.role.slice(1)}
+                  </Badge>
+                </motion.div>
+              )}
               
-              {/* Enhanced Notifications with animated bell */}
+              {/* Quick Actions - Hidden on mobile */}
               <motion.div
                 variants={buttonVariants}
                 whileHover="hover"
                 whileTap="tap"
+                className="hidden sm:block"
               >
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  className="relative h-9 w-9 hover:bg-muted/50 transition-colors duration-200 rounded-xl"
-                  onClick={() => setNotificationOpen(true)}
-                  aria-label={t('app.topNav.notifications.ariaLabel')}
+                  className="h-9 w-9 hover:bg-muted/50 transition-colors duration-200 rounded-xl"
+                  onClick={() => setShowQuickAdd(true)}
+                  aria-label={t('app.topNav.quickAdd.ariaLabel')}
                 >
-                  <Bell className="h-4 w-4 transition-transform duration-200" />
-                  <AnimatePresence>
-                    {notificationCount > 0 && (
-                      <motion.div
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0, opacity: 0 }}
-                        transition={springConfig}
-                        className="absolute -top-1 -right-1"
-                      >
-                        <Badge className="h-5 w-5 p-0 text-xs bg-red-500 text-white border-0 flex items-center justify-center">
-                          <motion.span
-                            animate={{ scale: [1, 1.1, 1] }}
-                            transition={{ duration: 2, repeat: Infinity }}
-                          >
-                            {notificationCount}
-                          </motion.span>
-                        </Badge>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  <Plus className="h-4 w-4 transition-transform duration-200" />
                 </Button>
               </motion.div>
-              
-              {/* Quick Actions */}
-              <motion.div
-                variants={buttonVariants}
-                whileHover="hover"
-                whileTap="tap"
-              >
-                <Button 
-                  size="sm" 
-                  className="gap-2 shadow-md hover:shadow-lg transition-shadow duration-200" 
-                  onClick={() => setQuickAddOpen(true)}
-                >
-                  <Plus size={16} />
-                  {t('app.topNav.quickAdd')}
-                </Button>
-              </motion.div>
-              
-              {/* Enhanced User Menu with Profile Image */}
+
+              {/* User Profile Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <motion.div
@@ -124,48 +241,64 @@ export function TopNavigation() {
                   >
                     <Button 
                       variant="ghost" 
-                      className="relative h-9 w-9 rounded-full hover:bg-muted/50 transition-colors duration-200"
+                      className="relative h-8 w-8 sm:h-9 sm:w-9 rounded-full hover:bg-muted/50 transition-colors duration-200 p-0"
                       aria-label={t('app.topNav.userMenu.ariaLabel')}
                     >
-                      <Avatar className="h-9 w-9">
-                        <AvatarImage 
-                          src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" 
-                          alt="John Doe Profile"
-                        />
-                        <AvatarFallback className="bg-primary text-primary-foreground">JD</AvatarFallback>
+                      <Avatar className="h-8 w-8 sm:h-9 sm:w-9">
+                        <AvatarImage src={userProfile?.avatar_url || ""} />
+                        <AvatarFallback className="text-xs sm:text-sm">
+                          {getUserInitials()}
+                        </AvatarFallback>
                       </Avatar>
                     </Button>
                   </motion.div>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent 
-                  className="w-56 bg-popover border border-border shadow-xl rounded-xl z-50" 
-                  align="end" 
-                  forceMount
-                  asChild
-                >
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <div className="px-2 py-1.5">
-                      <p className="text-sm font-medium">{t('app.topNav.userMenu.name')}</p>
-                      <p className="text-xs text-muted-foreground">{t('app.topNav.userMenu.email')}</p>
+                <DropdownMenuContent align="end" className="w-48 sm:w-56">
+                  <div className="flex items-center gap-2 p-2">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={userProfile?.avatar_url || ""} />
+                      <AvatarFallback className="text-xs">
+                        {getUserInitials()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col space-y-1 min-w-0">
+                      <p className="text-sm font-medium leading-none truncate">{getUserDisplayName()}</p>
+                      <p className="text-xs leading-none text-muted-foreground truncate">
+                        {user?.email}
+                      </p>
+                      {userProfile?.role && (
+                        <Badge className={`${getRoleColor(userProfile.role)} text-xs w-fit px-1 py-0`}>
+                          {userProfile.role}
+                        </Badge>
+                      )}
                     </div>
+                  </div>
+                  <DropdownMenuSeparator />
+                  
+                  {/* Mobile-only items */}
+                  <div className="sm:hidden">
+                    <DropdownMenuItem onClick={() => setShowQuickAdd(true)}>
+                      <Plus className="mr-2 h-4 w-4" />
+                      {t('app.topNav.quickAdd.label')}
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem className="hover:bg-muted/50 transition-colors duration-200 rounded-lg mx-1">
-                      <User className="mr-2 h-4 w-4" />
-                      {t('app.topNav.userMenu.profile')}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="hover:bg-muted/50 transition-colors duration-200 rounded-lg mx-1">
-                      {t('app.topNav.userMenu.settings')}
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem className="hover:bg-destructive/10 text-destructive focus:text-destructive transition-colors duration-200 rounded-lg mx-1">
-                      {t('app.topNav.userMenu.signOut')}
-                    </DropdownMenuItem>
-                  </motion.div>
+                  </div>
+                  
+                  <DropdownMenuItem>
+                    <User className="mr-2 h-4 w-4" />
+                    {t('app.topNav.userMenu.profile')}
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem onClick={forceRefresh}>
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                    {t('app.topNav.userMenu.refresh')}
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    {t('app.topNav.userMenu.signOut')}
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </motion.div>
@@ -173,8 +306,11 @@ export function TopNavigation() {
         </div>
       </motion.header>
 
-      <QuickAddModal open={quickAddOpen} onOpenChange={setQuickAddOpen} />
-      <NotificationSidebar open={notificationOpen} onOpenChange={setNotificationOpen} />
+      <QuickAddModal open={showQuickAdd} onOpenChange={setShowQuickAdd} />
+      <NotificationSidebar 
+        open={showNotifications}
+        onOpenChange={setShowNotifications}
+      />
     </>
   );
 }

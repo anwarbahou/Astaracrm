@@ -11,9 +11,10 @@ import { AddClientForm } from "@/components/clients/AddClientForm";
 interface AddClientModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onClientAdded?: () => void;
 }
 
-export function AddClientModal({ open, onOpenChange }: AddClientModalProps) {
+export function AddClientModal({ open, onOpenChange, onClientAdded }: AddClientModalProps) {
   const { t } = useTranslation();
 
   return (
@@ -22,7 +23,7 @@ export function AddClientModal({ open, onOpenChange }: AddClientModalProps) {
         <DialogHeader>
           <DialogTitle>{t('addClientModal.title')}</DialogTitle>
         </DialogHeader>
-        <AddClientForm onOpenChange={onOpenChange} />
+        <AddClientForm onOpenChange={onOpenChange} onClientAdded={onClientAdded} />
       </DialogContent>
     </Dialog>
   );

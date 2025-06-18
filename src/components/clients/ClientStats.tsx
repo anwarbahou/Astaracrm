@@ -1,4 +1,3 @@
-
 import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Client } from "@/types/client";
@@ -19,8 +18,8 @@ export function ClientStats({ clients }: ClientStatsProps) {
     const { t } = useTranslation();
 
     const totalRevenue = clients.reduce((sum, client) => sum + client.totalDealValue, 0);
-    const activeClients = clients.filter(c => c.stage === "Active").length;
-    const prospects = clients.filter(c => c.stage === "Prospect").length;
+    const activeClients = clients.filter(c => c.stage === "active").length;
+    const prospects = clients.filter(c => c.stage === "prospect").length;
 
     return (
         <div className="grid gap-4 md:grid-cols-4">

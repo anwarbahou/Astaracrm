@@ -8,8 +8,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { DealStage } from "@/types/deal";
+import { useUsersForSelection } from "@/hooks/useUsers";
 
 interface DealDetailsFieldsProps {
   formData: {
@@ -18,6 +20,7 @@ interface DealDetailsFieldsProps {
     expectedCloseDate: string;
     source: string;
     owner: string;
+    ownerId: string;
     priority: 'Low' | 'Medium' | 'High';
   };
   onUpdateField: (field: string, value: any) => void;
@@ -25,6 +28,31 @@ interface DealDetailsFieldsProps {
 
 export function DealDetailsFields({ formData, onUpdateField }: DealDetailsFieldsProps) {
   const { t } = useTranslation();
+  const { users, isLoading: isLoadingUsers, currentUser, userRole } = useUsersForSelection();
+
+  const handleOwnerSelect = (ownerId: string) => {
+    const selectedUser = users.find(u => u.id === ownerId);
+    if (selectedUser) {
+      onUpdateField('ownerId', ownerId);
+      onUpdateField('owner', selectedUser.name);
+    }
+  };
+
+  // Auto-select current user if they're not admin/manager and form is empty
+  React.useEffect(() => {
+    if (
+      !formData.ownerId && 
+      currentUser && 
+      userRole !== 'admin' && 
+      userRole !== 'manager' && 
+      users.length > 0
+    ) {
+      const currentUserOption = users.find(u => u.id === currentUser.id);
+      if (currentUserOption) {
+        handleOwnerSelect(currentUserOption.id);
+      }
+    }
+  }, [users, currentUser, userRole, formData.ownerId]);
 
   return (
     <>
@@ -79,18 +107,36 @@ export function DealDetailsFields({ formData, onUpdateField }: DealDetailsFields
 
       <div>
         <Label htmlFor="owner">{t('addDealModal.ownerLabel')}</Label>
-        <Select value={formData.owner} onValueChange={(value) => onUpdateField('owner', value)}>
+        <Select
+          value={formData.ownerId}
+          onValueChange={handleOwnerSelect}
+        >
           <SelectTrigger>
-            <SelectValue placeholder={t('addDealModal.ownerPlaceholder')} />
+            <SelectValue placeholder={isLoadingUsers ? "Loading users..." : t('addDealModal.ownerPlaceholder')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="John Doe">John Doe</SelectItem>
-            <SelectItem value="Sarah Smith">Sarah Smith</SelectItem>
-            <SelectItem value="Mike Johnson">Mike Johnson</SelectItem>
-            <SelectItem value="Emily Davis">Emily Davis</SelectItem>
-            <SelectItem value="David Wilson">David Wilson</SelectItem>
+            {users.map((user) => (
+              <SelectItem key={user.id} value={user.id}>
+                <div className="flex flex-col">
+                  <span className="font-medium">{user.name}</span>
+                  <span className="text-sm text-muted-foreground">
+                    {user.email} • {user.role}
+                  </span>
+                </div>
+              </SelectItem>
+            ))}
+            {users.length === 0 && !isLoadingUsers && (
+              <SelectItem value="no-users" disabled>
+                No users available
+              </SelectItem>
+            )}
           </SelectContent>
         </Select>
+        {userRole !== 'admin' && userRole !== 'manager' && (
+          <p className="text-xs text-muted-foreground mt-1">
+            You can only assign deals to yourself
+          </p>
+        )}
       </div>
 
       <div>

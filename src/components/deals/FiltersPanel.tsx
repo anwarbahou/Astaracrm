@@ -34,7 +34,7 @@ export function FiltersPanel({
   const { t } = useTranslation();
   const [localFilters, setLocalFilters] = useState<DealFilters>(filters);
 
-  const stages: DealStage[] = ['Prospect', 'Lead', 'Qualified', 'Negotiation', 'Won/Lost'];
+  const stages: DealStage[] = ['Prospect', 'Lead', 'Qualified', 'Proposal', 'Negotiation', 'Won/Lost'];
   const owners = ['John Doe', 'Sarah Smith', 'Mike Johnson', 'Emily Davis', 'David Wilson'];
   const sources = ['Website', 'Referral', 'Cold Outreach', 'LinkedIn', 'Existing Client'];
   const sourceKeys = ['website', 'referral', 'coldOutreach', 'linkedIn', 'existingClient'];

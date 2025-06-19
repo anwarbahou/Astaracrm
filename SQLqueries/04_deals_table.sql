@@ -1,10 +1,14 @@
 
+-- Create enums first
+CREATE TYPE deal_stage AS ENUM ('prospect', 'qualified', 'proposal', 'negotiation', 'won', 'lost');
+CREATE TYPE deal_priority AS ENUM ('low', 'medium', 'high');
+
 -- Deals table for sales opportunities
 CREATE TABLE IF NOT EXISTS deals (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     name TEXT NOT NULL,
     client_id UUID REFERENCES clients(id) ON DELETE SET NULL,
-    contact_id UUID REFERENCES contacts(id) ON DELETE SET NULL,
+    contact_id UUID, -- Will add foreign key constraint when contacts table exists
     value DECIMAL(15,2) NOT NULL DEFAULT 0,
     currency TEXT DEFAULT 'MAD',
     stage deal_stage DEFAULT 'prospect',

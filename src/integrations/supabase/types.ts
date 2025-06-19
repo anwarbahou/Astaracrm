@@ -80,6 +80,84 @@ export type Database = {
           },
         ]
       }
+      deals: {
+        Row: {
+          actual_close_date: string | null
+          client_id: string | null
+          contact_id: string | null
+          created_at: string | null
+          currency: string | null
+          description: string | null
+          expected_close_date: string | null
+          id: string
+          name: string
+          notes: string | null
+          owner_id: string | null
+          priority: Database["public"]["Enums"]["deal_priority"] | null
+          probability: number | null
+          source: string | null
+          stage: Database["public"]["Enums"]["deal_stage"] | null
+          tags: string[] | null
+          updated_at: string | null
+          value: number
+        }
+        Insert: {
+          actual_close_date?: string | null
+          client_id?: string | null
+          contact_id?: string | null
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          expected_close_date?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          owner_id?: string | null
+          priority?: Database["public"]["Enums"]["deal_priority"] | null
+          probability?: number | null
+          source?: string | null
+          stage?: Database["public"]["Enums"]["deal_stage"] | null
+          tags?: string[] | null
+          updated_at?: string | null
+          value?: number
+        }
+        Update: {
+          actual_close_date?: string | null
+          client_id?: string | null
+          contact_id?: string | null
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          expected_close_date?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          owner_id?: string | null
+          priority?: Database["public"]["Enums"]["deal_priority"] | null
+          probability?: number | null
+          source?: string | null
+          stage?: Database["public"]["Enums"]["deal_stage"] | null
+          tags?: string[] | null
+          updated_at?: string | null
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deals_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deals_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       users: {
         Row: {
           avatar_url: string | null

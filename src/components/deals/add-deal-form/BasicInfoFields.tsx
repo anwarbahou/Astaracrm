@@ -2,12 +2,21 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useTranslation } from "react-i18next";
+import { useClientsForSelection } from "@/hooks/useClients";
 
 interface BasicInfoFieldsProps {
   formData: {
     name: string;
     client: string;
+    clientId: string;
     value: number;
     notes: string;
   };
@@ -16,6 +25,15 @@ interface BasicInfoFieldsProps {
 
 export function BasicInfoFields({ formData, onUpdateField }: BasicInfoFieldsProps) {
   const { t } = useTranslation();
+  const { clients, isLoading: isLoadingClients } = useClientsForSelection();
+
+  const handleClientSelect = (clientId: string) => {
+    const selectedClient = clients.find(c => c.id === clientId);
+    if (selectedClient) {
+      onUpdateField('clientId', clientId);
+      onUpdateField('client', selectedClient.name);
+    }
+  };
 
   return (
     <>
@@ -32,13 +50,31 @@ export function BasicInfoFields({ formData, onUpdateField }: BasicInfoFieldsProp
 
       <div>
         <Label htmlFor="client">{t('addDealModal.clientLabel')}</Label>
-        <Input
-          id="client"
-          value={formData.client}
-          onChange={(e) => onUpdateField('client', e.target.value)}
-          placeholder={t('addDealModal.clientPlaceholder')}
-          required
-        />
+        <Select
+          value={formData.clientId}
+          onValueChange={handleClientSelect}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder={isLoadingClients ? "Loading clients..." : t('addDealModal.clientPlaceholder')} />
+          </SelectTrigger>
+          <SelectContent>
+            {clients.map((client) => (
+              <SelectItem key={client.id} value={client.id}>
+                <div className="flex flex-col">
+                  <span className="font-medium">{client.name}</span>
+                  {client.email && (
+                    <span className="text-sm text-muted-foreground">{client.email}</span>
+                  )}
+                </div>
+              </SelectItem>
+            ))}
+            {clients.length === 0 && !isLoadingClients && (
+              <SelectItem value="no-clients" disabled>
+                No clients available
+              </SelectItem>
+            )}
+          </SelectContent>
+        </Select>
       </div>
 
       <div>

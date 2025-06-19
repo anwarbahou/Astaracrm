@@ -2,31 +2,35 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useQueryClient } from "@tanstack/react-query";
 import { 
   Search, 
   Plus,
-  Filter
+  Filter,
+  Upload
 } from "lucide-react";
 import { Deal, DealFilters, DealStage } from '@/types/deal';
 import { mockDeals, pipelineStages } from '@/data/mockDeals';
 import { PipelineBoard } from '@/components/deals/PipelineBoard';
 import { DealModal } from '@/components/deals/DealModal';
 import { AddDealModal } from '@/components/deals/AddDealModal';
+import { ImportDealsModal } from '@/components/deals/ImportDealsModal';
 import { DealsFilterDropdown } from '@/components/deals/DealsFilterDropdown';
 import { DealsViewToggle } from '@/components/deals/DealsViewToggle';
 import { DealsListTable } from '@/components/deals/DealsListTable';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { useDeals } from "@/hooks/useDeals";
 
 export default function Deals() {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"kanban" | "list">("kanban");
-  const [deals, setDeals] = useState<Deal[]>(mockDeals);
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
   const [dealModalOpen, setDealModalOpen] = useState(false);
   const [addDealModalOpen, setAddDealModalOpen] = useState(false);
+  const [importModalOpen, setImportModalOpen] = useState(false);
   const [addDealStage, setAddDealStage] = useState<DealStage>('Prospect');
   const [filters, setFilters] = useState<DealFilters>({
     stages: [],
@@ -39,6 +43,24 @@ export default function Deals() {
   });
   
   const { toast } = useToast();
+  
+  // Try to use backend data, fallback to mock data if deals table doesn't exist
+  const { 
+    deals: backendDeals, 
+    isLoading: isLoadingDeals, 
+    error: dealsError,
+    createDeal, 
+    createDealAsync,
+    updateDeal, 
+    deleteDeal
+  } = useDeals();
+  
+  // Use backend deals if available, otherwise fallback to mock data
+  const [localMockDeals, setLocalMockDeals] = useState<Deal[]>(mockDeals);
+  const deals = dealsError ? localMockDeals : (backendDeals || []);
+  const isUsingMockData = !!dealsError;
+
+  const queryClient = useQueryClient();
 
   const filteredDeals = deals.filter(deal => {
     const matchesSearch = 
@@ -64,15 +86,23 @@ export default function Deals() {
   };
 
   const handleDealMove = (dealId: string, newStage: DealStage) => {
-    setDeals(prev => prev.map(deal => 
-      deal.id === dealId 
-        ? { 
-            ...deal, 
-            stage: newStage,
-            updatedAt: new Date().toISOString().split('T')[0]
-          }
-        : deal
-    ));
+    if (isUsingMockData) {
+      setLocalMockDeals(prev => prev.map(deal => 
+        deal.id === dealId 
+          ? { 
+              ...deal, 
+              stage: newStage,
+              updatedAt: new Date().toISOString().split('T')[0]
+            }
+          : deal
+      ));
+    } else {
+      // Find the deal and update it
+      const dealToUpdate = deals.find(deal => deal.id === dealId);
+      if (dealToUpdate) {
+        updateDeal({ ...dealToUpdate, stage: newStage });
+      }
+    }
     
     toast({
       title: t('deals.toasts.moved.title'),
@@ -81,39 +111,51 @@ export default function Deals() {
   };
 
   const handleDealSave = (updatedDeal: Deal) => {
-    setDeals(prev => prev.map(deal => 
-      deal.id === updatedDeal.id ? updatedDeal : deal
-    ));
-    
-    toast({
-      title: t('deals.toasts.updated.title'),
-      description: t('deals.toasts.updated.description'),
-    });
+    if (isUsingMockData) {
+      setLocalMockDeals(prev => prev.map(deal => 
+        deal.id === updatedDeal.id ? updatedDeal : deal
+      ));
+      
+      toast({
+        title: t('deals.toasts.updated.title'),
+        description: t('deals.toasts.updated.description'),
+      });
+    } else {
+      updateDeal(updatedDeal);
+    }
   };
 
   const handleDealDelete = (dealId: string) => {
-    setDeals(prev => prev.filter(deal => deal.id !== dealId));
-    
-    toast({
-      title: t('deals.toasts.deleted.title'),
-      description: t('deals.toasts.deleted.description'),
-    });
+    if (isUsingMockData) {
+      setLocalMockDeals(prev => prev.filter(deal => deal.id !== dealId));
+      
+      toast({
+        title: t('deals.toasts.deleted.title'),
+        description: t('deals.toasts.deleted.description'),
+      });
+    } else {
+      deleteDeal(dealId);
+    }
   };
 
   const handleAddDeal = (newDealData: Omit<Deal, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const newDeal: Deal = {
-      ...newDealData,
-      stage: addDealStage,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString().split('T')[0],
-      updatedAt: new Date().toISOString().split('T')[0]
-    };
-    setDeals(prev => [...prev, newDeal]);
-    
-    toast({
-      title: t('deals.toasts.created.title'),
-      description: t('deals.toasts.created.description', { stage: t(`deals.stages.${addDealStage.toLowerCase().replace('/', '-')}`) }),
-    });
+    if (isUsingMockData) {
+      const newDeal: Deal = {
+        ...newDealData,
+        stage: addDealStage,
+        id: Date.now().toString(),
+        createdAt: new Date().toISOString().split('T')[0],
+        updatedAt: new Date().toISOString().split('T')[0]
+      };
+      setLocalMockDeals(prev => [...prev, newDeal]);
+      
+      toast({
+        title: t('deals.toasts.created.title'),
+        description: t('deals.toasts.created.description', { stage: t(`deals.stages.${addDealStage.toLowerCase().replace('/', '-')}`) }),
+      });
+    } else {
+      createDeal({ ...newDealData, stage: addDealStage });
+    }
   };
 
   const handleOpenAddDeal = (stage: DealStage) => {
@@ -137,6 +179,64 @@ export default function Deals() {
     });
   };
 
+  const handleImportDeals = async (dealsToImport: Omit<Deal, 'id' | 'createdAt' | 'updatedAt'>[]) => {
+    if (isUsingMockData) {
+      const newDeals = dealsToImport.map(deal => ({
+        ...deal,
+        id: Date.now().toString(),
+        createdAt: new Date().toISOString().split('T')[0],
+        updatedAt: new Date().toISOString().split('T')[0]
+      }));
+      setLocalMockDeals(prev => [...prev, ...newDeals]);
+      
+      toast({
+        title: t('deals.toasts.imported.title'),
+        description: t('deals.toasts.imported.description', { count: dealsToImport.length }),
+      });
+    } else {
+      // Import deals one by one to handle potential errors
+      try {
+        for (const deal of dealsToImport) {
+          await createDealAsync(deal);
+        }
+        
+        toast({
+          title: 'Success',
+          description: `${dealsToImport.length} deals imported successfully`,
+        });
+      } catch (error) {
+        console.error('Error importing deals:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to import some deals. Please try again.',
+          variant: 'destructive',
+        });
+      }
+    }
+  };
+
+  const handleBulkDelete = async (dealsToDelete: Deal[]) => {
+    try {
+      // Delete each deal
+      await Promise.all(dealsToDelete.map(deal => deleteDeal(deal.id)));
+      
+      // Refresh the deals list
+      await queryClient.invalidateQueries({ queryKey: ['deals'] });
+      
+      toast({
+        title: "Success",
+        description: `${dealsToDelete.length} deals have been deleted.`,
+      });
+    } catch (error) {
+      console.error('Error deleting deals:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete deals. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Enhanced Header */}
@@ -149,6 +249,10 @@ export default function Deals() {
         </div>
         <div className="flex gap-3">
           <DealsViewToggle viewMode={viewMode} onViewModeChange={setViewMode} />
+          <Button variant="outline" onClick={() => setImportModalOpen(true)} className="gap-2">
+            <Upload size={16} />
+            {t('deals.import.button', 'Import')}
+          </Button>
           <Button onClick={() => handleOpenAddDeal('Prospect')} className="gap-2 crm-button-primary">
             <Plus size={16} />
             {t('deals.newDeal')}
@@ -231,6 +335,7 @@ export default function Deals() {
           onDealMove={handleDealMove}
           onDealClick={handleDealClick}
           onAddDeal={handleOpenAddDeal}
+          onBulkDelete={handleBulkDelete}
         />
       ) : (
         <Card className="crm-card">
@@ -256,6 +361,12 @@ export default function Deals() {
         open={addDealModalOpen}
         onOpenChange={setAddDealModalOpen}
         onSubmit={handleAddDeal}
+      />
+
+      <ImportDealsModal
+        open={importModalOpen}
+        onOpenChange={setImportModalOpen}
+        onImport={handleImportDeals}
       />
     </div>
   );

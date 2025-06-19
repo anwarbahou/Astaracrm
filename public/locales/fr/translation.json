@@ -360,6 +360,7 @@
       "prospect": "Prospect",
       "lead": "Piste",
       "qualified": "Qualifié",
+      "proposal": "Proposition",
       "negotiation": "Négociation",
       "won-lost": "Gagné/Perdu"
     },
@@ -536,7 +537,8 @@
     "sendEmail": "Envoyer un e-mail",
     "callLead": "Appeler le lead",
     "assign": "Assigner",
-    "at": "chez"
+    "at": "chez" ,
+    "notSpecified": "Non spécifié"
   },
   "countries": {
     "morocco": "Maroc",

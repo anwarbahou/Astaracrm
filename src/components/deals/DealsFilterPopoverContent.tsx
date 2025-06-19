@@ -27,7 +27,7 @@ const DealsFilterPopoverContent = ({ filters, onFiltersChange, onClose, onClearF
         setLocalFilters(filters);
     }, [filters]);
 
-    const stages: DealStage[] = ['Prospect', 'Lead', 'Qualified', 'Negotiation', 'Won/Lost'];
+    const stages: DealStage[] = ['Prospect', 'Lead', 'Qualified', 'Proposal', 'Negotiation', 'Won/Lost'];
     const owners = ['Sarah Chen', 'Mike Johnson', 'Emma Davis', 'Alex Rivera', 'David Kim', 'Lisa Wang', 'James Liu'];
 
     const handleApplyFilters = () => {

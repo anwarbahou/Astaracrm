@@ -1,17 +1,35 @@
-
 import { Deal } from '@/types/deal';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, User } from 'lucide-react';
+import { Calendar, User, MoreVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 interface DealCardProps {
   deal: Deal;
   onClick: (deal: Deal) => void;
   onDragStart: (deal: Deal) => void;
   onDragEnd: () => void;
+  onEdit?: (deal: Deal) => void;
+  onDelete?: (deal: Deal) => void;
+  onMove?: (deal: Deal, stage: string) => void;
 }
 
-export function DealCard({ deal, onClick, onDragStart, onDragEnd }: DealCardProps) {
+export function DealCard({ 
+  deal, 
+  onClick, 
+  onDragStart, 
+  onDragEnd,
+  onEdit,
+  onDelete,
+  onMove 
+}: DealCardProps) {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'High': return 'bg-red-500/20 text-red-400 border-red-500/30';
@@ -22,21 +40,86 @@ export function DealCard({ deal, onClick, onDragStart, onDragEnd }: DealCardProp
   };
 
   const handleDragStart = (e: React.DragEvent) => {
+    e.dataTransfer.setData('text/plain', deal.id);
+    e.dataTransfer.effectAllowed = 'move';
     onDragStart(deal);
   };
 
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent) => {
+    // Prevent click when clicking dropdown
+    if ((e.target as HTMLElement).closest('.deal-menu-trigger')) {
+      return;
+    }
     onClick(deal);
   };
 
   return (
     <div 
-      className="bg-gray-700 border border-gray-600 rounded-lg p-4 cursor-pointer transition-all duration-200 hover:bg-gray-600 hover:shadow-lg hover:scale-[1.02] group"
+      className="bg-gray-700 border border-gray-600 rounded-lg p-4 cursor-pointer transition-all duration-200 hover:bg-gray-600 hover:shadow-lg hover:scale-[1.02] group relative"
       onClick={handleClick}
       draggable
       onDragStart={handleDragStart}
       onDragEnd={onDragEnd}
     >
+      <div className="absolute top-2 right-2">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-6 w-6 p-0 text-gray-400 hover:text-white hover:bg-gray-600 deal-menu-trigger"
+            >
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem onClick={() => onEdit?.(deal)}>
+              Edit Deal
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onDelete?.(deal)} className="text-red-500">
+              Delete Deal
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={(e) => {
+              e.stopPropagation();
+              onMove?.(deal, 'Prospect');
+            }}>
+              Move to Prospect
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={(e) => {
+              e.stopPropagation();
+              onMove?.(deal, 'Lead');
+            }}>
+              Move to Lead
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={(e) => {
+              e.stopPropagation();
+              onMove?.(deal, 'Qualified');
+            }}>
+              Move to Qualified
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={(e) => {
+              e.stopPropagation();
+              onMove?.(deal, 'Proposal');
+            }}>
+              Move to Proposal
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={(e) => {
+              e.stopPropagation();
+              onMove?.(deal, 'Negotiation');
+            }}>
+              Move to Negotiation
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={(e) => {
+              e.stopPropagation();
+              onMove?.(deal, 'Won/Lost');
+            }}>
+              Move to Won/Lost
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
       <div className="space-y-3">
         {/* Deal Name */}
         <h4 className="font-semibold text-white text-sm leading-tight group-hover:text-blue-300 transition-colors">

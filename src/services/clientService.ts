@@ -4,7 +4,25 @@ import { Database } from '@/integrations/supabase/types';
 type Client = Database['public']['Tables']['clients']['Row'];
 type User = Database['public']['Tables']['users']['Row'];
 
-export interface ClientProfile extends Client {
+export interface ClientProfile {
+  id: string;
+  name: string;
+  email?: string | null;
+  phone?: string | null;
+  address?: string | null;
+  country?: string | null;
+  industry?: string | null;
+  website?: string | null;
+  avatar_url?: string | null;
+  notes?: string | null;
+  tags?: string[] | null;
+  stage?: Database["public"]["Enums"]["client_stage"] | null;
+  status?: Database["public"]["Enums"]["user_status"] | null;
+  owner_id?: string | null;
+  contacts_count?: number | null;
+  total_deal_value?: number | null;
+  created_at?: string | null;
+  updated_at?: string | null;
   owner?: {
     id: string;
     first_name: string | null;
@@ -12,6 +30,8 @@ export interface ClientProfile extends Client {
     email: string;
     avatar_url: string | null;
   };
+  company_name?: string;
+  description?: string;
 }
 
 export interface Contact {
@@ -75,7 +95,7 @@ export class ClientService {
         .from('clients')
         .select(`
           *,
-          owner:owner_id (
+          users (
             id,
             first_name,
             last_name,
@@ -96,7 +116,13 @@ export class ClientService {
         return null;
       }
 
-      return data;
+      // Transform the data to match expected structure
+      const transformedData = {
+        ...data,
+        owner: data.users || null
+      };
+
+      return transformedData;
     } catch (error) {
       console.error('Error in getClientProfile:', error);
       return null;

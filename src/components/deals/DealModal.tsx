@@ -1,4 +1,3 @@
-
 import { Deal, DealStage } from '@/types/deal';
 import { useState } from 'react';
 import * as React from 'react';
@@ -113,12 +112,12 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
                     <SelectValue placeholder="Select stage" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Discovery">Discovery</SelectItem>
+                    <SelectItem value="Prospect">Prospect</SelectItem>
+                    <SelectItem value="Lead">Lead</SelectItem>
                     <SelectItem value="Qualified">Qualified</SelectItem>
                     <SelectItem value="Proposal">Proposal</SelectItem>
                     <SelectItem value="Negotiation">Negotiation</SelectItem>
-                    <SelectItem value="Closed Won">Closed Won</SelectItem>
-                    <SelectItem value="Closed Lost">Closed Lost</SelectItem>
+                    <SelectItem value="Won/Lost">Won/Lost</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

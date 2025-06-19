@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import type { Database } from '@/integrations/supabase/types';
+import { useQuery } from '@tanstack/react-query';
 
 type User = Database['public']['Tables']['users']['Row'];
 
@@ -73,4 +74,57 @@ export const useUsers = () => {
   }, [user?.id, userProfile, isAdmin, isManager]);
 
   return { users, loading, error };
-}; 
+};
+
+export interface UserOption {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
+export function useUsersForSelection() {
+  const { user, userProfile } = useAuth();
+
+  const { data: users = [], isLoading, error } = useQuery({
+    queryKey: ['users-selection', userProfile?.role],
+    queryFn: async () => {
+      // If user is not authenticated, return empty array
+      if (!user) return [];
+
+      let query = supabase
+        .from('users')
+        .select('id, email, first_name, last_name, role')
+        .eq('status', 'active')
+        .order('first_name', { ascending: true });
+
+      // If user is not admin/manager, only show themselves
+      if (userProfile?.role !== 'admin' && userProfile?.role !== 'manager') {
+        query = query.eq('id', user.id);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error('Error fetching users:', error);
+        throw error;
+      }
+
+      return data?.map((user): UserOption => ({
+        id: user.id,
+        name: user.first_name ? `${user.first_name} ${user.last_name || ''}`.trim() : user.email,
+        email: user.email,
+        role: user.role || 'user'
+      })) || [];
+    },
+    enabled: !!user, // Only fetch when user is authenticated
+  });
+
+  return {
+    users,
+    isLoading,
+    error,
+    currentUser: user,
+    userRole: userProfile?.role
+  };
+} 

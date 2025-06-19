@@ -42,6 +42,9 @@ import {
 } from 'lucide-react';
 import { useClientProfile } from '@/hooks/useClientProfile';
 import type { ClientProfile } from '@/services/clientService';
+import type { Database } from '@/integrations/supabase/types';
+
+type ClientStage = Database["public"]["Enums"]["client_stage"];
 
 interface ClientProfileModalProps {
   clientId: string | null;
@@ -51,7 +54,7 @@ interface ClientProfileModalProps {
 }
 
 export function ClientProfileModal({ clientId, open, onOpenChange, onSave }: ClientProfileModalProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['clients', 'common']);
   const { toast } = useToast();
   const { isAdmin, isManager } = useAuth();
   const { users } = useUsers();
@@ -127,6 +130,23 @@ export function ClientProfileModal({ clientId, open, onOpenChange, onSave }: Cli
     const firstName = user.first_name || '';
     const lastName = user.last_name || '';
     return `${firstName} ${lastName}`.trim() || user.email;
+  };
+
+  const handleOwnerChange = (userId: string) => {
+    const selectedUser = users.find(u => u.id === userId);
+    if (selectedUser) {
+      setEditedClient(prev => ({
+        ...prev,
+        owner_id: userId,
+        owner: {
+          id: userId,
+          first_name: selectedUser.first_name,
+          last_name: selectedUser.last_name,
+          email: selectedUser.email,
+          avatar_url: selectedUser.avatar_url
+        }
+      }));
+    }
   };
 
   const formatCurrency = (amount: number | null | undefined) => {
@@ -258,8 +278,11 @@ export function ClientProfileModal({ clientId, open, onOpenChange, onSave }: Cli
                 
                 {isEditing ? (
                   <Select
-                    value={editedClient.stage || ''}
-                    onValueChange={(value) => setEditedClient({ ...editedClient, stage: value as any })}
+                    value={editedClient.stage || 'lead'}
+                    onValueChange={(value: 'lead' | 'prospect' | 'active' | 'inactive') => setEditedClient({ 
+                      ...editedClient, 
+                      stage: value
+                    })}
                   >
                     <SelectTrigger className="mt-2 max-w-xs">
                       <SelectValue />
@@ -319,6 +342,32 @@ export function ClientProfileModal({ clientId, open, onOpenChange, onSave }: Cli
                   <Calendar className="h-4 w-4 text-muted-foreground" />
                   <span>{t('clients.profile.memberSince')} {formatDate(client.created_at)}</span>
                 </div>
+                <div className="col-span-2">
+                  {isEditing ? (
+                    <Input
+                      value={(editedClient.tags || []).join(', ')}
+                      onChange={(e) => {
+                        const tagsArray = e.target.value
+                          .split(',')
+                          .map(tag => tag.trim())
+                          .filter(tag => tag.length > 0);
+                        setEditedClient({ ...editedClient, tags: tagsArray });
+                      }}
+                      placeholder={t('clients.profile.fields.tagsPlaceholder')}
+                      className="text-sm"
+                    />
+                  ) : (
+                    <div className="flex gap-2 flex-wrap">
+                      {client.tags && client.tags.length > 0 ? (
+                        client.tags.map((tag, index) => (
+                          <Badge key={index} variant="secondary">{tag}</Badge>
+                        ))
+                      ) : (
+                        <span className="text-sm text-muted-foreground">{t('common:notSpecified')}</span>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -358,105 +407,98 @@ export function ClientProfileModal({ clientId, open, onOpenChange, onSave }: Cli
 
           <TabsContent value="overview" className="space-y-4">
             <Card>
-              <CardHeader>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle>{t('clients.profile.companyInformation')}</CardTitle>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsEditing(!isEditing)}
+                  className="h-8 w-8"
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label>{t('clients.table.industry')}</Label>
-                  {isEditing ? (
-                    <Select
-                      value={editedClient.industry || ''}
-                      onValueChange={(value) => setEditedClient({ ...editedClient, industry: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Technology">{t('industries.technology')}</SelectItem>
-                        <SelectItem value="Healthcare">{t('industries.healthcare')}</SelectItem>
-                        <SelectItem value="Finance">{t('industries.finance')}</SelectItem>
-                        <SelectItem value="Retail">{t('industries.retail')}</SelectItem>
-                        <SelectItem value="Manufacturing">{t('industries.manufacturing')}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  ) : (
-                    <p className="text-sm">{client.industry || t('clients.profile.fields.noIndustrySpecified')}</p>
-                  )}
-                </div>
-                
-                <div>
                   <Label>{t('clients.profile.fields.owner')}</Label>
                   {isEditing && (isAdmin || isManager) ? (
-                    <Select
-                      value={editedClient.owner_id || ''}
-                      onValueChange={(value) => setEditedClient({ ...editedClient, owner_id: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select owner..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {users.map((user) => (
-                          <SelectItem key={user.id} value={user.id}>
-                            {getUserDisplayName(user)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <div className="mt-1.5">
+                      <Select
+                        value={editedClient.owner_id || ''}
+                        onValueChange={handleOwnerChange}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder={t('clients.profile.fields.selectOwner')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {users.map((user) => (
+                            <SelectItem key={user.id} value={user.id}>
+                              <div className="flex flex-col">
+                                <span className="font-medium">
+                                  {user.first_name ? `${user.first_name} ${user.last_name || ''}`.trim() : user.email}
+                                </span>
+                                <span className="text-xs text-muted-foreground">
+                                  {user.email} • {user.role}
+                                </span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   ) : (
-                    <p className="text-sm">
-                      {client.owner 
-                        ? `${client.owner.first_name || ''} ${client.owner.last_name || ''}`.trim() || client.owner.email
-                        : t('clients.profile.fields.noOwnerAssigned')
-                      }
-                    </p>
+                    <div className="flex items-center gap-2 mt-1.5">
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm">{getUserDisplayName(client.owner)}</span>
+                    </div>
                   )}
                   {isEditing && !isAdmin && !isManager && (
                     <p className="text-xs text-muted-foreground mt-1">
-                      Only admins and managers can change client ownership.
+                      {t('clients.profile.ownershipRestriction')}
                     </p>
                   )}
                 </div>
-                
+
                 <div>
-                  <Label>{t('clients.table.tags')}</Label>
+                  <Label>{t('clients.table.industry')}</Label>
                   {isEditing ? (
-                    <Input
-                      value={(editedClient.tags || []).join(', ')}
-                      onChange={(e) => {
-                        const tagsArray = e.target.value
-                          .split(',')
-                          .map(tag => tag.trim())
-                          .filter(tag => tag.length > 0);
-                        setEditedClient({ ...editedClient, tags: tagsArray });
-                      }}
-                      placeholder="Enter tags separated by commas"
-                      className="mt-1"
-                    />
-                  ) : (
-                    <div className="flex gap-2 flex-wrap mt-1">
-                      {client.tags && client.tags.length > 0 ? (
-                        client.tags.map((tag, index) => (
-                          <Badge key={index} variant="secondary">{tag}</Badge>
-                        ))
-                      ) : (
-                        <span className="text-sm text-muted-foreground">{t('clients.profile.fields.noTags')}</span>
-                      )}
+                    <div className="mt-1.5">
+                      <Select
+                        value={editedClient.industry || ''}
+                        onValueChange={(value) => setEditedClient({ ...editedClient, industry: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder={t('clients.profile.fields.selectIndustry')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Technology">{t('industries.technology')}</SelectItem>
+                          <SelectItem value="Healthcare">{t('industries.healthcare')}</SelectItem>
+                          <SelectItem value="Finance">{t('industries.finance')}</SelectItem>
+                          <SelectItem value="Retail">{t('industries.retail')}</SelectItem>
+                          <SelectItem value="Manufacturing">{t('industries.manufacturing')}</SelectItem>
+                          <SelectItem value="Education">{t('industries.education')}</SelectItem>
+                          <SelectItem value="Other">{t('industries.other')}</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
+                  ) : (
+                    <p className="text-sm mt-1.5">{client.industry || t('common:notSpecified')}</p>
                   )}
                 </div>
-                
+
                 <div>
-                  <Label>{t('addClientModal.notesLabel')}</Label>
+                  <Label>{t('clients.profile.fields.notes')}</Label>
                   {isEditing ? (
                     <Textarea
                       value={editedClient.notes || ''}
                       onChange={(e) => setEditedClient({ ...editedClient, notes: e.target.value })}
-                      placeholder={t('addClientModal.notesPlaceholder')}
-                      rows={4}
+                      placeholder={t('clients.profile.fields.notesPlaceholder')}
+                      className="mt-1.5"
                     />
                   ) : (
-                    <p className="text-sm whitespace-pre-wrap">{client.notes || t('clients.profile.fields.noNotesAvailable')}</p>
+                    <p className="text-sm mt-1.5 whitespace-pre-wrap">
+                      {client.notes || t('common:notSpecified')}
+                    </p>
                   )}
                 </div>
               </CardContent>

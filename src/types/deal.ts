@@ -21,7 +21,7 @@ export interface Deal {
   files?: DealFile[];
 }
 
-export type DealStage = 'Prospect' | 'Lead' | 'Qualified' | 'Negotiation' | 'Won/Lost';
+export type DealStage = 'Prospect' | 'Lead' | 'Qualified' | 'Proposal' | 'Negotiation' | 'Won/Lost';
 
 export interface PipelineStage {
   id: string;

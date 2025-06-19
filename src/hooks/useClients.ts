@@ -1,35 +1,35 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Client } from "@/types/client";
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 type SupabaseClient = Database['public']['Tables']['clients']['Row'];
 
-// Function to convert Supabase client to our Client type
-const convertSupabaseClient = (supabaseClient: any): Client => ({
-  id: supabaseClient.id,
-  name: supabaseClient.name,
-  email: supabaseClient.email || '',
-  phone: supabaseClient.phone || '',
-  industry: supabaseClient.industry || '',
-  stage: supabaseClient.stage || 'lead',
-  tags: supabaseClient.tags || [],
-  owner: supabaseClient.owner ? 
-    `${supabaseClient.owner.first_name || ''} ${supabaseClient.owner.last_name || ''}`.trim() || supabaseClient.owner.email 
-    : 'Unassigned',
-  country: supabaseClient.country || '',
-  contactsCount: supabaseClient.contacts_count || 0,
-  totalDealValue: supabaseClient.total_deal_value || 0,
-  createdDate: supabaseClient.created_at ? new Date(supabaseClient.created_at).toISOString().split('T')[0] : '',
-  lastInteraction: supabaseClient.updated_at ? new Date(supabaseClient.updated_at).toISOString().split('T')[0] : '',
-  status: supabaseClient.status === 'active' ? 'Active' : 'Archived',
-  notes: supabaseClient.notes || '',
+const convertSupabaseClient = (client: SupabaseClient & { owner: any }): Client => ({
+    id: client.id,
+    name: client.name || '',
+    email: client.email || '',
+    industry: client.industry || '',
+    stage: client.stage || 'lead',
+    tags: client.tags || [],
+    country: client.country || '',
+    contactsCount: client.contacts_count || 0,
+    totalDealValue: Number(client.total_deal_value) || 0,
+    status: client.status || 'active',
+    owner: client.owner ? `${client.owner.first_name} ${client.owner.last_name}` : '',
+    ownerId: client.owner_id || '',
+    createdDate: client.created_at || new Date().toISOString(),
+    lastInteraction: client.updated_at || new Date().toISOString(),
+    notes: client.notes || '',
+    website: client.website || '',
+    address: client.address || '',
+    phone: client.phone || '',
+    avatarUrl: client.avatar_url || '',
 });
 
 export const useClients = () => {
-    const [clients, setClients] = useState<Client[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const queryClient = useQueryClient();
     const [searchQuery, setSearchQuery] = useState("");
     const [addClientOpen, setAddClientOpen] = useState(false);
     const [selectedClient, setSelectedClient] = useState<Client | null>(null);
@@ -47,16 +47,14 @@ export const useClients = () => {
         lastInteractionTo: '',
     });
 
-    const fetchClients = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-            
+    const { data: clients = [], isLoading, error, refetch } = useQuery({
+        queryKey: ['clients'],
+        queryFn: async () => {
             const { data, error: supabaseError } = await supabase
                 .from('clients')
                 .select(`
                     *,
-                    owner:owner_id (
+                    users (
                         id,
                         first_name,
                         last_name,
@@ -67,43 +65,73 @@ export const useClients = () => {
 
             if (supabaseError) {
                 console.error('Error fetching clients:', supabaseError);
-                setError(supabaseError.message);
-                return;
+                throw supabaseError;
             }
 
-            const convertedClients = data?.map(convertSupabaseClient) || [];
-            setClients(convertedClients);
-            
-        } catch (err) {
-            console.error('Unexpected error fetching clients:', err);
-            setError('An unexpected error occurred');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchClients();
-    }, []);
+            return data?.map((client) => convertSupabaseClient({
+                ...client,
+                owner: client.users
+            })) || [];
+        },
+        staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
+        cacheTime: 1000 * 60 * 30, // Keep unused data in cache for 30 minutes
+        retry: 3, // Retry failed requests 3 times
+        refetchOnWindowFocus: true, // Refetch when window regains focus
+        refetchOnReconnect: true, // Refetch when internet reconnects
+    });
 
     const handleClientClick = (client: Client) => {
         setSelectedClient(client);
         setProfileModalOpen(true);
     };
 
-    const handleSaveClient = (updatedClient: Client) => {
-        // In a real app, this would update the client in the database
-        console.log('Saving client:', updatedClient);
-    };
+    const handleSaveClient = async (updatedClient: Client) => {
+        try {
+            // Optimistically update the UI
+            queryClient.setQueryData(['clients'], (oldData: Client[] = []) => {
+                return oldData.map(client => 
+                    client.id === updatedClient.id ? updatedClient : client
+                );
+            });
 
-    const refreshClients = () => {
-        fetchClients();
+            // Perform the actual update
+            const { error: updateError } = await supabase
+                .from('clients')
+                .update({
+                    name: updatedClient.name,
+                    email: updatedClient.email,
+                    industry: updatedClient.industry,
+                    stage: updatedClient.stage,
+                    tags: updatedClient.tags,
+                    country: updatedClient.country,
+                    status: updatedClient.status,
+                    notes: updatedClient.notes,
+                    website: updatedClient.website,
+                    address: updatedClient.address,
+                    phone: updatedClient.phone,
+                    updated_at: new Date().toISOString(),
+                })
+                .eq('id', updatedClient.id);
+
+            if (updateError) {
+                throw updateError;
+            }
+
+            // Refetch to ensure consistency
+            await refetch();
+            return true;
+        } catch (err) {
+            // Revert optimistic update on error
+            await refetch();
+            console.error('Error saving client:', err);
+            return false;
+        }
     };
 
     return {
         clients,
-        loading,
-        error,
+        loading: isLoading,
+        error: error ? (error as Error).message : null,
         searchQuery,
         setSearchQuery,
         addClientOpen,
@@ -115,6 +143,42 @@ export const useClients = () => {
         setFilters,
         handleClientClick,
         handleSaveClient,
-        refreshClients,
+        refreshClients: refetch,
     };
+};
+
+export interface ClientOption {
+  id: string;
+  name: string;
+  email?: string;
+}
+
+export function useClientsForSelection() {
+  const { data: clients = [], isLoading, error } = useQuery({
+    queryKey: ['clients-selection'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('clients')
+        .select('id, name, email')
+        .eq('status', 'active')
+        .order('name', { ascending: true });
+
+      if (error) {
+        console.error('Error fetching clients:', error);
+        throw error;
+      }
+
+      return data?.map((client): ClientOption => ({
+        id: client.id,
+        name: client.name,
+        email: client.email || undefined
+      })) || [];
+    },
+  });
+
+  return {
+    clients,
+    isLoading,
+    error
+  };
 }

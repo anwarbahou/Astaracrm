@@ -4,8 +4,9 @@ export const pipelineStages: PipelineStage[] = [
   { id: '1', name: 'Prospect', color: 'bg-purple-100 border-purple-300', icon: 'handshake', order: 1 },
   { id: '2', name: 'Lead', color: 'bg-blue-100 border-blue-300', icon: 'filter', order: 2 },
   { id: '3', name: 'Qualified', color: 'bg-yellow-100 border-yellow-300', icon: 'dollar-sign', order: 3 },
-  { id: '4', name: 'Negotiation', color: 'bg-orange-100 border-orange-300', icon: 'handshake', order: 4 },
-  { id: '5', name: 'Won/Lost', color: 'bg-green-100 border-green-300', icon: 'dollar-sign', order: 5 }
+  { id: '4', name: 'Proposal', color: 'bg-orange-100 border-orange-300', icon: 'file-text', order: 4 },
+  { id: '5', name: 'Negotiation', color: 'bg-red-100 border-red-300', icon: 'handshake', order: 5 },
+  { id: '6', name: 'Won/Lost', color: 'bg-green-100 border-green-300', icon: 'dollar-sign', order: 6 }
 ];
 
 // Export dealStages as an alias for compatibility with DealsBoard

@@ -426,6 +426,7 @@
       "prospect": "عميل محتمل",
       "lead": "مهتم",
       "qualified": "مؤهل",
+      "proposal": "اقتراح",
       "negotiation": "تفاوض",
       "won-lost": "فوز / خسارة"
     },
@@ -850,7 +851,8 @@
     "sendEmail": "إرسال بريد إلكتروني",
     "callLead": "الاتصال بالعميل المحتمل",
     "assign": "تخصيص",
-    "at": "في"
+    "at": "في",
+    "notSpecified": "غير محدد"
   },
   "countries": {
     "morocco": "المغرب",

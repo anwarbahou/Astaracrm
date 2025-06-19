@@ -5,12 +5,14 @@ import { Deal, DealStage } from '@/types/deal';
 interface DealFormData {
   name: string;
   client: string;
+  clientId: string;
   value: number;
   stage: DealStage;
   probability: number;
   expectedCloseDate: string;
   source: string;
   owner: string;
+  ownerId: string;
   priority: 'Low' | 'Medium' | 'High';
   tags: string[];
   notes: string;
@@ -19,12 +21,14 @@ interface DealFormData {
 const initialFormData: DealFormData = {
   name: '',
   client: '',
+  clientId: '',
   value: 0,
   stage: 'Prospect',
   probability: 25,
   expectedCloseDate: '',
   source: '',
-  owner: 'John Doe',
+  owner: '',
+  ownerId: '',
   priority: 'Medium',
   tags: [],
   notes: ''
@@ -42,13 +46,14 @@ export function useDealForm() {
   };
 
   const validateForm = (): boolean => {
-    return !!(formData.name && formData.client && formData.expectedCloseDate);
+    return !!(formData.name && formData.clientId && formData.expectedCloseDate);
   };
 
   const convertToDeal = (): Omit<Deal, 'id' | 'createdAt' | 'updatedAt'> => {
     return {
       name: formData.name,
       client: formData.client,
+      clientId: formData.clientId,
       value: formData.value,
       currency: 'MAD',
       stage: formData.stage,
@@ -56,6 +61,7 @@ export function useDealForm() {
       expectedCloseDate: formData.expectedCloseDate,
       source: formData.source,
       owner: formData.owner,
+      ownerId: formData.ownerId,
       tags: formData.tags,
       priority: formData.priority,
       notes: formData.notes,

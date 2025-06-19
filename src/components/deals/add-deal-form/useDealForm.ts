@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Deal, DealStage } from '@/types/deal';
 
@@ -46,7 +45,14 @@ export function useDealForm() {
   };
 
   const validateForm = (): boolean => {
-    return !!(formData.name && formData.clientId && formData.expectedCloseDate);
+    // Required fields: name, clientId (assign client), expectedCloseDate, value, ownerId
+    return !!(
+      formData.name.trim() && 
+      formData.clientId && 
+      formData.expectedCloseDate && 
+      formData.value > 0 &&
+      formData.ownerId
+    );
   };
 
   const convertToDeal = (): Omit<Deal, 'id' | 'createdAt' | 'updatedAt'> => {

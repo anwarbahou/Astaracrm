@@ -10,6 +10,8 @@ interface PipelineBoardProps {
   onDealClick: (deal: Deal) => void;
   onAddDeal: (stage: DealStage) => void;
   onBulkDelete?: (deals: Deal[]) => void;
+  onDealSelect?: (deal: Deal, event: React.MouseEvent) => void;
+  selectedDeals?: string[];
 }
 
 export function PipelineBoard({ 
@@ -18,11 +20,15 @@ export function PipelineBoard({
   onDealMove, 
   onDealClick, 
   onAddDeal,
-  onBulkDelete 
+  onBulkDelete,
+  onDealSelect,
+  selectedDeals = []
 }: PipelineBoardProps) {
   const [draggedDeal, setDraggedDeal] = useState<Deal | null>(null);
+  const [draggedDeals, setDraggedDeals] = useState<Deal[]>([]);
   const [dragOverStage, setDragOverStage] = useState<DealStage | null>(null);
   const [deletingDeals, setDeletingDeals] = useState<string[]>([]);
+  const [isDeleting, setIsDeleting] = useState(false);
   const { toast } = useToast();
 
   const getStageDeals = (stage: DealStage) => {
@@ -31,10 +37,20 @@ export function PipelineBoard({
 
   const handleDragStart = (deal: Deal) => {
     setDraggedDeal(deal);
+    
+    // If the dragged deal is selected and there are multiple selected deals, drag all selected
+    if (selectedDeals.includes(deal.id) && selectedDeals.length > 1) {
+      const selectedDealObjects = deals.filter(d => selectedDeals.includes(d.id));
+      setDraggedDeals(selectedDealObjects);
+    } else {
+      // Only drag the single deal
+      setDraggedDeals([deal]);
+    }
   };
 
   const handleDragEnd = () => {
     setDraggedDeal(null);
+    setDraggedDeals([]);
     setDragOverStage(null);
   };
 
@@ -43,33 +59,57 @@ export function PipelineBoard({
   };
 
   const handleDrop = (stage: DealStage) => {
-    if (draggedDeal && draggedDeal.stage !== stage) {
-      onDealMove(draggedDeal.id, stage);
+    if (draggedDeals.length > 0) {
+      // Move all dragged deals to the new stage
+      draggedDeals.forEach(deal => {
+        if (deal.stage !== stage) {
+          onDealMove(deal.id, stage);
+        }
+      });
+      
+      // Show appropriate toast message
+      if (draggedDeals.length > 1) {
+        toast({
+          title: "Deals Moved",
+          description: `${draggedDeals.length} deals moved to ${stage} stage.`,
+        });
+      }
     }
+    
     setDraggedDeal(null);
+    setDraggedDeals([]);
     setDragOverStage(null);
   };
 
   const handleBulkAction = async (action: string, dealsToUpdate: Deal[]) => {
     switch (action) {
       case 'delete':
-        if (onBulkDelete) {
-          // Mark all deals as deleting
+        if (onBulkDelete && !isDeleting) {
+          setIsDeleting(true);
+          
+          // Mark all deals as deleting to start animation
           setDeletingDeals(prev => [...prev, ...dealsToUpdate.map(d => d.id)]);
           
-          // Wait for animation
-          await new Promise(resolve => setTimeout(resolve, (dealsToUpdate.length + 1) * 100));
+          // Wait for animation to complete
+          await new Promise(resolve => setTimeout(resolve, 300));
           
-          // Actually delete the deals
-          onBulkDelete(dealsToUpdate);
-          
-          // Clear deleting state
-          setDeletingDeals([]);
-          
-          toast({
-            title: "Deals Deleted",
-            description: `${dealsToUpdate.length} deals have been deleted.`,
-          });
+          try {
+            // Actually delete the deals (this will show the toast)
+            await onBulkDelete(dealsToUpdate);
+            
+            // Keep the deleting state until the data has been refetched
+            // This prevents the cards from reappearing during the refetch
+            setTimeout(() => {
+              setDeletingDeals([]);
+              setIsDeleting(false);
+            }, 100);
+            
+          } catch (error) {
+            // If deletion fails, restore the deals
+            setDeletingDeals([]);
+            setIsDeleting(false);
+            throw error;
+          }
         }
         break;
       case 'move_prospect':
@@ -137,6 +177,9 @@ export function PipelineBoard({
             isDropTarget={isDropTarget}
             isDragging={!!draggedDeal}
             onBulkAction={handleBulkAction}
+            onDealSelect={onDealSelect}
+            selectedDeals={selectedDeals}
+            draggedDealsCount={draggedDeals.length}
           />
         );
       })}

@@ -26,6 +26,9 @@ interface PipelineColumnProps {
   isDropTarget: boolean;
   isDragging: boolean;
   onBulkAction?: (action: string, deals: Deal[]) => void;
+  onDealSelect?: (deal: Deal, event: React.MouseEvent) => void;
+  selectedDeals?: string[];
+  draggedDealsCount?: number;
 }
 
 export function PipelineColumn({
@@ -39,7 +42,10 @@ export function PipelineColumn({
   onDrop,
   isDropTarget,
   isDragging,
-  onBulkAction
+  onBulkAction,
+  onDealSelect,
+  selectedDeals = [],
+  draggedDealsCount
 }: PipelineColumnProps) {
   const { t } = useTranslation();
   const totalValue = deals.reduce((sum, deal) => sum + deal.value, 0);
@@ -174,7 +180,10 @@ export function PipelineColumn({
       {isDropTarget && isDragging && (
         <div className="mx-4 mb-4 border-2 border-dashed border-primary bg-primary/10 rounded-lg p-4 text-center text-primary animate-pulse">
           <Plus className="h-6 w-6 mx-auto mb-2" />
-          {t('deals.pipeline.dropDeal')}
+          {draggedDealsCount && draggedDealsCount > 1 
+            ? `Drop ${draggedDealsCount} deals here`
+            : t('deals.pipeline.dropDeal')
+          }
         </div>
       )}
 
@@ -209,6 +218,8 @@ export function PipelineColumn({
                   onEdit={onDealClick}
                   onDelete={(deal) => handleBulkAction('delete', [deal])}
                   onMove={(deal, newStage) => handleBulkAction(`move_${newStage.toLowerCase()}`, [deal])}
+                  onSelect={onDealSelect}
+                  isSelected={selectedDeals.includes(deal.id)}
                 />
               </motion.div>
             ))}

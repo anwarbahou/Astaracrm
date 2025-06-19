@@ -133,9 +133,12 @@ export function useDeals() {
     },
   });
 
-  // Create deal mutation
+  // Create deal mutation with optional silent mode
   const createDealMutation = useMutation({
-    mutationFn: async (dealData: Omit<Deal, 'id' | 'createdAt' | 'updatedAt'>) => {
+    mutationFn: async ({ dealData, silent = false }: { 
+      dealData: Omit<Deal, 'id' | 'createdAt' | 'updatedAt'>, 
+      silent?: boolean 
+    }) => {
       console.log('=== DEAL CREATION DEBUG ===');
       console.log('Input dealData:', dealData);
       
@@ -176,22 +179,26 @@ export function useDeals() {
       
       console.log('=== SUCCESS ===');
       console.log('Deal created successfully:', data);
-      return transformDealFromDB(data);
+      return { deal: transformDealFromDB(data), silent };
     },
-    onSuccess: (newDeal) => {
+    onSuccess: ({ deal, silent }) => {
       queryClient.invalidateQueries({ queryKey: ['deals'] });
-      toast({
-        title: 'Deal created',
-        description: `${newDeal.name} has been created successfully.`,
-      });
+      if (!silent) {
+        toast({
+          title: 'Deal created',
+          description: `${deal.name} has been created successfully.`,
+        });
+      }
     },
-    onError: (error) => {
+    onError: (error, { silent }) => {
       console.error('Error creating deal:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to create deal. Please try again.',
-        variant: 'destructive',
-      });
+      if (!silent) {
+        toast({
+          title: 'Error',
+          description: 'Failed to create deal. Please try again.',
+          variant: 'destructive',
+        });
+      }
     },
   });
 
@@ -227,42 +234,83 @@ export function useDeals() {
 
   // Delete deal mutation
   const deleteDealMutation = useMutation({
-    mutationFn: async (dealId: string) => {
+    mutationFn: async ({ dealId, silent = false }: { dealId: string, silent?: boolean }) => {
       const { error } = await supabase
         .from('deals')
         .delete()
         .eq('id', dealId);
 
       if (error) throw error;
-      return dealId;
+      return { dealId, silent };
     },
-    onSuccess: () => {
+    onSuccess: ({ dealId, silent }) => {
       queryClient.invalidateQueries({ queryKey: ['deals'] });
-      toast({
-        title: 'Deal deleted',
-        description: 'Deal has been deleted successfully.',
-      });
+      if (!silent) {
+        toast({
+          title: 'Deal deleted',
+          description: 'Deal has been deleted successfully.',
+        });
+      }
     },
-    onError: (error) => {
+    onError: (error, { silent }) => {
       console.error('Error deleting deal:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to delete deal. Please try again.',
-        variant: 'destructive',
-      });
+      if (!silent) {
+        toast({
+          title: 'Error',
+          description: 'Failed to delete deal. Please try again.',
+          variant: 'destructive',
+        });
+      }
     },
   });
+
+  // Helper functions for backwards compatibility
+  const createDeal = (dealData: Omit<Deal, 'id' | 'createdAt' | 'updatedAt'>) => {
+    createDealMutation.mutate({ dealData, silent: false });
+  };
+
+  const createDealAsync = (dealData: Omit<Deal, 'id' | 'createdAt' | 'updatedAt'>, silent = false) => {
+    return createDealMutation.mutateAsync({ dealData, silent });
+  };
+
+  const createDealsSilent = async (dealsData: Omit<Deal, 'id' | 'createdAt' | 'updatedAt'>[]) => {
+    const results = [];
+    for (const dealData of dealsData) {
+      const result = await createDealMutation.mutateAsync({ dealData, silent: true });
+      results.push(result.deal);
+    }
+    return results;
+  };
+
+  const deleteDeal = (dealId: string) => {
+    deleteDealMutation.mutate({ dealId, silent: false });
+  };
+
+  const deleteDealAsync = (dealId: string, silent = false) => {
+    return deleteDealMutation.mutateAsync({ dealId, silent });
+  };
+
+  const deleteDealsSilent = async (dealIds: string[]) => {
+    const results = [];
+    for (const dealId of dealIds) {
+      const result = await deleteDealMutation.mutateAsync({ dealId, silent: true });
+      results.push(result.dealId);
+    }
+    return results;
+  };
 
   return {
     deals,
     isLoading,
     error,
-    createDeal: createDealMutation.mutate,
-    createDealAsync: createDealMutation.mutateAsync,
+    createDeal,
+    createDealAsync,
+    createDealsSilent,
     updateDeal: updateDealMutation.mutate,
     updateDealAsync: updateDealMutation.mutateAsync,
-    deleteDeal: deleteDealMutation.mutate,
-    deleteDealAsync: deleteDealMutation.mutateAsync,
+    deleteDeal,
+    deleteDealAsync,
+    deleteDealsSilent,
     isCreating: createDealMutation.isPending,
     isUpdating: updateDealMutation.isPending,
     isDeleting: deleteDealMutation.isPending,

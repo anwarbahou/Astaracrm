@@ -7,7 +7,11 @@ import {
   Search, 
   Plus,
   Filter,
-  Upload
+  Upload,
+  X,
+  Trash2,
+  Users,
+  ArrowRight
 } from "lucide-react";
 import { Deal, DealFilters, DealStage } from '@/types/deal';
 import { mockDeals, pipelineStages } from '@/data/mockDeals';
@@ -32,6 +36,8 @@ export default function Deals() {
   const [addDealModalOpen, setAddDealModalOpen] = useState(false);
   const [importModalOpen, setImportModalOpen] = useState(false);
   const [addDealStage, setAddDealStage] = useState<DealStage>('Prospect');
+  const [selectedDeals, setSelectedDeals] = useState<string[]>([]);
+  const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
   const [filters, setFilters] = useState<DealFilters>({
     stages: [],
     owners: [],
@@ -51,8 +57,10 @@ export default function Deals() {
     error: dealsError,
     createDeal, 
     createDealAsync,
+    createDealsSilent,
     updateDeal, 
-    deleteDeal
+    deleteDeal,
+    deleteDealsSilent
   } = useDeals();
   
   // Use backend deals if available, otherwise fallback to mock data
@@ -194,11 +202,9 @@ export default function Deals() {
         description: t('deals.toasts.imported.description', { count: dealsToImport.length }),
       });
     } else {
-      // Import deals one by one to handle potential errors
+      // Import deals silently to avoid multiple toasts
       try {
-        for (const deal of dealsToImport) {
-          await createDealAsync(deal);
-        }
+        await createDealsSilent(dealsToImport);
         
         toast({
           title: 'Success',
@@ -216,25 +222,98 @@ export default function Deals() {
   };
 
   const handleBulkDelete = async (dealsToDelete: Deal[]) => {
-    try {
-      // Delete each deal
-      await Promise.all(dealsToDelete.map(deal => deleteDeal(deal.id)));
-      
-      // Refresh the deals list
-      await queryClient.invalidateQueries({ queryKey: ['deals'] });
+    if (isUsingMockData) {
+      // Handle mock data deletion
+      setLocalMockDeals(prev => prev.filter(deal => !dealsToDelete.some(d => d.id === deal.id)));
       
       toast({
         title: "Success",
         description: `${dealsToDelete.length} deals have been deleted.`,
       });
-    } catch (error) {
-      console.error('Error deleting deals:', error);
-      toast({
-        title: "Error",
-        description: "Failed to delete deals. Please try again.",
-        variant: "destructive",
-      });
+    } else {
+      // Delete deals silently to avoid multiple toasts
+      try {
+        const dealIds = dealsToDelete.map(deal => deal.id);
+        await deleteDealsSilent(dealIds);
+        
+        toast({
+          title: "Success",
+          description: `${dealsToDelete.length} deals have been deleted.`,
+        });
+      } catch (error) {
+        console.error('Error deleting deals:', error);
+        toast({
+          title: "Error",
+          description: "Failed to delete deals. Please try again.",
+          variant: "destructive",
+        });
+      }
     }
+  };
+
+  const handleDealSelect = (deal: Deal, event: React.MouseEvent) => {
+    const dealIndex = filteredDeals.findIndex(d => d.id === deal.id);
+    
+    if (event.shiftKey && lastSelectedIndex !== null) {
+      // Shift+click: select range
+      const start = Math.min(lastSelectedIndex, dealIndex);
+      const end = Math.max(lastSelectedIndex, dealIndex);
+      const rangeIds = filteredDeals.slice(start, end + 1).map(d => d.id);
+      
+      setSelectedDeals(prev => {
+        const newSelected = new Set(prev);
+        rangeIds.forEach(id => newSelected.add(id));
+        return Array.from(newSelected);
+      });
+    } else if (event.ctrlKey || event.metaKey) {
+      // Ctrl+click: toggle selection
+      setSelectedDeals(prev => 
+        prev.includes(deal.id)
+          ? prev.filter(id => id !== deal.id)
+          : [...prev, deal.id]
+      );
+      setLastSelectedIndex(dealIndex);
+    } else {
+      // Normal click: single select or deselect
+      if (selectedDeals.includes(deal.id) && selectedDeals.length === 1) {
+        // Deselect if only this card is selected
+        setSelectedDeals([]);
+        setLastSelectedIndex(null);
+      } else {
+        // Select only this card
+        setSelectedDeals([deal.id]);
+        setLastSelectedIndex(dealIndex);
+      }
+    }
+  };
+
+  const clearSelection = () => {
+    setSelectedDeals([]);
+    setLastSelectedIndex(null);
+  };
+
+  const handleBulkAction = (action: string) => {
+    const selectedDealObjects = deals.filter(deal => selectedDeals.includes(deal.id));
+    
+    switch (action) {
+      case 'delete':
+        handleBulkDelete(selectedDealObjects);
+        clearSelection();
+        break;
+      case 'assign':
+        // TODO: Implement bulk assign functionality
+        toast({
+          title: "Feature Coming Soon",
+          description: "Bulk assignment will be available soon!",
+        });
+        break;
+      default:
+        break;
+    }
+  };
+
+  const getSelectedDealsData = () => {
+    return deals.filter(deal => selectedDeals.includes(deal.id));
   };
 
   return (
@@ -259,28 +338,6 @@ export default function Deals() {
           </Button>
         </div>
       </div>
-
-      {/* Enhanced Search and Filters */}
-      <Card className="crm-card">
-        <CardContent className="p-4">
-          <div className="flex items-center gap-4">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <Input
-                placeholder={t('deals.searchPlaceholder')}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 crm-input"
-              />
-            </div>
-            <DealsFilterDropdown
-              filters={filters}
-              onFiltersChange={handleFiltersChange}
-              onClearFilters={handleClearFilters}
-            />
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Enhanced Stats Cards */}
       <div className="grid gap-4 md:grid-cols-4">
@@ -327,6 +384,74 @@ export default function Deals() {
         </Card>
       </div>
 
+      {/* Enhanced Search and Filters */}
+      <Card className="crm-card">
+        <CardContent className="p-4">
+          {selectedDeals.length > 0 ? (
+            // Bulk Actions Bar
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                    {selectedDeals.length} selected
+                  </Badge>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearSelection}
+                    className="h-6 w-6 p-0"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="h-4 w-px bg-border" />
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleBulkAction('assign')}
+                    className="gap-2"
+                  >
+                    <Users className="h-4 w-4" />
+                    Assign
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleBulkAction('delete')}
+                    className="gap-2 text-red-600 hover:text-red-700"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    Delete
+                  </Button>
+                </div>
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Total value: {getSelectedDealsData().reduce((sum, deal) => sum + deal.value, 0).toLocaleString()} MAD
+              </div>
+            </div>
+          ) : (
+            // Normal Search and Filters
+            <div className="flex items-center gap-4">
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input
+                  placeholder={t('deals.searchPlaceholder')}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 crm-input"
+                />
+              </div>
+              <DealsFilterDropdown
+                filters={filters}
+                onFiltersChange={handleFiltersChange}
+                onClearFilters={handleClearFilters}
+              />
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Pipeline Content */}
       {viewMode === "kanban" ? (
         <PipelineBoard
@@ -336,6 +461,8 @@ export default function Deals() {
           onDealClick={handleDealClick}
           onAddDeal={handleOpenAddDeal}
           onBulkDelete={handleBulkDelete}
+          onDealSelect={handleDealSelect}
+          selectedDeals={selectedDeals}
         />
       ) : (
         <Card className="crm-card">

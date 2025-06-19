@@ -1,4 +1,3 @@
-
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -38,23 +37,29 @@ export function BasicInfoFields({ formData, onUpdateField }: BasicInfoFieldsProp
   return (
     <>
       <div className="col-span-2">
-        <Label htmlFor="dealName">{t('addDealModal.dealNameLabel')}</Label>
+        <Label htmlFor="dealName">
+          {t('addDealModal.dealNameLabel')} <span className="text-red-500">*</span>
+        </Label>
         <Input
           id="dealName"
           value={formData.name}
           onChange={(e) => onUpdateField('name', e.target.value)}
           placeholder={t('addDealModal.dealNamePlaceholder')}
           required
+          className={!formData.name.trim() ? "border-red-300 focus:border-red-500" : ""}
         />
       </div>
 
       <div>
-        <Label htmlFor="client">{t('addDealModal.clientLabel')}</Label>
+        <Label htmlFor="client">
+          {t('addDealModal.clientLabel')} <span className="text-red-500">*</span>
+        </Label>
         <Select
           value={formData.clientId}
           onValueChange={handleClientSelect}
+          required
         >
-          <SelectTrigger>
+          <SelectTrigger className={!formData.clientId ? "border-red-300 focus:border-red-500" : ""}>
             <SelectValue placeholder={isLoadingClients ? "Loading clients..." : t('addDealModal.clientPlaceholder')} />
           </SelectTrigger>
           <SelectContent>
@@ -78,7 +83,9 @@ export function BasicInfoFields({ formData, onUpdateField }: BasicInfoFieldsProp
       </div>
 
       <div>
-        <Label htmlFor="value">{t('addDealModal.valueLabel')}</Label>
+        <Label htmlFor="value">
+          {t('addDealModal.valueLabel')} <span className="text-red-500">*</span>
+        </Label>
         <Input
           id="value"
           type="number"
@@ -86,6 +93,8 @@ export function BasicInfoFields({ formData, onUpdateField }: BasicInfoFieldsProp
           onChange={(e) => onUpdateField('value', parseInt(e.target.value) || 0)}
           placeholder="0"
           required
+          min="1"
+          className={formData.value <= 0 ? "border-red-300 focus:border-red-500" : ""}
         />
       </div>
 

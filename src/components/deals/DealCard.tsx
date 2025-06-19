@@ -1,6 +1,6 @@
 import { Deal } from '@/types/deal';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, User, MoreVertical } from 'lucide-react';
+import { Calendar, User, MoreVertical, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,6 +19,8 @@ interface DealCardProps {
   onEdit?: (deal: Deal) => void;
   onDelete?: (deal: Deal) => void;
   onMove?: (deal: Deal, stage: string) => void;
+  onSelect?: (deal: Deal, event: React.MouseEvent) => void;
+  isSelected?: boolean;
 }
 
 export function DealCard({ 
@@ -28,7 +30,9 @@ export function DealCard({
   onDragEnd,
   onEdit,
   onDelete,
-  onMove 
+  onMove,
+  onSelect,
+  isSelected = false
 }: DealCardProps) {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -50,17 +54,42 @@ export function DealCard({
     if ((e.target as HTMLElement).closest('.deal-menu-trigger')) {
       return;
     }
-    onClick(deal);
+
+    // Check if modifier keys are pressed for selection
+    if (onSelect && (e.ctrlKey || e.metaKey || e.shiftKey)) {
+      onSelect(deal, e);
+    } else if (onSelect && isSelected) {
+      // If card is selected and no modifiers, deselect
+      onSelect(deal, e);
+    } else if (onSelect) {
+      // Normal selection
+      onSelect(deal, e);
+    } else {
+      // Fallback to normal click
+      onClick(deal);
+    }
   };
 
   return (
-    <div 
-      className="bg-gray-700 border border-gray-600 rounded-lg p-4 cursor-pointer transition-all duration-200 hover:bg-gray-600 hover:shadow-lg hover:scale-[1.02] group relative"
-      onClick={handleClick}
+    <div
       draggable
       onDragStart={handleDragStart}
       onDragEnd={onDragEnd}
+      onClick={handleClick}
+      className={cn(
+        "border rounded-lg p-4 cursor-pointer transition-all duration-200 group relative",
+        isSelected 
+          ? "bg-blue-600 border-blue-500 shadow-lg scale-[1.02] ring-2 ring-blue-400/50" 
+          : "bg-gray-700 border-gray-600 hover:bg-gray-600 hover:shadow-lg hover:scale-[1.02]"
+      )}
     >
+      {/* Selection indicator */}
+      {isSelected && (
+        <div className="absolute top-2 left-2 bg-blue-500 rounded-full p-1">
+          <Check className="h-3 w-3 text-white" />
+        </div>
+      )}
+
       <div className="absolute top-2 right-2">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -122,16 +151,25 @@ export function DealCard({
 
       <div className="space-y-3">
         {/* Deal Name */}
-        <h4 className="font-semibold text-white text-sm leading-tight group-hover:text-blue-300 transition-colors">
+        <h4 className={cn(
+          "font-semibold text-sm leading-tight transition-colors",
+          isSelected ? "text-white" : "text-white group-hover:text-blue-300"
+        )}>
           {deal.name}
         </h4>
         
         {/* Client */}
-        <p className="text-gray-300 text-sm">{deal.client}</p>
+        <p className={cn(
+          "text-sm",
+          isSelected ? "text-blue-100" : "text-gray-300"
+        )}>{deal.client}</p>
         
         {/* Value and Priority */}
         <div className="flex items-center justify-between">
-          <span className="font-bold text-green-400 text-lg">
+          <span className={cn(
+            "font-bold text-lg",
+            isSelected ? "text-green-200" : "text-green-400"
+          )}>
             {deal.value.toLocaleString()} {deal.currency}
           </span>
           <Badge className={cn("text-xs", getPriorityColor(deal.priority))}>
@@ -142,19 +180,29 @@ export function DealCard({
         {/* Probability Bar */}
         <div className="space-y-1">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-gray-400">Probability</span>
-            <span className="text-gray-300">{deal.probability}%</span>
+            <span className={cn(
+              isSelected ? "text-blue-200" : "text-gray-400"
+            )}>Probability</span>
+            <span className={cn(
+              isSelected ? "text-blue-100" : "text-gray-300"
+            )}>{deal.probability}%</span>
           </div>
           <div className="w-full bg-gray-800 rounded-full h-2">
             <div 
-              className="bg-blue-500 h-2 rounded-full transition-all duration-300" 
+              className={cn(
+                "h-2 rounded-full transition-all duration-300",
+                isSelected ? "bg-blue-300" : "bg-blue-500"
+              )}
               style={{ width: `${deal.probability}%` }}
             />
           </div>
         </div>
         
         {/* Meta Info */}
-        <div className="flex items-center justify-between text-xs text-gray-400">
+        <div className={cn(
+          "flex items-center justify-between text-xs",
+          isSelected ? "text-blue-200" : "text-gray-400"
+        )}>
           <div className="flex items-center gap-1">
             <Calendar className="h-3 w-3" />
             <span>{new Date(deal.expectedCloseDate).toLocaleDateString()}</span>
@@ -169,12 +217,22 @@ export function DealCard({
         {deal.tags.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {deal.tags.slice(0, 2).map((tag, index) => (
-              <Badge key={index} variant="outline" className="text-xs bg-gray-800 text-gray-300 border-gray-600">
+              <Badge key={index} variant="outline" className={cn(
+                "text-xs border-gray-600",
+                isSelected 
+                  ? "bg-blue-700 text-blue-100" 
+                  : "bg-gray-800 text-gray-300"
+              )}>
                 {tag}
               </Badge>
             ))}
             {deal.tags.length > 2 && (
-              <Badge variant="outline" className="text-xs bg-gray-800 text-gray-300 border-gray-600">
+              <Badge variant="outline" className={cn(
+                "text-xs border-gray-600",
+                isSelected 
+                  ? "bg-blue-700 text-blue-100" 
+                  : "bg-gray-800 text-gray-300"
+              )}>
                 +{deal.tags.length - 2}
               </Badge>
             )}

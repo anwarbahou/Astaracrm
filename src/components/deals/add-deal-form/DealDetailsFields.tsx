@@ -1,4 +1,3 @@
-
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -85,13 +84,16 @@ export function DealDetailsFields({ formData, onUpdateField }: DealDetailsFields
       </div>
 
       <div>
-        <Label htmlFor="closeDate">{t('addDealModal.expectedCloseDateLabel')}</Label>
+        <Label htmlFor="closeDate">
+          {t('addDealModal.expectedCloseDateLabel')} <span className="text-red-500">*</span>
+        </Label>
         <Input
           id="closeDate"
           type="date"
           value={formData.expectedCloseDate}
           onChange={(e) => onUpdateField('expectedCloseDate', e.target.value)}
           required
+          className={!formData.expectedCloseDate ? "border-red-300 focus:border-red-500" : ""}
         />
       </div>
 
@@ -106,12 +108,15 @@ export function DealDetailsFields({ formData, onUpdateField }: DealDetailsFields
       </div>
 
       <div>
-        <Label htmlFor="owner">{t('addDealModal.ownerLabel')}</Label>
+        <Label htmlFor="owner">
+          {t('addDealModal.ownerLabel')} <span className="text-red-500">*</span>
+        </Label>
         <Select
           value={formData.ownerId}
           onValueChange={handleOwnerSelect}
+          required
         >
-          <SelectTrigger>
+          <SelectTrigger className={!formData.ownerId ? "border-red-300 focus:border-red-500" : ""}>
             <SelectValue placeholder={isLoadingUsers ? "Loading users..." : t('addDealModal.ownerPlaceholder')} />
           </SelectTrigger>
           <SelectContent>

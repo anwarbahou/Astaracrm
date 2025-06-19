@@ -1,28 +1,28 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, Download } from "lucide-react";
+import { Search, Filter, Download, RefreshCw } from "lucide-react";
 import { ActivityLog } from "@/types/activity";
-import { mockActivities } from "@/data/mockActivityLogs";
-import { notificationService } from "@/services/notificationService";
+import { useActivityLogs } from "@/hooks/useActivityLogs";
 import { ActivityStats } from "@/components/activity/ActivityStats";
 import { ActivityTabs } from "@/components/activity/ActivityTabs";
 
 export default function ActivityLogs() {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
-  const [activities, setActivities] = useState<ActivityLog[]>(mockActivities);
-
-  // Load real activities from notification service combined with mock data
-  useEffect(() => {
-    const realActivities = notificationService.getStoredActivities();
-    // Combine real activities with mock data, real activities first (most recent)
-    const combinedActivities = [...realActivities, ...mockActivities];
-    setActivities(combinedActivities);
-  }, []);
+  
+  const {
+    activities,
+    todayActivities,
+    systemActivities,
+    businessActivities,
+    isLoading,
+    error,
+    refetch
+  } = useActivityLogs();
 
   const filteredActivities = activities.filter(activity =>
     activity.action.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -31,17 +31,31 @@ export default function ActivityLogs() {
     activity.relatedTo.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const todayActivities = filteredActivities.filter(activity => 
+  const filteredTodayActivities = filteredActivities.filter(activity => 
     new Date(activity.timestamp).toDateString() === new Date().toDateString()
   );
 
-  const systemActivities = filteredActivities.filter(activity => 
+  const filteredSystemActivities = filteredActivities.filter(activity => 
     activity.type === "user_login" || activity.type === "report_generated"
   );
 
-  const businessActivities = filteredActivities.filter(activity => 
+  const filteredBusinessActivities = filteredActivities.filter(activity => 
     !["user_login", "report_generated"].includes(activity.type)
   );
+
+  if (error) {
+    return (
+      <div className="space-y-6 animate-in">
+        <div className="text-center py-8">
+          <p className="text-red-600 mb-4">Error loading activity logs: {error.message}</p>
+          <Button onClick={() => refetch()} className="gap-2">
+            <RefreshCw size={16} />
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-in">
@@ -54,6 +68,15 @@ export default function ActivityLogs() {
           </p>
         </div>
         <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            className="gap-2"
+            onClick={() => refetch()}
+            disabled={isLoading}
+          >
+            <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} />
+            Refresh
+          </Button>
           <Button variant="outline" className="gap-2">
             <Filter size={16} />
             {t('activityLogs.filter')}
@@ -75,25 +98,48 @@ export default function ActivityLogs() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
+              disabled={isLoading}
             />
           </div>
         </CardContent>
       </Card>
 
-      {/* Stats Cards */}
-      <ActivityStats 
-        activities={activities}
-        todayActivities={todayActivities}
-        businessActivities={businessActivities}
-      />
+      {/* Loading State */}
+      {isLoading && (
+        <div className="text-center py-8">
+          <RefreshCw className="animate-spin mx-auto mb-4" size={32} />
+          <p className="text-muted-foreground">Loading activity logs...</p>
+        </div>
+      )}
 
-      {/* Activity Tabs */}
-      <ActivityTabs
-        filteredActivities={filteredActivities}
-        todayActivities={todayActivities}
-        businessActivities={businessActivities}
-        systemActivities={systemActivities}
-      />
+      {/* No Data State */}
+      {!isLoading && activities.length === 0 && (
+        <div className="text-center py-8">
+          <p className="text-muted-foreground mb-4">No activity logs found.</p>
+          <p className="text-sm text-muted-foreground">
+            Activity logs will appear here as users perform actions in the system.
+          </p>
+        </div>
+      )}
+
+      {/* Stats Cards - Only show if we have data */}
+      {!isLoading && activities.length > 0 && (
+        <>
+          <ActivityStats 
+            activities={activities}
+            todayActivities={todayActivities}
+            businessActivities={businessActivities}
+          />
+
+          {/* Activity Tabs */}
+          <ActivityTabs
+            filteredActivities={filteredActivities}
+            todayActivities={filteredTodayActivities}
+            businessActivities={filteredBusinessActivities}
+            systemActivities={filteredSystemActivities}
+          />
+        </>
+      )}
     </div>
   );
 }

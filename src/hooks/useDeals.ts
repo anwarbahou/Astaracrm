@@ -187,8 +187,8 @@ export function useDeals() {
     onSuccess: async ({ deal, silent }) => {
       queryClient.invalidateQueries({ queryKey: ['deals'] });
       
-      // Create notifications for the new deal
-      if (user?.id && userProfile?.role) {
+      // Create notifications for the new deal only if not silent
+      if (!silent && user?.id && userProfile?.role) {
         await notificationService.notifyDealAdded(
           deal.name,
           deal.id,
@@ -300,18 +300,23 @@ export function useDeals() {
   };
 
   const createDealsWithBulkNotification = async (dealsData: Omit<Deal, 'id' | 'createdAt' | 'updatedAt'>[]) => {
+    console.log('🔄 Starting bulk deal creation for', dealsData.length, 'deals');
     const results = [];
     let totalValue = 0;
     
     // Create all deals silently
     for (const dealData of dealsData) {
+      console.log('📝 Creating deal silently:', dealData.name);
       const result = await createDealMutation.mutateAsync({ dealData, silent: true });
       results.push(result.deal);
       totalValue += result.deal.value;
     }
     
+    console.log('✅ All deals created. Total:', results.length, 'deals, Value:', totalValue);
+    
     // Create a single bulk notification
     if (user?.id && userProfile?.role && results.length > 0) {
+      console.log('🔔 Creating bulk notification for', results.length, 'deals');
       await notificationService.notifyBulkDealsAdded(
         results.length,
         totalValue,
@@ -320,6 +325,7 @@ export function useDeals() {
           userRole: userProfile.role
         }
       );
+      console.log('✅ Bulk notification created successfully');
     }
     
     return results;

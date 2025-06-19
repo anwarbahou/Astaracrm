@@ -3,6 +3,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Deal, DealStage } from '@/types/deal';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { notificationService } from '@/services/notificationService';
 
 // Transform database deal to frontend Deal type
 const transformDealFromDB = (dbDeal: any): Deal => ({
@@ -107,6 +109,7 @@ const capitalizeFirst = (str: string): string =>
 
 export function useDeals() {
   const { toast } = useToast();
+  const { user, userProfile } = useAuth();
   const queryClient = useQueryClient();
 
   // Fetch all deals with joins
@@ -181,8 +184,22 @@ export function useDeals() {
       console.log('Deal created successfully:', data);
       return { deal: transformDealFromDB(data), silent };
     },
-    onSuccess: ({ deal, silent }) => {
+    onSuccess: async ({ deal, silent }) => {
       queryClient.invalidateQueries({ queryKey: ['deals'] });
+      
+      // Create notifications for the new deal
+      if (user?.id && userProfile?.role) {
+        await notificationService.notifyDealAdded(
+          deal.name,
+          deal.id,
+          deal.value,
+          {
+            userId: user.id,
+            userRole: userProfile.role
+          }
+        );
+      }
+      
       if (!silent) {
         toast({
           title: 'Deal created',

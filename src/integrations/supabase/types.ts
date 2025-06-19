@@ -80,6 +80,90 @@ export type Database = {
           },
         ]
       }
+      contacts: {
+        Row: {
+          id: string
+          first_name: string
+          last_name: string
+          email: string | null
+          phone: string | null
+          role: string | null
+          company: string | null
+          client_id: string | null
+          tags: string[] | null
+          country: string | null
+          status: Database["public"]["Enums"]["contact_status"] | null
+          avatar_url: string | null
+          notes: string | null
+          address: string | null
+          linkedin_url: string | null
+          twitter_url: string | null
+          last_contacted_at: string | null
+          created_at: string | null
+          updated_at: string | null
+          owner_id: string | null
+        }
+        Insert: {
+          id?: string
+          first_name: string
+          last_name: string
+          email?: string | null
+          phone?: string | null
+          role?: string | null
+          company?: string | null
+          client_id?: string | null
+          tags?: string[] | null
+          country?: string | null
+          status?: Database["public"]["Enums"]["contact_status"] | null
+          avatar_url?: string | null
+          notes?: string | null
+          address?: string | null
+          linkedin_url?: string | null
+          twitter_url?: string | null
+          last_contacted_at?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+          owner_id?: string | null
+        }
+        Update: {
+          id?: string
+          first_name?: string
+          last_name?: string
+          email?: string | null
+          phone?: string | null
+          role?: string | null
+          company?: string | null
+          client_id?: string | null
+          tags?: string[] | null
+          country?: string | null
+          status?: Database["public"]["Enums"]["contact_status"] | null
+          avatar_url?: string | null
+          notes?: string | null
+          address?: string | null
+          linkedin_url?: string | null
+          twitter_url?: string | null
+          last_contacted_at?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+          owner_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contacts_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contacts_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       deals: {
         Row: {
           actual_close_date: string | null

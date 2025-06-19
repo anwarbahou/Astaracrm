@@ -286,6 +286,7 @@
       "header": {
         "contact": "Contact",
         "role": "Rôle/Titre",
+        "owner": "Propriétaire",
         "contactInfo": "Infos contact",
         "company": "Entreprise",
         "tags": "Étiquettes",
@@ -626,7 +627,23 @@
     "notesPlaceholder": "Ajoutez des notes supplémentaires sur ce contact...",
     "submitButton": "Ajouter le contact",
     "successTitle": "Succès !",
-    "successDescription": "Contact ajouté avec succès."
+    "successDescription": "Contact ajouté avec succès.",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "addContact": "Ajouter le contact",
+    "tabs" :{
+      "overview": "Aperçu",
+      "contacts": "Contacts",
+      "deals": "Affaires",
+      "notes": "Notes",
+      "files": "Fichiers",
+      "history": "Historique",
+      "messages": "Messages",
+      "contactInformation": "Informations du contact",
+      "lastContacted": "Dernier contact"
+    },
+    "contactAdded": "Contact ajouté avec succès"
+
   },
   "aiLeads": {
     "title": "Intelligence des leads par IA",

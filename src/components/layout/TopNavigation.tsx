@@ -21,6 +21,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { useNotifications } from "@/hooks/useNotifications";
 
 const getRoleIcon = (role: string | null) => {
   switch (role) {
@@ -54,6 +55,7 @@ export function TopNavigation() {
   const { toast } = useToast();
   const [showQuickAdd, setShowQuickAdd] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const { unreadCount } = useNotifications();
   const { 
     user, 
     userProfile, 
@@ -145,7 +147,7 @@ export function TopNavigation() {
               >
                 <Bell className="h-4 w-4 transition-transform duration-200" />
                 <AnimatePresence>
-                  {showNotifications && (
+                  {unreadCount > 0 && (
                     <motion.div
                       initial={{ scale: 0, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
@@ -158,7 +160,7 @@ export function TopNavigation() {
                           animate={{ scale: [1, 1.1, 1] }}
                           transition={{ duration: 2, repeat: Infinity }}
                         >
-                          3
+                          {unreadCount}
                         </motion.span>
                       </Badge>
                     </motion.div>

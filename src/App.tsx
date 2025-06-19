@@ -8,6 +8,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { TopNavigation } from "@/components/layout/TopNavigation";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { NotificationProvider } from "@/contexts/NotificationContext";
 import { pageVariants } from "@/lib/animations";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState, lazy, Suspense } from "react";
@@ -180,8 +181,9 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <ThemeProvider>
-          <TooltipProvider>
+        <NotificationProvider>
+          <ThemeProvider>
+            <TooltipProvider>
             <StagewiseToolbar 
               config={{
                 plugins: [ReactPlugin]
@@ -237,6 +239,7 @@ const App = () => {
             )}
           </TooltipProvider>
         </ThemeProvider>
+        </NotificationProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

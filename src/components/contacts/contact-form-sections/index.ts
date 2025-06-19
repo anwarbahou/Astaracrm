@@ -1,13 +1,16 @@
-
 import { Dispatch, SetStateAction } from "react";
-import { ClientFormData } from "@/components/clients/AddClientForm";
 
-export type ContactFormData = Omit<ClientFormData, "name" | "industry" | "stage" | "owner"> & {
+export type ContactFormData = {
   firstName: string;
   lastName: string;
+  email: string;
+  phone: string;
   role: string;
   company: string;
+  country: string;
   status: string;
+  notes: string;
+  tags: string[];
 };
 
 export interface SectionProps {
@@ -15,7 +18,6 @@ export interface SectionProps {
   setFormData: Dispatch<SetStateAction<ContactFormData>>;
 }
 
-export { ProfileSection } from './ProfileSection';
 export { BasicInfoSection } from './BasicInfoSection';
 export { ProfessionalInfoSection } from './ProfessionalInfoSection';
 export { LocationStatusSection } from './LocationStatusSection';

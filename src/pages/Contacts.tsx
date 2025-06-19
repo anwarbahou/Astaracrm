@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,13 +6,18 @@ import { Plus } from "lucide-react";
 import { AddContactModal } from "@/components/modals/AddContactModal";
 import { ContactsTable, Contact } from "@/components/contacts/ContactsTable";
 import { ContactProfileModal } from "@/components/contacts/ContactProfileModal";
+import { contactsService } from "@/services/contactsService";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Contacts() {
   const { t } = useTranslation();
+  const { user, userProfile } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [addContactOpen, setAddContactOpen] = useState(false);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState({
     company: '',
     role: '',
@@ -25,179 +30,108 @@ export default function Contacts() {
     lastContactedTo: '',
   });
 
-  // Enhanced mock contact data
-  const [contacts] = useState<Contact[]>([
-    {
-      id: 1,
-      firstName: "John",
-      lastName: "Smith",
-      email: "john@acme.com",
-      phone: "+212 661 234567",
-      role: "CEO",
-      company: "Acme Corporation",
-      tags: ["Decision Maker", "VIP"],
-      country: "Morocco",
-      status: "Active",
-      createdDate: "2023-01-15",
-      lastContacted: "2 days ago",
-      avatar: "",
-      notes: "Key decision maker for technology investments. Very interested in our CRM platform."
-    },
-    {
-      id: 2,
-      firstName: "Sarah",
-      lastName: "Johnson",
-      email: "sarah@techsolutions.com",
-      phone: "+33 1 42 86 83 02",
-      role: "CTO",
-      company: "Tech Solutions Ltd",
-      tags: ["Technical", "Decision Maker"],
-      country: "France",
-      status: "Active",
-      createdDate: "2023-03-20",
-      lastContacted: "1 week ago",
-      avatar: "",
-      notes: "Technical lead evaluating our software solutions."
-    },
-    {
-      id: 3,
-      firstName: "Mike",
-      lastName: "Chen",
-      email: "mike@global.com",
-      phone: "+34 91 123 4567",
-      role: "Procurement Manager",
-      company: "Global Industries",
-      tags: ["Procurement"],
-      country: "Spain",
-      status: "Inactive",
-      createdDate: "2022-11-10",
-      lastContacted: "3 weeks ago",
-      avatar: "",
-      notes: "Handles procurement decisions for European operations."
-    },
-    {
-      id: 4,
-      firstName: "Emily",
-      lastName: "Davis",
-      email: "emily@startupxyz.com",
-      phone: "+1 555 987 6543",
-      role: "Founder",
-      company: "StartupXYZ",
-      tags: ["Founder", "Startup"],
-      country: "USA",
-      status: "Active",
-      createdDate: "2023-06-05",
-      lastContacted: "Yesterday",
-      avatar: "",
-      notes: "Startup founder looking for scalable CRM solutions."
-    },
-    {
-      id: 5,
-      firstName: "David",
-      lastName: "Wilson",
-      email: "david@enterprise.com",
-      phone: "+971 4 123 4567",
-      role: "VP Sales",
-      company: "Enterprise Corp",
-      tags: ["Sales", "VIP"],
-      country: "UAE",
-      status: "Active",
-      createdDate: "2024-01-12",
-      lastContacted: "1 month ago",
-      avatar: "",
-      notes: "Sales VP interested in pipeline management features."
-    },
-    {
-      id: 6,
-      firstName: "Lisa",
-      lastName: "Anderson",
-      email: "lisa@acme.com",
-      phone: "+212 661 345678",
-      role: "CTO",
-      company: "Acme Corporation",
-      tags: ["Technical", "Decision Maker"],
-      country: "Morocco",
-      status: "Active",
-      createdDate: "2023-09-15",
-      lastContacted: "3 days ago",
-      avatar: "",
-      notes: "Technical decision maker for IT infrastructure projects."
-    },
-    {
-      id: 7,
-      firstName: "Robert",
-      lastName: "Garcia",
-      email: "robert@consulting.com",
-      phone: "+44 20 7946 0958",
-      role: "Senior Consultant",
-      company: "Consulting Pro",
-      tags: ["Consulting"],
-      country: "UK",
-      status: "Active",
-      createdDate: "2023-04-22",
-      lastContacted: "5 days ago",
-      avatar: "",
-      notes: "Consultant specializing in digital transformation projects."
-    },
-    {
-      id: 8,
-      firstName: "Maria",
-      lastName: "Rodriguez",
-      email: "maria@healthcare.com",
-      phone: "+212 661 567890",
-      role: "IT Director",
-      company: "HealthCare Plus",
-      tags: ["Healthcare", "Technical"],
-      country: "Morocco",
-      status: "Active",
-      createdDate: "2023-07-30",
-      lastContacted: "2 weeks ago",
-      avatar: "",
-      notes: "IT Director overseeing healthcare technology initiatives."
-    },
-    {
-      id: 9,
-      firstName: "James",
-      lastName: "Brown",
-      email: "james@retail.com",
-      phone: "+49 30 12345678",
-      role: "Operations Manager",
-      company: "Retail Masters",
-      tags: ["Retail", "Operations"],
-      country: "Germany",
-      status: "Inactive",
-      createdDate: "2022-12-08",
-      lastContacted: "2 months ago",
-      avatar: "",
-      notes: "Operations manager for retail chain modernization project."
-    },
-    {
-      id: 10,
-      firstName: "Anna",
-      lastName: "Schmidt",
-      email: "anna@fintech.com",
-      phone: "+41 44 123 4567",
-      role: "Product Manager",
-      company: "FinTech Solutions",
-      tags: ["Finance", "Product"],
-      country: "Switzerland",
-      status: "Active",
-      createdDate: "2024-02-14",
-      lastContacted: "4 days ago",
-      avatar: "",
-      notes: "Product manager for financial technology solutions."
+  // Load contacts on component mount
+  useEffect(() => {
+    if (user?.id && userProfile?.role) {
+      loadContacts();
     }
-  ]);
+  }, [user?.id, userProfile?.role]);
+
+  const loadContacts = async () => {
+    if (!user?.id || !userProfile?.role) return;
+    
+    try {
+      setIsLoading(true);
+      const fetchedContacts = await contactsService.getContacts({
+        userId: user.id,
+        userRole: userProfile.role
+      });
+      setContacts(fetchedContacts);
+    } catch (error) {
+      console.error('Error loading contacts:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleContactClick = (contact: Contact) => {
     setSelectedContact(contact);
     setProfileModalOpen(true);
   };
 
-  const handleSaveContact = (updatedContact: Contact) => {
-    // In a real app, this would update the contact in the database
-    console.log('Saving contact:', updatedContact);
+  const handleSaveContact = async (updatedContact: Contact) => {
+    if (!user?.id || !userProfile?.role) return;
+    
+    try {
+      await contactsService.updateContact(updatedContact.id, {
+        firstName: updatedContact.firstName,
+        lastName: updatedContact.lastName,
+        email: updatedContact.email,
+        phone: updatedContact.phone,
+        role: updatedContact.role,
+        company: updatedContact.company,
+        country: updatedContact.country,
+        status: updatedContact.status,
+        tags: updatedContact.tags,
+        notes: updatedContact.notes,
+      }, {
+        userId: user.id,
+        userRole: userProfile.role
+      });
+      
+      // Reload contacts to reflect changes
+      await loadContacts();
+    } catch (error) {
+      console.error('Error saving contact:', error);
+    }
   };
+
+  const handleContactAdded = () => {
+    // Reload contacts when a new contact is added
+    loadContacts();
+  };
+
+  // Development helpers for testing admin functionality
+  const handleSeedTestData = async () => {
+    try {
+      await contactsService.seedTestContacts(user?.id);
+      await loadContacts();
+      console.log('✅ Test data seeded successfully');
+    } catch (error) {
+      console.error('Error seeding test data:', error);
+    }
+  };
+
+  const handleClearAllData = async () => {
+    try {
+      await contactsService.clearAllContacts();
+      // Clear any remaining localStorage data
+      localStorage.removeItem('crm_contacts');
+      await loadContacts();
+      console.log('✅ All contacts cleared');
+    } catch (error) {
+      console.error('Error clearing contacts:', error);
+    }
+  };
+
+  const handleShowUserInfo = () => {
+    console.log('=== Current User Info ===');
+    console.log('User ID:', user?.id);
+    console.log('User Email:', user?.email);
+    console.log('User Role:', userProfile?.role);
+    console.log('Is Admin:', userProfile?.role === 'admin');
+    console.log('========================');
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <p className="text-muted-foreground">{t('contacts.loading')}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -208,12 +142,33 @@ export default function Contacts() {
             <h1 className="text-3xl font-bold">{t('contacts.title')}</h1>
             <p className="text-muted-foreground mt-1">
               {t('contacts.description')}
+              {userProfile?.role === 'admin' && (
+                <span className="block text-sm text-primary font-medium mt-1">
+                  Admin view: Showing all contacts from all users
+                </span>
+              )}
             </p>
           </div>
-          <Button className="gap-2" onClick={() => setAddContactOpen(true)}>
-            <Plus size={16} />
-            {t('contacts.addContact')}
-          </Button>
+          <div className="flex gap-2">
+            {/* Development buttons for testing admin functionality */}
+            {process.env.NODE_ENV === 'development' && (
+              <>
+                <Button variant="outline" size="sm" onClick={handleShowUserInfo}>
+                  Show User Info
+                </Button>
+                <Button variant="outline" size="sm" onClick={handleSeedTestData}>
+                  Seed Test Data
+                </Button>
+                <Button variant="outline" size="sm" onClick={handleClearAllData}>
+                  Clear All
+                </Button>
+              </>
+            )}
+            <Button className="gap-2" onClick={() => setAddContactOpen(true)}>
+              <Plus size={16} />
+              {t('contacts.addContact')}
+            </Button>
+          </div>
         </div>
 
         {/* Stats Cards */}
@@ -264,7 +219,11 @@ export default function Contacts() {
       </div>
 
       {/* Modals */}
-      <AddContactModal open={addContactOpen} onOpenChange={setAddContactOpen} />
+      <AddContactModal 
+        open={addContactOpen} 
+        onOpenChange={setAddContactOpen}
+        onContactAdded={handleContactAdded}
+      />
       
       <ContactProfileModal
         contact={selectedContact}

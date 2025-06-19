@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,15 +7,22 @@ import { Input } from "@/components/ui/input";
 import { Search, Filter, Download } from "lucide-react";
 import { ActivityLog } from "@/types/activity";
 import { mockActivities } from "@/data/mockActivityLogs";
+import { notificationService } from "@/services/notificationService";
 import { ActivityStats } from "@/components/activity/ActivityStats";
 import { ActivityTabs } from "@/components/activity/ActivityTabs";
 
 export default function ActivityLogs() {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
+  const [activities, setActivities] = useState<ActivityLog[]>(mockActivities);
 
-  // Use mock data
-  const activities: ActivityLog[] = mockActivities;
+  // Load real activities from notification service combined with mock data
+  useEffect(() => {
+    const realActivities = notificationService.getStoredActivities();
+    // Combine real activities with mock data, real activities first (most recent)
+    const combinedActivities = [...realActivities, ...mockActivities];
+    setActivities(combinedActivities);
+  }, []);
 
   const filteredActivities = activities.filter(activity =>
     activity.action.toLowerCase().includes(searchQuery.toLowerCase()) ||

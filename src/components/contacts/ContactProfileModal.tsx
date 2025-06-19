@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Sheet,
@@ -11,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,6 +28,8 @@ import {
 } from "lucide-react";
 import { Contact } from "./ContactsTable";
 import { useToast } from "@/hooks/use-toast";
+import { contactsService } from "@/services/contactsService";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface ContactProfileModalProps {
   contact: Contact | null;
@@ -40,42 +40,107 @@ interface ContactProfileModalProps {
 
 export function ContactProfileModal({ contact, open, onOpenChange, onSave }: ContactProfileModalProps) {
   const { t } = useTranslation();
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedContact, setEditedContact] = useState<Contact | null>(null);
+  const { user, userProfile } = useAuth();
   const { toast } = useToast();
+  const [isEditing, setIsEditing] = useState(false);
+  const [displayContact, setDisplayContact] = useState<Contact | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  if (!contact) return null;
+  useEffect(() => {
+    if (contact) {
+      setDisplayContact({ ...contact });
+    }
+  }, [contact]);
 
-  const handleEdit = () => {
-    setEditedContact({ ...contact });
-    setIsEditing(true);
-  };
+  const handleSave = async () => {
+    if (!displayContact || !user?.id || !userProfile?.role) return;
 
-  const handleSave = () => {
-    if (editedContact) {
-      onSave(editedContact);
+    try {
+      await contactsService.updateContact(displayContact.id, {
+        firstName: displayContact.firstName,
+        lastName: displayContact.lastName,
+        email: displayContact.email,
+        phone: displayContact.phone,
+        role: displayContact.role,
+        company: displayContact.company,
+        country: displayContact.country,
+        status: displayContact.status,
+        tags: displayContact.tags,
+        notes: displayContact.notes,
+      }, {
+        userId: user.id,
+        userRole: userProfile.role
+      });
+
+      onSave(displayContact);
       setIsEditing(false);
+      
       toast({
-        title: t('contacts.profile.contactUpdated'),
-        description: t('contacts.profile.contactUpdatedDescription'),
+        title: t('contacts.profile.success'),
+        description: t('contacts.profile.contactUpdated'),
+      });
+    } catch (error) {
+      console.error('Error updating contact:', error);
+      toast({
+        title: t('contacts.profile.error'),
+        description: error instanceof Error ? error.message : t('contacts.profile.updateFailed'),
+        variant: "destructive"
       });
     }
   };
 
-  const handleCancel = () => {
-    setEditedContact(null);
-    setIsEditing(false);
+  const handleDelete = async () => {
+    if (!displayContact || !user?.id || !userProfile?.role) return;
+
+    try {
+      setIsDeleting(true);
+      const success = await contactsService.deleteContact(displayContact.id, {
+        userId: user.id,
+        userRole: userProfile.role
+      });
+
+      if (success) {
+        toast({
+          title: t('contacts.profile.success'),
+          description: t('contacts.profile.contactDeleted'),
+        });
+        onOpenChange(false);
+        // Trigger a refresh of the contacts list
+        window.location.reload();
+      } else {
+        throw new Error('Failed to delete contact');
+      }
+    } catch (error) {
+      console.error('Error deleting contact:', error);
+      toast({
+        title: t('contacts.profile.error'),
+        description: error instanceof Error ? error.message : t('contacts.profile.deleteFailed'),
+        variant: "destructive"
+      });
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
-  const handleDelete = () => {
-    toast({
-      title: t('contacts.profile.contactDeleted'),
-      description: t('contacts.profile.contactDeletedDescription'),
-    });
-    onOpenChange(false);
+  const canEdit = () => {
+    if (!displayContact || !userProfile?.role) return false;
+    
+    // Admins can edit all contacts
+    if (userProfile.role === 'admin') return true;
+    
+    // Users and managers can only edit their own contacts
+    // For localStorage implementation, we check if the contact has an ownerId
+    const storedContact = displayContact as any;
+    return storedContact.ownerId === user?.id || !storedContact.ownerId;
   };
 
-  const displayContact = isEditing && editedContact ? editedContact : contact;
+  const canDelete = () => {
+    return canEdit(); // Same permissions as editing
+  };
+
+  if (!displayContact) {
+    return null;
+  }
 
   const getTagColor = (tag: string) => {
     switch (tag) {
@@ -95,25 +160,44 @@ export function ContactProfileModal({ contact, open, onOpenChange, onSave }: Con
           <div className="flex items-center justify-between">
             <SheetTitle>{t('contacts.profile.title')}</SheetTitle>
             <div className="flex gap-2">
-              {!isEditing ? (
+              {canEdit() && (
                 <>
-                  <Button variant="outline" size="sm" onClick={handleEdit} className="gap-2">
-                    <Edit className="h-4 w-4" />
-                    {t('contacts.profile.edit')}
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={handleDelete} className="text-red-600 hover:text-red-700 gap-2">
-                    <Trash2 className="h-4 w-4" />
-                    {t('contacts.profile.delete')}
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button variant="outline" size="sm" onClick={handleCancel}>
-                    {t('contacts.profile.cancel')}
-                  </Button>
-                  <Button size="sm" onClick={handleSave}>
-                    {t('contacts.profile.save')}
-                  </Button>
+                  {isEditing ? (
+                    <>
+                      <Button size="sm" onClick={handleSave}>
+                        <Edit className="h-4 w-4 mr-2" />
+                        {t('contacts.profile.save')}
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => {
+                          setIsEditing(false);
+                          setDisplayContact({ ...contact! });
+                        }}
+                      >
+                        <Edit className="h-4 w-4 mr-2" />
+                        {t('contacts.profile.cancel')}
+                      </Button>
+                    </>
+                  ) : (
+                    <Button size="sm" onClick={() => setIsEditing(true)}>
+                      <Edit className="h-4 w-4 mr-2" />
+                      {t('contacts.profile.edit')}
+                    </Button>
+                  )}
+                  
+                  {canDelete() && !isEditing && (
+                    <Button 
+                      size="sm" 
+                      variant="destructive"
+                      onClick={handleDelete}
+                      disabled={isDeleting}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      {isDeleting ? t('contacts.profile.deleting') : t('contacts.profile.delete')}
+                    </Button>
+                  )}
                 </>
               )}
             </div>
@@ -123,12 +207,11 @@ export function ContactProfileModal({ contact, open, onOpenChange, onSave }: Con
           <Card>
             <CardContent className="p-6">
               <div className="flex items-start gap-6">
-                <Avatar className="h-24 w-24">
-                  <AvatarImage src={displayContact.avatar} />
-                  <AvatarFallback className="bg-primary/10 text-primary text-xl font-medium">
+                <div className="h-24 w-24 rounded-full bg-primary/10 flex items-center justify-center">
+                  <span className="text-primary text-xl font-medium">
                     {displayContact.firstName[0]}{displayContact.lastName[0]}
-                  </AvatarFallback>
-                </Avatar>
+                  </span>
+                </div>
                 <div className="flex-1 space-y-4">
                   {isEditing ? (
                     <div className="grid grid-cols-2 gap-4">
@@ -136,16 +219,22 @@ export function ContactProfileModal({ contact, open, onOpenChange, onSave }: Con
                         <Label htmlFor="firstName">{t('contacts.profile.firstName')}</Label>
                         <Input
                           id="firstName"
-                          value={editedContact?.firstName || ''}
-                          onChange={(e) => setEditedContact(prev => prev ? {...prev, firstName: e.target.value} : null)}
+                          value={displayContact.firstName}
+                          onChange={(e) => setDisplayContact({
+                            ...displayContact,
+                            firstName: e.target.value
+                          })}
                         />
                       </div>
                       <div>
                         <Label htmlFor="lastName">{t('contacts.profile.lastName')}</Label>
                         <Input
                           id="lastName"
-                          value={editedContact?.lastName || ''}
-                          onChange={(e) => setEditedContact(prev => prev ? {...prev, lastName: e.target.value} : null)}
+                          value={displayContact.lastName}
+                          onChange={(e) => setDisplayContact({
+                            ...displayContact,
+                            lastName: e.target.value
+                          })}
                         />
                       </div>
                     </div>
@@ -193,32 +282,44 @@ export function ContactProfileModal({ contact, open, onOpenChange, onSave }: Con
                       <Input
                         id="email"
                         type="email"
-                        value={editedContact?.email || ''}
-                        onChange={(e) => setEditedContact(prev => prev ? {...prev, email: e.target.value} : null)}
+                        value={displayContact.email}
+                        onChange={(e) => setDisplayContact({
+                          ...displayContact,
+                          email: e.target.value
+                        })}
                       />
                     </div>
                     <div>
                       <Label htmlFor="phone">{t('contacts.profile.phone')}</Label>
                       <Input
                         id="phone"
-                        value={editedContact?.phone || ''}
-                        onChange={(e) => setEditedContact(prev => prev ? {...prev, phone: e.target.value} : null)}
+                        value={displayContact.phone}
+                        onChange={(e) => setDisplayContact({
+                          ...displayContact,
+                          phone: e.target.value
+                        })}
                       />
                     </div>
                     <div>
                       <Label htmlFor="role">{t('contacts.profile.role')}</Label>
                       <Input
                         id="role"
-                        value={editedContact?.role || ''}
-                        onChange={(e) => setEditedContact(prev => prev ? {...prev, role: e.target.value} : null)}
+                        value={displayContact.role}
+                        onChange={(e) => setDisplayContact({
+                          ...displayContact,
+                          role: e.target.value
+                        })}
                       />
                     </div>
                     <div>
                       <Label htmlFor="company">{t('contacts.profile.company')}</Label>
                       <Input
                         id="company"
-                        value={editedContact?.company || ''}
-                        onChange={(e) => setEditedContact(prev => prev ? {...prev, company: e.target.value} : null)}
+                        value={displayContact.company}
+                        onChange={(e) => setDisplayContact({
+                          ...displayContact,
+                          company: e.target.value
+                        })}
                       />
                     </div>
                   </div>
@@ -302,6 +403,10 @@ export function ContactProfileModal({ contact, open, onOpenChange, onSave }: Con
                     className="min-h-[120px]"
                     value={displayContact.notes || ''}
                     readOnly={!isEditing}
+                    onChange={(e) => setDisplayContact({
+                      ...displayContact,
+                      notes: e.target.value
+                    })}
                   />
                   <div className="space-y-3">
                     <h4 className="font-medium text-sm">{t('contacts.profile.notes.recentNotes')}</h4>

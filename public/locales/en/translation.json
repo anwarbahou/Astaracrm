@@ -264,11 +264,16 @@
     "submit": "Add Client"
   }
   },
-  "contacts": {
+
+
+"contacts": {
     "title": "Contacts",
     "description": "Manage all your contacts and business relationships.",
+    "loading": "Loading contacts...",
     "addContact": "Add Contact",
     "searchPlaceholder": "Search contacts by name, email, or company...",
+    "noContactsYet": "No contacts yet",
+    "addContactsToStart": "Add contacts to start building relationships",
     "stats": {
       "total": "Total Contacts",
       "active": "Active Contacts",
@@ -346,9 +351,84 @@
       "active": "Active",
       "inactive": "Inactive"
     },
-    "noContactsYet": "No contacts yet",
-    "addContactsToStart": "Add contacts to start building relationships"
+    "profile": {
+      "title": "Contact Profile",
+      "edit": "Edit",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "deleting": "Deleting...",
+      "deleteContact": "Delete Contact",
+      "success": "Success",
+      "error": "Error",
+      "contactUpdated": "Contact updated successfully",
+      "contactUpdatedDescription": "Contact information updated successfully.",
+      "contactDeleted": "Contact deleted successfully",
+      "contactDeletedDescription": "The contact was successfully deleted.",
+      "updateFailed": "Failed to update contact",
+      "deleteFailed": "Failed to delete contact",
+      "contactInformation": "Contact Information",
+      "professionalInfo": "Professional Information",
+      "companyInformation": "Company Information",
+      "activitySummary": "Activity Summary",
+      "created": "Created",
+      "lastContacted": "Last contacted",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Phone",
+      "role": "Role",
+      "company": "Company",
+      "location": "Location",
+      "position": "Position",
+      "joinDate": "Join Date",
+      "notesPlaceholder": "Add notes about this contact...",
+      "noNotes": "No notes available",
+      "tabs": {
+        "overview": "Overview",
+        "contacts": "Contacts",
+        "deals": "Deals",
+        "notes": "Notes",
+        "files": "Files",
+        "history": "History",
+        "messages": "Messages"
+      },
+      "notes": {
+        "title": "Notes and Comments",
+        "placeholder": "Add a note about this contact...",
+        "recentNotes": "Recent Notes",
+        "note1": "Initial contact made regarding software solutions. Very interested in our CRM platform.",
+        "note2": "Follow-up meeting scheduled for next week. Prepare presentation materials.",
+        "timeAgo": {
+          "2days": "2 days ago",
+          "1week": "1 week ago"
+        }
+      },
+      "files": {
+        "title": "Files and Documents",
+        "noFiles": "No files uploaded yet",
+        "uploadFiles": "Upload Files"
+      },
+      "messages": {
+        "title": "Message History",
+        "noMessages": "No messages yet",
+        "sendMessage": "Send Message"
+      },
+      "history": {
+        "title": "Activity History",
+        "contactCreated": "Contact created",
+        "emailSent": "Email sent",
+        "meetingScheduled": "Meeting scheduled",
+        "timeAgo": {
+          "3days": "3 days ago",
+          "1week": "1 week ago"
+        }
+      }
+    }
   },
+
+
+  
   "deals": {
     "title": "Deals",
     "addDeal": "Add Deal",
@@ -629,8 +709,18 @@
     "notesLabel": "Notes",
     "notesPlaceholder": "Add additional notes about this contact...",
     "submitButton": "Add Contact",
+    "creating": "Creating...",
     "successTitle": "Success!",
-    "successDescription": "Contact added successfully."
+    "successDescription": "Contact added successfully.",
+    "validationError": "Validation Error",
+    "requiredFields": "First name, last name, and email are required.",
+    "errorTitle": "Error",
+    "errorDescription": "Failed to create contact. Please try again.",
+    "cancel": "Cancel",
+    "save": "Save",
+    "addContact": "Add Contact",
+    "contactAdded": "Contact added successfully"
+
   },
   "aiLeads": {
     "title": "AI Lead Intelligence",

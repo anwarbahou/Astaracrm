@@ -2,6 +2,7 @@
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -22,6 +23,9 @@ export function AddClientModal({ open, onOpenChange, onClientAdded }: AddClientM
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{t('addClientModal.title')}</DialogTitle>
+          <DialogDescription>
+            {t('addClientModal.description')}
+          </DialogDescription>
         </DialogHeader>
         <AddClientForm onOpenChange={onOpenChange} onClientAdded={onClientAdded} />
       </DialogContent>

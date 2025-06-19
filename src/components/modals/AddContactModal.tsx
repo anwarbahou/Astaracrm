@@ -1,4 +1,3 @@
-
 import {
   Dialog,
   DialogContent,
@@ -11,9 +10,10 @@ import { AddContactForm } from "@/components/contacts/AddContactForm";
 interface AddContactModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onContactAdded?: () => void;
 }
 
-export function AddContactModal({ open, onOpenChange }: AddContactModalProps) {
+export function AddContactModal({ open, onOpenChange, onContactAdded }: AddContactModalProps) {
   const { t } = useTranslation();
 
   return (
@@ -22,7 +22,7 @@ export function AddContactModal({ open, onOpenChange }: AddContactModalProps) {
         <DialogHeader>
           <DialogTitle>{t('addContactModal.title')}</DialogTitle>
         </DialogHeader>
-        <AddContactForm onOpenChange={onOpenChange} />
+        <AddContactForm onOpenChange={onOpenChange} onContactAdded={onContactAdded} />
       </DialogContent>
     </Dialog>
   );

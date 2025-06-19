@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { 
   Search, 
   Filter,
@@ -31,6 +31,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { useAuth } from '@/contexts/AuthContext';
 
 export interface Contact {
   id: number;
@@ -45,8 +46,8 @@ export interface Contact {
   status: "Active" | "Inactive";
   createdDate: string;
   lastContacted: string;
-  avatar: string;
   notes?: string;
+  owner?: string;
 }
 
 export interface ContactFilters {
@@ -327,6 +328,7 @@ export function ContactsTable({
   onFiltersChange,
 }: ContactsTableProps) {
   const { t } = useTranslation();
+  const { isAdmin } = useAuth();
   const [sortField, setSortField] = useState<keyof Contact>('firstName');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [currentPage, setCurrentPage] = useState(1);
@@ -453,6 +455,9 @@ export function ContactsTable({
                     <ArrowUpDown className="h-3 w-3" />
                   </div>
                 </TableHead>
+                {isAdmin && (
+                  <TableHead>{t('contacts.table.header.owner')}</TableHead>
+                )}
                 <TableHead>{t('contacts.table.header.contactInfo')}</TableHead>
                 <TableHead 
                   className="cursor-pointer hover:bg-muted/50"
@@ -495,7 +500,6 @@ export function ContactsTable({
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <Avatar className="h-10 w-10">
-                        <AvatarImage src={contact.avatar} />
                         <AvatarFallback className="bg-primary/10 text-primary font-medium">
                           {contact.firstName[0]}{contact.lastName[0]}
                         </AvatarFallback>
@@ -509,6 +513,11 @@ export function ContactsTable({
                   <TableCell>
                     <p className="font-medium">{contact.role}</p>
                   </TableCell>
+                  {isAdmin && (
+                    <TableCell>
+                      <p className="text-sm text-muted-foreground">{contact.owner || 'Non assigné'}</p>
+                    </TableCell>
+                  )}
                   <TableCell>
                     <div className="space-y-1">
                       <p className="text-sm">{contact.email}</p>

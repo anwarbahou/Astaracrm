@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { notificationService } from '@/services/notificationService';
 import type { Database } from '@/integrations/supabase/types';
 
 import {
@@ -47,7 +48,7 @@ const initialFormData: ClientFormData = {
 
 export function AddClientForm({ onOpenChange, onClientAdded }: AddClientFormProps) {
   const { t } = useTranslation(['clients', 'common']);
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const [formData, setFormData] = useState<ClientFormData>(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
@@ -105,6 +106,18 @@ export function AddClientForm({ onOpenChange, onClientAdded }: AddClientFormProp
           variant: 'destructive',
         });
         return;
+      }
+
+      // Create notifications for the new client
+      if (data?.id && user?.id && userProfile?.role) {
+        await notificationService.notifyClientAdded(
+          formData.name,
+          data.id,
+          {
+            userId: user.id,
+            userRole: userProfile.role
+          }
+        );
       }
 
       toast({

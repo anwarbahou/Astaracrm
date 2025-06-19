@@ -58,6 +58,7 @@ export default function Deals() {
     createDeal, 
     createDealAsync,
     createDealsSilent,
+    createDealsWithBulkNotification,
     updateDeal, 
     deleteDeal,
     deleteDealsSilent
@@ -202,9 +203,9 @@ export default function Deals() {
         description: t('deals.toasts.imported.description', { count: dealsToImport.length }),
       });
     } else {
-      // Import deals silently to avoid multiple toasts
+      // Import deals with bulk notification
       try {
-        await createDealsSilent(dealsToImport);
+        await createDealsWithBulkNotification(dealsToImport);
         
         toast({
           title: 'Success',

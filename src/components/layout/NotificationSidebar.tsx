@@ -75,13 +75,23 @@ export function NotificationSidebar({ open, onOpenChange }: NotificationSidebarP
     return createdDate.toLocaleDateString();
   };
 
-  const getNotificationIcon = (type: string) => {
+  const getNotificationIcon = (type: string, data?: any) => {
     switch (type) {
       case "contact_added":
         return <UserPlus className="h-4 w-4 text-blue-500" />;
       case "client_added":
         return <Building className="h-4 w-4 text-green-500" />;
       case "deal_added":
+        // Show multiple dollar signs for bulk operations
+        if (data?.isBulkOperation) {
+          return (
+            <div className="flex items-center">
+              <DollarSign className="h-4 w-4 text-emerald-500" />
+              <DollarSign className="h-3 w-3 text-emerald-400 -ml-1" />
+              <DollarSign className="h-2 w-2 text-emerald-300 -ml-1" />
+            </div>
+          );
+        }
         return <DollarSign className="h-4 w-4 text-emerald-500" />;
       case "contact_updated":
         return <UserPlus className="h-4 w-4 text-blue-400" />;
@@ -239,7 +249,7 @@ export function NotificationSidebar({ open, onOpenChange }: NotificationSidebarP
                   >
                     <div className="flex items-start gap-3">
                       <div className="flex-shrink-0 mt-0.5">
-                        {getNotificationIcon(notification.type)}
+                        {getNotificationIcon(notification.type, notification.data)}
                       </div>
                       
                       <div className="flex-1 min-w-0">
@@ -263,6 +273,18 @@ export function NotificationSidebar({ open, onOpenChange }: NotificationSidebarP
                         <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
                           {content.description}
                         </p>
+                        
+                        {/* Show bulk operation indicator */}
+                        {notification.data?.isBulkOperation && (
+                          <div className="flex items-center gap-1 mt-1">
+                            <Badge variant="secondary" className="text-xs px-1 py-0 bg-emerald-100 text-emerald-700">
+                              Bulk Import
+                            </Badge>
+                            <span className="text-xs text-muted-foreground">
+                              {notification.data.dealCount} deals • {notification.data.totalValue?.toLocaleString()} MAD
+                            </span>
+                          </div>
+                        )}
                         
                         {/* Show user context for admin notifications */}
                         {content.performerName !== 'Unknown User' && !content.description.startsWith('You ') && (

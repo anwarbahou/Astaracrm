@@ -572,6 +572,30 @@ class NotificationService {
       priority: 'high'
     }, userContext);
   }
+
+  /**
+   * Create notification when multiple deals are added in bulk
+   */
+  async notifyBulkDealsAdded(
+    dealCount: number,
+    totalValue: number,
+    userContext: UserContext
+  ): Promise<void> {
+    await this.createNotifications({
+      type: 'deal_added',
+      title: 'Bulk Deals Created',
+      description: `created ${dealCount} deals with total value ${totalValue.toLocaleString()} MAD`,
+      entity_id: `bulk_${Date.now()}`, // Unique identifier for bulk operation
+      entity_type: 'deal',
+      data: { 
+        dealCount, 
+        totalValue, 
+        entityName: `${dealCount} deals`,
+        isBulkOperation: true 
+      },
+      priority: 'high'
+    }, userContext);
+  }
 }
 
 // Export singleton instance

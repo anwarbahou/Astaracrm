@@ -299,6 +299,32 @@ export function useDeals() {
     return results;
   };
 
+  const createDealsWithBulkNotification = async (dealsData: Omit<Deal, 'id' | 'createdAt' | 'updatedAt'>[]) => {
+    const results = [];
+    let totalValue = 0;
+    
+    // Create all deals silently
+    for (const dealData of dealsData) {
+      const result = await createDealMutation.mutateAsync({ dealData, silent: true });
+      results.push(result.deal);
+      totalValue += result.deal.value;
+    }
+    
+    // Create a single bulk notification
+    if (user?.id && userProfile?.role && results.length > 0) {
+      await notificationService.notifyBulkDealsAdded(
+        results.length,
+        totalValue,
+        {
+          userId: user.id,
+          userRole: userProfile.role
+        }
+      );
+    }
+    
+    return results;
+  };
+
   const deleteDeal = (dealId: string) => {
     deleteDealMutation.mutate({ dealId, silent: false });
   };
@@ -323,6 +349,7 @@ export function useDeals() {
     createDeal,
     createDealAsync,
     createDealsSilent,
+    createDealsWithBulkNotification,
     updateDeal: updateDealMutation.mutate,
     updateDealAsync: updateDealMutation.mutateAsync,
     deleteDeal,

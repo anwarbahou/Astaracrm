@@ -11,69 +11,89 @@ interface LazySectionProps {
 export const LazySection: React.FC<LazySectionProps> = ({
   children,
   className = '',
-  threshold = 0.1,
-  rootMargin = '100px',
-  fallbackHeight = 'min-h-[50vh]'
+  threshold = 0.2,
+  rootMargin = '50px',
+  fallbackHeight = 'min-h-[400px]'
 }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const [hasLoaded, setHasLoaded] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
-  const handleIntersection = useCallback(([entry]: IntersectionObserverEntry[]) => {
-    if (entry.isIntersecting && !hasLoaded) {
-      setHasLoaded(true);
-      // Use RAF for smooth animation timing
+  const handleIntersection = useCallback((entries: IntersectionObserverEntry[]) => {
+    const entry = entries[0];
+    
+    if (entry.isIntersecting && !isLoaded) {
+      // Load immediately when in view
+      setIsLoaded(true);
+      
+      // Animate in after a brief delay
       requestAnimationFrame(() => {
-        setTimeout(() => setIsVisible(true), 50);
+        setIsVisible(true);
       });
       
-      // Disconnect observer after loading to save resources
+      // Clean up observer
       if (observerRef.current && sectionRef.current) {
         observerRef.current.unobserve(sectionRef.current);
+        observerRef.current.disconnect();
+        observerRef.current = null;
       }
     }
-  }, [hasLoaded]);
+  }, [isLoaded]);
 
   useEffect(() => {
-    const currentRef = sectionRef.current;
-    
-    if (!currentRef) return;
+    const element = sectionRef.current;
+    if (!element) return;
 
-    // Create observer with better options for performance
-    observerRef.current = new IntersectionObserver(handleIntersection, {
-      threshold,
-      rootMargin,
-      // Add passive option for better performance
-    });
+    // Create a new intersection observer
+    observerRef.current = new IntersectionObserver(
+      handleIntersection,
+      {
+        root: null, // Use viewport as root
+        rootMargin,
+        threshold: [threshold]
+      }
+    );
 
-    observerRef.current.observe(currentRef);
+    observerRef.current.observe(element);
 
     return () => {
-      if (observerRef.current && currentRef) {
-        observerRef.current.unobserve(currentRef);
+      if (observerRef.current) {
         observerRef.current.disconnect();
+        observerRef.current = null;
       }
     };
-  }, [threshold, rootMargin, handleIntersection]);
+  }, [handleIntersection, threshold, rootMargin]);
 
-  return (
-    <div
-      ref={sectionRef}
-      className={`${fallbackHeight} transition-all duration-1000 ease-out ${
-        isVisible 
-          ? 'opacity-100 translate-y-0' 
-          : 'opacity-0 translate-y-8'
-      } ${className}`}
-    >
-      {hasLoaded ? children : (
-        <div className="h-96 flex items-center justify-center">
+  // Render loading placeholder or content
+  const renderContent = () => {
+    if (!isLoaded) {
+      return (
+        <div className={`${fallbackHeight} flex items-center justify-center`}>
           <div className="text-center">
-            <div className="w-8 h-8 bg-white/20 rounded-full animate-bounce mx-auto mb-4"></div>
-            <p className="text-white/60 text-sm">Loading section...</p>
+            <div className="w-6 h-6 bg-white/30 rounded-full animate-pulse mx-auto mb-3"></div>
+            <p className="text-white/50 text-sm">Loading...</p>
           </div>
         </div>
-      )}
+      );
+    }
+
+    return (
+      <div
+        className={`transition-all duration-700 ease-out transform ${
+          isVisible 
+            ? 'opacity-100 translate-y-0 scale-100' 
+            : 'opacity-0 translate-y-4 scale-95'
+        }`}
+      >
+        {children}
+      </div>
+    );
+  };
+
+  return (
+    <div ref={sectionRef} className={className}>
+      {renderContent()}
     </div>
   );
 }; 

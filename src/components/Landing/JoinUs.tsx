@@ -36,7 +36,7 @@ export const JoinUs = () => {
 
   if (isSubmitted) {
     return (
-      <section className="relative py-20 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8">
+      <section className="relative py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="glass-ultra rounded-3xl p-12 text-center relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5 pointer-events-none"></div>
@@ -58,7 +58,7 @@ export const JoinUs = () => {
   }
 
   return (
-    <section className="relative py-20 sm:py-24 lg:py-32 px-4 sm:px-6 lg:px-8">
+    <section className="relative py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="glass-ultra rounded-3xl p-8 sm:p-12 relative overflow-hidden">
           {/* Glass overlay effects */}

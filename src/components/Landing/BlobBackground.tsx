@@ -9,6 +9,9 @@ export const BlobBackground = () => {
       <div className="absolute w-[70vw] h-[70vw] top-[20%] left-[10%] bg-emerald-700 filter blur-3xl opacity-40 animate-blob2 rounded-full"></div>
       <div className="absolute w-[75vw] h-[75vw] top-[50%] left-[-20%] bg-lime-800 filter blur-3xl opacity-40 animate-blob3 rounded-full"></div>
 
+      {/* 🔥 Black contrast blob */}
+      <div className="absolute w-[70vw] h-[70vw] top-[40%] left-[50%] bg-black filter blur-3xl opacity-50 animate-blob2 rounded-full"></div>
+
       {/* Additional subtle blobs */}
       <div className="absolute w-[60vw] h-[60vw] top-[0%] right-[-25%] bg-green-600 filter blur-3xl opacity-30 animate-blob2 rounded-full"></div>
       <div className="absolute w-[65vw] h-[65vw] bottom-[-20%] right-[0%] bg-emerald-800 filter blur-3xl opacity-30 animate-blob3 rounded-full"></div>

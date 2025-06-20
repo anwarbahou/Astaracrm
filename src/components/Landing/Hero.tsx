@@ -48,38 +48,7 @@ export const Hero = () => {
           </LandingButton>
         </div>
 
-        {/* Feature Highlights */}
-        <div 
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 text-white/80 animate-fade-in"
-          style={{ animationDelay: '1.2s', animationFillMode: 'forwards', opacity: 0 }}
-          role="region"
-          aria-label="Key features"
-        >
-          <div className="text-center group hover:scale-105 transition-transform duration-300 will-change-transform">
-            <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-2 group-hover:text-white/90 transition-colors">
-              10x
-            </div>
-            <div className="text-sm sm:text-base uppercase tracking-wide font-medium">
-              Faster Setup
-            </div>
-          </div>
-          <div className="text-center group hover:scale-105 transition-transform duration-300 will-change-transform">
-            <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-2 group-hover:text-white/90 transition-colors">
-              99.9%
-            </div>
-            <div className="text-sm sm:text-base uppercase tracking-wide font-medium">
-              Uptime Guarantee
-            </div>
-          </div>
-          <div className="text-center group hover:scale-105 transition-transform duration-300 will-change-transform">
-            <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-2 group-hover:text-white/90 transition-colors">
-              24/7
-            </div>
-            <div className="text-sm sm:text-base uppercase tracking-wide font-medium">
-              Expert Support
-            </div>
-          </div>
-        </div>
+
 
       </div>
     </section>

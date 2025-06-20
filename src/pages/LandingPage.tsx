@@ -1,24 +1,38 @@
-import AuraBackground from "@/components/Landing/Assets/Auta-1.jpg";
 import { Navbar } from "@/components/Landing/Navbar";
 import { Hero } from "@/components/Landing/Hero";
+import { BlobBackground } from "@/components/Landing/BlobBackground";
+import { JoinUs } from "@/components/Landing/JoinUs";
+import { LazySection } from "@/components/Landing/LazySection";
 
 export default function LandingPage() {
   return (
     <main 
-      className="min-h-screen w-full bg-cover bg-center bg-no-repeat bg-fixed flex flex-col relative overflow-hidden"
-      style={{
-        backgroundImage: `linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 50%, rgba(0, 0, 0, 0.4) 100%), url(${AuraBackground})`,
-      }}
+      className="min-h-screen w-full relative overflow-x-hidden"
       role="main"
       aria-label="Astara CRM Landing Page"
     >
-      {/* Navigation */}
+      {/* Critical above-the-fold content */}
+      
+      {/* Navigation - Always loaded first for accessibility */}
       <Navbar />
       
-      {/* Hero Content */}
-      <div className="flex-1 flex items-center justify-center">
+      {/* Hero Content - Critical path, always loaded */}
+      <section className="min-h-screen flex items-center justify-center relative z-10">
         <Hero />
-      </div>
+      </section>
+      
+      {/* Background animation - Non-critical, loaded after hero */}
+      <BlobBackground />
+      
+      {/* Below-the-fold content - Lazy loaded */}
+      <LazySection 
+        className="relative z-10"
+        threshold={0.15}
+        rootMargin="150px"
+        fallbackHeight="min-h-[60vh]"
+      >
+        <JoinUs />
+      </LazySection>
     </main>
   );
 } 

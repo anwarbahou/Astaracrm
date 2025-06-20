@@ -265,9 +265,20 @@
     @apply inline-block;
   }
 
-  /* Improved delay animations */
-  .delay-300 {
-    animation-delay: 300ms;
+  /* Improved delay animations with better performance */
+  .animate-fade-in-delayed {
+    animation: fadeIn 0.6s ease-out 0.3s both;
+  }
+
+  /* Performance optimized animations */
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease-out both;
+    will-change: opacity, transform;
+  }
+
+  .animate-fade-in-delayed {
+    animation: fadeIn 0.6s ease-out 0.3s both;
+    will-change: opacity, transform;
   }
 
   /* Enhanced glass morphism for landing page */
@@ -281,6 +292,42 @@
     @apply backdrop-blur-xl bg-white/20 border border-white/30;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
+  }
+
+  /* Ultra glassy effect for auth forms */
+  .glass-ultra {
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.15) 0%, 
+      rgba(255, 255, 255, 0.05) 50%, 
+      rgba(255, 255, 255, 0.1) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 
+      0 25px 45px rgba(0, 0, 0, 0.15),
+      0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+      0 2px 4px rgba(255, 255, 255, 0.1) inset;
+  }
+
+  /* Enhanced input glass effect */
+  .input-glass {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.1),
+      0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  }
+
+  .input-glass:focus {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.15),
+      0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+      0 0 20px rgba(255, 255, 255, 0.1);
   }
 
   /* Mobile optimization for hero */
@@ -489,6 +536,80 @@
   }
 }
 
+/* Blob animations for lava lamp effect */
+@keyframes blob1 {
+  0%, 100% { 
+    transform: translate(0px, 0px) scale(1); 
+  }
+  25% { 
+    transform: translate(100px, -80px) scale(1.2); 
+  }
+  50% { 
+    transform: translate(-50px, 60px) scale(0.8); 
+  }
+  75% { 
+    transform: translate(80px, 40px) scale(1.1); 
+  }
+}
+
+@keyframes blob2 {
+  0%, 100% { 
+    transform: translate(0px, 0px) scale(1); 
+  }
+  25% { 
+    transform: translate(-80px, 100px) scale(1.3); 
+  }
+  50% { 
+    transform: translate(60px, -50px) scale(0.9); 
+  }
+  75% { 
+    transform: translate(-40px, -80px) scale(1.2); 
+  }
+}
+
+@keyframes blob3 {
+  0%, 100% { 
+    transform: translate(0px, 0px) scale(1); 
+  }
+  25% { 
+    transform: translate(50px, 120px) scale(0.7); 
+  }
+  50% { 
+    transform: translate(-100px, -40px) scale(1.4); 
+  }
+  75% { 
+    transform: translate(70px, -60px) scale(1.0); 
+  }
+}
+
+@keyframes gradient {
+  0%, 100% { 
+    background-position: 0% 50%; 
+  }
+  33% { 
+    background-position: 100% 25%; 
+  }
+  66% { 
+    background-position: 50% 75%; 
+  }
+}
+
+.animate-blob1 { 
+  animation: blob1 8s infinite ease-in-out; 
+}
+
+.animate-blob2 { 
+  animation: blob2 10s infinite ease-in-out; 
+}
+
+.animate-blob3 { 
+  animation: blob3 12s infinite ease-in-out; 
+}
+
+.animate-gradient { 
+  animation: gradient 6s ease infinite; 
+}
+
 /* Enhanced scrollbar styling */
 .scrollbar-thin::-webkit-scrollbar {
   width: 8px;
@@ -541,4 +662,50 @@ textarea,
 /* Layout stability */
 .layout-stable {
   contain: layout style paint;
+}
+
+/* Scroll animations */
+@keyframes scrollFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scrollSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scrollScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-scroll-fade-in {
+  animation: scrollFadeIn 1s ease-out forwards;
+}
+
+.animate-scroll-slide-up {
+  animation: scrollSlideUp 1s ease-out forwards;
+}
+
+.animate-scroll-scale-in {
+  animation: scrollScaleIn 1s ease-out forwards;
 }

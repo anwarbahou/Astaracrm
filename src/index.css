@@ -255,6 +255,41 @@
     @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
   }
 
+  /* Enhanced landing page styles */
+  .hero-title {
+    @apply bg-gradient-to-b from-white via-white to-white/80 bg-clip-text text-transparent;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .hero-title span {
+    @apply inline-block;
+  }
+
+  /* Improved delay animations */
+  .delay-300 {
+    animation-delay: 300ms;
+  }
+
+  /* Enhanced glass morphism for landing page */
+  .glass-effect {
+    @apply backdrop-blur-md bg-white/10 border border-white/20;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .glass-effect-strong {
+    @apply backdrop-blur-xl bg-white/20 border border-white/30;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  /* Mobile optimization for hero */
+  @media (max-width: 640px) {
+    .hero-title {
+      line-height: 1.1;
+    }
+  }
+
   /* Responsive search bar */
   .responsive-search {
     @apply w-full sm:w-60 lg:w-80;

@@ -36,9 +36,10 @@ const Workflows = lazy(() => import("./pages/Workflows"));
 const ActivityLogs = lazy(() => import("./pages/ActivityLogs"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
-// Keep login pages as regular imports since they're needed immediately
+// Keep login pages and landing page as regular imports since they're needed immediately
 import LoginPage from "./pages/LoginPage";
 import SIgnupPage from "./pages/SIgnupPage";
+import LandingPage from "./pages/LandingPage";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { AdminOnlyRoute, AdminManagerRoute } from "@/components/RoleBasedRoute";
 
@@ -82,9 +83,9 @@ function AnimatedRoutes() {
         className="flex-1 transition-theme duration-theme ease-theme"
       >
         <Routes location={location}>
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SIgnupPage />} />
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard">
             <Route index element={<ProtectedRoute><LazyWrapper><Dashboard /></LazyWrapper></ProtectedRoute>} />
             <Route path="clients" element={<ProtectedRoute><LazyWrapper><Clients /></LazyWrapper></ProtectedRoute>} />
@@ -175,8 +176,8 @@ const App = () => {
     ? isRtl ? "mr-0 md:mr-16" : "ml-0 md:ml-16"
     : isRtl ? "mr-0 md:mr-64" : "ml-0 md:ml-64";
 
-  // Hide sidebar and topnav on /login and /signup
-  const hideLayout = location.pathname === "/login" || location.pathname === "/signup";
+  // Hide sidebar and topnav on /login, /signup, and landing page
+  const hideLayout = location.pathname === "/login" || location.pathname === "/signup" || location.pathname === "/";
 
   return (
     <QueryClientProvider client={queryClient}>

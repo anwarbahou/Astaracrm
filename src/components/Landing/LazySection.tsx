@@ -11,7 +11,7 @@ interface LazySectionProps {
 export const LazySection: React.FC<LazySectionProps> = ({
   children,
   className = '',
-  threshold = 0.2,
+  threshold = 0.1,
   rootMargin = '50px',
   fallbackHeight = 'min-h-[400px]'
 }) => {
@@ -27,7 +27,7 @@ export const LazySection: React.FC<LazySectionProps> = ({
       // Load immediately when in view
       setIsLoaded(true);
       
-      // Animate in after a brief delay
+      // Animate in smoothly
       requestAnimationFrame(() => {
         setIsVisible(true);
       });
@@ -71,7 +71,7 @@ export const LazySection: React.FC<LazySectionProps> = ({
       return (
         <div className={`${fallbackHeight} flex items-center justify-center`}>
           <div className="text-center">
-            <div className="w-6 h-6 bg-white/30 rounded-full animate-pulse mx-auto mb-3"></div>
+            <div className="w-8 h-8 bg-white/30 rounded-full animate-pulse mx-auto mb-4"></div>
             <p className="text-white/50 text-sm">Loading...</p>
           </div>
         </div>
@@ -80,10 +80,10 @@ export const LazySection: React.FC<LazySectionProps> = ({
 
     return (
       <div
-        className={`transition-all duration-700 ease-out transform ${
+        className={`transition-all duration-1000 ease-out transform ${
           isVisible 
             ? 'opacity-100 translate-y-0 scale-100' 
-            : 'opacity-0 translate-y-4 scale-95'
+            : 'opacity-0 translate-y-6 scale-95'
         }`}
       >
         {children}

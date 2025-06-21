@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import AuraBackground from "@/components/Landing/Assets/Auta-1.jpg";
+import { AnimatedSection } from '@/components/Landing/AnimatedSection';
 
 export default function SIgnupPage() {
   const navigate = useNavigate();
@@ -62,42 +63,46 @@ export default function SIgnupPage() {
         role="main"
         aria-label="Signup Success Page"
       >
-        <div className="w-full max-w-md mx-4">
-                  <div className="glass-ultra rounded-3xl p-10 shadow-2xl relative overflow-hidden">
-          {/* Additional glass overlay for extra depth */}
-          <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5 pointer-events-none"></div>
-          <div className="absolute inset-0 bg-gradient-to-tl from-white/5 via-transparent to-white/10 pointer-events-none"></div>
-          
-          <div className="text-center relative z-10">
-            <div className="w-20 h-20 bg-green-500/15 backdrop-blur-sm border border-green-400/30 rounded-full flex items-center justify-center mx-auto mb-8 shadow-xl">
-              <svg className="w-10 h-10 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-            </div>
-            <h1 className="text-3xl font-bold mb-6 text-white drop-shadow-lg">Check Your Email</h1>
-            <p className="text-white/80 mb-8 leading-relaxed text-sm">
-              We've sent you a confirmation link at{' '}
-              <span className="text-white font-medium bg-white/10 px-2 py-1 rounded-lg">{email}</span>.{' '}
-              Please check your email and click the link to activate your account.
-            </p>
-            <div className="space-y-4">
-              <Link
-                to="/login"
-                className="inline-flex items-center justify-center w-full px-6 py-4 bg-white/12 backdrop-blur-sm border border-white/25 text-white font-semibold rounded-2xl transition-all duration-300 hover:bg-white/20 hover:scale-[1.02] hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-transparent relative overflow-hidden group"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                <span className="relative z-10">Go to Login</span>
-              </Link>
-              <Link
-                to="/"
-                className="inline-flex items-center justify-center w-full px-6 py-4 bg-transparent border border-white/30 text-white/90 font-medium rounded-2xl transition-all duration-300 hover:border-white/60 hover:text-white hover:bg-white/10 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-transparent"
-              >
-                Back to Home
-              </Link>
+        <AnimatedSection 
+          variant="scaleIn" 
+          delay={200}
+          className="w-full max-w-md mx-4"
+        >
+          <div className="glass-ultra rounded-3xl p-10 shadow-2xl relative overflow-hidden">
+            {/* Additional glass overlay for extra depth */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5 pointer-events-none"></div>
+            <div className="absolute inset-0 bg-gradient-to-tl from-white/5 via-transparent to-white/10 pointer-events-none"></div>
+            
+            <div className="text-center relative z-10">
+              <div className="w-20 h-20 bg-green-500/15 backdrop-blur-sm border border-green-400/30 rounded-full flex items-center justify-center mx-auto mb-8 shadow-xl">
+                <svg className="w-10 h-10 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <h1 className="text-3xl font-bold mb-6 text-white drop-shadow-lg">Check Your Email</h1>
+              <p className="text-white/80 mb-8 leading-relaxed text-sm">
+                We've sent you a confirmation link at{' '}
+                <span className="text-white font-medium bg-white/10 px-2 py-1 rounded-lg">{email}</span>.{' '}
+                Please check your email and click the link to activate your account.
+              </p>
+              <div className="space-y-4">
+                <Link
+                  to="/login"
+                  className="inline-flex items-center justify-center w-full px-6 py-4 bg-white/12 backdrop-blur-sm border border-white/25 text-white font-semibold rounded-2xl transition-all duration-300 hover:bg-white/20 hover:scale-[1.02] hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-transparent relative overflow-hidden group"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                  <span className="relative z-10">Go to Login</span>
+                </Link>
+                <Link
+                  to="/"
+                  className="inline-flex items-center justify-center w-full px-6 py-4 bg-transparent border border-white/30 text-white/90 font-medium rounded-2xl transition-all duration-300 hover:border-white/60 hover:text-white hover:bg-white/10 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2 focus:ring-offset-transparent"
+                >
+                  Back to Home
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
-        </div>
+        </AnimatedSection>
       </main>
     );
   }
@@ -112,19 +117,25 @@ export default function SIgnupPage() {
       aria-label="Signup Page"
     >
       {/* Back to Home Link */}
-      <Link
-        to="/"
-        className="absolute top-6 left-6 text-white/80 hover:text-white transition-colors duration-200 flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-white/50 rounded-md p-2"
-        aria-label="Back to home"
-      >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-        </svg>
-        Back to Home
-      </Link>
+      <AnimatedSection variant="slideDown" delay={100} threshold={0}>
+        <Link
+          to="/"
+          className="absolute top-6 left-6 text-white/80 hover:text-white transition-colors duration-200 flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-white/50 rounded-md p-2"
+          aria-label="Back to home"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to Home
+        </Link>
+      </AnimatedSection>
 
       {/* Signup Form */}
-      <div className="w-full max-w-md mx-4">
+      <AnimatedSection 
+        variant="scaleIn" 
+        delay={300}
+        className="w-full max-w-md mx-4"
+      >
         <div className="glass-ultra rounded-3xl p-10 shadow-2xl relative overflow-hidden">
           {/* Additional glass overlay for extra depth */}
           <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5 pointer-events-none"></div>
@@ -236,7 +247,7 @@ export default function SIgnupPage() {
             </div>
           </div>
         </div>
-      </div>
+      </AnimatedSection>
     </main>
   );
 }

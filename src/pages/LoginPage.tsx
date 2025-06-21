@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { AnimatedSection } from '@/components/Landing/AnimatedSection';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -70,19 +71,25 @@ export default function LoginPage() {
       )}
 
       {/* Back to Home Link */}
-      <Link
-        to="/"
-        className="absolute top-6 left-6 text-white/80 hover:text-white transition-colors duration-200 flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-white/50 rounded-md p-2 z-20"
-        aria-label="Back to home"
-      >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-        </svg>
-        Back to Home
-      </Link>
+      <AnimatedSection variant="slideDown" delay={100} threshold={0}>
+        <Link
+          to="/"
+          className="absolute top-6 left-6 text-white/80 hover:text-white transition-colors duration-200 flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-white/50 rounded-md p-2 z-20"
+          aria-label="Back to home"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to Home
+        </Link>
+      </AnimatedSection>
 
       {/* Login Form */}
-      <div className="w-full max-w-md mx-4 relative z-10">
+      <AnimatedSection 
+        variant="scaleIn" 
+        delay={300}
+        className="w-full max-w-md mx-4 relative z-10"
+      >
         <div className="glass-ultra rounded-3xl p-10 shadow-2xl relative overflow-hidden">
           {/* Additional glass overlay for extra depth */}
           <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5 pointer-events-none"></div>
@@ -178,7 +185,7 @@ export default function LoginPage() {
             </div>
           </div>
         </div>
-      </div>
+      </AnimatedSection>
     </main>
   );
 }

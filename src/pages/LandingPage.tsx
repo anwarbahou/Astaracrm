@@ -14,13 +14,21 @@ export default function LandingPage() {
       {/* Background animation - Fixed positioning */}
       <BlobBackground />
       
-      {/* Navigation - Fixed at top */}
-      <Navbar />
-      
-      {/* Hero Content - Full viewport height */}
-      <section className="min-h-screen flex items-center justify-center relative z-10">
-        <Hero />
-      </section>
+      {/* Navbar and Hero wrapper with gradient overlay */}
+      <div className="relative">
+        {/* Black gradient overlay - bottom to top (100% to 40%) */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black to-black/40 pointer-events-none z-0" />
+        
+        {/* Navigation - Fixed at top */}
+        <div className="relative z-50">
+          <Navbar />
+        </div>
+        
+        {/* Hero Content - Full viewport height */}
+        <section className="min-h-screen flex items-center justify-center relative z-10">
+          <Hero />
+        </section>
+      </div>
       
       {/* Below-the-fold content - Lazy loaded */}
       <LazySection 

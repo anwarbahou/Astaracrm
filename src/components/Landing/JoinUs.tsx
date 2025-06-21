@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { AnimatedSection, FadeInSection, SlideUpSection, ScaleInSection } from './AnimatedSection';
 
 export const JoinUs = () => {
   const [formData, setFormData] = useState({
@@ -36,7 +37,7 @@ export const JoinUs = () => {
 
   if (isSubmitted) {
     return (
-      <section className="relative py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8">
+      <FadeInSection className="relative py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="glass-ultra rounded-3xl p-12 text-center relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5 pointer-events-none"></div>
@@ -53,12 +54,12 @@ export const JoinUs = () => {
             </div>
           </div>
         </div>
-      </section>
+      </FadeInSection>
     );
   }
 
   return (
-    <section className="relative py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8">
+    <FadeInSection className="relative py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="glass-ultra rounded-3xl p-8 sm:p-12 relative overflow-hidden">
           {/* Glass overlay effects */}
@@ -68,7 +69,7 @@ export const JoinUs = () => {
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center relative z-10">
             {/* Text Content */}
             <div className="space-y-8">
-              <div>
+              <SlideUpSection delay={200}>
                 <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-6 leading-tight">
                   Join the
                   <span className="block text-white">
@@ -78,10 +79,10 @@ export const JoinUs = () => {
                 <p className="text-xl sm:text-2xl text-white/90 leading-relaxed mb-6">
                   Be among the first to experience the future of CRM. Get exclusive early access, special pricing, and direct input into our development process.
                 </p>
-              </div>
+              </SlideUpSection>
               
               <div className="space-y-6">
-                <div className="flex items-center space-x-4">
+                <AnimatedSection variant="slideLeft" delay={400} className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full flex items-center justify-center flex-shrink-0">
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -91,9 +92,9 @@ export const JoinUs = () => {
                     <h3 className="text-lg font-semibold text-white">Early Access</h3>
                     <p className="text-white/70">Be the first to try new features</p>
                   </div>
-                </div>
+                </AnimatedSection>
                 
-                <div className="flex items-center space-x-4">
+                <AnimatedSection variant="slideLeft" delay={500} className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full flex items-center justify-center flex-shrink-0">
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
@@ -103,9 +104,9 @@ export const JoinUs = () => {
                     <h3 className="text-lg font-semibold text-white">Special Pricing</h3>
                     <p className="text-white/70">Exclusive discounts for early adopters</p>
                   </div>
-                </div>
+                </AnimatedSection>
                 
-                <div className="flex items-center space-x-4">
+                <AnimatedSection variant="slideLeft" delay={600} className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full flex items-center justify-center flex-shrink-0">
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
@@ -115,12 +116,12 @@ export const JoinUs = () => {
                     <h3 className="text-lg font-semibold text-white">Direct Input</h3>
                     <p className="text-white/70">Shape the product with your feedback</p>
                   </div>
-                </div>
+                </AnimatedSection>
               </div>
             </div>
 
             {/* Form */}
-            <div className="space-y-8">
+            <AnimatedSection variant="slideRight" delay={300} className="space-y-8">
               <div className="text-center lg:text-left">
                 <h3 className="text-2xl font-bold text-white mb-2">Get Started Today</h3>
                 <p className="text-white/70">Join thousands of forward-thinking businesses</p>
@@ -199,12 +200,12 @@ export const JoinUs = () => {
                 By joining, you agree to our{' '}
                 <a href="#" className="underline hover:text-white/80 transition-colors">Terms of Service</a>
                 {' '}and{' '}
-                <a href="#" className="underline hover:text-white/80 transition-colors">Privacy Policy</a>
+                <a href="#" className="underline hover:text-white/80 transition-colors">Privacy Policy</a>.
               </p>
-            </div>
+            </AnimatedSection>
           </div>
         </div>
       </div>
-    </section>
+    </FadeInSection>
   );
 };

@@ -24,6 +24,11 @@ interface AddTaskModalProps {
 const BtnHeading1 = createButton('Heading 1', 'H1', () => document.execCommand('formatBlock', false, 'H1'));
 const BtnHeading2 = createButton('Heading 2', 'H2', () => document.execCommand('formatBlock', false, 'H2'));
 
+// Helper to check for valid UUID
+function isUUID(str: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+}
+
 export function AddTaskModal({ open, onOpenChange }: AddTaskModalProps) {
   const { userProfile, user } = useAuth();
   const { addTask, isLoading: isAdding } = useTasks();
@@ -81,14 +86,18 @@ export function AddTaskModal({ open, onOpenChange }: AddTaskModalProps) {
     e.preventDefault();
     setLoading(true);
     try {
-      const { related_entity_name, time_spent, ...taskToInsert } = form;
+      const { related_entity_name, ...taskToInsert } = form;
+
+      // Sanitize UUID fields
+      const finalAssignedTo = isUUID(assignedTo) ? assignedTo : null;
+      const finalRelatedEntityId = isUUID(taskToInsert.related_entity_id) ? taskToInsert.related_entity_id : null;
 
       await addTask({
         ...taskToInsert,
         due_date: taskToInsert.due_date || null,
         related_entity: taskToInsert.related_entity || null,
-        related_entity_id: taskToInsert.related_entity_id || null,
-        assigned_to: assignedTo,
+        related_entity_id: finalRelatedEntityId,
+        assigned_to: finalAssignedTo,
         owner: user?.id,
       });
 

@@ -27,6 +27,24 @@ interface EditTaskModalProps {
   task: Task;
 }
 
+// Define form state type explicitly
+interface EditFormState {
+  title: string;
+  description: string;
+  priority: "low" | "medium" | "high";
+  status: "pending" | "in_progress" | "completed" | "cancelled" | "todo" | "blocked";
+  due_date: string;
+  related_entity: "none" | "client" | "contact" | "deal"; // Use 'none' instead of ''
+  related_entity_id: string | null;
+  related_entity_name: string | null;
+  time_spent: string;
+  assigned_to: string | null;
+}
+
+function isUUID(str: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+}
+
 export const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, task }) => {
   const { userProfile, user } = useAuth();
   const { updateTask, isLoading: isUpdating } = useTasks();
@@ -34,31 +52,26 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, t
 
   const { t } = useTranslation();
 
-  console.log("EditTaskModal - task prop:", JSON.stringify(task, null, 2));
-  console.log("EditTaskModal - initial form state:", JSON.stringify({
-    title: task.title || "",
-    description: task.description || "",
-    priority: task.priority || "medium",
-    status: task.status || "pending",
-    due_date: task.due_date ? format(new Date(task.due_date), 'yyyy-MM-dd') : "",
-    related_entity: task.related_entity || "",
-    related_entity_id: task.related_entity_id || "",
-    related_entity_name: task.related_entity_name || "",
-    time_spent: "",
-    assigned_to: task.assigned_to || "",
-  }, null, 2));
+  const [form, setForm] = useState<EditFormState>(() => {
+    const initialRelatedEntity = (task.related_entity && ["client", "contact", "deal"].includes(task.related_entity)) ?
+      task.related_entity as "client" | "contact" | "deal" : "none";
 
-  const [form, setForm] = useState({
-    title: task.title || "",
-    description: task.description || "",
-    priority: task.priority || "medium",
-    status: task.status || "pending",
-    due_date: task.due_date ? format(new Date(task.due_date), 'yyyy-MM-dd') : "",
-    related_entity: (task.related_entity === null || task.related_entity === "" ? "none" : task.related_entity) as "none" | "client" | "contact" | "deal",
-    related_entity_id: task.related_entity_id || "",
-    related_entity_name: task.related_entity_name || "",
-    time_spent: "", // Not in task object, so initialize as empty
-    assigned_to: task.assigned_to || "",
+    // Sanitize IDs on initialization
+    const sanitizedRelatedEntityId = task.related_entity_id && isUUID(task.related_entity_id) ? task.related_entity_id : null;
+    const sanitizedAssignedTo = task.assigned_to && isUUID(task.assigned_to) ? task.assigned_to : null;
+
+    return {
+      title: task.title || "",
+      description: task.description || "",
+      priority: task.priority || "medium",
+      status: task.status || "pending",
+      due_date: task.due_date ? format(new Date(task.due_date), 'yyyy-MM-dd') : "",
+      related_entity: initialRelatedEntity,
+      related_entity_id: sanitizedRelatedEntityId,
+      related_entity_name: task.related_entity_name || null,
+      time_spent: "",
+      assigned_to: sanitizedAssignedTo,
+    };
   });
 
   const [loading, setLoading] = useState(false);
@@ -71,7 +84,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, t
 
   // Set assigned_to to current user id or selected user
   const isAdmin = userProfile?.role === 'admin';
-  const assignedTo = isAdmin ? form.assigned_to || (allUsers[0]?.id ?? '') : userProfile ? userProfile.id : "";
+  const assignedTo = isAdmin ? (form.assigned_to || (allUsers[0]?.id ?? null)) : (userProfile ? userProfile.id : null);
   const assignedToName = isAdmin
     ? allUsers.find(u => u.id === assignedTo)?.name || ''
     : userProfile ? `${userProfile.first_name || ""} ${userProfile.last_name || ""}`.trim() || userProfile.email : "";
@@ -79,19 +92,26 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, t
   const { toast } = useToast();
 
   useEffect(() => {
+    const initialRelatedEntity = (task.related_entity && ["client", "contact", "deal"].includes(task.related_entity)) ?
+      task.related_entity as "client" | "contact" | "deal" : "none";
+
+    // Sanitize IDs on update
+    const sanitizedRelatedEntityId = task.related_entity_id && isUUID(task.related_entity_id) ? task.related_entity_id : null;
+    const sanitizedAssignedTo = task.assigned_to && isUUID(task.assigned_to) ? task.assigned_to : null;
+
     setForm({
       title: task.title || "",
       description: task.description || "",
       priority: task.priority || "medium",
       status: task.status || "pending",
       due_date: task.due_date ? format(new Date(task.due_date), 'yyyy-MM-dd') : "",
-      related_entity: (task.related_entity === null || task.related_entity === "" ? "none" : task.related_entity) as "none" | "client" | "contact" | "deal",
-      related_entity_id: task.related_entity_id || "",
-      related_entity_name: task.related_entity_name || "",
+      related_entity: initialRelatedEntity,
+      related_entity_id: sanitizedRelatedEntityId,
+      related_entity_name: task.related_entity_name || null,
       time_spent: "",
-      assigned_to: task.assigned_to || "",
+      assigned_to: sanitizedAssignedTo,
     });
-    if (task.related_entity === 'contact' && userProfile) {
+    if (initialRelatedEntity === 'contact' && userProfile) {
       setContactsLoading(true);
       contactsService.getContacts({ userId: userProfile.id, userRole: userProfile.role })
         .then(data => setContacts(data.map(c => ({ id: c.id, name: `${c.firstName} ${c.lastName}` }))))
@@ -100,27 +120,35 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, t
   }, [task, userProfile]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleDescriptionChange = (value: string) => {
-    setForm({ ...form, description: value });
+    setForm(prev => ({ ...prev, description: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const { related_entity_name, time_spent, ...taskToUpdate } = form;
+      const { related_entity_name, time_spent, related_entity_id, assigned_to, ...taskToUpdate } = form;
 
-      await updateTask({
+      const finalRelatedEntity = form.related_entity === "none" ? null : form.related_entity;
+      const finalRelatedEntityId = form.related_entity === "none" || !isUUID(form.related_entity_id || "") ? null : form.related_entity_id;
+      const finalAssignedTo = !isUUID(form.assigned_to || "") ? null : form.assigned_to;
+      const finalRelatedEntityName = form.related_entity === "none" ? null : (related_entity_name || null);
+
+      const payload = {
         id: task.id,
         ...taskToUpdate,
         due_date: taskToUpdate.due_date || null,
-        related_entity: taskToUpdate.related_entity === "none" ? null : taskToUpdate.related_entity,
-        related_entity_id: taskToUpdate.related_entity === "none" ? null : taskToUpdate.related_entity_id,
-        assigned_to: assignedTo,
-      });
+        related_entity: finalRelatedEntity,
+        related_entity_id: finalRelatedEntityId,
+        assigned_to: finalAssignedTo,
+      };
+      console.log("EditTaskModal - Payload for updateTask:", JSON.stringify(payload, null, 2));
+
+      await updateTask(payload);
 
       toast({
         title: t('tasks.editTaskModal.toast.successTitle'),
@@ -139,7 +167,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, t
     }
   };
 
-  const handleRelatedEntityChange = (entityType: string, id: string, name: string) => {
+  const handleRelatedEntityChange = (entityType: "none" | "client" | "contact" | "deal", id: string | null, name: string | null) => {
     setForm(prev => ({ ...prev, related_entity: entityType, related_entity_id: id, related_entity_name: name }));
     setDropdownOpen(null);
   };
@@ -287,7 +315,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, t
                           key={u.id}
                           className="flex items-center gap-2 p-2 hover:bg-accent cursor-pointer"
                           onClick={() => {
-                            setForm({ ...form, assigned_to: u.id });
+                            setForm(prev => ({ ...prev, assigned_to: u.id }));
                             setDropdownOpen(null);
                           }}
                         >
@@ -310,7 +338,12 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, t
               <div className="relative">
                 <Select
                   value={form.related_entity}
-                  onValueChange={value => setForm(prev => ({ ...prev, related_entity: value, related_entity_id: value === "none" ? "" : prev.related_entity_id, related_entity_name: value === "none" ? "" : prev.related_entity_name }))}
+                  onValueChange={value => setForm(prev => ({
+                    ...prev,
+                    related_entity: value as "none" | "client" | "contact" | "deal",
+                    related_entity_id: value === "none" ? null : prev.related_entity_id,
+                    related_entity_name: value === "none" ? null : prev.related_entity_name
+                  }))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder={t('tasks.editTaskModal.form.selectRelatedEntity')} />

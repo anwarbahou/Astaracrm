@@ -24,6 +24,7 @@ export interface Task {
     avatar_url: string | null;
   } | null;
   related_entity_name?: string;
+  time_spent?: string | null;
 }
 
 const fetchTasks = async (): Promise<Task[]> => {
@@ -36,6 +37,7 @@ const fetchTasks = async (): Promise<Task[]> => {
         last_name,
         avatar_url
       )
+    ,time_spent
     `)
     .order('created_at', { ascending: false });
 

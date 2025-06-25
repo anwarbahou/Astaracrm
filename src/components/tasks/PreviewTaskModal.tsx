@@ -152,10 +152,14 @@ export const PreviewTaskModal: React.FC<PreviewTaskModalProps> = ({
                 </div>
               )}
 
-              {/* Time Tracking - Placeholder */}
+              {/* Time Tracking - Show actual time spent if present */}
               <div>
                 <p className="text-sm text-muted-foreground">{t('tasks.previewTaskModal.timeTracking')}</p>
-                <p className="text-foreground mt-1">{t('tasks.previewTaskModal.noTimeLogged')}</p>
+                {task.time_spent ? (
+                  <p className="text-foreground mt-1">{task.time_spent}</p>
+                ) : (
+                  <p className="text-foreground mt-1">{t('tasks.previewTaskModal.noTimeLogged')}</p>
+                )}
               </div>
 
               {/* Labels - Placeholder */}

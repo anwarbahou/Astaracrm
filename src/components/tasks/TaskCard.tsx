@@ -59,6 +59,9 @@ export const TaskCard: React.FC<{ task: Task }> = ({ task }) => {
     if (dropdownTriggerRef.current && dropdownTriggerRef.current.contains(e.target as Node)) {
       return;
     }
+    if (editModalOpen) {
+      return;
+    }
     if (!previewModalOpen) {
       setPreviewModalOpen(true);
     }
@@ -120,9 +123,9 @@ export const TaskCard: React.FC<{ task: Task }> = ({ task }) => {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          {task.due_date && (
+          {task.user && (
             <span className="text-muted-foreground flex items-center gap-1">
-              {Math.ceil((new Date(task.due_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d
+              {task.user.first_name} {task.user.last_name}
             </span>
           )}
           {task.user && (

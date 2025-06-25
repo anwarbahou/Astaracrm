@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { TaskCard } from './TaskCard';
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from 'react-i18next';
 
 const STATUS_COLUMNS = [
   { key: 'todo', label: 'To Do' },
@@ -19,8 +20,10 @@ interface TasksBoardProps {
 }
 
 const TasksBoard: React.FC<TasksBoardProps> = ({ tasks }) => {
+  const { t } = useTranslation(['tasks', 'common']);
+
   if (tasks.length === 0) {
-    return <div className="text-center text-muted-foreground py-12">No tasks found.</div>;
+    return <div className="text-center text-muted-foreground py-12">{t('tasks.noTasksFound')}</div>;
   }
 
   return (
@@ -37,7 +40,7 @@ const TasksBoard: React.FC<TasksBoardProps> = ({ tasks }) => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className={cn("w-3 h-3 rounded-full", getTaskStatusColor(col.key))} />
-                <h3 className="font-semibold text-foreground text-base">{col.label}</h3>
+                <h3 className="font-semibold text-foreground text-base">{t(`tasks.status.${col.key}`)}</h3>
               </div>
               <Badge variant="secondary" className="bg-muted text-muted-foreground">
                 {tasks.filter(task => task.status === col.key).length}
@@ -47,7 +50,7 @@ const TasksBoard: React.FC<TasksBoardProps> = ({ tasks }) => {
           <CardContent className="flex-1 p-0 overflow-hidden flex flex-col">
             <div className="space-y-3 h-[calc(100vh-400px)] overflow-y-auto px-3 pt-0 pb-3">
               {tasks.filter(task => task.status === col.key).length === 0 ? (
-                <div className="text-center text-muted-foreground py-8">No tasks</div>
+                <div className="text-center text-muted-foreground py-8">{t('tasks.noTasksInColumn')}</div>
               ) : (
                 tasks.filter(task => task.status === col.key).map(task => (
                   <TaskCard key={task.id} task={task} />

@@ -19,6 +19,7 @@ import { contactsService } from '@/services/contactsService';
 import { useDeals } from '@/hooks/useDeals';
 import { useUsersForSelection } from '@/hooks/useUsers';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface EditTaskModalProps {
   isOpen: boolean;
@@ -31,13 +32,29 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, t
   const { updateTask, isLoading: isUpdating } = useTasks();
   const { users: allUsers, isLoading: usersLoading } = useUsersForSelection();
 
-  const [form, setForm] = useState({
+  const { t } = useTranslation();
+
+  console.log("EditTaskModal - task prop:", JSON.stringify(task, null, 2));
+  console.log("EditTaskModal - initial form state:", JSON.stringify({
     title: task.title || "",
     description: task.description || "",
     priority: task.priority || "medium",
     status: task.status || "pending",
     due_date: task.due_date ? format(new Date(task.due_date), 'yyyy-MM-dd') : "",
     related_entity: task.related_entity || "",
+    related_entity_id: task.related_entity_id || "",
+    related_entity_name: task.related_entity_name || "",
+    time_spent: "",
+    assigned_to: task.assigned_to || "",
+  }, null, 2));
+
+  const [form, setForm] = useState({
+    title: task.title || "",
+    description: task.description || "",
+    priority: task.priority || "medium",
+    status: task.status || "pending",
+    due_date: task.due_date ? format(new Date(task.due_date), 'yyyy-MM-dd') : "",
+    related_entity: (task.related_entity === null || task.related_entity === "" ? "none" : task.related_entity) as "none" | "client" | "contact" | "deal",
     related_entity_id: task.related_entity_id || "",
     related_entity_name: task.related_entity_name || "",
     time_spent: "", // Not in task object, so initialize as empty
@@ -68,7 +85,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, t
       priority: task.priority || "medium",
       status: task.status || "pending",
       due_date: task.due_date ? format(new Date(task.due_date), 'yyyy-MM-dd') : "",
-      related_entity: task.related_entity || "",
+      related_entity: (task.related_entity === null || task.related_entity === "" ? "none" : task.related_entity) as "none" | "client" | "contact" | "deal",
       related_entity_id: task.related_entity_id || "",
       related_entity_name: task.related_entity_name || "",
       time_spent: "",
@@ -100,20 +117,20 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, t
         id: task.id,
         ...taskToUpdate,
         due_date: taskToUpdate.due_date || null,
-        related_entity: taskToUpdate.related_entity || null,
-        related_entity_id: taskToUpdate.related_entity_id || null,
+        related_entity: taskToUpdate.related_entity === "none" ? null : taskToUpdate.related_entity,
+        related_entity_id: taskToUpdate.related_entity === "none" ? null : taskToUpdate.related_entity_id,
         assigned_to: assignedTo,
       });
 
       toast({
-        title: "Task updated successfully!",
-        description: `Task "${form.title}" has been updated.`, 
+        title: t('tasks.editTaskModal.toast.successTitle'),
+        description: t('tasks.editTaskModal.toast.successDescription', { title: form.title }), 
       });
       onClose();
     } catch (error) {
       toast({
-        title: "Failed to update task",
-        description: error instanceof Error ? error.message : "An unknown error occurred.",
+        title: t('tasks.editTaskModal.toast.errorTitle'),
+        description: error instanceof Error ? error.message : t('tasks.editTaskModal.toast.unknownError'),
         variant: "destructive",
       });
       console.error("Failed to update task:", error);
@@ -143,12 +160,12 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, t
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent side="right" className="!w-[50vw] max-w-none flex flex-col p-0">
         <SheetHeader className="p-6 pb-0">
-          <SheetTitle>Edit Task</SheetTitle>
+          <SheetTitle>{t('tasks.editTaskModal.title')}</SheetTitle>
         </SheetHeader>
         <form className="flex-1 flex flex-col overflow-hidden" onSubmit={handleSubmit}>
           <div className="flex-1 overflow-y-auto px-6 pt-4 pb-2">
             <div>
-              <Label htmlFor="title">Title</Label>
+              <Label htmlFor="title">{t('tasks.editTaskModal.form.title')}</Label>
               <Input
                 id="title"
                 value={form.title}
@@ -158,7 +175,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, t
             </div>
             <div className="mb-4" />
             <div>
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">{t('tasks.editTaskModal.form.description')}</Label>
               <div style={{ height: 240 }} className="relative mb-4">
                 <ReactQuill
                   theme="snow"
@@ -192,7 +209,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, t
             </div>
             <div className="mb-4" />
             <div>
-              <Label htmlFor="due_date">Due Date</Label>
+              <Label htmlFor="due_date">{t('tasks.editTaskModal.form.dueDate')}</Label>
               <Input
                 id="due_date"
                 type="date"
@@ -202,7 +219,7 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, t
             </div>
             <div className="mb-4" />
             <div>
-              <Label htmlFor="time_spent">Time Spent</Label>
+              <Label htmlFor="time_spent">{t('tasks.editTaskModal.form.timeSpent')}</Label>
               <Input
                 id="time_spent"
                 placeholder="e.g. 1m 3d 2h 39m"
@@ -213,228 +230,148 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, t
             <div className="mb-4" />
             <div className="flex gap-4">
               <div className="flex-1">
-                <Label htmlFor="priority">Priority</Label>
+                <Label htmlFor="priority">{t('tasks.editTaskModal.form.priority')}</Label>
                 <Select
                   value={form.priority}
-                  onValueChange={(value) => setForm({ ...form, priority: value as 'low' | 'medium' | 'high' })}
+                  onValueChange={value => setForm(prev => ({ ...prev, priority: value as "high" | "medium" | "low" }))}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select priority" />
+                    <SelectValue placeholder={t('tasks.editTaskModal.form.selectPriority')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="high">High</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="low">Low</SelectItem>
+                    <SelectItem value="high">{t('tasks.priority.high')}</SelectItem>
+                    <SelectItem value="medium">{t('tasks.priority.medium')}</SelectItem>
+                    <SelectItem value="low">{t('tasks.priority.low')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="flex-1">
-                <Label htmlFor="status">Status</Label>
+                <Label htmlFor="status">{t('tasks.editTaskModal.form.status')}</Label>
                 <Select
                   value={form.status}
-                  onValueChange={(value) => setForm({ ...form, status: value as 'pending' | 'in_progress' | 'completed' | 'cancelled' | 'todo' | 'blocked' })}
+                  onValueChange={value => setForm(prev => ({ ...prev, status: value as "pending" | "in_progress" | "completed" | "cancelled" | "todo" | "blocked" }))}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select status" />
+                    <SelectValue placeholder={t('tasks.editTaskModal.form.selectStatus')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="in_progress">In Progress</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
-                    <SelectItem value="todo">To Do</SelectItem>
-                    <SelectItem value="blocked">Blocked</SelectItem>
+                    <SelectItem value="todo">{t('tasks.status.todo')}</SelectItem>
+                    <SelectItem value="pending">{t('tasks.status.pending')}</SelectItem>
+                    <SelectItem value="in_progress">{t('tasks.status.in_progress')}</SelectItem>
+                    <SelectItem value="blocked">{t('tasks.status.blocked')}</SelectItem>
+                    <SelectItem value="completed">{t('tasks.status.completed')}</SelectItem>
+                    <SelectItem value="cancelled">{t('tasks.status.cancelled')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
             <div className="mb-4" />
             <div>
-              <Label htmlFor="assignee">Assignee</Label>
-              {isAdmin ? (
-                <Select
-                  value={assignedTo}
-                  onValueChange={(value) => setForm({ ...form, assigned_to: value })}
+              <Label htmlFor="assigned_to">{t('tasks.editTaskModal.form.assignedTo')}</Label>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setDropdownOpen(dropdownOpen === 'assigned_to' ? null : 'assigned_to')}
+                  className="w-full border rounded px-3 py-2 bg-background text-foreground text-left flex justify-between items-center dark:bg-zinc-900 dark:text-zinc-100"
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select an assignee" />
-                  </SelectTrigger>
-                  <SelectContent>
+                  <span>{assignedToName || t('tasks.editTaskModal.form.selectUser')}</span>
+                  <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+                </button>
+                {dropdownOpen === 'assigned_to' && (
+                  <div className="absolute z-10 w-full bg-popover border rounded shadow-md mt-1 max-h-48 overflow-y-auto dark:bg-zinc-800">
                     {usersLoading ? (
-                      <SelectItem value="" disabled>Loading users...</SelectItem>
+                      <div className="p-2 text-center text-muted-foreground">{t('tasks.editTaskModal.form.loadingUsers')}</div>
                     ) : (
-                      allUsers.map(user => (
-                        <SelectItem key={user.id} value={user.id}>
-                          {user.name} ({user.email})
-                        </SelectItem>
+                      allUsers.map(u => (
+                        <div
+                          key={u.id}
+                          className="flex items-center gap-2 p-2 hover:bg-accent cursor-pointer"
+                          onClick={() => {
+                            setForm({ ...form, assigned_to: u.id });
+                            setDropdownOpen(null);
+                          }}
+                        >
+                          <Avatar className="h-6 w-6">
+                            <AvatarImage src={u.avatar_url || undefined} />
+                            <AvatarFallback>{u.name?.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          <span>{u.name}</span>
+                        </div>
                       ))
                     )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="mb-4" />
+            <div>
+              <Label htmlFor="related_entity">{t('tasks.editTaskModal.form.relatedEntity')}</Label>
+              <div className="relative">
+                <Select
+                  value={form.related_entity}
+                  onValueChange={value => setForm(prev => ({ ...prev, related_entity: value, related_entity_id: value === "none" ? "" : prev.related_entity_id, related_entity_name: value === "none" ? "" : prev.related_entity_name }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={t('tasks.editTaskModal.form.selectRelatedEntity')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t('tasks.editTaskModal.form.none')}</SelectItem>
+                    <SelectItem value="client">{t('tasks.editTaskModal.form.client')}</SelectItem>
+                    <SelectItem value="contact">{t('tasks.editTaskModal.form.contact')}</SelectItem>
+                    <SelectItem value="deal">{t('tasks.editTaskModal.form.deal')}</SelectItem>
                   </SelectContent>
                 </Select>
-              ) : (
-                <div className="flex items-center">
-                  <Avatar className="h-8 w-8 mr-2">
-                    <AvatarImage src={userProfile?.avatar_url || ''} />
-                    <AvatarFallback>
-                      {userProfile?.first_name?.[0]}
-                      {userProfile?.last_name?.[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                  <Input
-                    id="assignee"
-                    value={assignedToName}
-                    readOnly
-                    className="bg-muted-foreground/10 cursor-not-allowed"
-                  />
-                </div>
-              )}
-            </div>
-            <div className="mb-4" />
-            <div className="mb-4">
-              <Label htmlFor="related_entity">Related To</Label>
-              <div className="flex gap-4 mt-2 w-full">
-                {/* Client Card */}
-                <div className="flex-1">
-                  <button
-                    type="button"
-                    className={`flex flex-col items-center justify-center p-3 rounded-lg border transition-colors flex-1 w-full h-20 ${form.related_entity === 'client' ? 'bg-primary text-primary-foreground border-primary' : 'bg-muted text-muted-foreground border-border hover:border-primary'}`}
-                    onClick={() => {
-                      setForm({ ...form, related_entity: 'client', related_entity_id: '', related_entity_name: '' });
-                      setSearchQuery('');
-                    }}
-                  >
-                    <User className="mb-1" />
-                    <span className="text-xs font-medium">
-                      {form.related_entity === 'client' && form.related_entity_name
-                        ? form.related_entity_name
-                        : 'Client'}
-                    </span>
-                  </button>
-                </div>
-                {/* Contact Card */}
-                <div className="flex-1">
-                  <button
-                    type="button"
-                    className={`flex flex-col items-center justify-center p-3 rounded-lg border transition-colors flex-1 w-full h-20 ${form.related_entity === 'contact' ? 'bg-primary text-primary-foreground border-primary' : 'bg-muted text-muted-foreground border-border hover:border-primary'}`}
-                    onClick={() => {
-                      setForm({ ...form, related_entity: 'contact', related_entity_id: '', related_entity_name: '' });
-                      setSearchQuery('');
-                    }}
-                  >
-                    <Handshake className="mb-1" />
-                    <span className="text-xs font-medium">
-                      {form.related_entity === 'contact' && form.related_entity_name
-                        ? form.related_entity_name
-                        : 'Contact'}
-                    </span>
-                  </button>
-                </div>
-                {/* Deal Card */}
-                <div className="flex-1">
-                  <button
-                    type="button"
-                    className={`flex flex-col items-center justify-center p-3 rounded-lg border transition-colors flex-1 w-full h-20 ${form.related_entity === 'deal' ? 'bg-primary text-primary-foreground border-primary' : 'bg-muted text-muted-foreground border-border hover:border-primary'}`}
-                    onClick={() => {
-                      setForm({ ...form, related_entity: 'deal', related_entity_id: '', related_entity_name: '' });
-                      setSearchQuery('');
-                    }}
-                  >
-                    <Briefcase className="mb-1" />
-                    <span className="text-xs font-medium">
-                      {form.related_entity === 'deal' && form.related_entity_name
-                        ? form.related_entity_name
-                        : 'Deal'}
-                    </span>
-                  </button>
-                </div>
-                {/* Other Card */}
-                <div className="flex-1">
-                  <button
-                    type="button"
-                    className={`flex flex-col items-center justify-center p-3 rounded-lg border transition-colors flex-1 w-full h-20 ${form.related_entity === 'other' ? 'bg-primary text-primary-foreground border-primary' : 'bg-muted text-muted-foreground border-border hover:border-primary'}`}
-                    onClick={() => setForm({ ...form, related_entity: 'other', related_entity_id: '', related_entity_name: '' })}
-                  >
-                    <MoreHorizontal className="mb-1" />
-                    <span className="text-xs font-medium">Other</span>
-                  </button>
-                </div>
-              </div>
-              {/* Search section below cards */}
-              {form.related_entity && form.related_entity !== 'other' && (
-                <div className="mt-4 mb-4">
-                  <Input
-                    placeholder={`Search for a ${form.related_entity}...`}
-                    value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
-                    className="mb-2"
-                  />
-                  <div className="max-h-40 overflow-y-auto border rounded bg-background">
-                    {form.related_entity === 'client' && filteredClients.length === 0 && !clientsLoading && (
-                      <div className="px-4 py-2 text-muted-foreground text-xs">No clients found.</div>
-                    )}
-                    {form.related_entity === 'client' && clientsLoading && (
-                      <div className="px-4 py-2 text-muted-foreground text-xs">Loading clients...</div>
-                    )}
-                    {form.related_entity === 'client' && filteredClients.length > 0 && (
-                      filteredClients
-                        .filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()))
-                        .map(item => (
-                          <div
-                            key={item.id}
-                            className={`px-4 py-2 cursor-pointer hover:bg-accent ${form.related_entity_id === item.id ? 'bg-primary text-primary-foreground' : ''}`}
-                            onClick={() => setForm({ ...form, related_entity_id: item.id, related_entity_name: item.name })}
-                          >
-                            {item.name}
-                          </div>
-                        ))
-                    )}
-                    {form.related_entity === 'contact' && contacts.length === 0 && !contactsLoading && (
-                      <div className="px-4 py-2 text-muted-foreground text-xs">No contacts found.</div>
-                    )}
-                    {form.related_entity === 'contact' && contactsLoading && (
-                      <div className="px-4 py-2 text-muted-foreground text-xs">Loading contacts...</div>
-                    )}
-                    {form.related_entity === 'contact' && contacts.length > 0 && (
-                      contacts
-                        .filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()))
-                        .map(item => (
-                          <div
-                            key={item.id}
-                            className={`px-4 py-2 cursor-pointer hover:bg-accent ${form.related_entity_id === item.id ? 'bg-primary text-primary-foreground' : ''}`}
-                            onClick={() => setForm({ ...form, related_entity_id: item.id, related_entity_name: item.name })}
-                          >
-                            {item.name}
-                          </div>
-                        ))
-                    )}
-                    {form.related_entity === 'deal' && filteredDeals.length === 0 && !dealsLoading && (
-                      <div className="px-4 py-2 text-muted-foreground text-xs">No deals found.</div>
-                    )}
-                    {form.related_entity === 'deal' && dealsLoading && (
-                      <div className="px-4 py-2 text-muted-foreground text-xs">Loading deals...</div>
-                    )}
-                    {form.related_entity === 'deal' && filteredDeals.length > 0 && (
-                      filteredDeals
-                        .filter(item => (item.name || '').toLowerCase().includes(searchQuery.toLowerCase()))
-                        .map(item => (
-                          <div
-                            key={item.id}
-                            className={`px-4 py-2 cursor-pointer hover:bg-accent ${form.related_entity_id === item.id ? 'bg-primary text-primary-foreground' : ''}`}
-                            onClick={() => setForm({ ...form, related_entity_id: item.id, related_entity_name: item.name })}
-                          >
-                            {item.name}
-                          </div>
-                        ))
-                    )}
+
+                {form.related_entity !== "none" && (
+                  <div className="mt-4">
+                    <Input
+                      type="text"
+                      placeholder={t('tasks.editTaskModal.form.searchEntities')}
+                      value={searchQuery}
+                      onChange={e => setSearchQuery(e.target.value)}
+                      className="mb-2"
+                    />
+                    <div className="max-h-48 overflow-y-auto border rounded">
+                      {loading || clientsLoading || dealsLoading || contactsLoading ? (
+                        <div className="p-2 text-center text-muted-foreground">{t('tasks.editTaskModal.form.loading')}</div>
+                      ) : (
+                        {
+                          client: filteredClients,
+                          contact: filteredContacts,
+                          deal: filteredDeals,
+                        }[form.related_entity]?.length === 0 ? (
+                          <div className="p-2 text-center text-muted-foreground">{t('tasks.editTaskModal.form.noEntitiesFound')}</div>
+                        ) : (
+                          {
+                            client: filteredClients,
+                            contact: filteredContacts,
+                            deal: filteredDeals,
+                          }[form.related_entity]?.map((entity: any) => (
+                            <div
+                              key={entity.id}
+                              className="flex items-center gap-2 p-2 hover:bg-accent cursor-pointer"
+                              onClick={() => {
+                                handleRelatedEntityChange(form.related_entity, entity.id, entity.name);
+                              }}
+                            >
+                              {form.related_entity === 'client' && <Briefcase className="h-4 w-4 text-blue-500" />}
+                              {form.related_entity === 'contact' && <User className="h-4 w-4 text-green-500" />}
+                              {form.related_entity === 'deal' && <Handshake className="h-4 w-4 text-orange-500" />}
+                              <span>{entity.name}</span>
+                            </div>
+                          ))
+                        )
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
-          <div className="p-6 pt-4 border-t border-border flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
-            <Button type="submit" disabled={loading || isUpdating}>
-              {loading || isUpdating ? "Updating..." : "Save Changes"}
+          <div className="flex justify-end p-6 pt-2 border-t">
+            <Button type="submit" disabled={isUpdating || loading}>
+              {isUpdating || loading ? t('tasks.editTaskModal.saving') : t('tasks.editTaskModal.saveChanges')}
             </Button>
           </div>
         </form>

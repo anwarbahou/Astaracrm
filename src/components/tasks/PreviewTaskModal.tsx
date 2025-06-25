@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CalendarIcon, Clock, CheckCircle, AlertTriangle, User, Briefcase, Handshake } from 'lucide-react';
 import { format, isPast } from "date-fns";
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface PreviewTaskModalProps {
   isOpen: boolean;
@@ -55,6 +56,7 @@ export const PreviewTaskModal: React.FC<PreviewTaskModalProps> = ({
 }) => {
   const formattedDueDate = task.due_date ? format(new Date(task.due_date), "PPP") : "N/A";
   const isOverdue = task.due_date && isPast(new Date(task.due_date)) && task.status !== 'completed';
+  const { t } = useTranslation();
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -76,16 +78,16 @@ export const PreviewTaskModal: React.FC<PreviewTaskModalProps> = ({
         <div className="flex-1 flex overflow-hidden">
           <div className="flex-1 overflow-y-auto p-6">
             <div className="mb-6">
-              <h2 className="text-lg font-semibold mb-2">Priority</h2>
+              <h2 className="text-lg font-semibold mb-2">{t('tasks.previewTaskModal.priority')}</h2>
               {task.priority && (
                 <Badge variant="outline" className={cn("flex items-center gap-1 w-fit", priorityColors[task.priority])}>
-                  {priorityIcons[task.priority]} {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
+                  {priorityIcons[task.priority]} {t(`tasks.priority.${task.priority}`)}
                 </Badge>
               )}
             </div>
 
             <div className="mb-6">
-              <h2 className="text-lg font-semibold mb-2">Description</h2>
+              <h2 className="text-lg font-semibold mb-2">{t('tasks.previewTaskModal.description')}</h2>
               <div className="prose dark:prose-invert max-w-none text-[1px]">
                 <ReactQuill
                   value={task.description || ''}
@@ -100,12 +102,12 @@ export const PreviewTaskModal: React.FC<PreviewTaskModalProps> = ({
 
           {/* Right Sidebar for Details */}
           <div className="w-80 border-l border-border p-6 flex flex-col">
-            <h2 className="text-lg font-semibold mb-4">Details</h2>
+            <h2 className="text-lg font-semibold mb-4">{t('tasks.previewTaskModal.details')}</h2>
             <div className="space-y-4">
               {/* Assignee */}
               {task.user && (
                 <div>
-                  <p className="text-sm text-muted-foreground">Assignee</p>
+                  <p className="text-sm text-muted-foreground">{t('tasks.previewTaskModal.assignee')}</p>
                   <div className="flex items-center gap-2 mt-1">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={task.user.avatar_url || undefined} />
@@ -118,48 +120,48 @@ export const PreviewTaskModal: React.FC<PreviewTaskModalProps> = ({
 
               {/* Due Date */}
               <div>
-                <p className="text-sm text-muted-foreground">Due Date</p>
+                <p className="text-sm text-muted-foreground">{t('tasks.previewTaskModal.dueDate')}</p>
                 <div className={cn(
                   "flex items-center gap-2 mt-1",
                   isOverdue ? "text-red-500 font-medium" : "text-foreground"
                 )}>
                   <CalendarIcon className="h-4 w-4" />
                   <span>{formattedDueDate}</span>
-                  {isOverdue && <span className="text-xs ml-2">(Overdue)</span>}
+                  {isOverdue && <span className="text-xs ml-2">({t('tasks.previewTaskModal.overdue')})</span>}
                 </div>
               </div>
 
               {/* Status */}
               <div>
-                <p className="text-sm text-muted-foreground">Status</p>
+                <p className="text-sm text-muted-foreground">{t('tasks.previewTaskModal.status')}</p>
                 <Badge variant="outline" className={cn("flex items-center gap-1 w-fit mt-1", getTaskStatusColor(task.status || 'todo'))}>
-                  {statusIcons[task.status || 'todo']} {task.status?.charAt(0).toUpperCase() + task.status?.slice(1).replace('_', ' ')}
+                  {statusIcons[task.status || 'todo']} {t(`tasks.status.${task.status || 'todo'}`)}
                 </Badge>
               </div>
 
               {/* Related To */}
               {task.related_entity && task.related_entity_name && (
                 <div>
-                  <p className="text-sm text-muted-foreground">Related To</p>
+                  <p className="text-sm text-muted-foreground">{t('tasks.previewTaskModal.relatedTo')}</p>
                   <div className="flex items-center gap-2 mt-1">
                     {task.related_entity === 'client' && <Briefcase className="h-4 w-4 text-blue-500" />}
                     {task.related_entity === 'contact' && <User className="h-4 w-4 text-green-500" />}
                     {task.related_entity === 'deal' && <Handshake className="h-4 w-4 text-orange-500" />}
-                    <span className="font-medium">{task.related_entity_name} ({task.related_entity.charAt(0).toUpperCase() + task.related_entity.slice(1)})</span>
+                    <span className="font-medium">{task.related_entity_name} ({t(`tasks.relatedEntity.${task.related_entity}`)})</span>
                   </div>
                 </div>
               )}
 
               {/* Time Tracking - Placeholder */}
               <div>
-                <p className="text-sm text-muted-foreground">Time Tracking</p>
-                <p className="text-foreground mt-1">No time logged</p>
+                <p className="text-sm text-muted-foreground">{t('tasks.previewTaskModal.timeTracking')}</p>
+                <p className="text-foreground mt-1">{t('tasks.previewTaskModal.noTimeLogged')}</p>
               </div>
 
               {/* Labels - Placeholder */}
               <div>
-                <p className="text-sm text-muted-foreground">Labels</p>
-                <Badge variant="secondary" className="bg-gray-200 text-gray-700 mt-1">Frontend</Badge>
+                <p className="text-sm text-muted-foreground">{t('tasks.previewTaskModal.labels')}</p>
+                <Badge variant="secondary" className="bg-gray-200 text-gray-700 mt-1">{t('tasks.previewTaskModal.frontendLabel')}</Badge>
               </div>
             </div>
           </div>

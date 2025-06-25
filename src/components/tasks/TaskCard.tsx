@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MoreHorizontal, CheckCircle, Clock, AlertTriangle } from "lucide-react";
 import { EditTaskModal } from './EditTaskModal';
 import { PreviewTaskModal } from './PreviewTaskModal';
+import { useTranslation } from 'react-i18next';
 
 const priorityIcons = {
   low: '🟢',
@@ -39,6 +40,7 @@ export const TaskCard: React.FC<{ task: Task }> = ({ task }) => {
   const [editModalOpen, setEditModalOpen] = React.useState(false);
   const [previewModalOpen, setPreviewModalOpen] = React.useState(false);
   const dropdownTriggerRef = React.useRef<HTMLButtonElement>(null);
+  const { t } = useTranslation();
 
   const handleDelete = async () => {
     setDeleting(true);
@@ -85,10 +87,10 @@ export const TaskCard: React.FC<{ task: Task }> = ({ task }) => {
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-            <DropdownMenuItem onClick={handlePreview}>View Details</DropdownMenuItem>
-            <DropdownMenuItem onClick={handleEdit}>Edit</DropdownMenuItem>
+            <DropdownMenuItem onClick={handlePreview}>{t('tasks.viewDetails')}</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleEdit}>{t('tasks.edit')}</DropdownMenuItem>
             <DropdownMenuItem onClick={handleDelete} className="text-red-600" disabled={deleting}>
-              {deleting ? 'Deleting...' : 'Delete'}
+              {deleting ? t('tasks.deleting') : t('tasks.delete')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -99,13 +101,13 @@ export const TaskCard: React.FC<{ task: Task }> = ({ task }) => {
           {task.status && (
             <Badge variant="outline" className="flex items-center gap-1">
               {statusIcons[task.status]}{' '}
-              {task.status.charAt(0).toUpperCase() + task.status.slice(1).replace('_', ' ')}
+              {t(`tasks.status.${task.status}`)}
             </Badge>
           )}
           {task.priority && (
             <Badge variant="outline" className={`flex items-center gap-1 ${priorityColors[task.priority]}`}>
               {priorityIcons[task.priority]}{' '}
-              {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
+              {t(`tasks.priority.${task.priority}`)}
             </Badge>
           )}
         </div>

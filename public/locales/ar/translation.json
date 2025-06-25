@@ -249,189 +249,184 @@
         "unknown": "غير معروف"
       }
     },
-      "toasts": {
-        "addClient": {
-          "success": {
-            "title": "تمت إضافة العميل بنجاح",
-            "description": "تمت إضافة العميل إلى نظام إدارة علاقات العملاء الخاص بك."
-          },
-          "error": {
-            "title": "حدث خطأ أثناء إضافة العميل",
-            "missingFields": "الاسم والبريد الإلكتروني مطلوبان.",
-            "unexpected": "حدث خطأ غير متوقع."
-          }
-        }
-      },
-      "addClientModal": {
-        "creating": "جاري الإنشاء...",
-        "submit": "إضافة العميل"
-      }
-        
-  },
-
-
-    "contacts": {
-      "title": "جهات الاتصال",
-      "description": "إدارة جميع جهات الاتصال والعلاقات التجارية الخاصة بك.",
-      "loading": "جاري تحميل جهات الاتصال...",
-      "addContact": "إضافة جهة اتصال",
-      "searchPlaceholder": "ابحث في جهات الاتصال بالاسم أو البريد الإلكتروني أو الشركة...",
-      "noContactsYet": "لا توجد جهات اتصال بعد",
-      "addContactsToStart": "أضف جهات اتصال لبدء بناء العلاقات",
-      "stats": {
-        "total": "إجمالي جهات الاتصال",
-        "active": "جهات الاتصال النشطة",
-        "decisionMakers": "صناع القرار",
-        "companies": "الشركات"
-      },
-      "table": {
-        "title": "كل جهات الاتصال ({{count}})",
-        "searchPlaceholder": "ابحث في جهات الاتصال...",
-        "filtersButton": "فلاتر",
-        "lastContacted": "آخر اتصال: {{value}}",
-        "header": {
-          "contact": "جهة الاتصال",
-          "role": "الدور/المنصب",
-          "contactInfo": "معلومات الاتصال",
-          "company": "الشركة",
-          "tags": "الوسوم",
-          "location": "الموقع",
-          "created": "تاريخ الإنشاء",
-          "status": "الحالة"
+    "toasts": {
+      "addClient": {
+        "success": {
+          "title": "تمت إضافة العميل بنجاح",
+          "description": "تمت إضافة العميل إلى نظام إدارة علاقات العملاء الخاص بك."
         },
-        "pagination": {
-          "rowsPerPage": "صفوف لكل صفحة:",
-          "of": "{{start}}-{{end}} من {{total}}"
-        }
-      },
-      "filtersPanel": {
-        "title": "الفلاتر",
-        "clearAll": "مسح الكل",
-        "company": "الشركة",
-        "allCompanies": "كل الشركات",
-        "role": "الدور/المنصب",
-        "allRoles": "كل الأدوار",
-        "country": "البلد",
-        "allCountries": "كل البلدان",
-        "status": "الحالة",
-        "allStatuses": "كل الحالات",
-        "createdFrom": "تاريخ الإنشاء من",
-        "createdTo": "تاريخ الإنشاء إلى",
-        "lastContactedFrom": "آخر تواصل من",
-        "lastContactedTo": "آخر تواصل إلى",
-        "tags": "الوسوم",
-        "createdDate": "تاريخ الإنشاء",
-        "lastContacted": "آخر تواصل",
-        "from": "من",
-        "to": "إلى",
-        "showMore": "عرض المزيد",
-        "showLess": "عرض أقل"
-      },
-      "tags": {
-        "decisionMaker": "صانع قرار",
-        "vip": "شخصية هامة",
-        "technical": "تقني",
-        "founder": "مؤسس",
-        "startup": "شركة ناشئة",
-        "procurement": "مشتريات",
-        "sales": "مبيعات"
-      },
-      "companies": {
-        "acme": "شركة Acme",
-        "tech": "شركة Tech Solutions",
-        "global": "Global Industries",
-        "startup": "StartupXYZ",
-        "enterprise": "Enterprise Corp"
-      },
-      "roles": {
-        "ceo": "المدير التنفيذي",
-        "cto": "المدير التقني",
-        "vpSales": "نائب رئيس المبيعات",
-        "manager": "مدير",
-        "developer": "مطور",
-        "designer": "مصمم"
-      },
-      "statuses": {
-        "active": "نشط",
-        "inactive": "غير نشط"
-      },
-      "profile": {
-        "title": "ملف جهة الاتصال",
-        "edit": "تعديل",
-        "save": "حفظ التغييرات",
-        "cancel": "إلغاء",
-        "delete": "حذف",
-        "deleting": "جاري الحذف...",
-        "deleteContact": "حذف جهة الاتصال",
-        "success": "تم بنجاح",
-        "error": "خطأ",
-        "contactUpdated": "تم تحديث جهة الاتصال بنجاح",
-        "contactUpdatedDescription": "تم تحديث معلومات جهة الاتصال بنجاح.",
-        "contactDeleted": "تم حذف جهة الاتصال بنجاح",
-        "contactDeletedDescription": "تم حذف جهة الاتصال بنجاح.",
-        "updateFailed": "فشل في تحديث جهة الاتصال",
-        "deleteFailed": "فشل في حذف جهة الاتصال",
-        "contactInformation": "معلومات الاتصال",
-        "professionalInfo": "المعلومات المهنية",
-        "companyInformation": "معلومات الشركة",
-        "activitySummary": "ملخص النشاط",
-        "created": "تاريخ الإنشاء",
-        "lastContacted": "آخر تواصل",
-        "firstName": "الاسم الأول",
-        "lastName": "اسم العائلة",
-        "email": "البريد الإلكتروني",
-        "phone": "الهاتف",
-        "role": "الدور/المنصب",
-        "company": "الشركة",
-        "location": "الموقع",
-        "position": "المنصب",
-        "joinDate": "تاريخ الانضمام",
-        "notesPlaceholder": "أضف ملاحظة حول جهة الاتصال هذه...",
-        "noNotes": "لا توجد ملاحظات متاحة",
-        "tabs": {
-          "overview": "نظرة عامة",
-          "contacts": "جهات الاتصال",
-          "deals": "الصفقات",
-          "notes": "ملاحظات",
-          "files": "ملفات",
-          "history": "التاريخ",
-          "messages": "رسائل"
-        },
-        "notes": {
-          "title": "الملاحظات والتعليقات",
-          "placeholder": "أضف ملاحظة حول جهة الاتصال هذه...",
-          "recentNotes": "الملاحظات الأخيرة",
-          "note1": "تم إجراء اتصال أولي بخصوص حلول البرمجيات. مهتم جداً بمنصة CRM الخاصة بنا.",
-          "note2": "تم جدولة اجتماع متابعة للأسبوع القادم. تحضير مواد العرض التوضيحي.",
-          "timeAgo": {
-            "2days": "منذ يومين",
-            "1week": "منذ أسبوع"
-          }
-        },
-        "files": {
-          "title": "الملفات والوثائق",
-          "noFiles": "لم يتم تحميل ملفات بعد",
-          "uploadFiles": "تحميل ملفات"
-        },
-        "messages": {
-          "title": "تاريخ الرسائل",
-          "noMessages": "لا توجد رسائل بعد",
-          "sendMessage": "إرسال رسالة"
-        },
-        "history": {
-          "title": "سجل النشاط",
-          "contactCreated": "تم إنشاء جهة الاتصال",
-          "emailSent": "تم إرسال بريد إلكتروني",
-          "meetingScheduled": "تم جدولة اجتماع",
-          "timeAgo": {
-            "3days": "منذ 3 أيام",
-            "1week": "منذ أسبوع"
-          }
+        "error": {
+          "title": "حدث خطأ أثناء إضافة العميل",
+          "missingFields": "الاسم والبريد الإلكتروني مطلوبان.",
+          "unexpected": "حدث خطأ غير متوقع."
         }
       }
     },
-
-
+    "addClientModal": {
+      "creating": "جاري الإنشاء...",
+      "submit": "إضافة العميل"
+    }
+  },
+  "contacts": {
+    "title": "جهات الاتصال",
+    "description": "إدارة جميع جهات الاتصال والعلاقات التجارية الخاصة بك.",
+    "loading": "جاري تحميل جهات الاتصال...",
+    "addContact": "إضافة جهة اتصال",
+    "searchPlaceholder": "ابحث في جهات الاتصال بالاسم أو البريد الإلكتروني أو الشركة...",
+    "noContactsYet": "لا توجد جهات اتصال بعد",
+    "addContactsToStart": "أضف جهات اتصال لبدء بناء العلاقات",
+    "stats": {
+      "total": "إجمالي جهات الاتصال",
+      "active": "جهات الاتصال النشطة",
+      "decisionMakers": "صناع القرار",
+      "companies": "الشركات"
+    },
+    "table": {
+      "title": "كل جهات الاتصال ({{count}})",
+      "searchPlaceholder": "ابحث في جهات الاتصال...",
+      "filtersButton": "فلاتر",
+      "lastContacted": "آخر اتصال: {{value}}",
+      "header": {
+        "contact": "جهة الاتصال",
+        "role": "الدور/المنصب",
+        "contactInfo": "معلومات الاتصال",
+        "company": "الشركة",
+        "tags": "الوسوم",
+        "location": "الموقع",
+        "created": "تاريخ الإنشاء",
+        "status": "الحالة"
+      },
+      "pagination": {
+        "rowsPerPage": "صفوف لكل صفحة:",
+        "of": "{{start}}-{{end}} من {{total}}"
+      }
+    },
+    "filtersPanel": {
+      "title": "الفلاتر",
+      "clearAll": "مسح الكل",
+      "company": "الشركة",
+      "allCompanies": "كل الشركات",
+      "role": "الدور/المنصب",
+      "allRoles": "كل الأدوار",
+      "country": "البلد",
+      "allCountries": "كل البلدان",
+      "status": "الحالة",
+      "allStatuses": "كل الحالات",
+      "createdFrom": "تاريخ الإنشاء من",
+      "createdTo": "تاريخ الإنشاء إلى",
+      "lastContactedFrom": "آخر تواصل من",
+      "lastContactedTo": "آخر تواصل إلى",
+      "tags": "الوسوم",
+      "createdDate": "تاريخ الإنشاء",
+      "lastContacted": "آخر تواصل",
+      "from": "من",
+      "to": "إلى",
+      "showMore": "عرض المزيد",
+      "showLess": "عرض أقل"
+    },
+    "tags": {
+      "decisionMaker": "صانع قرار",
+      "vip": "شخصية هامة",
+      "technical": "تقني",
+      "founder": "مؤسس",
+      "startup": "شركة ناشئة",
+      "procurement": "مشتريات",
+      "sales": "مبيعات"
+    },
+    "companies": {
+      "acme": "شركة Acme",
+      "tech": "شركة Tech Solutions",
+      "global": "Global Industries",
+      "startup": "StartupXYZ",
+      "enterprise": "Enterprise Corp"
+    },
+    "roles": {
+      "ceo": "المدير التنفيذي",
+      "cto": "المدير التقني",
+      "vpSales": "نائب رئيس المبيعات",
+      "manager": "مدير",
+      "developer": "مطور",
+      "designer": "مصمم"
+    },
+    "statuses": {
+      "active": "نشط",
+      "inactive": "غير نشط"
+    },
+    "profile": {
+      "title": "ملف جهة الاتصال",
+      "edit": "تعديل",
+      "save": "حفظ التغييرات",
+      "cancel": "إلغاء",
+      "delete": "حذف",
+      "deleting": "جاري الحذف...",
+      "deleteContact": "حذف جهة الاتصال",
+      "success": "تم بنجاح",
+      "error": "خطأ",
+      "contactUpdated": "تم تحديث جهة الاتصال بنجاح",
+      "contactUpdatedDescription": "تم تحديث معلومات جهة الاتصال بنجاح.",
+      "contactDeleted": "تم حذف جهة الاتصال بنجاح",
+      "contactDeletedDescription": "تم حذف جهة الاتصال بنجاح.",
+      "updateFailed": "فشل في تحديث جهة الاتصال",
+      "deleteFailed": "فشل في حذف جهة الاتصال",
+      "contactInformation": "معلومات الاتصال",
+      "professionalInfo": "المعلومات المهنية",
+      "companyInformation": "معلومات الشركة",
+      "activitySummary": "ملخص النشاط",
+      "created": "تاريخ الإنشاء",
+      "lastContacted": "آخر تواصل",
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف",
+      "role": "الدور/المنصب",
+      "company": "الشركة",
+      "location": "الموقع",
+      "position": "المنصب",
+      "joinDate": "تاريخ الانضمام",
+      "notesPlaceholder": "أضف ملاحظة حول جهة الاتصال هذه...",
+      "noNotes": "لا توجد ملاحظات متاحة",
+      "tabs": {
+        "overview": "نظرة عامة",
+        "contacts": "جهات الاتصال",
+        "deals": "الصفقات",
+        "notes": "ملاحظات",
+        "files": "ملفات",
+        "history": "التاريخ",
+        "messages": "رسائل"
+      },
+      "notes": {
+        "title": "الملاحظات والتعليقات",
+        "placeholder": "أضف ملاحظة حول جهة الاتصال هذه...",
+        "recentNotes": "الملاحظات الأخيرة",
+        "note1": "تم إجراء اتصال أولي بخصوص حلول البرمجيات. مهتم جداً بمنصة CRM الخاصة بنا.",
+        "note2": "تم جدولة اجتماع متابعة للأسبوع القادم. تحضير مواد العرض التوضيحي.",
+        "timeAgo": {
+          "2days": "منذ يومين",
+          "1week": "منذ أسبوع"
+        }
+      },
+      "files": {
+        "title": "الملفات والوثائق",
+        "noFiles": "لم يتم تحميل ملفات بعد",
+        "uploadFiles": "تحميل ملفات"
+      },
+      "messages": {
+        "title": "تاريخ الرسائل",
+        "noMessages": "لا توجد رسائل بعد",
+        "sendMessage": "إرسال رسالة"
+      },
+      "history": {
+        "title": "سجل النشاط",
+        "contactCreated": "تم إنشاء جهة الاتصال",
+        "emailSent": "تم إرسال بريد إلكتروني",
+        "meetingScheduled": "تم جدولة اجتماع",
+        "timeAgo": {
+          "3days": "منذ 3 أيام",
+          "1week": "منذ أسبوع"
+        }
+      }
+    }
+  },
   "deals": {
     "title": "الصفقات",
     "description": "إدارة صفقاتك من خلال عملية المبيعات وتتبع خط أنابيب الإيرادات.",
@@ -504,6 +499,105 @@
       "coldOutreach": "تواصل بارد",
       "linkedIn": "لينكدإن",
       "existingClient": "عميل حالي"
+    }
+  },
+  "tasks": {
+    "title": "إدارة المهام",
+    "addTask": "إضافة مهمة",
+    "noTasksFound": "لم يتم العثور على مهام.",
+    "noTasksInColumn": "لا توجد مهام",
+    "viewDetails": "عرض التفاصيل",
+    "edit": "تعديل",
+    "deleting": "جاري الحذف...",
+    "delete": "حذف",
+    "status": {
+      "todo": "للقيام بها",
+      "pending": "معلقة",
+      "in_progress": "قيد التقدم",
+      "blocked": "محظورة",
+      "completed": "مكتملة",
+      "cancelled": "ملغاة"
+    },
+    "priority": {
+      "high": "عالية",
+      "medium": "متوسطة",
+      "low": "منخفضة"
+    },
+    "addTaskModal": {
+      "title": "إضافة مهمة جديدة",
+      "saving": "جاري الحفظ...",
+      "saveTask": "حفظ المهمة",
+      "form": {
+        "title": "العنوان",
+        "description": "الوصف",
+        "dueDate": "تاريخ الاستحقاق",
+        "timeSpent": "الوقت المستغرق",
+        "priority": "الأولوية",
+        "status": "الحالة",
+        "assignedTo": "مُعيّن إلى",
+        "selectUser": "اختر مستخدمًا",
+        "loadingUsers": "جاري تحميل المستخدمين...",
+        "relatedEntity": "ذات صلة بـ",
+        "none": "لا شيء",
+        "client": "عميل",
+        "contact": "جهة اتصال",
+        "deal": "صفقة",
+        "searchEntities": "البحث عن الكيانات...",
+        "loading": "جاري التحميل...",
+        "noEntitiesFound": "لم يتم العثور على كيانات."
+      }
+    },
+    "editTaskModal": {
+      "title": "تعديل المهمة",
+      "saving": "جاري الحفظ...",
+      "saveChanges": "حفظ التغييرات",
+      "toast": {
+        "successTitle": "تم تحديث المهمة بنجاح!",
+        "successDescription": "تم تحديث المهمة \"{{title}}\".",
+        "errorTitle": "فشل تحديث المهمة",
+        "unknownError": "حدث خطأ غير معروف."
+      },
+      "form": {
+        "title": "العنوان",
+        "description": "الوصف",
+        "dueDate": "تاريخ الاستحقاق",
+        "timeSpent": "الوقت المستغرق",
+        "priority": "الأولوية",
+        "selectPriority": "اختر الأولوية",
+        "status": "الحالة",
+        "selectStatus": "اختر الحالة",
+        "assignedTo": "مُعيّن إلى",
+        "selectUser": "اختر مستخدمًا",
+        "loadingUsers": "جاري تحميل المستخدمين...",
+        "relatedEntity": "ذات صلة بـ",
+        "selectRelatedEntity": "اختر كيانًا ذا صلة",
+        "none": "لا شيء",
+        "client": "عميل",
+        "contact": "جهة اتصال",
+        "deal": "صفقة",
+        "searchEntities": "البحث عن الكيانات...",
+        "loading": "جاري التحميل...",
+        "noEntitiesFound": "لم يتم العثور على كيانات."
+      }
+    },
+    "previewTaskModal": {
+      "priority": "الأولوية",
+      "description": "الوصف",
+      "details": "التفاصيل",
+      "assignee": "المُعيّن",
+      "dueDate": "تاريخ الاستحقاق",
+      "overdue": "متأخرة",
+      "status": "الحالة",
+      "relatedTo": "ذات صلة بـ",
+      "timeTracking": "تتبع الوقت",
+      "noTimeLogged": "لم يتم تسجيل وقت",
+      "labels": "التصنيفات",
+      "frontendLabel": "الواجهة الأمامية"
+    },
+    "relatedEntity": {
+      "client": "عميل",
+      "contact": "جهة اتصال",
+      "deal": "صفقة"
     }
   },
   "aiLeads": {
@@ -969,7 +1063,7 @@
       "deals": "الصفقات",
       "notes": "الملاحظات",
       "files": "الملفات",
-      "history": "السجل",
+      "history": "التاريخ",
       "messages": "الرسائل",
       "contactInformation": "معلومات جهة الاتصال",
       "lastContacted": "آخر اتصال",

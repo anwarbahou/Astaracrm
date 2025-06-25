@@ -453,6 +453,105 @@
     "export": "Exporter les journaux",
     "searchPlaceholder": "Rechercher des activités par action, utilisateur ou entité..."
   },
+  "tasks": {
+    "title": "Gestion des tâches",
+    "addTask": "Ajouter une tâche",
+    "noTasksFound": "Aucune tâche trouvée.",
+    "noTasksInColumn": "Aucune tâche",
+    "viewDetails": "Voir les détails",
+    "edit": "Modifier",
+    "deleting": "Suppression...",
+    "delete": "Supprimer",
+    "status": {
+      "todo": "À faire",
+      "pending": "En attente",
+      "in_progress": "En cours",
+      "blocked": "Bloqué",
+      "completed": "Terminé",
+      "cancelled": "Annulé"
+    },
+    "priority": {
+      "high": "Élevée",
+      "medium": "Moyenne",
+      "low": "Basse"
+    },
+    "addTaskModal": {
+      "title": "Ajouter une nouvelle tâche",
+      "saving": "Enregistrement...",
+      "saveTask": "Enregistrer la tâche",
+      "form": {
+        "title": "Titre",
+        "description": "Description",
+        "dueDate": "Date d'échéance",
+        "timeSpent": "Temps passé",
+        "priority": "Priorité",
+        "status": "Statut",
+        "assignedTo": "Assigné à",
+        "selectUser": "Sélectionner un utilisateur",
+        "loadingUsers": "Chargement des utilisateurs...",
+        "relatedEntity": "Lié à",
+        "none": "Aucun",
+        "client": "Client",
+        "contact": "Contact",
+        "deal": "Affaire",
+        "searchEntities": "Rechercher des entités...",
+        "loading": "Chargement...",
+        "noEntitiesFound": "Aucune entité trouvée."
+      }
+    },
+    "editTaskModal": {
+      "title": "Modifier la tâche",
+      "saving": "Enregistrement...",
+      "saveChanges": "Enregistrer les modifications",
+      "toast": {
+        "successTitle": "Tâche mise à jour avec succès !",
+        "successDescription": "La tâche \"{{title}}\" a été mise à jour.",
+        "errorTitle": "Échec de la mise à jour de la tâche",
+        "unknownError": "Une erreur inconnue est survenue."
+      },
+      "form": {
+        "title": "Titre",
+        "description": "Description",
+        "dueDate": "Date d'échéance",
+        "timeSpent": "Temps passé",
+        "priority": "Priorité",
+        "selectPriority": "Sélectionner la priorité",
+        "status": "Statut",
+        "selectStatus": "Sélectionner le statut",
+        "assignedTo": "Assigné à",
+        "selectUser": "Sélectionner un utilisateur",
+        "loadingUsers": "Chargement des utilisateurs...",
+        "relatedEntity": "Lié à",
+        "selectRelatedEntity": "Sélectionner une entité liée",
+        "none": "Aucun",
+        "client": "Client",
+        "contact": "Contact",
+        "deal": "Affaire",
+        "searchEntities": "Rechercher des entités...",
+        "loading": "Chargement...",
+        "noEntitiesFound": "Aucune entité trouvée."
+      }
+    },
+    "previewTaskModal": {
+      "priority": "Priorité",
+      "description": "Description",
+      "details": "Détails",
+      "assignee": "Assigné",
+      "dueDate": "Date d'échéance",
+      "overdue": "En retard",
+      "status": "Statut",
+      "relatedTo": "Lié à",
+      "timeTracking": "Suivi du temps",
+      "noTimeLogged": "Aucun temps enregistré",
+      "labels": "Étiquettes",
+      "frontendLabel": "Frontend"
+    },
+    "relatedEntity": {
+      "client": "Client",
+      "contact": "Contact",
+      "deal": "Affaire"
+    }
+  },
   "notes": {
     "grid": {
       "empty": {

@@ -14,6 +14,7 @@ import { contactsService } from '@/services/contactsService';
 import { useDeals } from '@/hooks/useDeals';
 import { useTasks } from '@/hooks/useTasks';
 import { useUsersForSelection } from '@/hooks/useUsers';
+import { useTranslation } from 'react-i18next';
 
 interface AddTaskModalProps {
   open: boolean;
@@ -46,6 +47,7 @@ export function AddTaskModal({ open, onOpenChange }: AddTaskModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [contacts, setContacts] = useState<any[]>([]);
   const [contactsLoading, setContactsLoading] = useState(false);
+  const { t } = useTranslation();
 
   // Set assigned_to to current user id or selected user
   const isAdmin = userProfile?.role === 'admin';
@@ -112,12 +114,12 @@ export function AddTaskModal({ open, onOpenChange }: AddTaskModalProps) {
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="!w-[50vw] max-w-none flex flex-col p-0">
         <SheetHeader className="p-6 pb-0">
-          <SheetTitle>Add New Task</SheetTitle>
+          <SheetTitle>{t('tasks.addTaskModal.title')}</SheetTitle>
         </SheetHeader>
         <form className="flex-1 flex flex-col overflow-hidden" onSubmit={handleSubmit}>
           <div className="flex-1 overflow-y-auto px-6 pt-4 pb-2">
             <div>
-              <Label htmlFor="title">Title</Label>
+              <Label htmlFor="title">{t('tasks.addTaskModal.form.title')}</Label>
               <Input
                 id="title"
                 value={form.title}
@@ -127,7 +129,7 @@ export function AddTaskModal({ open, onOpenChange }: AddTaskModalProps) {
             </div>
             <div className="mb-4" />
             <div>
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">{t('tasks.addTaskModal.form.description')}</Label>
               <div style={{ height: 240 }} className="relative mb-4">
                 <ReactQuill
                   theme="snow"
@@ -161,7 +163,7 @@ export function AddTaskModal({ open, onOpenChange }: AddTaskModalProps) {
             </div>
             <div className="mb-4" />
             <div>
-              <Label htmlFor="due_date">Due Date</Label>
+              <Label htmlFor="due_date">{t('tasks.addTaskModal.form.dueDate')}</Label>
               <Input
                 id="due_date"
                 type="date"
@@ -171,7 +173,7 @@ export function AddTaskModal({ open, onOpenChange }: AddTaskModalProps) {
             </div>
             <div className="mb-4" />
             <div>
-              <Label htmlFor="time_spent">Time Spent</Label>
+              <Label htmlFor="time_spent">{t('tasks.addTaskModal.form.timeSpent')}</Label>
               <Input
                 id="time_spent"
                 placeholder="e.g. 1m 3d 2h 39m"
@@ -182,7 +184,7 @@ export function AddTaskModal({ open, onOpenChange }: AddTaskModalProps) {
             <div className="mb-4" />
             <div className="flex gap-4">
               <div className="flex-1">
-                <Label htmlFor="priority">Priority</Label>
+                <Label htmlFor="priority">{t('tasks.addTaskModal.form.priority')}</Label>
                 <select
                   id="priority"
                   name="priority"
@@ -190,13 +192,13 @@ export function AddTaskModal({ open, onOpenChange }: AddTaskModalProps) {
                   onChange={handleChange}
                   className="w-full border rounded px-2 py-2 bg-background text-foreground dark:bg-zinc-900 dark:text-zinc-100"
                 >
-                  <option value="high">High</option>
-                  <option value="medium">Medium</option>
-                  <option value="low">Low</option>
+                  <option value="high">{t('tasks.priority.high')}</option>
+                  <option value="medium">{t('tasks.priority.medium')}</option>
+                  <option value="low">{t('tasks.priority.low')}</option>
                 </select>
               </div>
               <div className="flex-1">
-                <Label htmlFor="status">Status</Label>
+                <Label htmlFor="status">{t('tasks.addTaskModal.form.status')}</Label>
                 <select
                   id="status"
                   name="status"
@@ -204,198 +206,121 @@ export function AddTaskModal({ open, onOpenChange }: AddTaskModalProps) {
                   onChange={handleChange}
                   className="w-full border rounded px-2 py-2 bg-background text-foreground dark:bg-zinc-900 dark:text-zinc-100"
                 >
-                  <option value="pending">Pending</option>
-                  <option value="in_progress">In Progress</option>
-                  <option value="completed">Completed</option>
-                  <option value="cancelled">Cancelled</option>
+                  <option value="todo">{t('tasks.status.todo')}</option>
+                  <option value="pending">{t('tasks.status.pending')}</option>
+                  <option value="in_progress">{t('tasks.status.in_progress')}</option>
+                  <option value="blocked">{t('tasks.status.blocked')}</option>
+                  <option value="completed">{t('tasks.status.completed')}</option>
+                  <option value="cancelled">{t('tasks.status.cancelled')}</option>
                 </select>
               </div>
             </div>
             <div className="mb-4" />
             <div>
-              <Label htmlFor="assignee">Assignee</Label>
-              {isAdmin ? (
-                <select
-                  id="assignee"
-                  name="assigned_to"
-                  value={assignedTo}
-                  onChange={e => setForm({ ...form, assigned_to: e.target.value })}
-                  className="w-full border rounded px-2 py-2 bg-background text-foreground dark:bg-zinc-900 dark:text-zinc-100"
-                  disabled={usersLoading}
+              <Label htmlFor="assigned_to">{t('tasks.addTaskModal.form.assignedTo')}</Label>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setDropdownOpen(dropdownOpen === 'assigned_to' ? null : 'assigned_to')}
+                  className="w-full border rounded px-3 py-2 bg-background text-foreground text-left flex justify-between items-center dark:bg-zinc-900 dark:text-zinc-100"
                 >
-                  {usersLoading ? (
-                    <option>Loading users...</option>
-                  ) : (
-                    allUsers.map(user => (
-                      <option key={user.id} value={user.id}>
-                        {user.name} ({user.email})
-                      </option>
-                    ))
-                  )}
-                </select>
-              ) : (
-                <div className="flex items-center">
-                  <Avatar className="h-8 w-8 mr-2">
-                    <AvatarImage src={userProfile?.avatar_url || ''} />
-                    <AvatarFallback>
-                      {userProfile?.first_name?.[0]}
-                      {userProfile?.last_name?.[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                  <Input
-                    id="assignee"
-                    value={assignedToName}
-                    readOnly
-                    className="bg-muted-foreground/10 cursor-not-allowed"
-                  />
-                </div>
-              )}
-            </div>
-            <div className="mb-4" />
-            <div className="mb-4">
-              <Label htmlFor="related_entity">Related To</Label>
-              <div className="flex gap-4 mt-2 w-full">
-                {/* Client Card */}
-                <div className="flex-1">
-                  <button
-                    type="button"
-                    className={`flex flex-col items-center justify-center p-3 rounded-lg border transition-colors flex-1 w-full h-20 ${form.related_entity === 'client' ? 'bg-primary text-primary-foreground border-primary' : 'bg-muted text-muted-foreground border-border hover:border-primary'}`}
-                    onClick={() => {
-                      setForm({ ...form, related_entity: 'client', related_entity_id: '', related_entity_name: '' });
-                      setSearchQuery('');
-                    }}
-                  >
-                    <User className="mb-1" />
-                    <span className="text-xs font-medium">
-                      {form.related_entity === 'client' && form.related_entity_name
-                        ? form.related_entity_name
-                        : 'Client'}
-                    </span>
-                  </button>
-                </div>
-                {/* Contact Card */}
-                <div className="flex-1">
-                  <button
-                    type="button"
-                    className={`flex flex-col items-center justify-center p-3 rounded-lg border transition-colors flex-1 w-full h-20 ${form.related_entity === 'contact' ? 'bg-primary text-primary-foreground border-primary' : 'bg-muted text-muted-foreground border-border hover:border-primary'}`}
-                    onClick={() => {
-                      setForm({ ...form, related_entity: 'contact', related_entity_id: '', related_entity_name: '' });
-                      setSearchQuery('');
-                    }}
-                  >
-                    <Handshake className="mb-1" />
-                    <span className="text-xs font-medium">
-                      {form.related_entity === 'contact' && form.related_entity_name
-                        ? form.related_entity_name
-                        : 'Contact'}
-                    </span>
-                  </button>
-                </div>
-                {/* Deal Card */}
-                <div className="flex-1">
-                  <button
-                    type="button"
-                    className={`flex flex-col items-center justify-center p-3 rounded-lg border transition-colors flex-1 w-full h-20 ${form.related_entity === 'deal' ? 'bg-primary text-primary-foreground border-primary' : 'bg-muted text-muted-foreground border-border hover:border-primary'}`}
-                    onClick={() => {
-                      setForm({ ...form, related_entity: 'deal', related_entity_id: '', related_entity_name: '' });
-                      setSearchQuery('');
-                    }}
-                  >
-                    <Briefcase className="mb-1" />
-                    <span className="text-xs font-medium">
-                      {form.related_entity === 'deal' && form.related_entity_name
-                        ? form.related_entity_name
-                        : 'Deal'}
-                    </span>
-                  </button>
-                </div>
-                {/* Other Card */}
-                <div className="flex-1">
-                  <button
-                    type="button"
-                    className={`flex flex-col items-center justify-center p-3 rounded-lg border transition-colors flex-1 w-full h-20 ${form.related_entity === 'other' ? 'bg-primary text-primary-foreground border-primary' : 'bg-muted text-muted-foreground border-border hover:border-primary'}`}
-                    onClick={() => setForm({ ...form, related_entity: 'other', related_entity_id: '', related_entity_name: '' })}
-                  >
-                    <MoreHorizontal className="mb-1" />
-                    <span className="text-xs font-medium">Other</span>
-                  </button>
-                </div>
-              </div>
-              {/* Search section below cards */}
-              {form.related_entity && form.related_entity !== 'other' && (
-                <div className="mt-4 mb-4">
-                  <Input
-                    placeholder={`Search for a ${form.related_entity}...`}
-                    value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
-                    className="mb-2"
-                  />
-                  <div className="max-h-40 overflow-y-auto border rounded bg-background">
-                    {form.related_entity === 'client' && filteredClients.length === 0 && !clientsLoading && (
-                      <div className="px-4 py-2 text-muted-foreground text-xs">No clients found.</div>
-                    )}
-                    {form.related_entity === 'client' && clientsLoading && (
-                      <div className="px-4 py-2 text-muted-foreground text-xs">Loading clients...</div>
-                    )}
-                    {form.related_entity === 'client' && filteredClients.length > 0 && (
-                      filteredClients
-                        .filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()))
-                        .map(item => (
-                          <div
-                            key={item.id}
-                            className={`px-4 py-2 cursor-pointer hover:bg-accent ${form.related_entity_id === item.id ? 'bg-primary text-primary-foreground' : ''}`}
-                            onClick={() => setForm({ ...form, related_entity_id: item.id, related_entity_name: item.name })}
-                          >
-                            {item.name}
-                          </div>
-                        ))
-                    )}
-                    {form.related_entity === 'contact' && contacts.length === 0 && !contactsLoading && (
-                      <div className="px-4 py-2 text-muted-foreground text-xs">No contacts found.</div>
-                    )}
-                    {form.related_entity === 'contact' && contactsLoading && (
-                      <div className="px-4 py-2 text-muted-foreground text-xs">Loading contacts...</div>
-                    )}
-                    {form.related_entity === 'contact' && contacts.length > 0 && (
-                      contacts
-                        .filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase()))
-                        .map(item => (
-                          <div
-                            key={item.id}
-                            className={`px-4 py-2 cursor-pointer hover:bg-accent ${form.related_entity_id === item.id ? 'bg-primary text-primary-foreground' : ''}`}
-                            onClick={() => setForm({ ...form, related_entity_id: item.id, related_entity_name: item.name })}
-                          >
-                            {item.name}
-                          </div>
-                        ))
-                    )}
-                    {form.related_entity === 'deal' && filteredDeals.length === 0 && !dealsLoading && (
-                      <div className="px-4 py-2 text-muted-foreground text-xs">No deals found.</div>
-                    )}
-                    {form.related_entity === 'deal' && dealsLoading && (
-                      <div className="px-4 py-2 text-muted-foreground text-xs">Loading deals...</div>
-                    )}
-                    {form.related_entity === 'deal' && filteredDeals.length > 0 && (
-                      filteredDeals
-                        .filter(item => (item.name || '').toLowerCase().includes(searchQuery.toLowerCase()))
-                        .map(item => (
-                          <div
-                            key={item.id}
-                            className={`px-4 py-2 cursor-pointer hover:bg-accent ${form.related_entity_id === item.id ? 'bg-primary text-primary-foreground' : ''}`}
-                            onClick={() => setForm({ ...form, related_entity_id: item.id, related_entity_name: item.name })}
-                          >
-                            {item.name}
-                          </div>
-                        ))
+                  <span>{assignedToName || t('tasks.addTaskModal.form.selectUser')}</span>
+                  <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+                </button>
+                {dropdownOpen === 'assigned_to' && (
+                  <div className="absolute z-10 w-full bg-popover border rounded shadow-md mt-1 max-h-48 overflow-y-auto dark:bg-zinc-800">
+                    {usersLoading ? (
+                      <div className="p-2 text-center text-muted-foreground">{t('tasks.addTaskModal.form.loadingUsers')}</div>
+                    ) : (
+                      allUsers.map(u => (
+                        <div
+                          key={u.id}
+                          className="flex items-center gap-2 p-2 hover:bg-accent cursor-pointer"
+                          onClick={() => {
+                            setForm({ ...form, assigned_to: u.id });
+                            setDropdownOpen(null);
+                          }}
+                        >
+                          <Avatar className="h-6 w-6">
+                            <AvatarImage src={u.avatar_url || undefined} />
+                            <AvatarFallback>{u.name?.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          <span>{u.name}</span>
+                        </div>
+                      ))
                     )}
                   </div>
-                </div>
-              )}
+                )}
+              </div>
+            </div>
+
+            <div className="mb-4" />
+            <div>
+              <Label htmlFor="related_entity">{t('tasks.addTaskModal.form.relatedEntity')}</Label>
+              <div className="relative">
+                <select
+                  id="related_entity"
+                  name="related_entity"
+                  value={form.related_entity}
+                  onChange={handleChange}
+                  className="w-full border rounded px-2 py-2 bg-background text-foreground dark:bg-zinc-900 dark:text-zinc-100"
+                >
+                  <option value="">{t('tasks.addTaskModal.form.none')}</option>
+                  <option value="client">{t('tasks.addTaskModal.form.client')}</option>
+                  <option value="contact">{t('tasks.addTaskModal.form.contact')}</option>
+                  <option value="deal">{t('tasks.addTaskModal.form.deal')}</option>
+                </select>
+
+                {form.related_entity && (
+                  <div className="mt-4">
+                    <Input
+                      type="text"
+                      placeholder={t('tasks.addTaskModal.form.searchEntities')}
+                      value={searchQuery}
+                      onChange={e => setSearchQuery(e.target.value)}
+                      className="mb-2"
+                    />
+                    <div className="max-h-48 overflow-y-auto border rounded">
+                      {loading || clientsLoading || dealsLoading || contactsLoading ? (
+                        <div className="p-2 text-center text-muted-foreground">{t('tasks.addTaskModal.form.loading')}</div>
+                      ) : (
+                        {
+                          client: filteredClients.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase())),
+                          contact: contacts.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase())),
+                          deal: filteredDeals.filter(d => d.name.toLowerCase().includes(searchQuery.toLowerCase())),
+                        }[form.related_entity]?.length === 0 ? (
+                          <div className="p-2 text-center text-muted-foreground">{t('tasks.addTaskModal.form.noEntitiesFound')}</div>
+                        ) : (
+                          {
+                            client: filteredClients.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase())),
+                            contact: contacts.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase())),
+                            deal: filteredDeals.filter(d => d.name.toLowerCase().includes(searchQuery.toLowerCase())),
+                          }[form.related_entity]?.map((entity: any) => (
+                            <div
+                              key={entity.id}
+                              className="flex items-center gap-2 p-2 hover:bg-accent cursor-pointer"
+                              onClick={() => {
+                                setForm({ ...form, related_entity_id: entity.id, related_entity_name: entity.name });
+                                setSearchQuery('');
+                              }}
+                            >
+                              {form.related_entity === 'client' && <Briefcase className="h-4 w-4 text-muted-foreground" />}
+                              {form.related_entity === 'contact' && <User className="h-4 w-4 text-muted-foreground" />}
+                              {form.related_entity === 'deal' && <Handshake className="h-4 w-4 text-muted-foreground" />}
+                              <span>{entity.name}</span>
+                            </div>
+                          ))
+                        )
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-          <div className="p-6 border-t bg-background sticky bottom-0 z-10">
-            <Button type="submit" disabled={loading || isAdding} className="w-full mt-4">
-              {loading || isAdding ? "Adding..." : "Add Task"}
+          <div className="flex justify-end p-6 pt-2 border-t">
+            <Button type="submit" disabled={isAdding || loading}>
+              {isAdding || loading ? t('tasks.addTaskModal.saving') : t('tasks.addTaskModal.saveTask')}
             </Button>
           </div>
         </form>

@@ -265,7 +265,105 @@
   }
   },
 
-
+  "tasks": {
+    "title": "Task Management",
+    "addTask": "Add Task",
+    "noTasksFound": "No tasks found.",
+    "noTasksInColumn": "No tasks",
+    "viewDetails": "View Details",
+    "edit": "Edit",
+    "deleting": "Deleting...",
+    "delete": "Delete",
+    "status": {
+      "todo": "To Do",
+      "pending": "Pending",
+      "in_progress": "In Progress",
+      "blocked": "Blocked",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "priority": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "addTaskModal": {
+      "title": "Add New Task",
+      "saving": "Saving...",
+      "saveTask": "Save Task",
+      "form": {
+        "title": "Title",
+        "description": "Description",
+        "dueDate": "Due Date",
+        "timeSpent": "Time Spent",
+        "priority": "Priority",
+        "status": "Status",
+        "assignedTo": "Assigned To",
+        "selectUser": "Select User",
+        "loadingUsers": "Loading users...",
+        "relatedEntity": "Related To",
+        "none": "None",
+        "client": "Client",
+        "contact": "Contact",
+        "deal": "Deal",
+        "searchEntities": "Search entities...",
+        "loading": "Loading...",
+        "noEntitiesFound": "No entities found."
+      }
+    },
+    "editTaskModal": {
+      "title": "Edit Task",
+      "saving": "Saving...",
+      "saveChanges": "Save Changes",
+      "toast": {
+        "successTitle": "Task updated successfully!",
+        "successDescription": "Task \"{{title}}\" has been updated.",
+        "errorTitle": "Failed to update task",
+        "unknownError": "An unknown error occurred."
+      },
+      "form": {
+        "title": "Title",
+        "description": "Description",
+        "dueDate": "Due Date",
+        "timeSpent": "Time Spent",
+        "priority": "Priority",
+        "selectPriority": "Select priority",
+        "status": "Status",
+        "selectStatus": "Select status",
+        "assignedTo": "Assigned To",
+        "selectUser": "Select user",
+        "loadingUsers": "Loading users...",
+        "relatedEntity": "Related To",
+        "selectRelatedEntity": "Select related entity",
+        "none": "None",
+        "client": "Client",
+        "contact": "Contact",
+        "deal": "Deal",
+        "searchEntities": "Search entities...",
+        "loading": "Loading...",
+        "noEntitiesFound": "No entities found."
+      }
+    },
+    "previewTaskModal": {
+      "priority": "Priority",
+      "description": "Description",
+      "details": "Details",
+      "assignee": "Assignee",
+      "dueDate": "Due Date",
+      "overdue": "Overdue",
+      "status": "Status",
+      "relatedTo": "Related To",
+      "timeTracking": "Time Tracking",
+      "noTimeLogged": "No time logged",
+      "labels": "Labels",
+      "frontendLabel": "Frontend"
+    },
+    "relatedEntity": {
+      "client": "Client",
+      "contact": "Contact",
+      "deal": "Deal"
+    }
+  },
 "contacts": {
     "title": "Contacts",
     "description": "Manage all your contacts and business relationships.",

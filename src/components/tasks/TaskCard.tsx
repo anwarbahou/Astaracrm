@@ -48,9 +48,11 @@ export const TaskCard: React.FC<{ task: Task }> = ({ task }) => {
       setDeleting(false);
     }
   };
+
   const handleEdit = () => {
     setEditModalOpen(true);
   };
+
   const handlePreview = (e: React.MouseEvent) => {
     if (dropdownTriggerRef.current && dropdownTriggerRef.current.contains(e.target as Node)) {
       return;
@@ -61,21 +63,28 @@ export const TaskCard: React.FC<{ task: Task }> = ({ task }) => {
   };
 
   return (
-    <div className="bg-card content- rounded-lg p-3 flex flex-col gap-1 shadow-sm hover:shadow-md transition-shadow relative w-full justify-between hover:ring-2 hover:ring-primary hover:ring-offset-2 cursor-pointer" onClick={handlePreview}>
-      <div className="flex justify-between items-start mb-1 relative z-10"> {/* Higher z-index for dropdown */}
-        <div className="font-semibold text-base truncate pr-8" title={task.title}>{task.title}</div>
+    <div
+      onClick={handlePreview}
+      className="relative w-full cursor-pointer rounded-2xl border border-transparent bg-card p-4 flex flex-col gap-2 shadow-sm transition-all duration-300 ease-in-out hover:scale-[1.01] hover:shadow-lg hover:border-muted/40 group hover:ring-2 hover:ring-muted/30 hover:ring-offset-2 dark:hover:ring-0 dark:hover:ring-offset-0 dark:hover:ring-transparent"
+      >
+      <div className="absolute inset-0 rounded-2xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 border border-muted/20 dark:border-white/10 group-hover:border-muted-foreground/40 dark:group-hover:border-white/20" />
+
+      <div className="flex justify-between items-start mb-1 relative z-10">
+        <div className="font-semibold text-base truncate pr-8" title={task.title}>
+          {task.title}
+        </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
               ref={dropdownTriggerRef}
               className="p-1 rounded hover:bg-accent focus:outline-none"
               disabled={deleting}
-              onClick={(e) => e.stopPropagation()} // Stop click from reaching handlePreview
+              onClick={(e) => e.stopPropagation()}
             >
               <MoreHorizontal className="h-5 w-5 text-muted-foreground" />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}> {/* Also stop propagation for dropdown items to be safe */}
+          <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
             <DropdownMenuItem onClick={handlePreview}>View Details</DropdownMenuItem>
             <DropdownMenuItem onClick={handleEdit}>Edit</DropdownMenuItem>
             <DropdownMenuItem onClick={handleDelete} className="text-red-600" disabled={deleting}>
@@ -89,19 +98,24 @@ export const TaskCard: React.FC<{ task: Task }> = ({ task }) => {
         <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
           {task.status && (
             <Badge variant="outline" className="flex items-center gap-1">
-              {statusIcons[task.status]} {task.status.charAt(0).toUpperCase() + task.status.slice(1).replace('_', ' ')}
+              {statusIcons[task.status]}{' '}
+              {task.status.charAt(0).toUpperCase() + task.status.slice(1).replace('_', ' ')}
             </Badge>
           )}
           {task.priority && (
             <Badge variant="outline" className={`flex items-center gap-1 ${priorityColors[task.priority]}`}>
-              {priorityIcons[task.priority]} {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
+              {priorityIcons[task.priority]}{' '}
+              {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
             </Badge>
           )}
         </div>
       </div>
+
       <div className="flex items-center justify-between text-sm mt-auto pt-2 border-t border-dashed border-muted-foreground/20">
         <div className="flex items-center gap-1 text-muted-foreground">
-          <p className="font-medium">{task.task_identifier || `LKP-${task.id.substring(0, 4).toUpperCase()}`}</p>
+          <p className="font-medium">
+            {task.task_identifier || `LKP-${task.id.substring(0, 4).toUpperCase()}`}
+          </p>
         </div>
         <div className="flex items-center gap-2">
           {task.due_date && (
@@ -112,11 +126,15 @@ export const TaskCard: React.FC<{ task: Task }> = ({ task }) => {
           {task.user && (
             <Avatar className="h-6 w-6">
               <AvatarImage src={task.user.avatar_url || undefined} />
-              <AvatarFallback>{task.user.first_name?.charAt(0)}{task.user.last_name?.charAt(0)}</AvatarFallback>
+              <AvatarFallback>
+                {task.user.first_name?.charAt(0)}
+                {task.user.last_name?.charAt(0)}
+              </AvatarFallback>
             </Avatar>
           )}
         </div>
       </div>
+
       <EditTaskModal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} task={task} />
       <PreviewTaskModal isOpen={previewModalOpen} onClose={() => setPreviewModalOpen(false)} task={task} />
     </div>

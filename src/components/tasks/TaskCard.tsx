@@ -1,125 +1,124 @@
-
-import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import React from 'react';
+import { useTasks, Task } from '@/hooks/useTasks';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Calendar, User } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { MoreHorizontal, CheckCircle, Clock, AlertTriangle } from "lucide-react";
+import { EditTaskModal } from './EditTaskModal';
+import { PreviewTaskModal } from './PreviewTaskModal';
 
-interface Task {
-  id: number;
-  title: string;
-  description: string;
-  priority: string;
-  status: string;
-  assignee: string;
-  dueDate: string;
-  relatedTo: string;
-  type: string;
-  completed: boolean;
-  createdDate: string;
-}
+const priorityIcons = {
+  low: '🟢',
+  medium: '🟠',
+  high: '🔴',
+};
 
-interface TaskCardProps {
-  task: Task;
-}
+const priorityColors = {
+  low: 'bg-green-500 text-white',
+  medium: 'bg-orange-500 text-white',
+  high: 'bg-red-500 text-white',
+};
 
-export function TaskCard({ task }: TaskCardProps) {
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "High": return "bg-red-100 text-red-800";
-      case "Medium": return "bg-yellow-100 text-yellow-800";
-      case "Low": return "bg-green-100 text-green-800";
-      default: return "bg-gray-100 text-gray-800";
+const statusIcons = {
+  pending: <Clock className="h-4 w-4 text-yellow-500" />,
+  in_progress: <Clock className="h-4 w-4 text-blue-500" />,
+  completed: <CheckCircle className="h-4 w-4 text-green-500" />,
+  cancelled: <AlertTriangle className="h-4 w-4 text-red-500" />,
+  todo: <Clock className="h-4 w-4 text-gray-400" />,
+  blocked: <AlertTriangle className="h-4 w-4 text-purple-500" />,
+};
+
+export const TaskCard: React.FC<{ task: Task }> = ({ task }) => {
+  const { deleteTask } = useTasks();
+  const [deleting, setDeleting] = React.useState(false);
+  const [editModalOpen, setEditModalOpen] = React.useState(false);
+  const [previewModalOpen, setPreviewModalOpen] = React.useState(false);
+  const dropdownTriggerRef = React.useRef<HTMLButtonElement>(null);
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      await deleteTask(task.id);
+    } finally {
+      setDeleting(false);
     }
   };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Completed": return "bg-green-500";
-      case "In Progress": return "bg-blue-500";
-      case "In Review": return "bg-purple-500";
-      case "Not Started": return "bg-gray-500";
-      default: return "bg-gray-500";
-    }
+  const handleEdit = () => {
+    setEditModalOpen(true);
   };
-
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case "Follow-up": return "bg-blue-100 text-blue-800";
-      case "Demo": return "bg-purple-100 text-purple-800";
-      case "Proposal": return "bg-orange-100 text-orange-800";
-      case "Legal": return "bg-red-100 text-red-800";
-      case "Report": return "bg-green-100 text-green-800";
-      case "Maintenance": return "bg-gray-100 text-gray-800";
-      default: return "bg-gray-100 text-gray-800";
+  const handlePreview = (e: React.MouseEvent) => {
+    if (dropdownTriggerRef.current && dropdownTriggerRef.current.contains(e.target as Node)) {
+      return;
+    }
+    if (!previewModalOpen) {
+      setPreviewModalOpen(true);
     }
   };
 
   return (
-    <div className="flex items-start gap-4 p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors">
-      <Checkbox 
-        checked={task.completed}
-        className="mt-1"
-      />
-      
-      <div className="flex-1 space-y-2">
-        <div className="flex items-start justify-between">
-          <div className="space-y-1">
-            <h4 className={`font-medium ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
-              {task.title}
-            </h4>
-            <p className="text-sm text-muted-foreground">{task.description}</p>
-          </div>
-          
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem>Edit Task</DropdownMenuItem>
-              <DropdownMenuItem>Assign to Someone</DropdownMenuItem>
-              <DropdownMenuItem>Set Reminder</DropdownMenuItem>
-              <DropdownMenuItem>Mark Complete</DropdownMenuItem>
-              <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-        
-        <div className="flex items-center gap-2 flex-wrap">
-          <Badge variant="secondary" className={getPriorityColor(task.priority)}>
-            {task.priority}
-          </Badge>
-          <Badge className={`${getStatusColor(task.status)} text-white`}>
-            {task.status}
-          </Badge>
-          <Badge variant="outline" className={getTypeColor(task.type)}>
-            {task.type}
-          </Badge>
-        </div>
-        
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1">
-              <Calendar className="h-3 w-3" />
-              <span className={new Date(task.dueDate) < new Date() && !task.completed ? 'text-red-600 font-medium' : ''}>
-                Due: {new Date(task.dueDate).toLocaleDateString()}
-              </span>
-            </div>
-            <div className="flex items-center gap-1">
-              <User className="h-3 w-3" />
-              <span>{task.assignee}</span>
-            </div>
-          </div>
-          <span className="text-xs">Related to: {task.relatedTo}</span>
+    <div className="bg-card content- rounded-lg p-3 flex flex-col gap-1 shadow-sm hover:shadow-md transition-shadow relative w-full justify-between hover:ring-2 hover:ring-primary hover:ring-offset-2 cursor-pointer" onClick={handlePreview}>
+      <div className="flex justify-between items-start mb-1 relative z-10"> {/* Higher z-index for dropdown */}
+        <div className="font-semibold text-base truncate pr-8" title={task.title}>{task.title}</div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              ref={dropdownTriggerRef}
+              className="p-1 rounded hover:bg-accent focus:outline-none"
+              disabled={deleting}
+              onClick={(e) => e.stopPropagation()} // Stop click from reaching handlePreview
+            >
+              <MoreHorizontal className="h-5 w-5 text-muted-foreground" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}> {/* Also stop propagation for dropdown items to be safe */}
+            <DropdownMenuItem onClick={handlePreview}>View Details</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleEdit}>Edit</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleDelete} className="text-red-600" disabled={deleting}>
+              {deleting ? 'Deleting...' : 'Delete'}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      <div className="flex flex-col gap-1 relative z-0">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
+          {task.status && (
+            <Badge variant="outline" className="flex items-center gap-1">
+              {statusIcons[task.status]} {task.status.charAt(0).toUpperCase() + task.status.slice(1).replace('_', ' ')}
+            </Badge>
+          )}
+          {task.priority && (
+            <Badge variant="outline" className={`flex items-center gap-1 ${priorityColors[task.priority]}`}>
+              {priorityIcons[task.priority]} {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
+            </Badge>
+          )}
         </div>
       </div>
+      <div className="flex items-center justify-between text-sm mt-auto pt-2 border-t border-dashed border-muted-foreground/20">
+        <div className="flex items-center gap-1 text-muted-foreground">
+          <p className="font-medium">{task.task_identifier || `LKP-${task.id.substring(0, 4).toUpperCase()}`}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          {task.due_date && (
+            <span className="text-muted-foreground flex items-center gap-1">
+              {Math.ceil((new Date(task.due_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}d
+            </span>
+          )}
+          {task.user && (
+            <Avatar className="h-6 w-6">
+              <AvatarImage src={task.user.avatar_url || undefined} />
+              <AvatarFallback>{task.user.first_name?.charAt(0)}{task.user.last_name?.charAt(0)}</AvatarFallback>
+            </Avatar>
+          )}
+        </div>
+      </div>
+      <EditTaskModal isOpen={editModalOpen} onClose={() => setEditModalOpen(false)} task={task} />
+      <PreviewTaskModal isOpen={previewModalOpen} onClose={() => setPreviewModalOpen(false)} task={task} />
     </div>
   );
-}
+};

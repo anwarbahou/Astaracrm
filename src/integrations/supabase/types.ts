@@ -82,70 +82,70 @@ export type Database = {
       }
       contacts: {
         Row: {
-          id: string
-          first_name: string
-          last_name: string
+          address: string | null
+          avatar_url: string | null
+          client_id: string | null
+          company: string | null
+          country: string | null
+          created_at: string | null
           email: string | null
+          first_name: string
+          id: string
+          last_contacted_at: string | null
+          last_name: string
+          linkedin_url: string | null
+          notes: string | null
+          owner_id: string | null
           phone: string | null
           role: string | null
-          company: string | null
-          client_id: string | null
-          tags: string[] | null
-          country: string | null
           status: Database["public"]["Enums"]["contact_status"] | null
-          avatar_url: string | null
-          notes: string | null
-          address: string | null
-          linkedin_url: string | null
+          tags: string[] | null
           twitter_url: string | null
-          last_contacted_at: string | null
-          created_at: string | null
           updated_at: string | null
-          owner_id: string | null
         }
         Insert: {
-          id?: string
-          first_name: string
-          last_name: string
+          address?: string | null
+          avatar_url?: string | null
+          client_id?: string | null
+          company?: string | null
+          country?: string | null
+          created_at?: string | null
           email?: string | null
+          first_name: string
+          id?: string
+          last_contacted_at?: string | null
+          last_name: string
+          linkedin_url?: string | null
+          notes?: string | null
+          owner_id?: string | null
           phone?: string | null
           role?: string | null
-          company?: string | null
-          client_id?: string | null
-          tags?: string[] | null
-          country?: string | null
           status?: Database["public"]["Enums"]["contact_status"] | null
-          avatar_url?: string | null
-          notes?: string | null
-          address?: string | null
-          linkedin_url?: string | null
+          tags?: string[] | null
           twitter_url?: string | null
-          last_contacted_at?: string | null
-          created_at?: string | null
           updated_at?: string | null
-          owner_id?: string | null
         }
         Update: {
-          id?: string
-          first_name?: string
-          last_name?: string
+          address?: string | null
+          avatar_url?: string | null
+          client_id?: string | null
+          company?: string | null
+          country?: string | null
+          created_at?: string | null
           email?: string | null
+          first_name?: string
+          id?: string
+          last_contacted_at?: string | null
+          last_name?: string
+          linkedin_url?: string | null
+          notes?: string | null
+          owner_id?: string | null
           phone?: string | null
           role?: string | null
-          company?: string | null
-          client_id?: string | null
-          tags?: string[] | null
-          country?: string | null
           status?: Database["public"]["Enums"]["contact_status"] | null
-          avatar_url?: string | null
-          notes?: string | null
-          address?: string | null
-          linkedin_url?: string | null
+          tags?: string[] | null
           twitter_url?: string | null
-          last_contacted_at?: string | null
-          created_at?: string | null
           updated_at?: string | null
-          owner_id?: string | null
         }
         Relationships: [
           {
@@ -167,7 +167,10 @@ export type Database = {
       deals: {
         Row: {
           actual_close_date: string | null
+          client_email: string | null
           client_id: string | null
+          client_name: string | null
+          client_phone: string | null
           contact_id: string | null
           created_at: string | null
           currency: string | null
@@ -187,7 +190,10 @@ export type Database = {
         }
         Insert: {
           actual_close_date?: string | null
+          client_email?: string | null
           client_id?: string | null
+          client_name?: string | null
+          client_phone?: string | null
           contact_id?: string | null
           created_at?: string | null
           currency?: string | null
@@ -207,7 +213,10 @@ export type Database = {
         }
         Update: {
           actual_close_date?: string | null
+          client_email?: string | null
           client_id?: string | null
+          client_name?: string | null
+          client_phone?: string | null
           contact_id?: string | null
           created_at?: string | null
           currency?: string | null
@@ -236,6 +245,135 @@ export type Database = {
           {
             foreignKeyName: "deals_owner_id_fkey"
             columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          created_at: string | null
+          data: Json | null
+          description: string
+          entity_id: string
+          entity_type: string
+          id: string
+          is_read: boolean | null
+          priority: string | null
+          target_user_id: string
+          title: string
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          data?: Json | null
+          description: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          is_read?: boolean | null
+          priority?: string | null
+          target_user_id: string
+          title: string
+          type: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          data?: Json | null
+          description?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          is_read?: boolean | null
+          priority?: string | null
+          target_user_id?: string
+          title?: string
+          type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_target_user_id_fkey"
+            columns: ["target_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tasks: {
+        Row: {
+          assigned_to: string | null
+          completed_at: string | null
+          created_at: string | null
+          description: string | null
+          due_date: string | null
+          id: string
+          owner: string | null
+          priority: string | null
+          related_entity: string | null
+          related_entity_id: string | null
+          status: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          owner?: string | null
+          priority?: string | null
+          related_entity?: string | null
+          related_entity_id?: string | null
+          status?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          owner?: string | null
+          priority?: string | null
+          related_entity?: string | null
+          related_entity_id?: string | null
+          status?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_owner_fkey"
+            columns: ["owner"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
@@ -298,18 +436,6 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      activity_type:
-        | "deal_created"
-        | "deal_updated"
-        | "contact_created"
-        | "contact_updated"
-        | "client_created"
-        | "client_updated"
-        | "task_created"
-        | "task_completed"
-        | "email_sent"
-        | "note_created"
-        | "meeting_scheduled"
       client_stage: "lead" | "prospect" | "active" | "inactive"
       contact_status: "active" | "inactive"
       deal_priority: "low" | "medium" | "high"
@@ -320,11 +446,6 @@ export type Database = {
         | "negotiation"
         | "won"
         | "lost"
-      email_type: "received" | "sent" | "draft"
-      note_type: "general" | "meeting" | "task" | "idea"
-      note_visibility: "public" | "private" | "team"
-      task_priority: "low" | "medium" | "high"
-      task_status: "pending" | "in_progress" | "completed" | "cancelled"
       user_role: "admin" | "manager" | "user"
       user_status: "active" | "inactive"
     }
@@ -442,19 +563,6 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      activity_type: [
-        "deal_created",
-        "deal_updated",
-        "contact_created",
-        "contact_updated",
-        "client_created",
-        "client_updated",
-        "task_created",
-        "task_completed",
-        "email_sent",
-        "note_created",
-        "meeting_scheduled",
-      ],
       client_stage: ["lead", "prospect", "active", "inactive"],
       contact_status: ["active", "inactive"],
       deal_priority: ["low", "medium", "high"],
@@ -466,11 +574,6 @@ export const Constants = {
         "won",
         "lost",
       ],
-      email_type: ["received", "sent", "draft"],
-      note_type: ["general", "meeting", "task", "idea"],
-      note_visibility: ["public", "private", "team"],
-      task_priority: ["low", "medium", "high"],
-      task_status: ["pending", "in_progress", "completed", "cancelled"],
       user_role: ["admin", "manager", "user"],
       user_status: ["active", "inactive"],
     },

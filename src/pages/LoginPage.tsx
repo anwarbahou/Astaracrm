@@ -70,20 +70,6 @@ export default function LoginPage() {
         <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black"></div>
       )}
 
-      {/* Back to Home Link */}
-      <AnimatedSection variant="slideDown" delay={100} threshold={0}>
-        <Link
-          to="/"
-          className="absolute top-6 left-6 text-white/80 hover:text-white transition-colors duration-200 flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-white/50 rounded-md p-2 z-20"
-          aria-label="Back to home"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          Back to Home
-        </Link>
-      </AnimatedSection>
-
       {/* Login Form */}
       <AnimatedSection 
         variant="scaleIn" 

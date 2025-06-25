@@ -1,0 +1,1 @@
+ALTER TABLE tasks RENAME COLUMN related_entity_type TO related_entity; 

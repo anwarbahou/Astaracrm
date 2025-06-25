@@ -1,0 +1,9 @@
+CREATE SEQUENCE task_identifier_seq
+    START WITH 00000
+    INCREMENT BY 1
+    MINVALUE 00000
+    MAXVALUE 99999
+    CYCLE;
+
+ALTER TABLE public.tasks
+ADD COLUMN task_identifier VARCHAR(9) UNIQUE; 

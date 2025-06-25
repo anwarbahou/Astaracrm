@@ -81,6 +81,7 @@ export interface UserOption {
   name: string;
   email: string;
   role: string;
+  avatar_url: string | null;
 }
 
 export function useUsersForSelection() {
@@ -94,7 +95,7 @@ export function useUsersForSelection() {
 
       let query = supabase
         .from('users')
-        .select('id, email, first_name, last_name, role')
+        .select('id, email, first_name, last_name, role, avatar_url')
         .eq('status', 'active')
         .order('first_name', { ascending: true });
 
@@ -114,7 +115,8 @@ export function useUsersForSelection() {
         id: user.id,
         name: user.first_name ? `${user.first_name} ${user.last_name || ''}`.trim() : user.email,
         email: user.email,
-        role: user.role || 'user'
+        role: user.role || 'user',
+        avatar_url: user.avatar_url
       })) || [];
     },
     enabled: !!user, // Only fetch when user is authenticated

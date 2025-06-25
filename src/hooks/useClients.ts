@@ -11,21 +11,19 @@ const convertSupabaseClient = (client: SupabaseClient & { owner: any }): Client 
     name: client.name || '',
     email: client.email || '',
     industry: client.industry || '',
-    stage: client.stage || 'lead',
+    stage: (client.stage === 'lead' || client.stage === 'prospect' || client.stage === 'active' || client.stage === 'inactive') ? client.stage : 'lead',
     tags: client.tags || [],
     country: client.country || '',
     contactsCount: client.contacts_count || 0,
     totalDealValue: Number(client.total_deal_value) || 0,
-    status: client.status || 'active',
+    status: client.status === 'active' ? 'Active' : 'Archived',
     owner: client.owner ? `${client.owner.first_name} ${client.owner.last_name}` : '',
-    ownerId: client.owner_id || '',
     createdDate: client.created_at || new Date().toISOString(),
     lastInteraction: client.updated_at || new Date().toISOString(),
     notes: client.notes || '',
-    website: client.website || '',
-    address: client.address || '',
     phone: client.phone || '',
-    avatarUrl: client.avatar_url || '',
+    // Removed website and address as they are not in Client type
+    // avatarUrl: client.avatar_url || '',
 });
 
 export const useClients = () => {
@@ -74,7 +72,6 @@ export const useClients = () => {
             })) || [];
         },
         staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
-        cacheTime: 1000 * 60 * 30, // Keep unused data in cache for 30 minutes
         retry: 3, // Retry failed requests 3 times
         refetchOnWindowFocus: true, // Refetch when window regains focus
         refetchOnReconnect: true, // Refetch when internet reconnects
@@ -101,13 +98,11 @@ export const useClients = () => {
                     name: updatedClient.name,
                     email: updatedClient.email,
                     industry: updatedClient.industry,
-                    stage: updatedClient.stage,
+                    stage: updatedClient.stage as 'lead' | 'prospect' | 'active' | 'inactive',
                     tags: updatedClient.tags,
                     country: updatedClient.country,
-                    status: updatedClient.status,
+                    status: updatedClient.status === 'Active' ? 'active' : 'inactive',
                     notes: updatedClient.notes,
-                    website: updatedClient.website,
-                    address: updatedClient.address,
                     phone: updatedClient.phone,
                     updated_at: new Date().toISOString(),
                 })
@@ -151,6 +146,7 @@ export interface ClientOption {
   id: string;
   name: string;
   email?: string;
+  owner_id?: string;
 }
 
 export function useClientsForSelection() {
@@ -159,7 +155,7 @@ export function useClientsForSelection() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('clients')
-        .select('id, name, email')
+        .select('id, name, email, owner_id')
         .eq('status', 'active')
         .order('name', { ascending: true });
 
@@ -171,7 +167,8 @@ export function useClientsForSelection() {
       return data?.map((client): ClientOption => ({
         id: client.id,
         name: client.name,
-        email: client.email || undefined
+        email: client.email || undefined,
+        owner_id: client.owner_id
       })) || [];
     },
   });

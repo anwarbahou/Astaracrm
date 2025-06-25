@@ -1,4 +1,3 @@
-
 -- Sample data for development and testing
 -- Insert sample users (these will need to be created through Supabase Auth)
 INSERT INTO users (id, email, first_name, last_name, role) VALUES
@@ -29,10 +28,16 @@ INSERT INTO deals (name, value, currency, stage, probability, expected_close_dat
 ON CONFLICT DO NOTHING;
 
 -- Insert sample tasks
-INSERT INTO tasks (title, description, due_date, priority, status, assigned_to_id, owner_id) VALUES
-('Follow up with Acme Corp', 'Schedule meeting to discuss contract terms', NOW() + INTERVAL '2 hours', 'high', 'pending', '22222222-2222-2222-2222-222222222222', '22222222-2222-2222-2222-222222222222'),
-('Prepare proposal for Tech Solutions', 'Create detailed proposal document', NOW() + INTERVAL '1 day', 'medium', 'in_progress', '22222222-2222-2222-2222-222222222222', '22222222-2222-2222-2222-222222222222'),
-('Send contract to Global Industries', 'Finalize and send contract for review', NOW() + INTERVAL '3 days', 'high', 'pending', '33333333-3333-3333-3333-333333333333', '22222222-2222-2222-2222-222222222222')
+INSERT INTO public.tasks (title, description, due_date, priority, status, assigned_to, owner)
+VALUES
+('Plan Q4 Marketing Campaign', 'Outline strategies and budget for next quarter.', NOW() + INTERVAL '10 days', 'high', 'todo', '22222222-2222-2222-2222-222222222222', '22222222-2222-2222-2222-222222222222'),
+('Review Client Feedback', 'Go through recent feedback and compile action points.', NOW() + INTERVAL '2 days', 'medium', 'in_progress', '22222222-2222-2222-2222-222222222222', '22222222-2222-2222-2222-222222222222'),
+('Debug Login Issue', 'Investigate and fix the intermittent login problem reported by users.', NOW() + INTERVAL '5 hours', 'high', 'blocked', '33333333-3333-3333-3333-333333333333', '22222222-2222-2222-2222-222222222222'),
+('Update User Documentation', 'Add new features and common FAQs to the help docs.', NOW() + INTERVAL '7 days', 'low', 'pending', '33333333-3333-3333-3333-333333333333', '22222222-2222-2222-2222-222222222222'),
+('Prepare Presentation for Stakeholders', 'Create slides and talking points for the quarterly update.', NOW() + INTERVAL '1 day', 'high', 'in_progress', '22222222-2222-2222-2222-222222222222', '22222222-2222-2222-2222-222222222222'),
+('Archive Old Data', 'Move inactive client data to archive storage.', NOW() - INTERVAL '3 days', 'low', 'completed', '22222222-2222-2222-2222-222222222222', '22222222-2222-2222-2222-222222222222'),
+('Address Security Vulnerability', 'Patch critical security flaw identified in recent audit.', NOW() + INTERVAL '1 hour', 'high', 'blocked', '33333333-3333-3333-3333-333333333333', '22222222-2222-2222-2222-222222222222'),
+('Cancel Subscription for Test Account', 'Deactivate the trial subscription for the expired test account.', NOW() - INTERVAL '1 day', 'medium', 'cancelled', '22222222-2222-2222-2222-222222222222', '22222222-2222-2222-2222-222222222222')
 ON CONFLICT DO NOTHING;
 
 -- Insert sample notes

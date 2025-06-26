@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -74,6 +74,49 @@ export default function Settings() {
   const { userProfile, refreshUserProfile } = useAuth();
   const { toast } = useToast();
 
+  // Sync settings with userProfile when it loads/changes
+  useEffect(() => {
+    if (userProfile) {
+      setSettings({
+        // Profile Settings
+        firstName: userProfile.first_name || '',
+        lastName: userProfile.last_name || '',
+        email: userProfile.email || '',
+        phone: userProfile.phone || '',
+        timezone: userProfile.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
+        // Company Settings (keep defaults or fetch from userProfile/company if available)
+        companyName: settings.companyName,
+        companyEmail: settings.companyEmail,
+        companyPhone: settings.companyPhone,
+        companyAddress: settings.companyAddress,
+        companyTimezone: settings.companyTimezone,
+        currency: settings.currency,
+        dateFormat: settings.dateFormat,
+        // Notifications (keep defaults or fetch from userProfile if available)
+        emailNotifications: settings.emailNotifications,
+        pushNotifications: settings.pushNotifications,
+        weeklyReports: settings.weeklyReports,
+        dealAlerts: settings.dealAlerts,
+        taskReminders: settings.taskReminders,
+        // Security (keep defaults or fetch from userProfile if available)
+        twoFactorAuth: settings.twoFactorAuth,
+        sessionTimeout: settings.sessionTimeout,
+        passwordExpiry: settings.passwordExpiry,
+        // Email (keep defaults or fetch from userProfile if available)
+        smtpServer: settings.smtpServer,
+        smtpPort: settings.smtpPort,
+        smtpUsername: settings.smtpUsername,
+        smtpPassword: settings.smtpPassword,
+        // Integrations (keep defaults or fetch from userProfile if available)
+        googleCalendar: settings.googleCalendar,
+        outlookCalendar: settings.outlookCalendar,
+        slackIntegration: settings.slackIntegration,
+        zapierWebhooks: settings.zapierWebhooks,
+      });
+    }
+    // eslint-disable-next-line
+  }, [userProfile]);
+
   const initials = `${userProfile?.first_name?.charAt(0) || ''}${userProfile?.last_name?.charAt(0) || ''}`;
 
   const fileRef = useRef<HTMLInputElement>(null);
@@ -133,7 +176,22 @@ export default function Settings() {
             Configure your CRM system preferences and integrations.
           </p>
         </div>
-        <Button className="gap-2">
+        <Button className="gap-2" onClick={async () => {
+          if (!userProfile) return toast({ title: 'User not loaded', variant: 'destructive' });
+          const { error } = await supabase.from('users').update({
+            first_name: settings.firstName,
+            last_name: settings.lastName,
+            email: settings.email,
+            phone: settings.phone,
+            timezone: settings.timezone
+          }).eq('id', userProfile.id);
+          if (error) {
+            toast({ title: 'Failed to save changes', description: error.message, variant: 'destructive' });
+          } else {
+            toast({ title: 'Settings saved' });
+            refreshUserProfile();
+          }
+        }}>
           <Save size={16} />
           Save All Changes
         </Button>
@@ -174,15 +232,15 @@ export default function Settings() {
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First Name</Label>
-                  <Input id="firstName" value={settings.firstName || userProfile?.first_name || ''} onChange={e => handleSettingChange('firstName', e.target.value)} />
+                  <Input id="firstName" value={settings.firstName} onChange={e => handleSettingChange('firstName', e.target.value)} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lastName">Last Name</Label>
-                  <Input id="lastName" value={settings.lastName || userProfile?.last_name || ''} onChange={e => handleSettingChange('lastName', e.target.value)} />
+                  <Input id="lastName" value={settings.lastName} onChange={e => handleSettingChange('lastName', e.target.value)} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" value={settings.email || userProfile?.email || ''} onChange={e => handleSettingChange('email', e.target.value)} />
+                  <Input id="email" type="email" value={settings.email} onChange={e => handleSettingChange('email', e.target.value)} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">Phone</Label>
@@ -190,7 +248,7 @@ export default function Settings() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="timezone">Timezone</Label>
-                  <Input id="timezone" value={settings.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone} onChange={e => handleSettingChange('timezone', e.target.value)} />
+                  <Input id="timezone" value={settings.timezone} onChange={e => handleSettingChange('timezone', e.target.value)} />
                 </div>
               </div>
             </CardContent>

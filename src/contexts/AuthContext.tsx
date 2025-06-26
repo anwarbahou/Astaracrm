@@ -1,21 +1,19 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session, AuthError } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { Database } from '@/integrations/supabase/types';
-
-type UserRole = Database['public']['Enums']['user_role'];
 
 interface UserProfile {
   id: string;
   email: string;
   first_name: string | null;
   last_name: string | null;
-  role: UserRole | null;
+  role: string | null;
   avatar_url: string | null;
   phone: string | null;
-  status: Database['public']['Enums']['user_status'] | null;
+  status: string | null;
   created_at: string | null;
   updated_at: string | null;
+  timezone?: string | null;
 }
 
 interface AuthContextType {
@@ -28,7 +26,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, name: string) => Promise<{ error: AuthError | null }>;
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<{ error: AuthError | null }>;
-  updateUserRole: (userId: string, role: UserRole) => Promise<{ error: any }>;
+  updateUserRole: (userId: string, role: string) => Promise<{ error: any }>;
   refreshUserProfile: () => Promise<void>;
   forceRefresh: () => Promise<void>;
 }
@@ -247,7 +245,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { error };
   };
 
-  const updateUserRole = async (userId: string, role: UserRole) => {
+  const updateUserRole = async (userId: string, role: string) => {
     try {
       const { error } = await supabase
         .from('users')

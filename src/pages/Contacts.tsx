@@ -2,18 +2,22 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Upload } from "lucide-react";
 import { AddContactModal } from "@/components/modals/AddContactModal";
-import { ContactsTable, Contact } from "@/components/contacts/ContactsTable";
+import { ContactsCardGrid } from "@/components/contacts/ContactsCardGrid";
 import { ContactProfileModal } from "@/components/contacts/ContactProfileModal";
 import { contactsService } from "@/services/contactsService";
 import { useAuth } from "@/contexts/AuthContext";
+import { ImportContactsModal } from "@/components/contacts/ImportContactsModal";
+import { useToast } from "@/hooks/use-toast";
+import { Contact } from "@/components/contacts/ContactsTable";
 
 export default function Contacts() {
   const { t } = useTranslation();
   const { user, userProfile } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [addContactOpen, setAddContactOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [contacts, setContacts] = useState<Contact[]>([]);
@@ -29,6 +33,7 @@ export default function Contacts() {
     lastContactedFrom: '',
     lastContactedTo: '',
   });
+  const { toast } = useToast();
 
   // Load contacts on component mount
   useEffect(() => {
@@ -91,36 +96,27 @@ export default function Contacts() {
     loadContacts();
   };
 
-  // Development helpers for testing admin functionality
-  const handleSeedTestData = async () => {
+  const handleImportContacts = async (newContacts: Omit<Contact, 'id' | 'created_at' | 'updated_at'>[]): Promise<number> => {
+    if (!user?.id || !userProfile?.role) return 0;
     try {
-      await contactsService.seedTestContacts(user?.id);
+      const inserted = await contactsService.importContacts(newContacts, { userId: user.id, userRole: userProfile.role });
       await loadContacts();
-      console.log('✅ Test data seeded successfully');
-    } catch (error) {
-      console.error('Error seeding test data:', error);
+      toast({
+        title: inserted > 0 ? 'Contacts Imported' : 'No New Contacts',
+        description: inserted > 0
+          ? `${inserted} new contacts imported successfully.`
+          : 'All provided emails already exist, nothing was added.',
+      });
+      return inserted;
+    } catch (error: any) {
+      console.error("Error importing contacts:", error);
+      toast({
+        title: 'Import Error',
+        description: error.message || 'Failed to import contacts.',
+        variant: 'destructive',
+      });
+      return 0;
     }
-  };
-
-  const handleClearAllData = async () => {
-    try {
-      await contactsService.clearAllContacts();
-      // Clear any remaining localStorage data
-      localStorage.removeItem('crm_contacts');
-      await loadContacts();
-      console.log('✅ All contacts cleared');
-    } catch (error) {
-      console.error('Error clearing contacts:', error);
-    }
-  };
-
-  const handleShowUserInfo = () => {
-    console.log('=== Current User Info ===');
-    console.log('User ID:', user?.id);
-    console.log('User Email:', user?.email);
-    console.log('User Role:', userProfile?.role);
-    console.log('Is Admin:', userProfile?.role === 'admin');
-    console.log('========================');
   };
 
   if (isLoading) {
@@ -150,23 +146,13 @@ export default function Contacts() {
             </p>
           </div>
           <div className="flex gap-2">
-            {/* Development buttons for testing admin functionality */}
-            {process.env.NODE_ENV === 'development' && (
-              <>
-                <Button variant="outline" size="sm" onClick={handleShowUserInfo}>
-                  Show User Info
-                </Button>
-                <Button variant="outline" size="sm" onClick={handleSeedTestData}>
-                  Seed Test Data
-                </Button>
-                <Button variant="outline" size="sm" onClick={handleClearAllData}>
-                  Clear All
-                </Button>
-              </>
-            )}
             <Button className="gap-2" onClick={() => setAddContactOpen(true)}>
               <Plus size={16} />
               {t('contacts.addContact')}
+            </Button>
+            <Button variant="outline" className="gap-2" onClick={() => setIsImportModalOpen(true)}>
+              <Upload size={16} />
+              {t('contacts.importContacts')}
             </Button>
           </div>
         </div>
@@ -207,14 +193,10 @@ export default function Contacts() {
           </Card>
         </div>
 
-        {/* Contacts Table */}
-        <ContactsTable
+        {/* Contacts Grid */}
+        <ContactsCardGrid
           contacts={contacts}
           onContactClick={handleContactClick}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          filters={filters}
-          onFiltersChange={setFilters}
         />
       </div>
 
@@ -230,6 +212,11 @@ export default function Contacts() {
         open={profileModalOpen}
         onOpenChange={setProfileModalOpen}
         onSave={handleSaveContact}
+      />
+      <ImportContactsModal
+        open={isImportModalOpen}
+        onOpenChange={setIsImportModalOpen}
+        onImport={handleImportContacts}
       />
     </>
   );

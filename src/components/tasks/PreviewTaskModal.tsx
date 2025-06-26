@@ -158,7 +158,7 @@ export const PreviewTaskModal: React.FC<PreviewTaskModalProps> = ({
                 {task.time_spent ? (
                   <p className="text-foreground mt-1">{task.time_spent}</p>
                 ) : (
-                  <p className="text-foreground mt-1">{t('tasks.previewTaskModal.noTimeLogged')}</p>
+                <p className="text-foreground mt-1">{t('tasks.previewTaskModal.noTimeLogged')}</p>
                 )}
               </div>
 

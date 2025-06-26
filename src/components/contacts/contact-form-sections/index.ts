@@ -11,6 +11,7 @@ export type ContactFormData = {
   status: string;
   notes: string;
   tags: string[];
+  visibility: 'Public' | 'Private';
 };
 
 export interface SectionProps {

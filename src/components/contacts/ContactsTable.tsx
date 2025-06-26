@@ -44,6 +44,7 @@ export interface Contact {
   tags: string[];
   country: string;
   status: "Active" | "Inactive";
+  visibility: "Public" | "Private";
   createdDate: string;
   lastContacted: string;
   notes?: string;
@@ -488,6 +489,7 @@ export function ContactsTable({
                   </div>
                 </TableHead>
                 <TableHead>{t('contacts.table.header.status')}</TableHead>
+                <TableHead>{t('contacts.table.header.visibility')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -551,6 +553,13 @@ export function ContactsTable({
                     <Badge className={`${getStatusColor(contact.status)} text-white text-xs`}>
                       {contact.status}
                     </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {contact.visibility === 'Private' ? (
+                      <span className="inline-flex items-center gap-1 text-xs"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 11c1.654 0 3-.895 3-2s-1.346-2-3-2-3 .895-3 2 .346 2 3 2z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 13c-4.971 0-9 2.239-9 5v2h18v-2c0-2.761-4.029-5-9-5z"/></svg>{t('visibility.private','Private')}</span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-xs"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 7.292"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 12a7.5 7.5 0 017.5 7.5H4.5A7.5 7.5 0 0112 12z"/></svg>{t('visibility.public','Public')}</span>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}

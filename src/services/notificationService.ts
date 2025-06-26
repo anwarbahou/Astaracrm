@@ -3,7 +3,10 @@ import { ActivityLog } from '@/types/activity';
 
 export interface NotificationData {
   id: string;
-  type: 'contact_added' | 'client_added' | 'deal_added' | 'contact_updated' | 'client_updated' | 'deal_updated';
+  type:
+    | 'contact_added'  | 'client_added'  | 'deal_added'  | 'task_added'
+    | 'contact_updated'| 'client_updated'| 'deal_updated'| 'task_updated'
+    | 'contact_deleted'| 'client_deleted'| 'deal_deleted'| 'task_deleted';
   title: string;
   description: string;
   user_id: string;

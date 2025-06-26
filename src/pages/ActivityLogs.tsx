@@ -5,7 +5,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Filter, Download, RefreshCw } from "lucide-react";
-import { ActivityLog } from "@/types/activity";
 import { useActivityLogs } from "@/hooks/useActivityLogs";
 import { ActivityStats } from "@/components/activity/ActivityStats";
 import { ActivityTabs } from "@/components/activity/ActivityTabs";

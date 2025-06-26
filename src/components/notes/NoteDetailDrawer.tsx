@@ -9,76 +9,46 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { 
-  Pin, 
-  Calendar, 
-  Paperclip, 
-  Edit, 
-  Trash2, 
-  Download,
-  Eye,
-  EyeOff,
-  Users,
-  FileText,
-  Lightbulb,
-  CheckSquare,
-  MessageSquare
+import {
+  Pin,
+  Edit,
+  Trash2,
 } from "lucide-react";
 import { NoteModal } from "./NoteModal";
 import type { Note } from "@/types/note";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface NoteDetailDrawerProps {
   note: Note | null;
   isOpen: boolean;
   onClose: () => void;
+  onSave: () => void;
+  onDelete: (noteId: string) => void;
+  relatedEntityOptions?: Array<{ id: string; name: string; type: 'client' | 'contact' | 'deal' }>;
 }
 
-export function NoteDetailDrawer({ note, isOpen, onClose }: NoteDetailDrawerProps) {
+export function NoteDetailDrawer({
+  note,
+  isOpen,
+  onClose,
+  onSave,
+  onDelete,
+  relatedEntityOptions
+}: NoteDetailDrawerProps) {
   const { t, i18n } = useTranslation();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   if (!note) return null;
-
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case "meeting":
-        return <MessageSquare className="h-4 w-4" />;
-      case "task":
-        return <CheckSquare className="h-4 w-4" />;
-      case "idea":
-        return <Lightbulb className="h-4 w-4" />;
-      default:
-        return <FileText className="h-4 w-4" />;
-    }
-  };
-
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case "meeting":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200";
-      case "task":
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
-      case "idea":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
-      default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200";
-    }
-  };
-
-  const getVisibilityIcon = (visibility: string) => {
-    switch (visibility) {
-      case "private":
-        return <EyeOff className="h-4 w-4" />;
-      case "team":
-        return <Users className="h-4 w-4" />;
-      default:
-        return <Eye className="h-4 w-4" />;
-    }
-  };
-
-  const getVisibilityText = (visibility: Note["visibility"]) => {
-    return t(`notes.visibility.${visibility}`);
-  };
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString(i18n.language, {
@@ -90,24 +60,9 @@ export function NoteDetailDrawer({ note, isOpen, onClose }: NoteDetailDrawerProp
     });
   };
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return "0 Bytes";
-    const k = 1024;
-    const sizes = ["Bytes", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
-  };
-
-  const handleEdit = (noteData: Partial<Note>) => {
-    // Mock update - in real app, this would call API
-    console.log("Updating note:", noteData);
+  const handleEditSave = () => {
+    onSave();
     setIsEditModalOpen(false);
-  };
-
-  const handleDelete = () => {
-    // Mock delete - in real app, this would call API
-    console.log("Deleting note:", note.id);
-    onClose();
   };
 
   return (
@@ -132,34 +87,38 @@ export function NoteDetailDrawer({ note, isOpen, onClose }: NoteDetailDrawerProp
                 >
                   <Edit className="h-4 w-4" />
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleDelete}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete this
+                        note and remove its data from our servers.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => onDelete(note.id)}>
+                        Continue
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </div>
 
             {/* Metadata */}
             <div className="space-y-3">
-              <div className="flex items-center gap-4">
-                <Badge className={`gap-1 ${getTypeColor(note.type)}`}>
-                  {getTypeIcon(note.type)}
-                  {note.type}
-                </Badge>
-                <Badge variant="outline" className="gap-1">
-                  {getVisibilityIcon(note.visibility)}
-                  {getVisibilityText(note.visibility)}
-                </Badge>
-              </div>
-
-              {note.linkedTo && (
+              {note.relatedEntityId && note.relatedEntityType && (
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">{t('notes.detail.linkedTo')}</span>
+                  <span className="text-sm text-muted-foreground">Related to:</span>
                   <Badge variant="outline">
-                    {note.linkedTo.name}
+                    {relatedEntityOptions?.find(opt => opt.id === note.relatedEntityId)?.name || note.relatedEntityType}
                   </Badge>
                 </div>
               )}
@@ -190,71 +149,25 @@ export function NoteDetailDrawer({ note, isOpen, onClose }: NoteDetailDrawerProp
               </div>
             </div>
 
-            {/* Reminder */}
-            {note.hasReminder && note.reminderDate && (
-              <div className="space-y-3">
-                <h3 className="font-medium flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
-                  {t('notes.detail.reminder')}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {formatDate(note.reminderDate)}
-                </p>
-              </div>
-            )}
-
-            {/* Attachments */}
-            {note.attachments.length > 0 && (
-              <div className="space-y-3">
-                <h3 className="font-medium flex items-center gap-2">
-                  <Paperclip className="h-4 w-4" />
-                  {t('notes.detail.attachments', { count: note.attachments.length })}
-                </h3>
-                <div className="space-y-2">
-                  {note.attachments.map((attachment) => (
-                    <div
-                      key={attachment.id}
-                      className="flex items-center justify-between p-3 border rounded-lg"
-                    >
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium truncate">
-                          {attachment.name}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {formatFileSize(attachment.size)}
-                        </p>
-                      </div>
-                      <Button variant="ghost" size="sm">
-                        <Download className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Metadata */}
-            <div className="space-y-4 pt-4 border-t">
-              <div className="flex items-center gap-3">
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback>{note.createdBy.avatar}</AvatarFallback>
+            {/* Created & Updated Info */}
+            <div className="space-y-3">
+              <h3 className="font-medium">{t('notes.detail.info')}</h3>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Avatar className="h-6 w-6">
+                  <AvatarFallback>{note.owner?.charAt(0) || 'U'}</AvatarFallback>
                 </Avatar>
-                <div>
-                  <p className="text-sm font-medium">{note.createdBy.name}</p>
-                  <p className="text-xs text-muted-foreground">{t('notes.detail.author')}</p>
-                </div>
+                <span>{note.owner || 'Unknown'}</span>
               </div>
-
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p className="text-muted-foreground">{t('notes.detail.created')}</p>
-                  <p>{formatDate(note.createdAt)}</p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground">{t('notes.detail.modified')}</p>
-                  <p>{formatDate(note.updatedAt)}</p>
-                </div>
+              <div className="text-sm text-muted-foreground">
+                <span>{t('notes.detail.createdAt')}: </span>
+                <span>{formatDate(note.createdAt)}</span>
               </div>
+              {note.updatedAt && note.updatedAt !== note.createdAt && (
+                <div className="text-sm text-muted-foreground">
+                  <span>{t('notes.detail.updatedAt')}: </span>
+                  <span>{formatDate(note.updatedAt)}</span>
+                </div>
+              )}
             </div>
           </div>
         </SheetContent>
@@ -263,8 +176,9 @@ export function NoteDetailDrawer({ note, isOpen, onClose }: NoteDetailDrawerProp
       <NoteModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
-        onSave={handleEdit}
+        onSave={handleEditSave}
         note={note}
+        relatedEntityOptions={relatedEntityOptions}
       />
     </>
   );

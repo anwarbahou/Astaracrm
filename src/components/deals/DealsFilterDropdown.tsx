@@ -1,4 +1,3 @@
-
 import { DealFilters } from '@/types/deal';
 import { useState } from 'react';
 import {
@@ -15,9 +14,11 @@ interface DealsFilterDropdownProps {
   filters: DealFilters;
   onFiltersChange: (filters: DealFilters) => void;
   onClearFilters: () => void;
+  availableOwners: string[];
+  allTags: string[];
 }
 
-export function DealsFilterDropdown({ filters, onFiltersChange, onClearFilters }: DealsFilterDropdownProps) {
+export function DealsFilterDropdown({ filters, onFiltersChange, onClearFilters, availableOwners, allTags }: DealsFilterDropdownProps) {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   
@@ -46,7 +47,14 @@ export function DealsFilterDropdown({ filters, onFiltersChange, onClearFilters }
         className="w-auto p-0 border-none bg-transparent" 
         align="end"
       >
-        <DealsFilterPopoverContent filters={filters} onFiltersChange={onFiltersChange} onClose={() => setIsOpen(false)} onClearFilters={onClearFilters} />
+        <DealsFilterPopoverContent 
+          filters={filters} 
+          onFiltersChange={onFiltersChange} 
+          onClose={() => setIsOpen(false)} 
+          onClearFilters={onClearFilters}
+          availableOwners={availableOwners}
+          allTags={allTags}
+        />
       </DropdownMenuContent>
     </DropdownMenu>
   );

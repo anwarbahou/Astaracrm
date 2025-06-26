@@ -1,4 +1,3 @@
-
 import { DealFilters, DealStage } from '@/types/deal';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
@@ -15,20 +14,24 @@ interface DealsFilterPopoverContentProps {
     onFiltersChange: (filters: DealFilters) => void;
     onClose: () => void;
     onClearFilters: () => void;
+    availableOwners: string[];
+    allTags: string[];
 }
 
-const DealsFilterPopoverContent = ({ filters, onFiltersChange, onClose, onClearFilters }: DealsFilterPopoverContentProps) => {
+const DealsFilterPopoverContent = ({ filters, onFiltersChange, onClose, onClearFilters, availableOwners, allTags }: DealsFilterPopoverContentProps) => {
     const { t } = useTranslation();
     const [localFilters, setLocalFilters] = useState<DealFilters>(filters);
     const [showAllStages, setShowAllStages] = useState(false);
     const [showAllOwners, setShowAllOwners] = useState(false);
+    const [showAllTags, setShowAllTags] = useState(false);
 
     useEffect(() => {
         setLocalFilters(filters);
     }, [filters]);
 
     const stages: DealStage[] = ['Prospect', 'Lead', 'Qualified', 'Proposal', 'Negotiation', 'Won/Lost'];
-    const owners = ['Sarah Chen', 'Mike Johnson', 'Emma Davis', 'Alex Rivera', 'David Kim', 'Lisa Wang', 'James Liu'];
+    const owners = availableOwners;
+    const tags = allTags;
 
     const handleApplyFilters = () => {
         onFiltersChange(localFilters);
@@ -55,6 +58,7 @@ const DealsFilterPopoverContent = ({ filters, onFiltersChange, onClose, onClearF
 
     const displayedStages = showAllStages ? stages : stages.slice(0, 3);
     const displayedOwners = showAllOwners ? owners : owners.slice(0, 3);
+    const displayedTags = showAllTags ? tags : tags.slice(0, 3);
 
     return (
         <Card className="w-[380px] bg-card border-border text-card-foreground shadow-lg">
@@ -170,6 +174,34 @@ const DealsFilterPopoverContent = ({ filters, onFiltersChange, onClose, onClearF
                         className="bg-input border-input text-foreground"
                         />
                     </div>
+                </FilterSection>
+
+                <FilterSection title={t('deals.filtersDropdown.tagsLabel', 'Tags')}>
+                    {displayedTags.map((tag) => (
+                        <div key={tag} className="flex items-center space-x-2">
+                            <Checkbox
+                                id={`tag-${tag}`}
+                                checked={localFilters.tags.includes(tag)}
+                                onCheckedChange={(checked) => {
+                                    const newTags = checked 
+                                      ? [...localFilters.tags, tag]
+                                      : localFilters.tags.filter(t => t !== tag);
+                                    setLocalFilters({ ...localFilters, tags: newTags });
+                                }}
+                                className="border-input data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                            />
+                            <Label htmlFor={`tag-${tag}`} className="text-sm text-foreground cursor-pointer">{tag}</Label>
+                        </div>
+                    ))}
+                    {tags.length > 3 && (
+                        <Button
+                        variant="link"
+                        className="p-0 h-auto text-xs text-primary hover:text-primary/80"
+                        onClick={(e) => { e.preventDefault(); setShowAllTags(!showAllTags); }}
+                        >
+                        {showAllTags ? t('deals.filtersDropdown.showLess') : t('deals.filtersDropdown.showMore')}
+                        </Button>
+                    )}
                 </FilterSection>
             </CardContent>
             <CardFooter className="flex justify-end gap-2 p-4 border-t border-border">

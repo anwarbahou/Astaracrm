@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
@@ -12,7 +12,6 @@ import {
   NotesSection,
   ContactFormData,
 } from './contact-form-sections';
-import { Button } from '@/components/ui/button';
 
 interface AddContactFormProps {
   onOpenChange: (open: boolean) => void;
@@ -30,9 +29,10 @@ const initialFormData: ContactFormData = {
   status: "",
   notes: "",
   tags: [],
+  visibility: 'Public',
 };
 
-export function AddContactForm({ onOpenChange, onContactAdded }: AddContactFormProps) {
+export const AddContactForm = forwardRef<HTMLFormElement, AddContactFormProps>(({ onOpenChange, onContactAdded }, formRef) => {
   const { t } = useTranslation('addContactModal');
   const { toast } = useToast();
   const { user, userProfile } = useAuth();
@@ -188,26 +188,30 @@ export function AddContactForm({ onOpenChange, onContactAdded }: AddContactFormP
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form ref={formRef as any} onSubmit={handleSubmit} className="space-y-6">
       <BasicInfoSection formData={formData} setFormData={setFormData} />
       <ProfessionalInfoSection formData={formData} setFormData={setFormData} />
       <LocationStatusSection formData={formData} setFormData={setFormData} />
       <TagsSection formData={formData} setFormData={setFormData} />
-      <NotesSection formData={formData} setFormData={setFormData} />
-      
-      <div className="flex gap-3 justify-end pt-4 border-t">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => onOpenChange(false)}
-          disabled={loading}
-        >
-          {t('addContactModal.cancel')}
-        </Button>
-        <Button type="submit" disabled={loading}>
-          {loading ? t('addContactModal.creating') : t('addContactModal.addContact')}
-        </Button>
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-foreground">
+          {t('addContactModal.visibilityLabel', 'Visibility')}
+        </label>
+        <div className="flex gap-4">
+          {['Public', 'Private'].map(option => (
+            <div
+              key={option}
+              onClick={() => setFormData(prev => ({ ...prev, visibility: option as 'Public' | 'Private' }))}
+              className={`flex-1 cursor-pointer rounded-md border p-3 text-center transition-colors ${formData.visibility === option ? 'border-primary bg-primary/10' : 'border-muted hover:bg-accent'}`}
+            >
+              {t(`visibility.${option.toLowerCase()}`, option)}
+            </div>
+          ))}
+        </div>
       </div>
+      <NotesSection formData={formData} setFormData={setFormData} />
     </form>
   );
-}
+});
+
+AddContactForm.displayName = 'AddContactForm';

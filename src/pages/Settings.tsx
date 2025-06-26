@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,15 +22,27 @@ import {
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useAuth } from '@/contexts/AuthContext';
+import { uploadAvatar } from '@/lib/uploadAvatar';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function Settings() {
   const [settings, setSettings] = useState({
+    // Profile Settings (will be populated from userProfile)
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    timezone: "",
+    
     // Company Settings
     companyName: "WOLFHUNT CRM",
     companyEmail: "contact@wolfhunt.com",
     companyPhone: "+1 (555) 123-4567",
     companyAddress: "123 Business Ave, Suite 500, New York, NY 10001",
-    timezone: "America/New_York",
+    companyTimezone: "America/New_York",
     currency: "MAD",
     dateFormat: "MM/DD/YYYY",
     
@@ -58,6 +70,37 @@ export default function Settings() {
     slackIntegration: false,
     zapierWebhooks: true,
   });
+
+  const { userProfile, refreshUserProfile } = useAuth();
+  const { toast } = useToast();
+
+  const initials = `${userProfile?.first_name?.charAt(0) || ''}${userProfile?.last_name?.charAt(0) || ''}`;
+
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const handlePhotoClick = () => fileRef.current?.click();
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !userProfile) return;
+    console.log('[Settings] File selected', file.name, file.size, 'bytes');
+    try {
+      const url = await uploadAvatar(file, userProfile.id);
+      console.log('[Settings] Avatar URL returned', url);
+      const { error } = await supabase.from('users').update({ avatar_url: url }).eq('id', userProfile.id);
+      if (error) {
+        console.error('[Settings] DB update error', error);
+      } else {
+        console.log('[Settings] users.avatar_url updated');
+      }
+      toast({ title: 'Photo updated' });
+      console.log('[Settings] Triggering profile refresh...');
+      refreshUserProfile();
+    } catch (err) {
+      console.error('[Settings] Avatar upload flow failed', err);
+      toast({ title: 'Upload failed', variant: 'destructive' });
+    }
+  };
 
   const handleSettingChange = (key: string, value: any) => {
     setSettings(prev => ({ ...prev, [key]: value }));
@@ -111,55 +154,44 @@ export default function Settings() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <SettingsIcon className="h-5 w-5" />
-                Company Information
+                <User className="h-5 w-5" />
+                Profile Information
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
+              <div className="flex items-center gap-6">
+                <Avatar className="h-20 w-20">
+                  <AvatarImage src={userProfile?.avatar_url || ''} />
+                  <AvatarFallback>{initials || 'UP'}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <Button variant="outline" onClick={handlePhotoClick}>Change Photo</Button>
+                  <input type="file" accept="image/*" ref={fileRef} onChange={handleFileChange} className="hidden" />
+                  <p className="text-xs text-muted-foreground mt-1">PNG or JPG up to 2MB</p>
+                </div>
+              </div>
+
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="companyName">Company Name</Label>
-                  <Input
-                    id="companyName"
-                    value={settings.companyName}
-                    onChange={(e) => handleSettingChange('companyName', e.target.value)}
-                  />
+                  <Label htmlFor="firstName">First Name</Label>
+                  <Input id="firstName" value={settings.firstName || userProfile?.first_name || ''} onChange={e => handleSettingChange('firstName', e.target.value)} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="companyEmail">Company Email</Label>
-                  <Input
-                    id="companyEmail"
-                    type="email"
-                    value={settings.companyEmail}
-                    onChange={(e) => handleSettingChange('companyEmail', e.target.value)}
-                  />
+                  <Label htmlFor="lastName">Last Name</Label>
+                  <Input id="lastName" value={settings.lastName || userProfile?.last_name || ''} onChange={e => handleSettingChange('lastName', e.target.value)} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="companyPhone">Phone Number</Label>
-                  <Input
-                    id="companyPhone"
-                    value={settings.companyPhone}
-                    onChange={(e) => handleSettingChange('companyPhone', e.target.value)}
-                  />
+                  <Label htmlFor="email">Email</Label>
+                  <Input id="email" type="email" value={settings.email || userProfile?.email || ''} onChange={e => handleSettingChange('email', e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Phone</Label>
+                  <Input id="phone" value={settings.phone} onChange={e => handleSettingChange('phone', e.target.value)} placeholder="+1 (555) 123-4567" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="timezone">Timezone</Label>
-                  <Input
-                    id="timezone"
-                    value={settings.timezone}
-                    onChange={(e) => handleSettingChange('timezone', e.target.value)}
-                  />
+                  <Input id="timezone" value={settings.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone} onChange={e => handleSettingChange('timezone', e.target.value)} />
                 </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="companyAddress">Company Address</Label>
-                <Textarea
-                  id="companyAddress"
-                  value={settings.companyAddress}
-                  onChange={(e) => handleSettingChange('companyAddress', e.target.value)}
-                  rows={3}
-                />
               </div>
             </CardContent>
           </Card>

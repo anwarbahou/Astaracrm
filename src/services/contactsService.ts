@@ -1,6 +1,7 @@
 import type { Contact } from '@/components/contacts/ContactsTable';
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
+import { notificationService } from '@/services/notificationService';
 
 // Database types
 type ContactRow = Database['public']['Tables']['contacts']['Row'];
@@ -18,6 +19,7 @@ export interface ContactInput {
   status?: 'Active' | 'Inactive';
   tags?: string[];
   notes?: string;
+  owner?: string;
 }
 
 export interface ContactsServiceOptions {
@@ -41,12 +43,13 @@ const dbContactToContact = (dbContact: ContactRow & { owner?: any }): Contact =>
     createdDate: dbContact.created_at ? new Date(dbContact.created_at).toLocaleDateString() : '',
     lastContacted: dbContact.last_contacted_at ? new Date(dbContact.last_contacted_at).toLocaleDateString() : 'Never',
     notes: dbContact.notes || '',
+    visibility: 'Public',
     owner: dbContact.owner ? `${dbContact.owner.first_name} ${dbContact.owner.last_name}` : undefined,
   };
 };
 
 // Convert UI contact input to database format
-const contactInputToDbInsert = (input: ContactInput, ownerId: string): ContactInsert => {
+const contactInputToDbInsert = (input: Omit<ContactInput, 'owner'> & { owner?: string | null }, ownerId: string): ContactInsert => {
   return {
     first_name: input.firstName,
     last_name: input.lastName,
@@ -58,7 +61,7 @@ const contactInputToDbInsert = (input: ContactInput, ownerId: string): ContactIn
     status: input.status === 'Inactive' ? 'inactive' : 'active',
     tags: input.tags || [],
     notes: input.notes || null,
-    owner_id: ownerId,
+    owner_id: input.owner || ownerId,
   };
 };
 
@@ -268,6 +271,15 @@ export const contactsService = {
       }
       
       console.log(`🔗 Supabase: Contact deleted by ${userRole} ${userId}:`, existingContact.first_name, existingContact.last_name);
+
+      // Notify deletion
+      notificationService.createNotifications({
+        type: 'contact_deleted',
+        title: 'Contact Deleted',
+        description: `deleted contact ${existingContact.first_name} ${existingContact.last_name}`,
+        entity_id: existingContact.id,
+        entity_type: 'contact',
+      }, { userId, userRole: (userRole || 'user') as any });
       return true;
     } catch (error) {
       console.error('Error deleting contact in Supabase:', error);
@@ -379,5 +391,42 @@ export const contactsService = {
       console.error('Error seeding test contacts:', error);
       throw error;
     }
-  }
+  },
+
+  async importContacts(
+    contactsToImport: Omit<Contact, 'id' | 'created_at' | 'updated_at'>[],
+    options: ContactsServiceOptions
+  ): Promise<number> {
+    const { userId } = options;
+    try {
+      const dbInserts = contactsToImport.map(contact => contactInputToDbInsert({
+        firstName: contact.firstName,
+        lastName: contact.lastName,
+        email: contact.email,
+        phone: contact.phone,
+        role: contact.role,
+        company: contact.company,
+        country: contact.country,
+        status: contact.status === 'Active' ? 'Active' : 'Inactive',
+        tags: contact.tags || [],
+        notes: contact.notes,
+        owner: contact.owner,
+      }, userId));
+
+      const { error, count } = await supabase
+        .from('contacts')
+        .upsert(dbInserts, { onConflict: 'email', ignoreDuplicates: true, count: 'exact' });
+
+      if (error) {
+        console.error('Error importing contacts to Supabase:', error);
+        throw error;
+      }
+
+      console.log(`🔗 Supabase: Import complete. Inserted ${count ?? 0} new contacts (duplicates ignored).`);
+      return count ?? 0;
+    } catch (error) {
+      console.error('Error importing contacts:', error);
+      throw error;
+    }
+  },
 }; 

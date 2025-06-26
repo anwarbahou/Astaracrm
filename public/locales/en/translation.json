@@ -136,7 +136,8 @@
       "lastInteraction": "Last Interaction",
       "status": "Status",
       "rowsPerPage": "Rows per page:",
-      "of": "{{start}}-{{end}} of {{total}}"
+      "of": "{{start}}-{{end}} of {{total}}",
+      "importClients": "Import Clients"
     },
     "filtersPanel": {
       "title": "Advanced Filters",
@@ -215,7 +216,8 @@
         "noTags": "No tags",
         "noNotesAvailable": "No notes available",
         "noRoleSpecified": "No role specified",
-        "notAvailable": "N/A"
+        "notAvailable": "N/A",
+        "notes" : "notes"
       },
       "deals": {
         "title": "Deals & Opportunities",
@@ -391,7 +393,8 @@
         "tags": "Tags",
         "location": "Location",
         "created": "Created",
-        "status": "Status"
+        "status": "Status",
+        "visibility": "Visibility"
       },
       "pagination": {
         "rowsPerPage": "Rows per page:",
@@ -522,6 +525,11 @@
           "1week": "1 week ago"
         }
       }
+    },
+    "importContacts": "Import Contacts",
+    "import": {
+      "title": "Import Contacts",
+      "description": "Import your contacts data from a JSON file or paste it directly"
     }
   },
 
@@ -548,6 +556,9 @@
       "avgSize": "Avg Deal Size",
       "vsLastMonth": "{{change}} vs last month"
     },
+    "totalDeals": "Total Deals",
+    "totalValue": "Total Value",
+    "wonDeals": "Won Deals",
     "toasts": {
       "moved": {
         "title": "Deal moved",
@@ -817,8 +828,8 @@
     "cancel": "Cancel",
     "save": "Save",
     "addContact": "Add Contact",
-    "contactAdded": "Contact added successfully"
-
+    "contactAdded": "Contact added successfully",
+    "visibilityLabel": "Visibility"
   },
   "aiLeads": {
     "title": "AI Lead Intelligence",
@@ -1100,5 +1111,9 @@
     "inactive": "Inactive",
     "prospect": "Prospect",
     "unknown": "Unknown"
+  },
+  "visibility": {
+    "public": "Public",
+    "private": "Private"
   }
 }

@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Search, Filter } from "lucide-react";
@@ -7,7 +6,9 @@ import { NotesGrid } from "@/components/notes/NotesGrid";
 import { NoteModal } from "@/components/notes/NoteModal";
 import { NoteDetailDrawer } from "@/components/notes/NoteDetailDrawer";
 import { NoteFilters } from "@/components/notes/NoteFilters";
-import { mockNotes } from "@/data/mockNotes";
+import { noteService } from '@/services/noteService';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 import type { Note, NoteFilters as NoteFiltersType } from "@/types/note";
 
 export default function Notes() {
@@ -17,23 +18,54 @@ export default function Notes() {
   const [isDetailDrawerOpen, setIsDetailDrawerOpen] = useState(false);
   const [filters, setFilters] = useState<NoteFiltersType>({
     tags: [],
-    type: "all",
-    visibility: "all",
+    relatedEntityType: "all",
+    isPinned: "all",
     sortBy: "modified"
   });
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { user, userProfile } = useAuth();
+  const { toast } = useToast();
 
-  const filteredNotes = mockNotes.filter(note => {
+  // Fetch notes
+  useEffect(() => {
+    if (user?.id && userProfile?.role) {
+      loadNotes();
+    }
+  }, [user?.id, userProfile?.role]);
+
+  const loadNotes = async () => {
+    if (!user?.id || !userProfile?.role) return;
+    setIsLoading(true);
+    try {
+      const fetchedNotes = await noteService.getNotes({ userId: user.id, userRole: userProfile.role });
+      setNotes(fetchedNotes);
+    } catch (error) {
+      console.error("Error fetching notes:", error);
+      toast({
+        title: "Error",
+        description: "Failed to load notes.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const filteredNotes = notes.filter(note => {
     const matchesSearch = note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          note.content.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesTags = filters.tags.length === 0 || 
                        filters.tags.some(tag => note.tags.includes(tag));
     
-    const matchesType = filters.type === "all" || note.type === filters.type;
+    const matchesEntityType = filters.relatedEntityType === "all" || note.relatedEntityType === filters.relatedEntityType;
     
-    const matchesVisibility = filters.visibility === "all" || note.visibility === filters.visibility;
+    const matchesPinnedStatus = filters.isPinned === "all" || 
+                                (filters.isPinned === "pinned" && note.isPinned) || 
+                                (filters.isPinned === "unpinned" && !note.isPinned);
     
-    return matchesSearch && matchesTags && matchesType && matchesVisibility;
+    return matchesSearch && matchesTags && matchesEntityType && matchesPinnedStatus;
   });
 
   const sortedNotes = [...filteredNotes].sort((a, b) => {
@@ -55,11 +87,51 @@ export default function Notes() {
     setIsDetailDrawerOpen(true);
   };
 
-  const handleCreateNote = (noteData: Partial<Note>) => {
-    // Mock creation - in real app, this would call API
-    console.log("Creating note:", noteData);
+  const handleNoteSave = () => {
+    loadNotes(); // Re-fetch notes after save/create
     setIsCreateModalOpen(false);
+    setSelectedNote(null); // Clear selected note after editing
   };
+
+  const handleNoteDelete = async (noteId: string) => {
+    if (!user?.id || !userProfile?.role) {
+      toast({
+        title: "Authentication Error",
+        description: "User not authenticated. Please log in again.",
+        variant: "destructive",
+      });
+      return;
+    }
+    try {
+      await noteService.deleteNote(noteId, { userId: user.id, userRole: userProfile.role });
+      toast({
+        title: "Note Deleted",
+        description: "Note deleted successfully.",
+      });
+      loadNotes(); // Re-fetch notes after deletion
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete note.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Mock related entity options for now. In a real app, these would be fetched.
+  const relatedEntityOptions = [
+    { id: "a1b2c3d4-e5f6-7890-1234-567890abcdef", name: "Client A", type: "client" as const },
+    { id: "f0e9d8c7-b6a5-4321-fedc-ba9876543210", name: "Contact B", type: "contact" as const },
+    { id: "1a2b3c4d-5e6f-7890-abcd-ef0123456789", name: "Deal C", type: "deal" as const },
+  ];
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <p className="text-lg text-muted-foreground">Loading notes...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -107,6 +179,7 @@ export default function Notes() {
         <NotesGrid 
           notes={sortedNotes} 
           onNoteClick={handleNoteClick}
+          onDeleteNote={handleNoteDelete}
         />
       </div>
 
@@ -114,13 +187,17 @@ export default function Notes() {
       <NoteModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-        onSave={handleCreateNote}
+        onSave={handleNoteSave}
+        relatedEntityOptions={relatedEntityOptions}
       />
 
       <NoteDetailDrawer
         note={selectedNote}
         isOpen={isDetailDrawerOpen}
         onClose={() => setIsDetailDrawerOpen(false)}
+        onSave={handleNoteSave}
+        onDelete={handleNoteDelete}
+        relatedEntityOptions={relatedEntityOptions}
       />
     </div>
   );

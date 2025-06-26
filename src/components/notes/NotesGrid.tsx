@@ -1,4 +1,3 @@
-
 import { NoteCard } from "./NoteCard";
 import type { Note } from "@/types/note";
 import { useTranslation } from "react-i18next";
@@ -6,9 +5,10 @@ import { useTranslation } from "react-i18next";
 interface NotesGridProps {
   notes: Note[];
   onNoteClick: (note: Note) => void;
+  onDeleteNote: (noteId: string) => void;
 }
 
-export function NotesGrid({ notes, onNoteClick }: NotesGridProps) {
+export function NotesGrid({ notes, onNoteClick, onDeleteNote }: NotesGridProps) {
   const { t } = useTranslation();
 
   if (notes.length === 0) {
@@ -39,6 +39,7 @@ export function NotesGrid({ notes, onNoteClick }: NotesGridProps) {
                 key={note.id} 
                 note={note} 
                 onClick={() => onNoteClick(note)} 
+                onDelete={() => onDeleteNote(note.id)}
               />
             ))}
           </div>
@@ -56,6 +57,7 @@ export function NotesGrid({ notes, onNoteClick }: NotesGridProps) {
                 key={note.id} 
                 note={note} 
                 onClick={() => onNoteClick(note)} 
+                onDelete={() => onDeleteNote(note.id)}
               />
             ))}
           </div>

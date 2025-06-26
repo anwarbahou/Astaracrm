@@ -11,18 +11,18 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Deal } from '@/types/deal';
+import { Client } from '@/types/client';
 import { AlertCircle, Upload, FileText, X } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-interface ImportDealsModalProps {
+interface ImportClientsModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onImport: (deals: Omit<Deal, 'id' | 'created_at' | 'updated_at'>[]) => void;
+  onImport: (clients: Omit<Client, 'id' | 'created_at' | 'updated_at'>[]) => void;
 }
 
-export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsModalProps) {
+export function ImportClientsModal({ open, onOpenChange, onImport }: ImportClientsModalProps) {
   const { t } = useTranslation();
   const { toast } = useToast();
   const { userProfile } = useAuth();
@@ -31,9 +31,9 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  console.log('ImportDealsModal - userProfile:', userProfile);
+  console.log('ImportClientsModal - userProfile:', userProfile);
 
-  const validateAndParseDeals = (jsonData: string) => {
+  const validateAndParseClients = (jsonData: string) => {
     try {
       setError(null);
       
@@ -42,11 +42,11 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
         throw new Error('User not authenticated. Please refresh the page and try again.');
       }
       
-      const parsedDeals = JSON.parse(jsonData);
+      const parsedClients = JSON.parse(jsonData);
       
       // Validate the JSON structure
-      if (!Array.isArray(parsedDeals)) {
-        throw new Error('JSON must be an array of deals');
+      if (!Array.isArray(parsedClients)) {
+        throw new Error('JSON must be an array of clients');
       }
 
       // Get current user info for owner assignment
@@ -56,39 +56,37 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
 
       console.log('Using ownerId:', userProfile.id, 'ownerName:', ownerName);
 
-      // Validate each deal has required fields and transform data
-      const requiredFields = ['name', 'value']; // Deal name and value are required
-      const transformedDeals = parsedDeals.map((deal, index) => {
+      // Validate each client has required fields and transform data
+      const requiredFields = ['name']; // Client name is the primary required field
+      const transformedClients = parsedClients.map((client, index) => {
         // Check required fields
         requiredFields.forEach(field => {
-          if (deal[field] === undefined || deal[field] === null) {
-            throw new Error(`Deal at index ${index} is missing required field: ${field}`);
+          if (client[field] === undefined || client[field] === null) {
+            throw new Error(`Client at index ${index} is missing required field: ${field}`);
           }
         });
 
         // Transform and set default values
         return {
-          ...deal,
-          owner_id: userProfile.id, // Use userProfile.id directly for owner
-          actual_close_date: deal.actual_close_date || null,
-          client_email: deal.client_email || null,
-          client_id: deal.client_id || null,
-          client_name: deal.client_name || null,
-          client_phone: deal.client_phone || null,
-          contact_id: deal.contact_id || null,
-          currency: deal.currency || null,
-          description: deal.description || null,
-          expected_close_date: deal.expected_close_date || null,
-          notes: deal.notes || null,
-          priority: deal.priority || 'medium', // Default priority
-          probability: deal.probability || 0, // Default probability
-          source: deal.source || null,
-          stage: deal.stage || 'prospect', // Default stage
-          tags: Array.isArray(deal.tags) ? deal.tags : [],
+          ...client,
+          owner: userProfile.id, // Use userProfile.id directly for owner
+          address: client.address || null,
+          avatar_url: client.avatar_url || null,
+          contacts_count: client.contacts_count || 0,
+          country: client.country || null,
+          email: client.email || null,
+          industry: client.industry || null,
+          notes: client.notes || null,
+          phone: client.phone || null,
+          stage: client.stage || 'lead', // Default stage for clients
+          status: client.status || 'active', // Default status for clients
+          tags: Array.isArray(client.tags) ? client.tags : [],
+          total_deal_value: client.total_deal_value || 0,
+          website: client.website || null,
         };
       });
 
-      return transformedDeals;
+      return transformedClients;
     } catch (err) {
       throw err instanceof Error ? err : new Error('Invalid JSON format');
     }
@@ -96,15 +94,15 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
 
   const handleImport = () => {
     try {
-      const parsedDeals = validateAndParseDeals(jsonInput);
-      onImport(parsedDeals);
+      const parsedClients = validateAndParseClients(jsonInput);
+      onImport(parsedClients);
       onOpenChange(false);
       setJsonInput('');
       setSelectedFile(null);
       
       toast({
         title: 'Success',
-        description: `${parsedDeals.length} deals imported successfully`,
+        description: `${parsedClients.length} clients imported successfully`,
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Invalid JSON format');
@@ -122,7 +120,7 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
     reader.onload = (e) => {
       try {
         const content = e.target?.result as string;
-        validateAndParseDeals(content); // Validate but don't import yet
+        validateAndParseClients(content); // Validate but don't import yet
         setJsonInput(content);
         setError(null);
       } catch (err) {
@@ -166,9 +164,9 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>{t('deals.import.title', 'Import Deals')}</DialogTitle>
+          <DialogTitle>{t('clients.import.title', 'Import Clients')}</DialogTitle>
           <DialogDescription>
-            {t('deals.import.description', 'Import your deals data from a JSON file or paste it directly')}
+            {t('clients.import.description', 'Import your clients data from a JSON file or paste it directly')}
           </DialogDescription>
         </DialogHeader>
 
@@ -229,14 +227,17 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
               onChange={(e) => setJsonInput(e.target.value)}
               placeholder={`[
   {
-    "name": "Website Redesign",
-    "value": 15000,
-    "stage": "proposal",
-    "priority": "high",
-    "client_name": "Client Alpha",
-    "expected_close_date": "2024-12-31",
-    "tags": ["SaaS", "New Business"],
-    "description": "Full redesign of client's existing website with new branding and features."
+    "name": "Client Alpha",
+    "email": "alpha@example.com",
+    "phone": "+1-111-222-3333",
+    "industry": "Technology",
+    "country": "USA",
+    "status": "active",
+    "stage": "prospect",
+    "tags": ["Enterprise", "Strategic"],
+    "notes": "Seeking CRM solution for large team.",
+    "website": "https://www.alpha.com",
+    "total_deal_value": 150000
   }
 ]`}
               className="font-mono min-h-[300px]"
@@ -247,14 +248,17 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
               onClick={() => {
                 navigator.clipboard.writeText(`[
   {
-    "name": "Website Redesign",
-    "value": 15000,
-    "stage": "proposal",
-    "priority": "high",
-    "client_name": "Client Alpha",
-    "expected_close_date": "2024-12-31",
-    "tags": ["SaaS", "New Business"],
-    "description": "Full redesign of client's existing website with new branding and features."
+    "name": "Client Alpha",
+    "email": "alpha@example.com",
+    "phone": "+1-111-222-3333",
+    "industry": "Technology",
+    "country": "USA",
+    "status": "active",
+    "stage": "prospect",
+    "tags": ["Enterprise", "Strategic"],
+    "notes": "Seeking CRM solution for large team.",
+    "website": "https://www.alpha.com",
+    "total_deal_value": 150000
   }
 ]`);
                 toast({

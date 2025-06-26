@@ -7,11 +7,11 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import {
   Select,
   SelectContent,
@@ -19,35 +19,38 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { X, Calendar as CalendarIcon, Upload } from "lucide-react";
+import { X } from "lucide-react";
 import type { Note } from "@/types/note";
+import { noteService } from '@/services/noteService';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 interface NoteModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (note: Partial<Note>) => void;
   note?: Note;
+  relatedEntityOptions?: Array<{ id: string; name: string; type: 'client' | 'contact' | 'deal' }>;
 }
 
-export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
+export function NoteModal({ isOpen, onClose, onSave, note, relatedEntityOptions }: NoteModalProps) {
   const { t } = useTranslation();
+  const { user, userProfile } = useAuth();
+  const { toast } = useToast();
+
   const [title, setTitle] = useState(note?.title || "");
   const [content, setContent] = useState(note?.content || "");
-  const [type, setType] = useState(note?.type || "general");
-  const [visibility, setVisibility] = useState(note?.visibility || "private");
   const [tags, setTags] = useState<string[]>(note?.tags || []);
   const [currentTag, setCurrentTag] = useState("");
   const [isPinned, setIsPinned] = useState(note?.isPinned || false);
-  const [hasReminder, setHasReminder] = useState(note?.hasReminder || false);
-  const [reminderDate, setReminderDate] = useState<Date | undefined>(
-    note?.reminderDate ? new Date(note.reminderDate) : undefined
-  );
+  const [relatedEntityType, setRelatedEntityType] = useState<Note["relatedEntityType"]>(note?.relatedEntityType || null);
+  const [relatedEntityId, setRelatedEntityId] = useState<string | null>(note?.relatedEntityId || null);
+
+  const predefinedTags = ["meeting", "idea", "task", "general"];
+
+  function isUUID(str: string) {
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+  }
 
   const handleAddTag = () => {
     if (currentTag.trim() && !tags.includes(currentTag.trim())) {
@@ -60,51 +63,81 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
     setTags(tags.filter(tag => tag !== tagToRemove));
   };
 
-  const handleTypeChange = (value: string) => {
-    setType(value as Note["type"]);
+  const handleRelatedEntityChange = (value: string) => {
+    if (value === "none") {
+      setRelatedEntityType(null);
+      setRelatedEntityId(null);
+    } else {
+      const [type, id] = value.split(":");
+      setRelatedEntityType(type as Note["relatedEntityType"]);
+      setRelatedEntityId(id);
+    }
   };
 
-  const handleVisibilityChange = (value: string) => {
-    setVisibility(value as Note["visibility"]);
-  };
+  const handleSave = async () => {
+    if (!user?.id || !userProfile?.role) {
+      toast({
+        title: "Authentication Error",
+        description: "User not authenticated. Please log in again.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-  const handleSave = () => {
-    const noteData: Partial<Note> = {
+    const noteData = {
       title,
       content,
-      type: type as Note["type"],
-      visibility: visibility as Note["visibility"],
       tags,
-      isPinned,
-      hasReminder,
-      reminderDate: reminderDate?.toISOString(),
+      is_pinned: isPinned,
+      related_entity_type: relatedEntityType,
+      related_entity_id: relatedEntityId,
+      owner_id: user.id,
     };
 
-    onSave(noteData);
-    handleClose();
+    try {
+      if (note?.id) {
+        await noteService.updateNote(note.id, noteData, { userId: user.id, userRole: userProfile.role });
+        toast({
+          title: "Note Updated",
+          description: "Note updated successfully.",
+        });
+      } else {
+        await noteService.createNote(noteData);
+        toast({
+          title: "Note Created",
+          description: "Note created successfully.",
+        });
+      }
+      onSave(noteData);
+      handleClose();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to save note.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleClose = () => {
     setTitle("");
     setContent("");
-    setType("general");
-    setVisibility("private");
     setTags([]);
     setCurrentTag("");
     setIsPinned(false);
-    setHasReminder(false);
-    setReminderDate(undefined);
+    setRelatedEntityType(null);
+    setRelatedEntityId(null);
     onClose();
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>{note ? t('notes.modal.editTitle') : t('notes.modal.createTitle')}</DialogTitle>
-        </DialogHeader>
+    <Sheet open={isOpen} onOpenChange={handleClose}>
+      <SheetContent side="right" className="max-w-2xl w-full sm:max-w-lg overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle>{note ? t('notes.modal.editTitle') : t('notes.modal.createTitle')}</SheetTitle>
+        </SheetHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-6 mt-4">
           {/* Title */}
           <div className="space-y-2">
             <Label htmlFor="title">{t('notes.modal.titleLabel')}</Label>
@@ -114,38 +147,6 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
-          </div>
-
-          {/* Type and Visibility */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>{t('notes.modal.typeLabel')}</Label>
-              <Select value={type} onValueChange={handleTypeChange}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="general">{t('notes.noteType.general')}</SelectItem>
-                  <SelectItem value="meeting">{t('notes.noteType.meeting')}</SelectItem>
-                  <SelectItem value="task">{t('notes.noteType.task')}</SelectItem>
-                  <SelectItem value="idea">{t('notes.noteType.idea')}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>{t('notes.modal.visibilityLabel')}</Label>
-              <Select value={visibility} onValueChange={handleVisibilityChange}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="private">{t('notes.visibility.private')}</SelectItem>
-                  <SelectItem value="team">{t('notes.visibility.team')}</SelectItem>
-                  <SelectItem value="public">{t('notes.visibility.public')}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </div>
 
           {/* Tags */}
@@ -164,13 +165,21 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
               </Button>
             </div>
             <div className="flex flex-wrap gap-2">
-              {tags.map((tag) => (
-                <Badge key={tag} variant="secondary" className="gap-1">
+              {predefinedTags.map((tag) => (
+                <Badge
+                  key={tag}
+                  variant={tags.includes(tag) ? "default" : "secondary"}
+                  className="cursor-pointer"
+                  onClick={() => handleRemoveTag(tag)}
+                >
                   {tag}
-                  <X 
-                    className="h-3 w-3 cursor-pointer" 
-                    onClick={() => handleRemoveTag(tag)}
-                  />
+                  {tags.includes(tag) && <X className="h-3 w-3 ml-1" onClick={() => handleRemoveTag(tag)} />}
+                </Badge>
+              ))}
+              {tags.filter(tag => !predefinedTags.includes(tag)).map((tag) => (
+                <Badge key={tag} variant="default" className="gap-1 cursor-pointer" onClick={() => handleRemoveTag(tag)}>
+                  {tag}
+                  <X className="h-3 w-3" />
                 </Badge>
               ))}
             </div>
@@ -188,58 +197,25 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
             />
           </div>
 
-          {/* Options */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="pinned">{t('notes.modal.pinNote')}</Label>
-              <Switch
-                id="pinned"
-                checked={isPinned}
-                onCheckedChange={setIsPinned}
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <Label htmlFor="reminder">{t('notes.modal.setReminder')}</Label>
-              <Switch
-                id="reminder"
-                checked={hasReminder}
-                onCheckedChange={setHasReminder}
-              />
-            </div>
-
-            {hasReminder && (
-              <div className="space-y-2">
-                <Label>{t('notes.modal.reminderDate')}</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start">
-                      <CalendarIcon className="h-4 w-4 mr-2" />
-                      {reminderDate ? reminderDate.toLocaleDateString() : t('notes.modal.selectDate')}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={reminderDate}
-                      onSelect={setReminderDate}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-            )}
-          </div>
-
-          {/* Attachments */}
+          {/* Related Entity */}
           <div className="space-y-2">
-            <Label>{t('notes.modal.attachmentsLabel')}</Label>
-            <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
-              <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-              <p className="text-sm text-muted-foreground">
-                {t('notes.modal.attachmentsPlaceholder')}
-              </p>
-            </div>
+            <Label>{t('notes.modal.relatedToLabel')}</Label>
+            <Select
+              value={relatedEntityType && relatedEntityId ? `${relatedEntityType}:${relatedEntityId}` : "none"}
+              onValueChange={handleRelatedEntityChange}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a related entity (optional)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">None</SelectItem>
+                {relatedEntityOptions?.map((entity) => (
+                  <SelectItem key={entity.id} value={`${entity.type}:${entity.id}`}>
+                    {entity.name} ({entity.type})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
@@ -248,11 +224,11 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
           <Button variant="outline" onClick={handleClose}>
             {t('common.cancel')}
           </Button>
-          <Button onClick={handleSave} disabled={!title.trim()}>
-            {note ? t('notes.modal.updateButton') : t('notes.modal.createButton')}
+          <Button onClick={handleSave}>
+            {note ? t('common.saveChanges') : t('common.create')}
           </Button>
         </div>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 }

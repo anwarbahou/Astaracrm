@@ -215,7 +215,8 @@
         "noTags": "Aucune étiquette",
         "noNotesAvailable": "Aucune note disponible",
         "noRoleSpecified": "Aucun rôle spécifié",
-        "notAvailable": "Non disponible"
+        "notAvailable": "Non disponible",
+        "notes" : "Notes"
       },
       "deals": {
         "title": "Affaires et opportunités",
@@ -292,7 +293,8 @@
         "tags": "Étiquettes",
         "location": "Lieu",
         "created": "Créé le",
-        "status": "Statut"
+        "status": "Statut",
+        "visibility": "Visibilité"
       },
       "pagination": {
         "rowsPerPage": "Lignes par page :",
@@ -349,6 +351,11 @@
     "statuses": {
       "active": "Actif",
       "inactive": "Inactif"
+    },
+    "importContacts": "Importer des contacts",
+    "import": {
+      "title": "Importer des contacts",
+      "description": "Importez vos données de contacts à partir d'un fichier JSON ou collez-les directement"
     }
   },
   "deals": {
@@ -370,8 +377,11 @@
       "pipelineValue": "Valeur du pipeline",
       "won": "Affaires gagnées",
       "avgSize": "Taille moy. affaire",
-      "vsLastMonth": "{{change}} par rapport au mois dernier"
+      "vsLastMonth": "{{change}} vs mois dernier"
     },
+    "totalDeals": "Nombre total d'affaires",
+    "totalValue": "Valeur totale",
+    "wonDeals": "Affaires remportées",
     "toasts": {
       "moved": {
         "title": "Affaire déplacée",
@@ -741,8 +751,8 @@
       "contactInformation": "Informations du contact",
       "lastContacted": "Dernier contact"
     },
-    "contactAdded": "Contact ajouté avec succès"
-
+    "contactAdded": "Contact ajouté avec succès",
+    "visibilityLabel": "Visibilité"
   },
   "aiLeads": {
     "title": "Intelligence des leads par IA",
@@ -998,5 +1008,9 @@
       "launch": "Lancer la Campagne",
       "saveDraft": "Sauvegarder le Brouillon"
     }
+  },
+  "visibility": {
+    "public": "Public",
+    "private": "Privé"
   }
 }

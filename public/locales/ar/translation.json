@@ -218,7 +218,8 @@
         "noTags": "لا توجد علامات",
         "noNotesAvailable": "لا توجد ملاحظات متاحة",
         "noRoleSpecified": "لم يتم تحديد دور",
-        "notAvailable": "غير متاح"
+        "notAvailable": "غير متاح",
+        "notes" : "الملاحظات"
       },
       "deals": {
         "title": "الصفقات والفرص",
@@ -294,7 +295,8 @@
         "tags": "الوسوم",
         "location": "الموقع",
         "created": "تاريخ الإنشاء",
-        "status": "الحالة"
+        "status": "الحالة",
+        "visibility": "الخصوصية"
       },
       "pagination": {
         "rowsPerPage": "صفوف لكل صفحة:",
@@ -351,6 +353,11 @@
     "statuses": {
       "active": "نشط",
       "inactive": "غير نشط"
+    },
+    "importContacts": "استيراد جهات الاتصال",
+    "import": {
+      "title": "استيراد جهات الاتصال",
+      "description": "قم باستيراد بيانات جهات الاتصال من ملف JSON أو الصقها مباشرةً"
     },
     "profile": {
       "title": "ملف جهة الاتصال",
@@ -445,10 +452,13 @@
     "stats": {
       "active": "الصفقات النشطة",
       "pipelineValue": "قيمة خط الأنابيب",
-      "won": "الصفقات المربوحة",
+      "won": "الصفقات الفائزة",
       "avgSize": "متوسط حجم الصفقة",
-      "vsLastMonth": "{{change}} عن الشهر الماضي"
+      "vsLastMonth": "{{change}} مقارنة بالشهر الماضي"
     },
+    "totalDeals": "إجمالي الصفقات",
+    "totalValue": "إجمالي القيمة",
+    "wonDeals": "الصفقات الفائزة",
     "toasts": {
       "moved": {
         "title": "تم نقل الصفقة",
@@ -1068,9 +1078,11 @@
       "contactInformation": "معلومات جهة الاتصال",
       "lastContacted": "آخر اتصال",
       "activitySummary": "ملخص النشاط",
-      "acivitysummary": "ملخص النشاط"
+      "acivitysummary": "ملخص النشاط",
+      "visibilityLabel": "الخصوصية"
     },
-    "contactAdded": "تم إضافة جهة الاتصال بنجاح"
+    "contactAdded": "تمت إضافة جهة الاتصال بنجاح",
+    "visibilityLabel": "الخصوصية"
   },
   "addDealModal": {
     "title": "إضافة صفقة جديدة",

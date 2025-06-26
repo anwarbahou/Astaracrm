@@ -1,4 +1,3 @@
-
 export interface Deal {
   id: string;
   name: string;
@@ -14,8 +13,8 @@ export interface Deal {
   ownerId?: string;
   tags: string[];
   priority: 'Low' | 'Medium' | 'High';
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
   notes?: string;
   activities?: DealActivity[];
   files?: DealFile[];

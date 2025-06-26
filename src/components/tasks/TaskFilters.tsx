@@ -11,12 +11,24 @@ import {
 } from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 interface TaskFiltersProps {
   selectedOwners: string[];
   onSelectOwner: (ownerId: string) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
+  selectedRelatedEntity: string;
+  setSelectedRelatedEntity: (entity: string) => void;
+  selectedPriority: string;
+  setSelectedPriority: (priority: string) => void;
 }
 
 export function TaskFilters({
@@ -24,6 +36,10 @@ export function TaskFilters({
   onSelectOwner,
   searchQuery,
   setSearchQuery,
+  selectedRelatedEntity,
+  setSelectedRelatedEntity,
+  selectedPriority,
+  setSelectedPriority,
 }: TaskFiltersProps) {
   const { users, isLoading: isLoadingUsers } = useUsersForSelection();
 
@@ -70,6 +86,52 @@ export function TaskFilters({
               </Tooltip>
             ))}
           </TooltipProvider>
+        </div>
+
+        {/* Related Entity Filter */}
+        <div className="relative">
+          {selectedRelatedEntity !== "" && (
+            <Badge variant="secondary" className="absolute -top-2 -right-2 z-10 text-xs px-1 py-0.5">
+              {selectedRelatedEntity.charAt(0).toUpperCase() + selectedRelatedEntity.slice(1)}
+            </Badge>
+          )}
+          <Select
+            value={selectedRelatedEntity}
+            onValueChange={setSelectedRelatedEntity}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by Related To" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Related Entities</SelectItem>
+              <SelectItem value="client">Client</SelectItem>
+              <SelectItem value="contact">Contact</SelectItem>
+              <SelectItem value="deal">Deal</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Priority Filter */}
+        <div className="relative">
+          {selectedPriority !== "" && (
+            <Badge variant="secondary" className="absolute -top-2 -right-2 z-10 text-xs px-1 py-0.5">
+              {selectedPriority.charAt(0).toUpperCase() + selectedPriority.slice(1)}
+            </Badge>
+          )}
+          <Select
+            value={selectedPriority}
+            onValueChange={setSelectedPriority}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Filter by Priority" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Priorities</SelectItem>
+              <SelectItem value="high">High</SelectItem>
+              <SelectItem value="medium">Medium</SelectItem>
+              <SelectItem value="low">Low</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </CardContent>
     </Card>

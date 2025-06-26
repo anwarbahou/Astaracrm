@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { notificationService } from '@/services/notificationService';
 import { Database } from '@/integrations/supabase/types';
 
 type Client = Database['public']['Tables']['clients']['Row'];
@@ -32,6 +33,29 @@ export interface ClientProfile {
   };
   company_name?: string;
   description?: string;
+}
+
+export interface ClientInput {
+  name: string;
+  email?: string | null;
+  phone?: string | null;
+  address?: string | null;
+  country?: string | null;
+  industry?: string | null;
+  website?: string | null;
+  avatar_url?: string | null;
+  notes?: string | null;
+  tags?: string[] | null;
+  stage?: Database["public"]["Enums"]["client_stage"] | null;
+  status?: Database["public"]["Enums"]["user_status"] | null;
+  owner_id?: string | null;
+  contacts_count?: number | null;
+  total_deal_value?: number | null;
+}
+
+export interface UserContext {
+  userId: string;
+  userRole: 'admin' | 'manager' | 'user' | null;
 }
 
 export interface Contact {
@@ -152,9 +176,52 @@ export class ClientService {
       }
 
       console.log('✅ Client updated successfully:', clientId);
+
+      // Push notification
+      const { data: user } = await supabase.auth.getUser();
+      if (user?.user?.id) {
+        notificationService.createNotifications({
+          type: 'client_updated',
+          title: 'Client Updated',
+          description: `updated client ${updates.name || ''}`,
+          entity_id: clientId,
+          entity_type: 'client',
+        }, { userId: user.user.id, userRole: 'user' });
+      }
       return true;
     } catch (error) {
       console.error('Error in updateClient:', error);
+      return false;
+    }
+  }
+
+  // Delete a client by ID
+  static async deleteClient(clientId: string): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('clients')
+        .delete()
+        .eq('id', clientId);
+
+      if (error) {
+        console.error('Error deleting client:', error);
+        return false;
+      }
+
+      const { data: user } = await supabase.auth.getUser();
+      if (user?.user?.id) {
+        notificationService.createNotifications({
+          type: 'client_deleted',
+          title: 'Client Deleted',
+          description: 'deleted a client',
+          entity_id: clientId,
+          entity_type: 'client',
+        }, { userId: user.user.id, userRole: 'user' });
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error in deleteClient:', error);
       return false;
     }
   }
@@ -252,32 +319,92 @@ export class ClientService {
       {
         id: '3',
         client_id: clientId,
-        type: 'note_created',
-        title: 'Product demonstration completed',
-        description: 'Demonstrated key features and answered questions',
+        type: 'note_added',
+        title: 'Meeting notes',
+        description: 'Key takeaways from client meeting',
         user_id: '1',
         user: { first_name: 'You', last_name: '' },
-        created_at: '2024-01-12T15:00:00Z',
+        created_at: '2024-01-10T09:00:00Z',
       },
     ];
   }
 
   // Get client documents (mock data for now)
   static async getClientDocuments(clientId: string): Promise<Document[]> {
-    return [];
+    return [
+      {
+        id: '1',
+        client_id: clientId,
+        name: 'Project Proposal v1.2.pdf',
+        file_path: '/documents/proposal_v1.2.pdf',
+        file_size: 1024 * 500, // 500 KB
+        mime_type: 'application/pdf',
+        uploaded_by: 'John Doe',
+        created_at: '2024-01-15T16:00:00Z',
+      },
+      {
+        id: '2',
+        client_id: clientId,
+        name: 'Contract_ClientA.docx',
+        file_path: '/documents/contract_clientA.docx',
+        file_size: 1024 * 120, // 120 KB
+        mime_type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        uploaded_by: 'Jane Smith',
+        created_at: '2024-01-10T11:00:00Z',
+      },
+    ];
   }
 
   // Calculate total deal value for a client
   static async calculateClientDealValue(clientId: string): Promise<number> {
-    const deals = await this.getClientDeals(clientId);
-    return deals
-      .filter(deal => deal.stage === 'won')
-      .reduce((total, deal) => total + deal.value, 0);
+    const deals = await ClientService.getClientDeals(clientId); // Using mock data
+    return deals.reduce((sum, deal) => sum + deal.value, 0);
   }
 
-  // Get deal count for a client
+  // Get count of deals for a client
   static async getClientDealCount(clientId: string): Promise<number> {
-    const deals = await this.getClientDeals(clientId);
-    return deals.filter(deal => deal.stage !== 'won' && deal.stage !== 'lost').length;
+    const deals = await ClientService.getClientDeals(clientId); // Using mock data
+    return deals.length;
+  }
+
+  static async importClients(
+    clientsToImport: ClientInput[],
+    options: UserContext
+  ): Promise<void> {
+    const { userId } = options;
+    try {
+      const dbInserts = clientsToImport.map(client => ({
+        name: client.name,
+        email: client.email || null,
+        phone: client.phone || null,
+        address: client.address || null,
+        country: client.country || null,
+        industry: client.industry || null,
+        website: client.website || null,
+        avatar_url: client.avatar_url || null,
+        notes: client.notes || null,
+        tags: client.tags || [],
+        stage: client.stage || 'lead',
+        status: client.status || 'active',
+        owner_id: client.owner_id || userId,
+        // contacts_count and total_deal_value are typically calculated by the backend
+        // or initialized to 0 and updated later
+        contacts_count: client.contacts_count || 0, 
+        total_deal_value: client.total_deal_value || 0,
+      }));
+
+      const { error } = await supabase
+        .from('clients')
+        .insert(dbInserts);
+
+      if (error) {
+        console.error('Error importing clients to Supabase:', error);
+        throw error;
+      }
+      console.log(`🔗 Supabase: Successfully imported ${clientsToImport.length} clients.`);
+    } catch (error) {
+      console.error('Error importing clients:', error);
+      throw error;
+    }
   }
 } 

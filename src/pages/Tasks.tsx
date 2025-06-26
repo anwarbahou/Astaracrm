@@ -13,6 +13,8 @@ const Tasks: React.FC = () => {
   const { tasks } = useTasks();
   const [selectedOwners, setSelectedOwners] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedRelatedEntity, setSelectedRelatedEntity] = useState<string>("");
+  const [selectedPriority, setSelectedPriority] = useState<string>("");
 
   console.log("Tasks component - current tasks:", tasks);
 
@@ -31,8 +33,10 @@ const Tasks: React.FC = () => {
                           task.user?.first_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           task.user?.last_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           task.related_entity_name?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesRelatedEntity = selectedRelatedEntity === "" || task.related_entity === selectedRelatedEntity;
+    const matchesPriority = selectedPriority === "" || task.priority === selectedPriority;
 
-    return matchesOwner && matchesSearch;
+    return matchesOwner && matchesSearch && matchesRelatedEntity && matchesPriority;
   });
 
   return (
@@ -51,6 +55,10 @@ const Tasks: React.FC = () => {
           onSelectOwner={handleSelectOwner}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
+          selectedRelatedEntity={selectedRelatedEntity}
+          setSelectedRelatedEntity={setSelectedRelatedEntity}
+          selectedPriority={selectedPriority}
+          setSelectedPriority={setSelectedPriority}
         />
       </div>
 

@@ -1,12 +1,13 @@
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Upload } from "lucide-react";
 
 interface ClientsPageHeaderProps {
     onAddClient: () => void;
+    onImportClients: () => void;
 }
 
-export function ClientsPageHeader({ onAddClient }: ClientsPageHeaderProps) {
+export function ClientsPageHeader({ onAddClient, onImportClients }: ClientsPageHeaderProps) {
     const { t } = useTranslation();
 
     return (
@@ -17,13 +18,23 @@ export function ClientsPageHeader({ onAddClient }: ClientsPageHeaderProps) {
                     {t('app.topNav.pageDescription.clients')}
                 </p>
             </div>
-            <Button 
-                className="gap-2 w-full sm:w-auto text-sm" 
-                onClick={onAddClient}
-            >
-                <Plus size={16} />
-                {t('clients.addClient')}
-            </Button>
+            <div className="flex gap-2 w-full sm:w-auto">
+              <Button 
+                  className="gap-2 w-full sm:w-auto text-sm" 
+                  onClick={onAddClient}
+              >
+                  <Plus size={16} />
+                  {t('clients.addClient')}
+              </Button>
+              <Button 
+                  variant="outline"
+                  className="gap-2 w-full sm:w-auto text-sm" 
+                  onClick={onImportClients}
+              >
+                  <Upload size={16} />
+                  {t('clients.importClients', 'Import Clients')}
+              </Button>
+            </div>
         </div>
     );
 }

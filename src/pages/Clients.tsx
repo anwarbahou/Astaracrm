@@ -4,6 +4,13 @@ import { ClientProfileModal } from "@/components/clients/ClientProfileModal";
 import { useClients } from "@/hooks/useClients";
 import { ClientsPageHeader } from "@/components/clients/ClientsPageHeader";
 import { ClientStats } from "@/components/clients/ClientStats";
+import { ImportClientsModal } from "@/components/clients/ImportClientsModal";
+import { Client } from "@/types/client";
+import type { ClientInput } from "@/services/clientService";
+import { ClientService } from "@/services/clientService";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { useState } from "react";
 
 export default function Clients() {
   const {
@@ -24,10 +31,46 @@ export default function Clients() {
     refreshClients,
   } = useClients();
 
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const { user, userProfile } = useAuth();
+  const { toast } = useToast();
+
+  const handleImportClients = async (newClients: Omit<Client, 'id' | 'created_at' | 'updated_at'>[]) => {
+    if (!user?.id || !userProfile?.role) {
+      toast({
+        title: "Authentication Error",
+        description: "User not authenticated. Please log in again.",
+        variant: "destructive",
+      });
+      return;
+    }
+    try {
+      await ClientService.importClients(newClients as unknown as ClientInput[], {
+        userId: user.id,
+        userRole: userProfile.role,
+      });
+      await refreshClients();
+      toast({
+        title: "Clients Imported",
+        description: `${newClients.length} clients imported successfully.`,
+      });
+    } catch (error: any) {
+      console.error("Error importing clients:", error);
+      toast({
+        title: "Import Error",
+        description: error.message || "Failed to import clients.",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="space-y-6 animate-in">
-        <ClientsPageHeader onAddClient={() => setAddClientOpen(true)} />
+        <ClientsPageHeader 
+          onAddClient={() => setAddClientOpen(true)}
+          onImportClients={() => setIsImportModalOpen(true)}
+        />
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto mb-4"></div>
@@ -41,12 +84,15 @@ export default function Clients() {
   if (error) {
     return (
       <div className="space-y-6 animate-in">
-        <ClientsPageHeader onAddClient={() => setAddClientOpen(true)} />
+        <ClientsPageHeader 
+          onAddClient={() => setAddClientOpen(true)}
+          onImportClients={() => setIsImportModalOpen(true)}
+        />
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <p className="text-destructive mb-4">Error loading clients: {error}</p>
             <button 
-              onClick={refreshClients}
+              onClick={() => refreshClients()}
               className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
             >
               Try Again
@@ -60,7 +106,10 @@ export default function Clients() {
   return (
     <>
       <div className="space-y-6 animate-in">
-        <ClientsPageHeader onAddClient={() => setAddClientOpen(true)} />
+        <ClientsPageHeader 
+          onAddClient={() => setAddClientOpen(true)}
+          onImportClients={() => setIsImportModalOpen(true)}
+        />
 
         <ClientStats clients={clients} />
 
@@ -84,7 +133,14 @@ export default function Clients() {
         clientId={selectedClient?.id || null}
         open={profileModalOpen}
         onOpenChange={setProfileModalOpen}
-        onSave={refreshClients}
+        onSave={() => refreshClients()}
+        onDelete={() => refreshClients()}
+      />
+
+      <ImportClientsModal
+        open={isImportModalOpen}
+        onOpenChange={setIsImportModalOpen}
+        onImport={handleImportClients}
       />
     </>
   );

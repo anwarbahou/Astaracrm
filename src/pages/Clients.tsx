@@ -2,6 +2,7 @@ import { AddClientModal } from "@/components/modals/AddClientModal";
 import { ClientsTable } from "@/components/clients/ClientsTable";
 import { ClientProfileModal } from "@/components/clients/ClientProfileModal";
 import { useClients } from "@/hooks/useClients";
+import { withPageTitle } from '@/components/withPageTitle';
 import { ClientsPageHeader } from "@/components/clients/ClientsPageHeader";
 import { ClientStats } from "@/components/clients/ClientStats";
 import { ImportClientsModal } from "@/components/clients/ImportClientsModal";
@@ -12,7 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
 
-export default function Clients() {
+function Clients() {
   const {
     clients,
     loading,
@@ -145,3 +146,5 @@ export default function Clients() {
     </>
   );
 }
+
+export default withPageTitle(Clients, 'clients');

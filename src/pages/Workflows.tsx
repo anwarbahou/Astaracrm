@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,8 +24,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { withPageTitle } from '@/components/withPageTitle';
 
-export default function Workflows() {
+function Workflows() {
   const [searchQuery, setSearchQuery] = useState("");
 
   // Mock workflows data
@@ -463,3 +463,5 @@ export default function Workflows() {
     </div>
   );
 }
+
+export default withPageTitle(Workflows, 'workflows');

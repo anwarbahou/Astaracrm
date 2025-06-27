@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,6 +26,7 @@ import { LeadProfileModal } from "@/components/leads/LeadProfileModal";
 import { AdvancedFilters } from "@/components/leads/AdvancedFilters";
 import { NewCampaignModal } from "@/components/leads/NewCampaignModal";
 import { ResearchAssistant } from "@/components/leads/ResearchAssistant";
+import { withPageTitle } from '@/components/withPageTitle';
 
 interface Lead {
   id: number;
@@ -63,7 +63,7 @@ interface FilterState {
   dateRange: { start: string; end: string };
 }
 
-export default function AILeads() {
+function AILeads() {
   const { t } = useTranslation();
   
   const [searchQuery, setSearchQuery] = useState("");
@@ -460,3 +460,5 @@ export default function AILeads() {
     </div>
   );
 }
+
+export default withPageTitle(AILeads, 'aiLeads');

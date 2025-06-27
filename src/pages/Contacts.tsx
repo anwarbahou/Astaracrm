@@ -11,8 +11,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { ImportContactsModal } from "@/components/contacts/ImportContactsModal";
 import { useToast } from "@/hooks/use-toast";
 import { Contact } from "@/components/contacts/ContactsTable";
+import { withPageTitle } from '@/components/withPageTitle';
 
-export default function Contacts() {
+export default withPageTitle(function Contacts() {
   const { t } = useTranslation();
   const { user, userProfile } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
@@ -205,4 +206,4 @@ export default function Contacts() {
       />
     </>
   );
-}
+}, 'contacts');

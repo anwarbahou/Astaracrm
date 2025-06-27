@@ -27,8 +27,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { uploadAvatar } from '@/lib/uploadAvatar';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { withPageTitle } from '@/components/withPageTitle';
 
-export default function Settings() {
+function Settings() {
   const [settings, setSettings] = useState({
     // Profile Settings (will be populated from userProfile)
     firstName: "",
@@ -634,3 +635,5 @@ export default function Settings() {
     </div>
   );
 }
+
+export default withPageTitle(Settings, 'settings');

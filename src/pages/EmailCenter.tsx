@@ -1,4 +1,3 @@
-
 import { EmailSidebar } from "@/components/email/EmailSidebar";
 import { EmailList } from "@/components/email/EmailList";
 import { ComposeEmailModal } from "@/components/email/ComposeEmailModal";
@@ -6,72 +5,40 @@ import { EmailDetailModal } from "@/components/email/EmailDetailModal";
 import { useEmailData } from "@/hooks/useEmailData";
 import { getFilteredEmails, getUnreadCounts } from "@/utils/emailUtils";
 import { Email } from "@/types/email";
+import { withPageTitle } from '@/components/withPageTitle';
+import { useState } from "react";
 
-export default function EmailCenter() {
-  const {
-    emails,
-    selectedFolder,
-    setSelectedFolder,
-    selectedEmails,
-    setSelectedEmails,
-    selectedEmail,
-    setSelectedEmail,
-    composeOpen,
-    setComposeOpen,
-    detailOpen,
-    setDetailOpen
-  } = useEmailData();
-
-  const handleEmailSelect = (emailId: number) => {
-    setSelectedEmails(prev => 
-      prev.includes(emailId) 
-        ? prev.filter(id => id !== emailId)
-        : [...prev, emailId]
-    );
-  };
-
-  const handleEmailClick = (email: Email) => {
-    setSelectedEmail(email);
-    setDetailOpen(true);
-    
-    // Mark as read
-    if (!email.read) {
-      email.read = true;
-    }
-  };
-
-  const handleBulkSelect = (emailIds: number[]) => {
-    setSelectedEmails(emailIds);
-  };
+function EmailCenter() {
+  const [selectedFolder, setSelectedFolder] = useState<string>("inbox");
+  const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
+  const [composeOpen, setComposeOpen] = useState(false);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const { emailData } = useEmailData();
+  
+  // Filter emails based on selected folder
+  const filteredEmails = getFilteredEmails(emailData.emails, selectedFolder);
+  const unreadCounts = getUnreadCounts(emailData.emails);
 
   return (
-    <div className="flex h-screen bg-background">
-      {/* Sidebar */}
+    <div className="flex h-[calc(100vh-4rem)] overflow-hidden">
       <EmailSidebar
         selectedFolder={selectedFolder}
         onFolderSelect={setSelectedFolder}
+        unreadCounts={unreadCounts}
         onComposeClick={() => setComposeOpen(true)}
-        unreadCounts={getUnreadCounts(emails)}
       />
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col">
-        <EmailList
-          emails={getFilteredEmails(emails, selectedFolder)}
-          selectedEmails={selectedEmails}
-          onEmailSelect={handleEmailSelect}
-          onEmailClick={handleEmailClick}
-          onBulkSelect={handleBulkSelect}
-          folder={selectedFolder}
-        />
-      </div>
-
-      {/* Modals */}
+      <EmailList
+        emails={filteredEmails}
+        selectedEmail={selectedEmail}
+        onEmailSelect={(email) => {
+          setSelectedEmail(email);
+          setDetailOpen(true);
+        }}
+      />
       <ComposeEmailModal
         open={composeOpen}
         onOpenChange={setComposeOpen}
       />
-
       <EmailDetailModal
         email={selectedEmail}
         open={detailOpen}
@@ -80,3 +47,5 @@ export default function EmailCenter() {
     </div>
   );
 }
+
+export default withPageTitle(EmailCenter, 'email');

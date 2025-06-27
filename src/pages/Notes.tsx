@@ -10,22 +10,26 @@ import { noteService } from '@/services/noteService';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import type { Note, NoteFilters as NoteFiltersType } from "@/types/note";
+import { withPageTitle } from '@/components/withPageTitle';
+import { useTranslation } from 'react-i18next';
 
-export default function Notes() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
-  const [isDetailDrawerOpen, setIsDetailDrawerOpen] = useState(false);
-  const [filters, setFilters] = useState<NoteFiltersType>({
-    tags: [],
-    relatedEntityType: "all",
-    isPinned: "all",
-    sortBy: "modified"
-  });
-  const [notes, setNotes] = useState<Note[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+function Notes() {
+  const { t } = useTranslation();
   const { user, userProfile } = useAuth();
   const { toast } = useToast();
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+  const [detailDrawerOpen, setDetailDrawerOpen] = useState(false);
+  const [noteModalOpen, setNoteModalOpen] = useState(false);
+  const [filters, setFilters] = useState<NoteFiltersType>({
+    search: '',
+    tags: [],
+    dateRange: null,
+    priority: null,
+    status: null
+  });
 
   // Fetch notes
   useEffect(() => {
@@ -36,7 +40,7 @@ export default function Notes() {
 
   const loadNotes = async () => {
     if (!user?.id || !userProfile?.role) return;
-    setIsLoading(true);
+    setLoading(true);
     try {
       const fetchedNotes = await noteService.getNotes({ userId: user.id, userRole: userProfile.role });
       setNotes(fetchedNotes);
@@ -48,24 +52,25 @@ export default function Notes() {
         variant: "destructive",
       });
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   const filteredNotes = notes.filter(note => {
-    const matchesSearch = note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         note.content.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = note.title.toLowerCase().includes(filters.search.toLowerCase()) ||
+                         note.content.toLowerCase().includes(filters.search.toLowerCase());
     
     const matchesTags = filters.tags.length === 0 || 
                        filters.tags.some(tag => note.tags.includes(tag));
     
-    const matchesEntityType = filters.relatedEntityType === "all" || note.relatedEntityType === filters.relatedEntityType;
+    const matchesDateRange = filters.dateRange === null || 
+                            (note.createdAt >= filters.dateRange.start && note.createdAt <= filters.dateRange.end));
     
-    const matchesPinnedStatus = filters.isPinned === "all" || 
-                                (filters.isPinned === "pinned" && note.isPinned) || 
-                                (filters.isPinned === "unpinned" && !note.isPinned);
+    const matchesPriority = filters.priority === null || note.priority === filters.priority;
     
-    return matchesSearch && matchesTags && matchesEntityType && matchesPinnedStatus;
+    const matchesStatus = filters.status === null || note.status === filters.status;
+    
+    return matchesSearch && matchesTags && matchesDateRange && matchesPriority && matchesStatus;
   });
 
   const sortedNotes = [...filteredNotes].sort((a, b) => {
@@ -84,12 +89,12 @@ export default function Notes() {
 
   const handleNoteClick = (note: Note) => {
     setSelectedNote(note);
-    setIsDetailDrawerOpen(true);
+    setDetailDrawerOpen(true);
   };
 
   const handleNoteSave = () => {
     loadNotes(); // Re-fetch notes after save/create
-    setIsCreateModalOpen(false);
+    setNoteModalOpen(false);
     setSelectedNote(null); // Clear selected note after editing
   };
 
@@ -125,7 +130,7 @@ export default function Notes() {
     { id: "1a2b3c4d-5e6f-7890-abcd-ef0123456789", name: "Deal C", type: "deal" as const },
   ];
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-screen">
         <p className="text-lg text-muted-foreground">Loading notes...</p>
@@ -152,8 +157,8 @@ export default function Notes() {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   placeholder="Search notes..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  value={filters.search}
+                  onChange={(e) => setFilters({ ...filters, search: e.target.value })}
                   className="pl-10 w-64"
                 />
               </div>
@@ -163,7 +168,7 @@ export default function Notes() {
               
               {/* Create Note Button */}
               <Button 
-                onClick={() => setIsCreateModalOpen(true)}
+                onClick={() => setNoteModalOpen(true)}
                 className="gap-2 bg-primary hover:bg-primary/90"
               >
                 <Plus size={16} />
@@ -185,16 +190,16 @@ export default function Notes() {
 
       {/* Modals */}
       <NoteModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        isOpen={noteModalOpen}
+        onClose={() => setNoteModalOpen(false)}
         onSave={handleNoteSave}
         relatedEntityOptions={relatedEntityOptions}
       />
 
       <NoteDetailDrawer
         note={selectedNote}
-        isOpen={isDetailDrawerOpen}
-        onClose={() => setIsDetailDrawerOpen(false)}
+        isOpen={detailDrawerOpen}
+        onClose={() => setDetailDrawerOpen(false)}
         onSave={handleNoteSave}
         onDelete={handleNoteDelete}
         relatedEntityOptions={relatedEntityOptions}
@@ -202,3 +207,5 @@ export default function Notes() {
     </div>
   );
 }
+
+export default withPageTitle(Notes, 'notes');

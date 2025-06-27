@@ -11,6 +11,7 @@ export interface Deal {
   source: string;
   owner: string;
   ownerId?: string;
+  ownerAvatar?: string;
   tags: string[];
   priority: 'Low' | 'Medium' | 'High';
   created_at: string;

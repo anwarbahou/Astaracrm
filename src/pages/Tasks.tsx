@@ -6,6 +6,7 @@ import { AddTaskModal } from '@/components/tasks/AddTaskModal';
 import { TaskFilters } from '@/components/tasks/TaskFilters';
 import TasksTable from '@/components/tasks/TasksTable';
 import { useTasks } from '@/hooks/useTasks';
+import { withPageTitle } from '@/components/withPageTitle';
 
 const Tasks: React.FC = () => {
   const { t } = useTranslation();
@@ -74,4 +75,4 @@ const Tasks: React.FC = () => {
   );
 };
 
-export default Tasks;
+export default withPageTitle(Tasks, 'tasks');

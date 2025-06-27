@@ -1,13 +1,15 @@
 import { Deal, DealStage } from '@/types/deal';
-import { useState } from 'react';
-import * as React from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogPortal,
+  DialogOverlay,
+  DialogClose,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,8 +22,29 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, FileText, MessageSquare, Activity, Save, Trash2 } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
+import { useTranslation } from 'react-i18next';
+import {
+  Calendar,
+  FileText,
+  MessageSquare,
+  Activity,
+  Save,
+  Trash2,
+  DollarSign,
+  Users,
+  Tag,
+  Clock,
+  BarChart,
+  Link,
+  AlertCircle,
+  X
+} from 'lucide-react';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { useClientsForSelection } from '@/hooks/useClients';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface DealModalProps {
   deal: Deal | null;
@@ -32,17 +55,48 @@ interface DealModalProps {
 }
 
 export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealModalProps) {
-  const [editedDeal, setEditedDeal] = useState<Deal | null>(deal);
+  // 1. All useState hooks
+  const [editedDeal, setEditedDeal] = useState<Deal>(deal);
+  const [isEditing, setIsEditing] = useState(false);
+  
+  // 2. All context hooks
+  const { t } = useTranslation();
+  const { userProfile } = useAuth();
+  
+  // 3. All other hooks
+  const { clients, isLoading: loadingClients } = useClientsForSelection();
+  
+  // 4. Memoized values
+  const availableClients = useMemo(() => {
+    if (!clients) return [];
+    if (userProfile?.role === 'admin') return clients;
+    return clients.filter(client => client.owner_id === userProfile?.id);
+  }, [clients, userProfile]);
 
-  React.useEffect(() => {
-    setEditedDeal(deal);
+  // 5. Effects
+  useEffect(() => {
+    if (deal) {
+      setEditedDeal(deal);
+    }
   }, [deal]);
 
-  if (!deal || !editedDeal) return null;
-
+  // 6. Callbacks and handlers
   const handleSave = () => {
-    onSave(editedDeal);
-    onOpenChange(false);
+    onSave?.(editedDeal);
+    setIsEditing(false);
+  };
+
+  const updateField = <K extends keyof Deal>(field: K, value: Deal[K]) => {
+    setEditedDeal(prev => ({ ...prev, [field]: value }));
+  };
+
+  const getPriorityColor = (priority: string) => {
+    const colors = {
+      'High': 'bg-red-500',
+      'Medium': 'bg-yellow-500',
+      'Low': 'bg-green-500'
+    };
+    return colors[priority] || 'bg-gray-500';
   };
 
   const handleDelete = () => {
@@ -52,230 +106,409 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
     }
   };
 
-  const updateField = (field: keyof Deal, value: any) => {
-    setEditedDeal(prev => prev ? { ...prev, [field]: value } : null);
+  const getStageColor = (stage: DealStage) => {
+    const stageColors = {
+      'Lead': 'bg-purple-500',
+      'Prospect': 'bg-blue-500',
+      'Qualified': 'bg-green-500',
+      'Proposal': 'bg-yellow-500',
+      'Negotiation': 'bg-orange-500',
+      'Won/Lost': 'bg-gray-500'
+    };
+    return stageColors[stage] || 'bg-gray-500';
+  };
+
+  if (!deal || !editedDeal) return null;
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      setIsEditing(false);
+    }
+    onOpenChange(open);
   };
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-[600px] sm:max-w-[600px] overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle>Deal Details</SheetTitle>
-          <SheetDescription>
-            View and edit deal information
-          </SheetDescription>
-        </SheetHeader>
-
-        <div className="py-6 space-y-6">
-          {/* Deal Header Info */}
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="dealName">Deal Name</Label>
-              <Input
-                id="dealName"
-                value={editedDeal.name}
-                onChange={(e) => updateField('name', e.target.value)}
-                className="mt-1"
-              />
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent 
+        className="max-w-4xl max-h-[90vh] w-full overflow-hidden flex flex-col bg-background"
+        onInteractOutside={(e) => {
+          e.preventDefault();
+          handleOpenChange(false);
+        }}
+        onEscapeKeyDown={() => handleOpenChange(false)}
+      >
+        <DialogClose asChild>
+          <button
+            className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+            onClick={() => handleOpenChange(false)}
+          >
+            <X className="h-4 w-4" />
+            <span className="sr-only">Close</span>
+          </button>
+        </DialogClose>
+        <DialogHeader>
+          <div className="flex items-start justify-between">
+            <div className="space-y-1">
+              <DialogTitle className="text-2xl font-semibold flex items-center gap-2">
+                {isEditing ? (
+                  <Input
+                    value={editedDeal.name}
+                    onChange={(e) => updateField('name', e.target.value)}
+                    className="text-2xl font-semibold h-9"
+                  />
+                ) : (
+                  editedDeal.name
+                )}
+              </DialogTitle>
+              <DialogDescription className="flex items-center gap-3">
+                <Badge variant="secondary" className={`${getStageColor(editedDeal.stage)} text-white`}>
+                  {editedDeal.stage}
+                </Badge>
+                <Badge variant="outline" className={`${getPriorityColor(editedDeal.priority)} text-white`}>
+                  {editedDeal.priority} Priority
+                </Badge>
+                <span className="text-muted-foreground">
+                  Created {new Date(editedDeal.created_at).toLocaleDateString()}
+                </span>
+              </DialogDescription>
             </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="dealValue">Value (MAD)</Label>
-                <Input
-                  id="dealValue"
-                  type="number"
-                  value={editedDeal.value}
-                  onChange={(e) => updateField('value', parseInt(e.target.value) || 0)}
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="probability">Probability (%)</Label>
-                <Input
-                  id="probability"
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={editedDeal.probability}
-                  onChange={(e) => updateField('probability', parseInt(e.target.value) || 0)}
-                  className="mt-1"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="stage">Stage</Label>
-                <Select value={editedDeal.stage} onValueChange={(value) => updateField('stage', value)}>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select stage" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Prospect">Prospect</SelectItem>
-                    <SelectItem value="Lead">Lead</SelectItem>
-                    <SelectItem value="Qualified">Qualified</SelectItem>
-                    <SelectItem value="Proposal">Proposal</SelectItem>
-                    <SelectItem value="Negotiation">Negotiation</SelectItem>
-                    <SelectItem value="Won/Lost">Won/Lost</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="priority">Priority</Label>
-                <Select value={editedDeal.priority} onValueChange={(value) => updateField('priority', value)}>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select priority" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Low">Low</SelectItem>
-                    <SelectItem value="Medium">Medium</SelectItem>
-                    <SelectItem value="High">High</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="closeDate">Expected Close Date</Label>
-                <Input
-                  id="closeDate"
-                  type="date"
-                  value={editedDeal.expectedCloseDate}
-                  onChange={(e) => updateField('expectedCloseDate', e.target.value)}
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="source">Source</Label>
-                <Input
-                  id="source"
-                  value={editedDeal.source}
-                  onChange={(e) => updateField('source', e.target.value)}
-                  className="mt-1"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="client">Client</Label>
-                <Input
-                  id="client"
-                  value={editedDeal.client}
-                  onChange={(e) => updateField('client', e.target.value)}
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="owner">Owner</Label>
-                <Input
-                  id="owner"
-                  value={editedDeal.owner}
-                  onChange={(e) => updateField('owner', e.target.value)}
-                  className="mt-1"
-                />
-              </div>
+            <div className="flex items-center gap-2">
+              {isEditing ? (
+                <>
+                  <Button variant="outline" onClick={() => setIsEditing(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleSave}>
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Changes
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button variant="outline" onClick={() => setIsEditing(true)}>
+                    Edit Deal
+                  </Button>
+                  <Button variant="destructive" onClick={handleDelete}>
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete
+                  </Button>
+                </>
+              )}
             </div>
           </div>
+        </DialogHeader>
 
-          {/* Tabs Section */}
-          <Tabs defaultValue="notes" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="notes" className="flex items-center gap-2">
-                <FileText className="h-4 w-4" />
-                Notes
-              </TabsTrigger>
-              <TabsTrigger value="files" className="flex items-center gap-2">
-                <FileText className="h-4 w-4" />
-                Files
-              </TabsTrigger>
-              <TabsTrigger value="activities" className="flex items-center gap-2">
-                <Activity className="h-4 w-4" />
-                Activities
-              </TabsTrigger>
-              <TabsTrigger value="communication" className="flex items-center gap-2">
-                <MessageSquare className="h-4 w-4" />
-                Communication
-              </TabsTrigger>
-            </TabsList>
+        <Separator className="my-4" />
 
-            <TabsContent value="notes" className="space-y-4">
-              <div>
-                <Label htmlFor="notes">Notes</Label>
-                <Textarea
-                  id="notes"
-                  value={editedDeal.notes || ''}
-                  onChange={(e) => updateField('notes', e.target.value)}
-                  className="mt-1 min-h-[200px]"
-                  placeholder="Add your notes about this deal..."
-                />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="files" className="space-y-4">
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                <FileText className="mx-auto h-12 w-12 text-gray-400" />
-                <h3 className="mt-2 text-sm font-medium text-gray-900">No files</h3>
-                <p className="mt-1 text-sm text-gray-500">Get started by uploading a file.</p>
-                <div className="mt-6">
-                  <Button variant="outline">Upload File</Button>
+        <ScrollArea className="flex-1 px-1">
+          <div className="grid grid-cols-3 gap-6">
+            {/* Left Column - Key Details */}
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <h3 className="font-semibold flex items-center gap-2">
+                  <DollarSign className="w-4 h-4" />
+                  Financial Details
+                </h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Value</span>
+                    {isEditing ? (
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="number"
+                          value={editedDeal.value}
+                          onChange={(e) => updateField('value', Number(e.target.value))}
+                          className="w-32 text-right"
+                        />
+                        <Select
+                          value={editedDeal.currency}
+                          onValueChange={(value) => updateField('currency', value)}
+                        >
+                          <SelectTrigger className="w-20">
+                            <SelectValue placeholder="Currency" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="MAD">MAD</SelectItem>
+                            <SelectItem value="USD">USD</SelectItem>
+                            <SelectItem value="EUR">EUR</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    ) : (
+                      <span className="font-semibold">{editedDeal.value.toLocaleString()} {editedDeal.currency}</span>
+                    )}
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Probability</span>
+                    {isEditing ? (
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="number"
+                          min="0"
+                          max="100"
+                          value={editedDeal.probability}
+                          onChange={(e) => updateField('probability', Number(e.target.value))}
+                          className="w-20 text-right"
+                        />
+                        <span>%</span>
+                      </div>
+                    ) : (
+                      <span className="font-semibold">{editedDeal.probability}%</span>
+                    )}
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Expected Revenue</span>
+                    <span className="font-semibold">{(editedDeal.value * (editedDeal.probability / 100)).toLocaleString()} {editedDeal.currency}</span>
+                  </div>
                 </div>
               </div>
-            </TabsContent>
 
-            <TabsContent value="activities" className="space-y-4">
               <div className="space-y-4">
-                {editedDeal.activities && editedDeal.activities.length > 0 ? (
-                  editedDeal.activities.map((activity) => (
-                    <div key={activity.id} className="border rounded-lg p-4">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h4 className="font-medium">{activity.title}</h4>
-                          <p className="text-sm text-muted-foreground">{activity.description}</p>
-                          <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                            <span>{activity.user}</span>
-                            <span>{new Date(activity.date).toLocaleDateString()}</span>
-                          </div>
-                        </div>
-                        <Badge variant="outline">{activity.type}</Badge>
-                      </div>
+                <h3 className="font-semibold flex items-center gap-2">
+                  <Users className="w-4 h-4" />
+                  People
+                </h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Client</span>
+                    {isEditing ? (
+                      <Select
+                        value={editedDeal.clientId || ''}
+                        onValueChange={(value) => {
+                          const selectedClient = availableClients.find(c => c.id === value);
+                          updateField('clientId', value);
+                          updateField('client', selectedClient?.name || '');
+                        }}
+                      >
+                        <SelectTrigger className="w-48">
+                          <SelectValue placeholder="Select client" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {loadingClients ? (
+                            <SelectItem value="loading" disabled>Loading clients...</SelectItem>
+                          ) : availableClients.length === 0 ? (
+                            <SelectItem value="none" disabled>No clients available</SelectItem>
+                          ) : (
+                            availableClients.map((client) => (
+                              <SelectItem key={client.id} value={client.id}>
+                                {client.name}
+                              </SelectItem>
+                            ))
+                          )}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <span className="font-semibold">{editedDeal.client}</span>
+                    )}
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Owner</span>
+                    <div className="flex items-center gap-2">
+                      <Avatar className="h-6 w-6">
+                        <AvatarImage src={editedDeal.ownerAvatar} />
+                        <AvatarFallback>{editedDeal.owner.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <span className="font-semibold">{editedDeal.owner}</span>
                     </div>
-                  ))
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="font-semibold flex items-center gap-2">
+                  <Tag className="w-4 h-4" />
+                  Tags
+                </h3>
+                {isEditing ? (
+                  <div className="space-y-2">
+                    <div className="flex flex-wrap gap-2">
+                      {editedDeal.tags.map((tag) => (
+                        <Badge 
+                          key={tag} 
+                          variant="secondary"
+                          className="cursor-pointer hover:bg-destructive hover:text-destructive-foreground"
+                          onClick={() => updateField('tags', editedDeal.tags.filter(t => t !== tag))}
+                        >
+                          {tag} ×
+                        </Badge>
+                      ))}
+                    </div>
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Add new tag"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && e.currentTarget.value) {
+                            updateField('tags', [...editedDeal.tags, e.currentTarget.value]);
+                            e.currentTarget.value = '';
+                          }
+                        }}
+                      />
+                    </div>
+                  </div>
                 ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    No activities recorded yet
+                  <div className="flex flex-wrap gap-2">
+                    {editedDeal.tags.map((tag) => (
+                      <Badge key={tag} variant="secondary">
+                        {tag}
+                      </Badge>
+                    ))}
                   </div>
                 )}
               </div>
-            </TabsContent>
+            </div>
 
-            <TabsContent value="communication" className="space-y-4">
-              <div className="text-center py-8 text-muted-foreground">
-                Communication history will be displayed here
-              </div>
-            </TabsContent>
-          </Tabs>
+            {/* Middle Column - Timeline & Activities */}
+            <div className="col-span-2">
+              <Tabs defaultValue="overview" className="w-full">
+                <TabsList className="grid w-full grid-cols-4">
+                  <TabsTrigger value="overview" className="flex items-center gap-2">
+                    <BarChart className="h-4 w-4" />
+                    Overview
+                  </TabsTrigger>
+                  <TabsTrigger value="activities" className="flex items-center gap-2">
+                    <Activity className="h-4 w-4" />
+                    Activities
+                  </TabsTrigger>
+                  <TabsTrigger value="files" className="flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    Files
+                  </TabsTrigger>
+                  <TabsTrigger value="notes" className="flex items-center gap-2">
+                    <MessageSquare className="h-4 w-4" />
+                    Notes
+                  </TabsTrigger>
+                </TabsList>
 
-          {/* Action Buttons */}
-          <div className="flex justify-between pt-6 border-t">
-            <Button variant="destructive" onClick={handleDelete} className="flex items-center gap-2">
-              <Trash2 className="h-4 w-4" />
-              Delete Deal
-            </Button>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={() => onOpenChange(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleSave} className="flex items-center gap-2">
-                <Save className="h-4 w-4" />
-                Save Changes
-              </Button>
+                <TabsContent value="overview" className="space-y-6 mt-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-4">
+                      <h4 className="font-medium flex items-center gap-2">
+                        <Clock className="w-4 h-4" />
+                        Timeline
+                      </h4>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Created</span>
+                          <span>{new Date(editedDeal.created_at).toLocaleDateString()}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Last Updated</span>
+                          <span>{new Date(editedDeal.updated_at).toLocaleDateString()}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Expected Close</span>
+                          <span>{editedDeal.expectedCloseDate}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <h4 className="font-medium flex items-center gap-2">
+                        <Link className="w-4 h-4" />
+                        Source Details
+                      </h4>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Source</span>
+                          <span>{editedDeal.source || 'Not specified'}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <h4 className="font-medium flex items-center gap-2">
+                      <AlertCircle className="w-4 h-4" />
+                      Risk Assessment
+                    </h4>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="p-4 bg-muted rounded-lg">
+                        <div className="text-2xl font-bold">{editedDeal.probability}%</div>
+                        <div className="text-sm text-muted-foreground">Win Probability</div>
+                      </div>
+                      <div className="p-4 bg-muted rounded-lg">
+                        <div className="text-2xl font-bold">{editedDeal.stage}</div>
+                        <div className="text-sm text-muted-foreground">Current Stage</div>
+                      </div>
+                      <div className="p-4 bg-muted rounded-lg">
+                        <div className="text-2xl font-bold">{editedDeal.priority}</div>
+                        <div className="text-sm text-muted-foreground">Priority Level</div>
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="activities" className="mt-6">
+                  <div className="space-y-4">
+                    {editedDeal.activities?.length ? (
+                      editedDeal.activities.map((activity) => (
+                        <div key={activity.id} className="flex items-start gap-4 p-4 bg-muted rounded-lg">
+                          <div className="p-2 bg-background rounded">
+                            <Activity className="w-4 h-4" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="font-medium">{activity.title}</div>
+                            <div className="text-sm text-muted-foreground">{activity.description}</div>
+                            <div className="text-xs text-muted-foreground mt-1">
+                              {activity.user} - {new Date(activity.date).toLocaleString()}
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center text-muted-foreground py-8">
+                        No activities recorded yet
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="files" className="mt-6">
+                  <div className="space-y-4">
+                    {editedDeal.files?.length ? (
+                      editedDeal.files.map((file) => (
+                        <div key={file.id} className="flex items-center gap-4 p-4 bg-muted rounded-lg">
+                          <FileText className="w-4 h-4" />
+                          <div className="flex-1">
+                            <div className="font-medium">{file.name}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {(file.size / 1024).toFixed(2)} KB - Uploaded by {file.uploadedBy}
+                            </div>
+                          </div>
+                          <Button variant="outline" size="sm" asChild>
+                            <a href={file.url} target="_blank" rel="noopener noreferrer">
+                              Download
+                            </a>
+                          </Button>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center text-muted-foreground py-8">
+                        No files attached to this deal
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="notes" className="mt-6">
+                  {isEditing ? (
+                    <Textarea
+                      value={editedDeal.notes || ''}
+                      onChange={(e) => updateField('notes', e.target.value)}
+                      placeholder="Add notes about this deal..."
+                      className="min-h-[200px]"
+                    />
+                  ) : (
+                    <div className="p-4 bg-muted rounded-lg whitespace-pre-wrap">
+                      {editedDeal.notes || 'No notes added yet'}
+                    </div>
+                  )}
+                </TabsContent>
+              </Tabs>
             </div>
           </div>
-        </div>
-      </SheetContent>
-    </Sheet>
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -1,116 +1,70 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Database } from '@/integrations/supabase/types';
 import { useAuth } from '@/contexts/AuthContext';
+import { taskService, type TaskRow, type TaskInput } from '@/services/taskService';
+import { useTranslation } from 'react-i18next';
 
-type DbTask = Database['public']['Tables']['tasks']['Row'];
-
-export interface Task {
-  id: string;
-  created_at: string;
-  title: string;
-  description: string | null;
-  due_date: string | null;
-  priority: 'low' | 'medium' | 'high' | null;
-  status: 'pending' | 'in_progress' | 'completed' | 'cancelled' | 'todo' | 'blocked' | null;
-  assigned_to: string;
-  related_entity: 'client' | 'contact' | 'deal' | 'other' | null;
-  related_entity_id: string | null;
-  task_identifier: string | null;
-  user?: {
-    first_name: string | null;
-    last_name: string | null;
-    avatar_url: string | null;
-  } | null;
-  related_entity_name?: string;
-  time_spent?: string | null;
-}
-
-const fetchTasks = async (): Promise<Task[]> => {
-  const { data, error } = await supabase
-    .from('tasks')
-    .select(`
-      *,
-      user:users!tasks_assigned_to_fkey (
-        first_name,
-        last_name,
-        avatar_url
-      )
-    ,time_spent
-    `)
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    console.error('Error fetching tasks:', error);
-    throw error;
-  }
-
-  const tasksWithRelatedNames = await Promise.all(
-    (data as any[]).map(async (task) => {
-      let related_entity_name: string | undefined = undefined;
-      if (task.related_entity && task.related_entity_id) {
-        let tableName = task.related_entity;
-        if (tableName === 'client') {
-          tableName = 'clients';
-        }
-        // NOTE: This makes N+1 queries. For production, you might want to create a database view or function.
-        try {
-          const { data: entityData, error: entityError } = await supabase
-            .from(tableName)
-            .select('name')
-            .eq('id', task.related_entity_id)
-            .single();
-          
-          if (entityError) {
-            console.error(`Error fetching related ${task.related_entity}:`, entityError.message);
-          } else if (entityData) {
-            related_entity_name = (entityData as any).name;
-          }
-        } catch (e) {
-            console.error(e)
-        }
-      }
-      return { ...task, related_entity_name };
-    })
-  );
-
-  return tasksWithRelatedNames as Task[];
-};
+export type Task = TaskRow;
 
 export function useTasks() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const { user } = useAuth();
+  const { t } = useTranslation();
 
-  const { data: tasks = [], isLoading, error } = useQuery<Task[]>({
+  const {
+    data: tasks = [],
+    isLoading,
+    error,
+    refetch
+  } = useQuery<Task[]>({
     queryKey: ['tasks'],
-    queryFn: fetchTasks,
+    queryFn: () => taskService.getTasks(),
   });
 
   const addTaskMutation = useMutation({
-    mutationFn: async (newTask: Database['public']['Tables']['tasks']['Insert']) => {
+    mutationFn: async (newTask: Omit<TaskInput, 'owner'>) => {
       if (!user) {
-        throw new Error('User not authenticated.');
+        throw new Error('User not authenticated');
       }
-      const { data, error } = await supabase.from('tasks').insert({ ...newTask, owner: user.id }).select().single();
-      if (error) {
-        console.error('Error creating task:', error);
-        throw error;
-      }
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.refetchQueries({ queryKey: ['tasks'] });
-      toast({
-        title: 'Task Added',
-        description: 'The new task has been added successfully.',
+
+      return taskService.addTask({
+        ...newTask,
+        owner: user.id
       });
     },
-    onError: (error: any) => {
+    onSuccess: (task) => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      toast({
+        title: t('tasks.addTaskModal.toast.successTitle'),
+        description: t('tasks.addTaskModal.toast.successDescription', { title: task.title }),
+      });
+    },
+    onError: (error: Error) => {
       console.error('Task creation failed:', error);
       toast({
-        title: 'Error Adding Task',
+        title: t('tasks.addTaskModal.toast.errorTitle'),
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const updateTaskMutation = useMutation({
+    mutationFn: async ({ id, ...updates }: Partial<Task> & { id: string }) => {
+      return taskService.updateTask(id, updates);
+    },
+    onSuccess: (task) => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      toast({
+        title: t('tasks.editTaskModal.toast.successTitle'),
+        description: t('tasks.editTaskModal.toast.successDescription', { title: task.title }),
+      });
+    },
+    onError: (error: Error) => {
+      console.error('Task update failed:', error);
+      toast({
+        title: t('tasks.editTaskModal.toast.errorTitle'),
         description: error.message,
         variant: 'destructive',
       });
@@ -119,58 +73,127 @@ export function useTasks() {
 
   const deleteTaskMutation = useMutation({
     mutationFn: async (taskId: string) => {
-      const { error } = await supabase.from('tasks').delete().eq('id', taskId);
-      if (error) throw error;
-      return taskId;
+      return taskService.deleteTask(taskId);
     },
-    onSuccess: () => {
-      queryClient.refetchQueries({ queryKey: ['tasks'] });
-      toast({
-        title: 'Task Deleted',
-        description: 'The task has been deleted.',
+    onMutate: async (taskId) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['tasks'] });
+
+      // Snapshot the previous value
+      const previousTasks = queryClient.getQueryData<Task[]>(['tasks']);
+
+      // Optimistically update to the new value
+      queryClient.setQueryData<Task[]>(['tasks'], old => {
+        return old?.filter(task => task.id !== taskId) ?? [];
       });
+
+      // Return a context object with the snapshotted value
+      return { previousTasks };
     },
-    onError: (error: any) => {
+    onError: (error: Error, taskId, context) => {
+      // Rollback to the previous value
+      queryClient.setQueryData(['tasks'], context?.previousTasks);
+
+      let errorMessage = t('tasks.deleteTaskModal.toast.unknownError');
+      if (error instanceof Error) {
+        switch (error.message) {
+          case 'Task not found':
+            errorMessage = t('tasks.deleteTaskModal.toast.notFound');
+            break;
+          case 'Cannot delete task with existing activity logs':
+            errorMessage = t('tasks.deleteTaskModal.toast.hasDependencies');
+            break;
+          default:
+            errorMessage = error.message;
+        }
+      }
+
       toast({
-        title: 'Error Deleting Task',
-        description: error.message,
+        title: t('tasks.deleteTaskModal.toast.errorTitle'),
+        description: errorMessage,
         variant: 'destructive',
       });
+    },
+    onSettled: () => {
+      // Always refetch after error or success
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
     },
   });
 
-  const updateTaskMutation = useMutation({
-    mutationFn: async (updatedTask: Database['public']['Tables']['tasks']['Update']) => {
-      const { data, error } = await supabase.from('tasks').update(updatedTask).eq('id', updatedTask.id).select().single();
-      if (error) {
-        console.error('Error updating task:', error);
-        throw error;
-      }
-      return data;
+  const bulkDeleteTasksMutation = useMutation({
+    mutationFn: async (taskIds: string[]) => {
+      return taskService.bulkDeleteTasks(taskIds);
     },
-    onSuccess: () => {
-      queryClient.refetchQueries({ queryKey: ['tasks'] });
-      toast({
-        title: 'Task Updated',
-        description: 'The task has been updated successfully.',
+    onMutate: async (taskIds) => {
+      await queryClient.cancelQueries({ queryKey: ['tasks'] });
+      const previousTasks = queryClient.getQueryData<Task[]>(['tasks']);
+
+      queryClient.setQueryData<Task[]>(['tasks'], old => {
+        return old?.filter(task => !taskIds.includes(task.id)) ?? [];
       });
+
+      return { previousTasks };
     },
-    onError: (error: any) => {
-      console.error('Task update failed:', error);
+    onError: (error: Error, taskIds, context) => {
+      queryClient.setQueryData(['tasks'], context?.previousTasks);
+
+      let errorMessage = t('tasks.bulkDeleteModal.toast.unknownError');
+      if (error instanceof Error) {
+        switch (error.message) {
+          case 'Some tasks not found':
+            errorMessage = t('tasks.bulkDeleteModal.toast.someNotFound');
+            break;
+          case 'Cannot delete tasks with existing activity logs':
+            errorMessage = t('tasks.bulkDeleteModal.toast.hasDependencies');
+            break;
+          default:
+            errorMessage = error.message;
+        }
+      }
+
       toast({
-        title: 'Error Updating Task',
-        description: error.message,
+        title: t('tasks.bulkDeleteModal.toast.errorTitle'),
+        description: errorMessage,
         variant: 'destructive',
       });
     },
+    onSuccess: (_, taskIds) => {
+      toast({
+        title: t('tasks.bulkDeleteModal.toast.successTitle'),
+        description: t('tasks.bulkDeleteModal.toast.successDescription', { count: taskIds.length }),
+      });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    },
   });
+
+  const getTasksByUser = async (userId: string) => {
+    return taskService.getTasksByUser(userId);
+  };
+
+  const getTasksByEntity = async (entityType: 'client' | 'contact' | 'deal', entityId: string) => {
+    return taskService.getTasksByEntity(entityType, entityId);
+  };
 
   return {
     tasks,
     isLoading,
     error,
+    refetch,
     addTask: addTaskMutation.mutate,
-    deleteTask: deleteTaskMutation.mutate,
+    addTaskAsync: addTaskMutation.mutateAsync,
     updateTask: updateTaskMutation.mutate,
+    updateTaskAsync: updateTaskMutation.mutateAsync,
+    deleteTask: deleteTaskMutation.mutate,
+    deleteTaskAsync: deleteTaskMutation.mutateAsync,
+    bulkDeleteTasks: bulkDeleteTasksMutation.mutate,
+    bulkDeleteTasksAsync: bulkDeleteTasksMutation.mutateAsync,
+    getTasksByUser,
+    getTasksByEntity,
+    isAdding: addTaskMutation.isPending,
+    isUpdating: updateTaskMutation.isPending,
+    isDeleting: deleteTaskMutation.isPending,
+    isBulkDeleting: bulkDeleteTasksMutation.isPending,
   };
 } 

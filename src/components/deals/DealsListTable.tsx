@@ -1,4 +1,3 @@
-
 import { Deal } from '@/types/deal';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -11,18 +10,26 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ArrowUpDown, Calendar, DollarSign } from 'lucide-react';
+import { ArrowUpDown, Calendar, DollarSign, Check } from 'lucide-react';
 import { useState } from 'react';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface DealsListTableProps {
   deals: Deal[];
   onDealClick: (deal: Deal) => void;
+  onDealSelect?: (deal: Deal) => void;
+  selectedDeals?: string[];
 }
 
 type SortField = 'name' | 'value' | 'expectedCloseDate' | 'stage' | 'client';
 type SortDirection = 'asc' | 'desc';
 
-export function DealsListTable({ deals, onDealClick }: DealsListTableProps) {
+export function DealsListTable({ 
+  deals, 
+  onDealClick, 
+  onDealSelect,
+  selectedDeals = []
+}: DealsListTableProps) {
   const [sortField, setSortField] = useState<SortField>('name');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
@@ -33,6 +40,19 @@ export function DealsListTable({ deals, onDealClick }: DealsListTableProps) {
       setSortField(field);
       setSortDirection('asc');
     }
+  };
+
+  const handleRowClick = (e: React.MouseEvent, deal: Deal) => {
+    // If clicking checkbox or if in selection mode, handle selection
+    if (
+      (e.target as HTMLElement).closest('.checkbox-cell') ||
+      selectedDeals.length > 0
+    ) {
+      e.preventDefault();
+      onDealSelect?.(deal);
+      return;
+    }
+    onDealClick(deal);
   };
 
   const sortedDeals = [...deals].sort((a, b) => {
@@ -105,6 +125,9 @@ export function DealsListTable({ deals, onDealClick }: DealsListTableProps) {
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead className="w-[30px]">
+              {/* Empty header for checkbox column */}
+            </TableHead>
             <TableHead>
               <SortButton field="name">Deal Name</SortButton>
             </TableHead>
@@ -130,9 +153,20 @@ export function DealsListTable({ deals, onDealClick }: DealsListTableProps) {
           {sortedDeals.map((deal) => (
             <TableRow
               key={deal.id}
-              className="cursor-pointer hover:bg-muted/50 transition-colors"
-              onClick={() => onDealClick(deal)}
+              className={`cursor-pointer transition-colors ${
+                selectedDeals.includes(deal.id)
+                  ? 'bg-blue-500/10 hover:bg-blue-500/20'
+                  : 'hover:bg-muted/50'
+              }`}
+              onClick={(e) => handleRowClick(e, deal)}
             >
+              <TableCell className="checkbox-cell w-[30px]">
+                <Checkbox
+                  checked={selectedDeals.includes(deal.id)}
+                  onCheckedChange={() => onDealSelect?.(deal)}
+                  className="data-[state=checked]:bg-blue-500 data-[state=checked]:border-blue-500"
+                />
+              </TableCell>
               <TableCell className="font-medium">
                 <div className="flex flex-col">
                   <span className="font-semibold">{deal.name}</span>

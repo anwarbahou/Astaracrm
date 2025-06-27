@@ -3,104 +3,157 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Editor, { Toolbar, BtnBold, BtnItalic, BtnUnderline, BtnBulletList, BtnNumberedList, BtnLink, createButton } from "react-simple-wysiwyg";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { User, Briefcase, Handshake, MoreHorizontal } from 'lucide-react';
+import { User, Briefcase, Handshake, MoreHorizontal, Calendar } from 'lucide-react';
 import { useClientsForSelection } from '@/hooks/useClients';
 import { contactsService } from '@/services/contactsService';
 import { useDeals } from '@/hooks/useDeals';
-import { useTasks } from '@/hooks/useTasks';
+import { useTasks, Task } from '@/hooks/useTasks';
 import { useUsersForSelection } from '@/hooks/useUsers';
 import { useTranslation } from 'react-i18next';
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 
 interface AddTaskModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-const BtnHeading1 = createButton('Heading 1', 'H1', () => document.execCommand('formatBlock', false, 'H1'));
-const BtnHeading2 = createButton('Heading 2', 'H2', () => document.execCommand('formatBlock', false, 'H2'));
-
-// Helper to check for valid UUID
-function isUUID(str: string) {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+interface FormErrors {
+  title?: string;
+  priority?: string;
+  status?: string;
+  due_date?: string;
+  related_entity?: string;
 }
 
 export function AddTaskModal({ open, onOpenChange }: AddTaskModalProps) {
   const { userProfile, user } = useAuth();
-  const { addTask, isLoading: isAdding } = useTasks();
+  const { addTask, isAdding } = useTasks();
   const { users: allUsers, isLoading: usersLoading } = useUsersForSelection();
+  const { t } = useTranslation();
+  
   const [form, setForm] = useState({
     title: "",
     description: "",
-    priority: "medium",
-    status: "pending",
+    priority: "medium" as const,
+    status: "pending" as const,
     due_date: "",
-    related_entity: "",
+    related_entity: "" as "" | "client" | "contact" | "deal",
     related_entity_id: "",
     related_entity_name: "",
     time_spent: "",
     assigned_to: ""
   });
-  const [loading, setLoading] = useState(false);
+
+  const [errors, setErrors] = useState<FormErrors>({});
   const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
   const { clients, isLoading: clientsLoading } = useClientsForSelection();
   const { deals, isLoading: dealsLoading } = useDeals();
   const [searchQuery, setSearchQuery] = useState('');
   const [contacts, setContacts] = useState<any[]>([]);
   const [contactsLoading, setContactsLoading] = useState(false);
-  const { t } = useTranslation();
+  const [date, setDate] = useState<Date>();
 
   // Set assigned_to to current user id or selected user
   const isAdmin = userProfile?.role === 'admin';
-  const assignedTo = isAdmin ? form.assigned_to || (allUsers[0]?.id ?? '') : userProfile ? userProfile.id : "";
+  const assignedTo = isAdmin ? form.assigned_to || (allUsers[0]?.id ?? '') : userProfile?.id ?? '';
   const assignedToName = isAdmin
     ? allUsers.find(u => u.id === assignedTo)?.name || ''
     : userProfile ? `${userProfile.first_name || ""} ${userProfile.last_name || ""}`.trim() || userProfile.email : "";
 
-  const userId = userProfile?.id;
-  const filteredClients = clients.filter(c => c.owner_id === userId);
-  const filteredDeals = deals.filter(d => d.ownerId === userId);
-
   useEffect(() => {
     if (form.related_entity === 'contact' && userProfile) {
       setContactsLoading(true);
-      contactsService.getContacts({ userId: userProfile.id, userRole: userProfile.role })
+      contactsService.getContacts({ 
+        userId: userProfile.id, 
+        userRole: userProfile.role as 'user' | 'admin' | 'manager' 
+      })
         .then(data => setContacts(data.map(c => ({ id: c.id, name: c.firstName + ' ' + c.lastName }))))
         .finally(() => setContactsLoading(false));
     }
   }, [form.related_entity, userProfile]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {};
+
+    if (!form.title.trim()) {
+      newErrors.title = t('tasks.addTaskModal.form.validation.titleRequired');
+    }
+
+    if (form.priority && !['low', 'medium', 'high'].includes(form.priority)) {
+      newErrors.priority = t('tasks.addTaskModal.form.validation.invalidPriority');
+    }
+
+    if (form.status && !['pending', 'in_progress', 'completed', 'cancelled', 'todo', 'blocked'].includes(form.status)) {
+      newErrors.status = t('tasks.addTaskModal.form.validation.invalidStatus');
+    }
+
+    if (form.due_date) {
+      const dueDate = new Date(form.due_date);
+      if (isNaN(dueDate.getTime())) {
+        newErrors.due_date = t('tasks.addTaskModal.form.validation.invalidDueDate');
+      }
+    }
+
+    if (form.related_entity && !['client', 'contact', 'deal', ''].includes(form.related_entity)) {
+      newErrors.related_entity = t('tasks.addTaskModal.form.validation.invalidEntityType');
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const handleDescriptionChange = (e: any) => {
-    setForm({ ...form, description: e.target.value });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setForm(prev => ({ ...prev, [name]: value }));
+    // Clear error when field is edited
+    if (errors[name as keyof FormErrors]) {
+      setErrors(prev => ({ ...prev, [name]: undefined }));
+    }
+  };
+
+  const handleDescriptionChange = (value: string) => {
+    setForm(prev => ({ ...prev, description: value }));
+  };
+
+  const handleDateSelect = (date: Date | undefined) => {
+    setDate(date);
+    if (date) {
+      setForm(prev => ({ ...prev, due_date: format(date, 'yyyy-MM-dd') }));
+      if (errors.due_date) {
+        setErrors(prev => ({ ...prev, due_date: undefined }));
+      }
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    
+    if (!validateForm()) {
+      return;
+    }
+
     try {
-      const { related_entity_name, ...taskToInsert } = form;
-
-      // Sanitize UUID fields
-      const finalAssignedTo = isUUID(assignedTo) ? assignedTo : null;
-      const finalRelatedEntityId = isUUID(taskToInsert.related_entity_id) ? taskToInsert.related_entity_id : null;
-
       await addTask({
-        ...taskToInsert,
-        due_date: taskToInsert.due_date || null,
-        related_entity: taskToInsert.related_entity || null,
-        related_entity_id: finalRelatedEntityId,
-        assigned_to: finalAssignedTo,
-        owner: user?.id,
+        title: form.title,
+        description: form.description,
+        priority: form.priority,
+        status: form.status,
+        due_date: form.due_date || null,
+        related_entity: form.related_entity || null,
+        related_entity_id: form.related_entity_id || null,
+        time_spent: form.time_spent || null,
+        assigned_to: assignedTo || null
       });
 
+      // Reset form
       setForm({
         title: "",
         description: "",
@@ -113,225 +166,329 @@ export function AddTaskModal({ open, onOpenChange }: AddTaskModalProps) {
         time_spent: "",
         assigned_to: ""
       });
+      setDate(undefined);
       onOpenChange(false);
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      console.error('Error submitting task:', error);
+    }
+  };
+
+  const handleRelatedEntityChange = (entityType: "client" | "contact" | "deal", id: string, name: string) => {
+    setForm(prev => ({
+      ...prev,
+      related_entity: entityType,
+      related_entity_id: id,
+      related_entity_name: name
+    }));
+    setDropdownOpen(null);
+    if (errors.related_entity) {
+      setErrors(prev => ({ ...prev, related_entity: undefined }));
     }
   };
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="!w-[50vw] max-w-none flex flex-col p-0">
-        <SheetHeader className="p-6 pb-0">
+      <SheetContent className="sm:max-w-[600px] overflow-y-auto">
+        <SheetHeader>
           <SheetTitle>{t('tasks.addTaskModal.title')}</SheetTitle>
         </SheetHeader>
-        <form className="flex-1 flex flex-col overflow-hidden" onSubmit={handleSubmit}>
-          <div className="flex-1 overflow-y-auto px-6 pt-4 pb-2">
-            <div>
-              <Label htmlFor="title">{t('tasks.addTaskModal.form.title')}</Label>
-              <Input
-                id="title"
-                value={form.title}
-                onChange={e => setForm({ ...form, title: e.target.value })}
-                required
-              />
-            </div>
-            <div className="mb-4" />
-            <div>
-              <Label htmlFor="description">{t('tasks.addTaskModal.form.description')}</Label>
-              <div style={{ height: 240 }} className="relative mb-4">
-                <ReactQuill
-                  theme="snow"
-                  value={form.description}
-                  onChange={value => setForm({ ...form, description: value })}
-                  style={{ height: 240, display: 'flex', flexDirection: 'column' }}
-                  className="react-quill-fixed"
-                  modules={{
-                    toolbar: [
-                      [{ 'header': [1, 2, false] }],
-                      ['bold', 'italic', 'underline'],
-                      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                      ['link'],
-                      ['clean']
-                    ]
-                  }}
-                />
-                <style>{`
-                  .react-quill-fixed .ql-container {
-                    height: 180px !important;
-                    min-height: 180px !important;
-                    max-height: 180px !important;
+
+        <form onSubmit={handleSubmit} className="space-y-6 mt-8">
+          <div className="space-y-2">
+            <Label htmlFor="title">{t('tasks.addTaskModal.form.title')}</Label>
+            <Input
+              id="title"
+              name="title"
+              value={form.title}
+              onChange={handleChange}
+              placeholder={t('tasks.addTaskModal.form.titlePlaceholder')}
+              className={errors.title ? 'border-red-500' : ''}
+            />
+            {errors.title && <p className="text-sm text-red-500">{errors.title}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <Label>{t('tasks.addTaskModal.form.description')}</Label>
+            <ReactQuill
+              value={form.description}
+              onChange={handleDescriptionChange}
+              placeholder={t('tasks.addTaskModal.form.descriptionPlaceholder')}
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>{t('tasks.addTaskModal.form.priority')}</Label>
+              <Select
+                value={form.priority}
+                onValueChange={(value) => {
+                  setForm(prev => ({ ...prev, priority: value as typeof form.priority }));
+                  if (errors.priority) {
+                    setErrors(prev => ({ ...prev, priority: undefined }));
                   }
-                  .react-quill-fixed .ql-editor {
-                    height: 100% !important;
-                    min-height: 100% !important;
-                    max-height: 100% !important;
+                }}
+              >
+                <SelectTrigger className={errors.priority ? 'border-red-500' : ''}>
+                  <SelectValue placeholder={t('tasks.addTaskModal.form.priorityPlaceholder')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="low">{t('tasks.priority.low')}</SelectItem>
+                  <SelectItem value="medium">{t('tasks.priority.medium')}</SelectItem>
+                  <SelectItem value="high">{t('tasks.priority.high')}</SelectItem>
+                </SelectContent>
+              </Select>
+              {errors.priority && <p className="text-sm text-red-500">{errors.priority}</p>}
+            </div>
+
+            <div className="space-y-2">
+              <Label>{t('tasks.addTaskModal.form.status')}</Label>
+              <Select
+                value={form.status}
+                onValueChange={(value) => {
+                  setForm(prev => ({ ...prev, status: value as typeof form.status }));
+                  if (errors.status) {
+                    setErrors(prev => ({ ...prev, status: undefined }));
                   }
-                `}</style>
-              </div>
+                }}
+              >
+                <SelectTrigger className={errors.status ? 'border-red-500' : ''}>
+                  <SelectValue placeholder={t('tasks.addTaskModal.form.statusPlaceholder')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="todo">{t('tasks.status.todo')}</SelectItem>
+                  <SelectItem value="pending">{t('tasks.status.pending')}</SelectItem>
+                  <SelectItem value="in_progress">{t('tasks.status.in_progress')}</SelectItem>
+                  <SelectItem value="blocked">{t('tasks.status.blocked')}</SelectItem>
+                  <SelectItem value="completed">{t('tasks.status.completed')}</SelectItem>
+                  <SelectItem value="cancelled">{t('tasks.status.cancelled')}</SelectItem>
+                </SelectContent>
+              </Select>
+              {errors.status && <p className="text-sm text-red-500">{errors.status}</p>}
             </div>
-            <div className="mb-4" />
-            <div>
-              <Label htmlFor="due_date">{t('tasks.addTaskModal.form.dueDate')}</Label>
-              <Input
-                id="due_date"
-                type="date"
-                value={form.due_date || ''}
-                onChange={e => setForm({ ...form, due_date: e.target.value })}
-              />
-            </div>
-            <div className="mb-4" />
-            <div>
-              <Label htmlFor="time_spent">{t('tasks.addTaskModal.form.timeSpent')}</Label>
-              <Input
-                id="time_spent"
-                placeholder="e.g. 1m 3d 2h 39m"
-                value={form.time_spent || ''}
-                onChange={e => setForm({ ...form, time_spent: e.target.value })}
-              />
-            </div>
-            <div className="mb-4" />
-            <div className="flex gap-4">
-              <div className="flex-1">
-                <Label htmlFor="priority">{t('tasks.addTaskModal.form.priority')}</Label>
-                <select
-                  id="priority"
-                  name="priority"
-                  value={form.priority}
-                  onChange={handleChange}
-                  className="w-full border rounded px-2 py-2 bg-background text-foreground dark:bg-zinc-900 dark:text-zinc-100"
-                >
-                  <option value="high">{t('tasks.priority.high')}</option>
-                  <option value="medium">{t('tasks.priority.medium')}</option>
-                  <option value="low">{t('tasks.priority.low')}</option>
-                </select>
-              </div>
-              <div className="flex-1">
-                <Label htmlFor="status">{t('tasks.addTaskModal.form.status')}</Label>
-                <select
-                  id="status"
-                  name="status"
-                  value={form.status}
-                  onChange={handleChange}
-                  className="w-full border rounded px-2 py-2 bg-background text-foreground dark:bg-zinc-900 dark:text-zinc-100"
-                >
-                  <option value="todo">{t('tasks.status.todo')}</option>
-                  <option value="pending">{t('tasks.status.pending')}</option>
-                  <option value="in_progress">{t('tasks.status.in_progress')}</option>
-                  <option value="blocked">{t('tasks.status.blocked')}</option>
-                  <option value="completed">{t('tasks.status.completed')}</option>
-                  <option value="cancelled">{t('tasks.status.cancelled')}</option>
-                </select>
-              </div>
-            </div>
-            <div className="mb-4" />
-            <div>
-              <Label htmlFor="assigned_to">{t('tasks.addTaskModal.form.assignedTo')}</Label>
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setDropdownOpen(dropdownOpen === 'assigned_to' ? null : 'assigned_to')}
-                  className="w-full border rounded px-3 py-2 bg-background text-foreground text-left flex justify-between items-center dark:bg-zinc-900 dark:text-zinc-100"
-                >
-                  <span>{assignedToName || t('tasks.addTaskModal.form.selectUser')}</span>
-                  <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
-                </button>
-                {dropdownOpen === 'assigned_to' && (
-                  <div className="absolute z-10 w-full bg-popover border rounded shadow-md mt-1 max-h-48 overflow-y-auto dark:bg-zinc-800">
-                    {usersLoading ? (
-                      <div className="p-2 text-center text-muted-foreground">{t('tasks.addTaskModal.form.loadingUsers')}</div>
-                    ) : (
-                      allUsers.map(u => (
-                        <div
-                          key={u.id}
-                          className="flex items-center gap-2 p-2 hover:bg-accent cursor-pointer"
-                          onClick={() => {
-                            setForm({ ...form, assigned_to: u.id });
-                            setDropdownOpen(null);
-                          }}
-                        >
-                          <Avatar className="h-6 w-6">
-                            <AvatarImage src={u.avatar_url || undefined} />
-                            <AvatarFallback>{u.name?.charAt(0)}</AvatarFallback>
-                          </Avatar>
-                          <span>{u.name}</span>
-                        </div>
-                      ))
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>{t('tasks.addTaskModal.form.dueDate')}</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !date && "text-muted-foreground",
+                      errors.due_date && "border-red-500"
                     )}
-                  </div>
-                )}
-              </div>
+                  >
+                    <Calendar className="mr-2 h-4 w-4" />
+                    {date ? format(date, "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <CalendarComponent
+                    mode="single"
+                    selected={date}
+                    onSelect={handleDateSelect}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              {errors.due_date && <p className="text-sm text-red-500">{errors.due_date}</p>}
             </div>
 
-            <div className="mb-4" />
-            <div>
-              <Label htmlFor="related_entity">{t('tasks.addTaskModal.form.relatedEntity')}</Label>
-              <div className="relative">
-                <select
-                  id="related_entity"
-                  name="related_entity"
-                  value={form.related_entity}
-                  onChange={handleChange}
-                  className="w-full border rounded px-2 py-2 bg-background text-foreground dark:bg-zinc-900 dark:text-zinc-100"
-                >
-                  <option value="">{t('tasks.addTaskModal.form.none')}</option>
-                  <option value="client">{t('tasks.addTaskModal.form.client')}</option>
-                  <option value="contact">{t('tasks.addTaskModal.form.contact')}</option>
-                  <option value="deal">{t('tasks.addTaskModal.form.deal')}</option>
-                </select>
+            <div className="space-y-2">
+              <Label>{t('tasks.addTaskModal.form.timeSpent')}</Label>
+              <Input
+                name="time_spent"
+                value={form.time_spent}
+                onChange={handleChange}
+                placeholder={t('tasks.addTaskModal.form.timeSpentPlaceholder')}
+              />
+            </div>
+          </div>
 
-                {form.related_entity && (
-                  <div className="mt-4">
+          {isAdmin && (
+            <div className="space-y-2">
+              <Label>{t('tasks.addTaskModal.form.assignedTo')}</Label>
+              <Select
+                value={form.assigned_to}
+                onValueChange={(value) => setForm(prev => ({ ...prev, assigned_to: value }))}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={t('tasks.addTaskModal.form.selectUser')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {usersLoading ? (
+                    <SelectItem value="">{t('tasks.addTaskModal.form.loadingUsers')}</SelectItem>
+                  ) : (
+                    allUsers.map((user) => (
+                      <SelectItem key={user.id} value={user.id}>
+                        <div className="flex items-center gap-2">
+                          <Avatar className="h-6 w-6">
+                            <AvatarImage src={user.avatar_url || undefined} />
+                            <AvatarFallback>
+                              {user.name.split(' ')[0]?.[0]}
+                              {user.name.split(' ')[1]?.[0]}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span>{user.name}</span>
+                        </div>
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <Label>{t('tasks.addTaskModal.form.relatedEntity')}</Label>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant={form.related_entity === "" ? "default" : "outline"}
+                onClick={() => {
+                  setForm(prev => ({
+                    ...prev,
+                    related_entity: "",
+                    related_entity_id: "",
+                    related_entity_name: ""
+                  }));
+                  if (errors.related_entity) {
+                    setErrors(prev => ({ ...prev, related_entity: undefined }));
+                  }
+                }}
+              >
+                {t('tasks.addTaskModal.form.none')}
+              </Button>
+
+              <Popover open={dropdownOpen === 'client'} onOpenChange={(open) => setDropdownOpen(open ? 'client' : null)}>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant={form.related_entity === "client" ? "default" : "outline"}
+                  >
+                    <Briefcase className="mr-2 h-4 w-4" />
+                    {t('tasks.addTaskModal.form.client')}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80">
+                  <div className="space-y-4">
                     <Input
-                      type="text"
                       placeholder={t('tasks.addTaskModal.form.searchEntities')}
                       value={searchQuery}
-                      onChange={e => setSearchQuery(e.target.value)}
-                      className="mb-2"
+                      onChange={(e) => setSearchQuery(e.target.value)}
                     />
-                    <div className="max-h-48 overflow-y-auto border rounded">
-                      {loading || clientsLoading || dealsLoading || contactsLoading ? (
-                        <div className="p-2 text-center text-muted-foreground">{t('tasks.addTaskModal.form.loading')}</div>
+                    <div className="max-h-48 overflow-auto">
+                      {clientsLoading ? (
+                        <div className="text-center py-2">{t('tasks.addTaskModal.form.loading')}</div>
+                      ) : clients.length === 0 ? (
+                        <div className="text-center py-2">{t('tasks.addTaskModal.form.noEntitiesFound')}</div>
                       ) : (
-                        {
-                          client: filteredClients.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase())),
-                          contact: contacts.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase())),
-                          deal: filteredDeals.filter(d => d.name.toLowerCase().includes(searchQuery.toLowerCase())),
-                        }[form.related_entity]?.length === 0 ? (
-                          <div className="p-2 text-center text-muted-foreground">{t('tasks.addTaskModal.form.noEntitiesFound')}</div>
-                        ) : (
-                          {
-                            client: filteredClients.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase())),
-                            contact: contacts.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase())),
-                            deal: filteredDeals.filter(d => d.name.toLowerCase().includes(searchQuery.toLowerCase())),
-                          }[form.related_entity]?.map((entity: any) => (
-                            <div
-                              key={entity.id}
-                              className="flex items-center gap-2 p-2 hover:bg-accent cursor-pointer"
-                              onClick={() => {
-                                setForm({ ...form, related_entity_id: entity.id, related_entity_name: entity.name });
-                                setSearchQuery('');
-                              }}
-                            >
-                              {form.related_entity === 'client' && <Briefcase className="h-4 w-4 text-muted-foreground" />}
-                              {form.related_entity === 'contact' && <User className="h-4 w-4 text-muted-foreground" />}
-                              {form.related_entity === 'deal' && <Handshake className="h-4 w-4 text-muted-foreground" />}
-                              <span>{entity.name}</span>
-                            </div>
-                          ))
-                        )
+                        clients.map((client) => (
+                          <Button
+                            key={client.id}
+                            variant="ghost"
+                            className="w-full justify-start"
+                            onClick={() => handleRelatedEntityChange("client", client.id, client.name)}
+                          >
+                            {client.name}
+                          </Button>
+                        ))
                       )}
                     </div>
                   </div>
-                )}
-              </div>
+                </PopoverContent>
+              </Popover>
+
+              <Popover open={dropdownOpen === 'contact'} onOpenChange={(open) => setDropdownOpen(open ? 'contact' : null)}>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant={form.related_entity === "contact" ? "default" : "outline"}
+                  >
+                    <User className="mr-2 h-4 w-4" />
+                    {t('tasks.addTaskModal.form.contact')}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80">
+                  <div className="space-y-4">
+                    <Input
+                      placeholder={t('tasks.addTaskModal.form.searchEntities')}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    <div className="max-h-48 overflow-auto">
+                      {contactsLoading ? (
+                        <div className="text-center py-2">{t('tasks.addTaskModal.form.loading')}</div>
+                      ) : contacts.length === 0 ? (
+                        <div className="text-center py-2">{t('tasks.addTaskModal.form.noEntitiesFound')}</div>
+                      ) : (
+                        contacts.map((contact) => (
+                          <Button
+                            key={contact.id}
+                            variant="ghost"
+                            className="w-full justify-start"
+                            onClick={() => handleRelatedEntityChange("contact", contact.id, contact.name)}
+                          >
+                            {contact.name}
+                          </Button>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              <Popover open={dropdownOpen === 'deal'} onOpenChange={(open) => setDropdownOpen(open ? 'deal' : null)}>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant={form.related_entity === "deal" ? "default" : "outline"}
+                  >
+                    <Handshake className="mr-2 h-4 w-4" />
+                    {t('tasks.addTaskModal.form.deal')}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80">
+                  <div className="space-y-4">
+                    <Input
+                      placeholder={t('tasks.addTaskModal.form.searchEntities')}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    <div className="max-h-48 overflow-auto">
+                      {dealsLoading ? (
+                        <div className="text-center py-2">{t('tasks.addTaskModal.form.loading')}</div>
+                      ) : deals.length === 0 ? (
+                        <div className="text-center py-2">{t('tasks.addTaskModal.form.noEntitiesFound')}</div>
+                      ) : (
+                        deals.map((deal) => (
+                          <Button
+                            key={deal.id}
+                            variant="ghost"
+                            className="w-full justify-start"
+                            onClick={() => handleRelatedEntityChange("deal", deal.id, deal.name)}
+                          >
+                            {deal.name}
+                          </Button>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
+            {errors.related_entity && <p className="text-sm text-red-500">{errors.related_entity}</p>}
           </div>
-          <div className="flex justify-end p-6 pt-2 border-t">
-            <Button type="submit" disabled={isAdding || loading}>
-              {isAdding || loading ? t('tasks.addTaskModal.saving') : t('tasks.addTaskModal.saveTask')}
-            </Button>
-          </div>
+
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={isAdding}
+          >
+            {isAdding ? t('tasks.addTaskModal.saving') : t('tasks.addTaskModal.saveTask')}
+          </Button>
         </form>
       </SheetContent>
     </Sheet>

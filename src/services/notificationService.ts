@@ -77,11 +77,11 @@ class NotificationService {
         timestamp: new Date().toISOString()
       };
       
-      // Create notification for the user who performed the action (always gets "You" prefix)
+      // Create notification for the user who performed the action
       notifications.push({
         type: input.type,
         title: input.title,
-        description: `You ${input.description}`,
+        description: input.description, // Keep original description for user's own notification
         user_id: userContext.userId,
         target_user_id: userContext.userId,
         entity_id: input.entity_id,
@@ -107,10 +107,13 @@ class NotificationService {
         admins.forEach(admin => {
           // Skip if this admin is the one who performed the action (they already have their own notification)
           if (admin.id !== userContext.userId) {
+            // Replace "You" with the actual user name in the description
+            const adminDescription = input.description.replace(/^You/, userName);
+            
             notifications.push({
               type: input.type,
               title: `${userName} - ${input.title}`,
-              description: `${userName} (${userInfo.role}) ${input.description}`,
+              description: adminDescription,
               user_id: userContext.userId, // Who performed the action
               target_user_id: admin.id, // Admin who should see it
               entity_id: input.entity_id,

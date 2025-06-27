@@ -293,13 +293,24 @@
       "title": "Add New Task",
       "saving": "Saving...",
       "saveTask": "Save Task",
+      "toast": {
+        "successTitle": "Task Created",
+        "successDescription": "Task \"{{title}}\" has been created successfully.",
+        "errorTitle": "Failed to Create Task",
+        "unknownError": "An unknown error occurred."
+      },
       "form": {
         "title": "Title",
+        "titlePlaceholder": "Enter task title",
         "description": "Description",
+        "descriptionPlaceholder": "Enter task description",
         "dueDate": "Due Date",
         "timeSpent": "Time Spent",
+        "timeSpentPlaceholder": "e.g., 2h 30m",
         "priority": "Priority",
+        "priorityPlaceholder": "Select priority",
         "status": "Status",
+        "statusPlaceholder": "Select status",
         "assignedTo": "Assigned To",
         "selectUser": "Select User",
         "loadingUsers": "Loading users...",
@@ -310,7 +321,14 @@
         "deal": "Deal",
         "searchEntities": "Search entities...",
         "loading": "Loading...",
-        "noEntitiesFound": "No entities found."
+        "noEntitiesFound": "No entities found.",
+        "validation": {
+          "titleRequired": "Title is required",
+          "invalidPriority": "Invalid priority value",
+          "invalidStatus": "Invalid status value",
+          "invalidDueDate": "Invalid due date format",
+          "invalidEntityType": "Invalid related entity type"
+        }
       }
     },
     "editTaskModal": {
@@ -318,32 +336,23 @@
       "saving": "Saving...",
       "saveChanges": "Save Changes",
       "toast": {
-        "successTitle": "Task updated successfully!",
-        "successDescription": "Task \"{{title}}\" has been updated.",
-        "errorTitle": "Failed to update task",
+        "successTitle": "Task Updated",
+        "successDescription": "Task \"{{title}}\" has been updated successfully.",
+        "errorTitle": "Failed to Update Task",
         "unknownError": "An unknown error occurred."
-      },
-      "form": {
-        "title": "Title",
-        "description": "Description",
-        "dueDate": "Due Date",
-        "timeSpent": "Time Spent",
-        "priority": "Priority",
-        "selectPriority": "Select priority",
-        "status": "Status",
-        "selectStatus": "Select status",
-        "assignedTo": "Assigned To",
-        "selectUser": "Select user",
-        "loadingUsers": "Loading users...",
-        "relatedEntity": "Related To",
-        "selectRelatedEntity": "Select related entity",
-        "none": "None",
-        "client": "Client",
-        "contact": "Contact",
-        "deal": "Deal",
-        "searchEntities": "Search entities...",
-        "loading": "Loading...",
-        "noEntitiesFound": "No entities found."
+      }
+    },
+    "deleteTaskModal": {
+      "title": "Delete Task",
+      "confirmMessage": "Are you sure you want to delete this task?",
+      "warning": "This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete",
+      "toast": {
+        "successTitle": "Task Deleted",
+        "successDescription": "The task has been deleted successfully.",
+        "errorTitle": "Failed to Delete Task",
+        "unknownError": "An unknown error occurred."
       }
     },
     "previewTaskModal": {
@@ -357,13 +366,40 @@
       "relatedTo": "Related To",
       "timeTracking": "Time Tracking",
       "noTimeLogged": "No time logged",
-      "labels": "Labels",
-      "frontendLabel": "Frontend"
+      "labels": "Labels"
     },
-    "relatedEntity": {
-      "client": "Client",
-      "contact": "Contact",
-      "deal": "Deal"
+    "filters": {
+      "searchPlaceholder": "Search tasks...",
+      "owner": "Owner",
+      "allOwners": "All Owners",
+      "priority": "Priority",
+      "allPriorities": "All Priorities",
+      "status": "Status",
+      "allStatuses": "All Statuses",
+      "dueDate": "Due Date",
+      "from": "From",
+      "to": "To",
+      "relatedTo": "Related To",
+      "allEntities": "All Entities",
+      "clearFilters": "Clear Filters"
+    },
+    "table": {
+      "columns": {
+        "id": "ID",
+        "title": "Title",
+        "priority": "Priority",
+        "status": "Status",
+        "assignedTo": "Assigned To",
+        "dueDate": "Due Date",
+        "relatedTo": "Related To",
+        "createdAt": "Created At",
+        "actions": "Actions"
+      },
+      "emptyState": {
+        "title": "No tasks found",
+        "description": "Create your first task to get started",
+        "createButton": "Create Task"
+      }
     }
   },
 "contacts": {
@@ -539,104 +575,74 @@
   
   "deals": {
     "title": "Deals",
-    "addDeal": "Add Deal",
-    "newDeal": "New Deal",
-    "searchPlaceholder": "Search deals...",
-    "filters": "Filters",
-    "stages": {
-      "prospect": "Prospect",
-      "lead": "Lead",
-      "qualified": "Qualified",
-      "proposal": "Proposal",
-      "negotiation": "Negotiation",
-      "won-lost": "Won/Lost"
+    "total": "Total",
+    "actions": {
+      "import": "Import Deals",
+      "add": "Add Deal"
+    },
+    "filters": {
+      "title": "Filters",
+      "searchPlaceholder": "Search deals...",
+      "clear": "Clear Filters"
     },
     "stats": {
-      "active": "Active Deals",
-      "pipelineValue": "Pipeline Value",
-      "won": "Deals Won",
-      "avgSize": "Avg Deal Size",
-      "vsLastMonth": "{{change}} vs last month"
-    },
-    "totalDeals": "Total Deals",
-    "totalValue": "Total Value",
-    "wonDeals": "Won Deals",
-    "toasts": {
-      "moved": {
-        "title": "Deal moved",
-        "description": "Deal moved to {{stage}} stage"
-      },
-      "updated": {
-        "title": "Deal updated",
-        "description": "Deal has been updated successfully"
-      },
-      "deleted": {
-        "title": "Deal deleted",
-        "description": "Deal has been deleted successfully"
-      },
-      "created": {
-        "title": "Deal created",
-        "description": "New deal added to {{stage}} stage"
-      }
+      "totalValue": "Total Value",
+      "wonDeals": "Won Deals",
+      "avgDealSize": "Average Deal Size"
     },
     "pipeline": {
-      "dropDeal": "Drop deal here",
-      "noDeals": "No deals in this stage",
-      "addFirstDeal": "Add your first deal",
-      "addDeal": "Add Deal"
+      "dropDeal": "Drop deal here"
     },
-    "board": {
-      "noDeals": "No deals in this stage."
-    },
-    "filtersDropdown": {
-      "title": "Filter deals",
-      "clear": "Clear",
-      "stagesLabel": "Stages",
-      "ownersLabel": "Owners",
-      "valueLabel": "Value range (€)",
-      "minPlaceholder": "Min",
-      "maxPlaceholder": "Max",
-      "dateLabel": "Expected close date",
-      "showMore": "Show more",
-      "showLess": "Show less"
-    },
-    "filtersPanel": {
-      "sourcesLabel": "Sources",
-      "clearAll": "Clear all",
-      "apply": "Apply"
-    },
-    "sources": {
-      "website": "Website",
-      "referral": "Referral",
-      "coldOutreach": "Cold Outreach",
-      "linkedIn": "LinkedIn",
-      "existingClient": "Existing Client"
-    },
-    "noDealsYet": "No deals yet",
-    "createDealsToTrack": "Create deals to track opportunities",
-    "closeDate": "Date of close:",
-    "notSet": "Not set",
-    "probability": "probability",
-    "notifications": {
+    "toasts": {
       "created": {
-        "title": "New Deal Created",
-        "description": "Created deal {{name}} worth {{value}} MAD"
+        "title": "Deal Created",
+        "description": "New deal has been created successfully."
       },
       "updated": {
         "title": "Deal Updated",
-        "description": "Updated deal {{name}}"
+        "description": "Deal has been updated successfully."
       },
       "deleted": {
         "title": "Deal Deleted",
-        "description": "Deleted deal {{name}}"
+        "description": "Deal has been deleted successfully."
+      },
+      "moved": {
+        "title": "Deal Moved",
+        "description": "Deal moved to {{stage}} stage."
+      },
+      "imported": {
+        "title": "Deals Imported",
+        "description": "{{count}} deals have been imported successfully."
+      },
+      "bulkDeleted": {
+        "title": "Deals Deleted",
+        "description": "{{count}} deals have been deleted successfully."
+      },
+      "bulkMoved": {
+        "title": "Deals Moved",
+        "description": "{{count}} deals moved to {{stage}} stage."
+      }
+    },
+    "notifications": {
+      "created": {
+        "title": "New Deal Created",
+        "description": "{{name}} ({{value}} MAD) has been created"
+      },
+      "updated": {
+        "title": "Deal Updated",
+        "description": "You updated deal {{name}}"
+      },
+      "deleted": {
+        "title": "Deal Deleted",
+        "description": "{{name}} has been deleted"
       },
       "BulkAdded": {
-        "title": "Bulk Deals Created",
-        "description": "Created {{count}} deals with total value {{value}} MAD"
+        "title": "Multiple Deals Added",
+        "description": "{{count}} new deals added (Total value: {{value}} MAD)"
       },
       "BulkDeleted": {
-        "title": "Bulk Deals Deleted",
-        "description": "Deleted {{count}} deals"
+        "title": "Multiple Deals Deleted",
+        "description": "{{count}} deals have been deleted"
       }
     }
   },

@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,8 +15,15 @@ import {
   LineChart
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { withPageTitle } from '@/components/withPageTitle';
+import { useState } from "react";
 
-export default function Reports() {
+function Reports() {
+  const [selectedDateRange, setSelectedDateRange] = useState("last30days");
+  const [selectedMetric, setSelectedMetric] = useState("revenue");
+  const [selectedView, setSelectedView] = useState("overview");
+  const [selectedTab, setSelectedTab] = useState("sales");
+
   // Mock data for reports
   const salesMetrics = {
     totalRevenue: 847500,
@@ -404,3 +410,5 @@ export default function Reports() {
     </div>
   );
 }
+
+export default withPageTitle(Reports, 'reports');

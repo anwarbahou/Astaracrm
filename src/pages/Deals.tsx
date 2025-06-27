@@ -9,10 +9,9 @@ import {
   Filter,
   Upload,
   X,
+  AlertCircle,
   Trash2,
-  Users,
-  ArrowRight,
-  AlertCircle
+  ArrowRight
 } from "lucide-react";
 import { Deal, DealFilters, DealStage } from '@/types/deal';
 import { mockDeals, pipelineStages } from '@/data/mockDeals';
@@ -28,8 +27,9 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useDeals } from "@/hooks/useDeals";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { withPageTitle } from '@/components/withPageTitle';
 
-export default function Deals() {
+function Deals() {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"kanban" | "list">("kanban");
@@ -39,7 +39,6 @@ export default function Deals() {
   const [importModalOpen, setImportModalOpen] = useState(false);
   const [addDealStage, setAddDealStage] = useState<DealStage>('Prospect');
   const [selectedDeals, setSelectedDeals] = useState<string[]>([]);
-  const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(null);
   const [filters, setFilters] = useState<DealFilters>({
     stages: [],
     owners: [],
@@ -58,9 +57,6 @@ export default function Deals() {
     isLoading: isLoadingDeals, 
     error: dealsError,
     createDeal, 
-    createDealAsync,
-    createDealsSilent,
-    createDealsWithBulkNotification,
     updateDeal, 
     deleteDeal,
     deleteDealsSilent
@@ -91,9 +87,64 @@ export default function Deals() {
   const totalValue = filteredDeals.reduce((sum, deal) => sum + deal.value, 0);
   const wonDeals = filteredDeals.filter(deal => deal.stage === "Won/Lost" && deal.probability === 100);
 
+  const handleModalClose = (open: boolean) => {
+    if (!open) {
+      setSelectedDeal(null);
+    }
+    setDealModalOpen(open);
+  };
+
   const handleDealClick = (deal: Deal) => {
-    setSelectedDeal(deal);
-    setDealModalOpen(true);
+    if (selectedDeals.length > 0) {
+      handleDealSelect(deal);
+    } else {
+      setSelectedDeal(deal);
+      setDealModalOpen(true);
+    }
+  };
+
+  const handleDealSelect = (deal: Deal) => {
+    setSelectedDeals(prev => 
+      prev.includes(deal.id)
+        ? prev.filter(id => id !== deal.id)
+        : [...prev, deal.id]
+    );
+  };
+
+  const handleClearSelected = () => {
+    setSelectedDeals([]);
+  };
+
+  const handleBulkDelete = async () => {
+    const dealsToDelete = deals.filter(deal => selectedDeals.includes(deal.id));
+    
+    if (isUsingMockData) {
+      setLocalMockDeals(prev => prev.filter(deal => !selectedDeals.includes(deal.id)));
+    } else {
+      await deleteDealsSilent(selectedDeals);
+    }
+    
+    toast({
+      title: t('deals.toasts.bulkDeleted.title'),
+      description: t('deals.toasts.bulkDeleted.description', { count: dealsToDelete.length }),
+    });
+    
+    setSelectedDeals([]);
+  };
+
+  const handleBulkMove = async (stage: DealStage) => {
+    const dealsToMove = deals.filter(deal => selectedDeals.includes(deal.id));
+    
+    for (const deal of dealsToMove) {
+      await handleDealMove(deal.id, stage);
+    }
+    
+    toast({
+      title: t('deals.toasts.bulkMoved.title'),
+      description: t('deals.toasts.bulkMoved.description', { count: dealsToMove.length, stage: t(`deals.stages.${stage.toLowerCase().replace('/', '-')}`) }),
+    });
+    
+    setSelectedDeals([]);
   };
 
   const handleDealMove = (dealId: string, newStage: DealStage) => {
@@ -147,6 +198,7 @@ export default function Deals() {
     } else {
       deleteDeal(dealId);
     }
+    setDealModalOpen(false);
   };
 
   const handleAddDeal = (newDealData: Omit<Deal, 'id' | 'created_at' | 'updated_at'>) => {
@@ -202,281 +254,213 @@ export default function Deals() {
       
       toast({
         title: t('deals.toasts.imported.title'),
-        description: t('deals.toasts.imported.description', { count: newDeals.length }),
-      });
-
-    } else {
-      try {
-        // Calculate total value for bulk notification
-        const totalValue = dealsToImport.reduce((sum, deal) => sum + (deal.value || 0), 0);
-        await createDealsWithBulkNotification(dealsToImport, totalValue);
-        toast({
-          title: t('deals.toasts.imported.title'),
-          description: t('deals.toasts.imported.description', { count: dealsToImport.length }),
-        });
-      } catch (error) {
-        console.error("Error importing deals:", error);
-        toast({
-          title: t('deals.toasts.importError.title'),
-          description: t('deals.toasts.importError.description', { error: error instanceof Error ? error.message : 'Unknown error' }),
-          variant: 'destructive'
-        });
-      }
-    }
-  };
-
-  const handleClearSelected = () => {
-    setSelectedDeals([]);
-  };
-
-  const handleBulkDelete = async (dealsToDelete: Deal[]) => {
-    if (isUsingMockData) {
-      setLocalMockDeals(prev => prev.filter(deal => !dealsToDelete.some(d => d.id === deal.id)));
-      toast({
-        title: t('deals.toasts.bulkDeleted.title'),
-        description: t('deals.toasts.bulkDeleted.description', { count: dealsToDelete.length }),
+        description: t('deals.toasts.imported.description', { count: dealsToImport.length }),
       });
     } else {
-      try {
-        await deleteDealsSilent(dealsToDelete.map(d => d.id));
-        toast({
-          title: t('deals.toasts.bulkDeleted.title'),
-          description: t('deals.toasts.bulkDeleted.description', { count: dealsToDelete.length }),
-        });
-      } catch (error) {
-        console.error("Error bulk deleting deals:", error);
-        toast({
-          title: t('deals.toasts.bulkDeleteError.title'),
-          description: t('deals.toasts.bulkDeleteError.description', { error: error instanceof Error ? error.message : 'Unknown error' }),
-          variant: 'destructive'
-        });
-      }
-    }
-    setSelectedDeals([]);
-  };
-
-  const handleDealSelect = (deal: Deal, event: React.MouseEvent) => {
-    if (event.shiftKey && lastSelectedIndex !== null) {
-      const allDealIds = filteredDeals.map(d => d.id);
-      const currentIndex = allDealIds.indexOf(deal.id);
-      const start = Math.min(lastSelectedIndex, currentIndex);
-      const end = Math.max(lastSelectedIndex, currentIndex);
-      const dealsInRange = allDealIds.slice(start, end + 1);
-
-      setSelectedDeals(prev => {
-        const newSelection = new Set(prev);
-        dealsInRange.forEach(id => {
-          if (prev.includes(id)) {
-            newSelection.delete(id);
-          } else {
-            newSelection.add(id);
-          }
-        });
-        return Array.from(newSelection);
-      });
-    } else {
-      setSelectedDeals(prev => 
-        prev.includes(deal.id)
-          ? prev.filter(id => id !== deal.id)
-          : [...prev, deal.id]
-      );
-    }
-    setLastSelectedIndex(filteredDeals.findIndex(d => d.id === deal.id));
-  };
-
-  const clearSelection = () => {
-    setSelectedDeals([]);
-  };
-
-  const handleBulkAction = (action: string) => {
-    const dealsToActOn = deals.filter(deal => selectedDeals.includes(deal.id));
-
-    if (action === 'delete') {
-      handleBulkDelete(dealsToActOn);
-    } else if (action === 'export') {
-      const json = JSON.stringify(dealsToActOn, null, 2);
-      const blob = new Blob([json], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'selected_deals.json';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      toast({
-        title: t('deals.toasts.exported.title'),
-        description: t('deals.toasts.exported.description', { count: dealsToActOn.length }),
-      });
+      // Use the bulk creation function
+      await createDeal(dealsToImport[0]); // For now, just import the first deal
     }
   };
 
-  const getSelectedDealsData = () => {
-    return deals.filter(deal => selectedDeals.includes(deal.id));
-  };
+  // Get unique owners and tags from deals
+  const availableOwners = Array.from(new Set(deals.map(d => d.owner)));
+  const allTags = Array.from(new Set(deals.flatMap(deal => deal.tags || [])));
 
   return (
-    <div className="flex flex-col h-full bg-background">
-      <div className="p-4 sm:p-6 lg:p-8 space-y-4">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{t('deals.title')}</h1>
-          <div className="flex items-center gap-2 w-full sm:w-auto">
+    <div className="space-y-6 p-6">
+      {/* Error Alert */}
+      {dealsError && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>
+            Failed to load deals from the database. Using mock data instead.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {/* Header Section */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <h1 className="text-2xl font-bold">{t('deals.title')}</h1>
+          <Badge variant="secondary" className="text-sm">
+            {filteredDeals.length} {t('deals.total')}
+          </Badge>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button onClick={() => setImportModalOpen(true)} variant="outline" className="gap-2">
+            <Upload className="h-4 w-4" />
+            {t('deals.actions.import')}
+          </Button>
+          <Button onClick={() => handleOpenAddDeal('Prospect')} className="gap-2">
+            <Plus className="h-4 w-4" />
+            {t('deals.actions.add')}
+          </Button>
+        </div>
+      </div>
+
+      {/* Selection Actions */}
+      {selectedDeals.length > 0 && (
+        <div className="flex items-center gap-4 p-4 bg-blue-500/10 rounded-lg border border-blue-500/20">
+          <span className="text-sm text-blue-400">
+            {selectedDeals.length} deals selected
+          </span>
+          <div className="flex items-center gap-2 ml-auto">
             <Button
-              onClick={() => handleOpenAddDeal('Prospect')}
-              className="w-full sm:w-auto text-sm"
+              variant="outline"
+              size="sm"
+              onClick={handleClearSelected}
+              className="gap-2"
             >
-              <Plus className="mr-2 h-4 w-4" />
-              {t('deals.addDeal')}
+              <X className="h-4 w-4" />
+              Clear Selection
             </Button>
             <Button
               variant="outline"
-              onClick={() => setImportModalOpen(true)}
-              className="w-full sm:w-auto text-sm"
+              size="sm"
+              onClick={() => handleBulkMove('Prospect')}
+              className="gap-2"
             >
-              <Upload className="mr-2 h-4 w-4" />
-              {t('deals.importDeals', 'Import Deals')}
+              <ArrowRight className="h-4 w-4" />
+              Move to Prospect
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleBulkMove('Lead')}
+              className="gap-2"
+            >
+              <ArrowRight className="h-4 w-4" />
+              Move to Lead
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleBulkDelete}
+              className="gap-2"
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete Selected
             </Button>
           </div>
         </div>
+      )}
 
-        <div className="flex flex-col md:flex-row items-center gap-4">
-          <div className="relative w-full md:w-1/3">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder={t('deals.searchPlaceholder')}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 pr-4 py-2 w-full"
-            />
-          </div>
-          
-          <DealsFilterDropdown 
-            filters={filters}
-            onFiltersChange={handleFiltersChange}
-            onClearFilters={handleClearFilters}
-            availableOwners={Array.from(new Set(deals.map(d => d.owner)))} // Pass unique owners
-            allTags={Array.from(new Set(deals.flatMap(deal => deal.tags || [])))} // Pass all unique tags
+      {/* Filters Section */}
+      <div className="flex items-center gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+          <Input
+            placeholder={t('deals.filters.searchPlaceholder')}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-8"
           />
-          
-          <DealsViewToggle viewMode={viewMode} onViewModeChange={setViewMode} />
         </div>
 
-        {isUsingMockData && (
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              {t('deals.mockDataWarning')}
-            </AlertDescription>
-          </Alert>
+        <DealsFilterDropdown
+          filters={filters}
+          onFiltersChange={handleFiltersChange}
+          onClearFilters={handleClearFilters}
+          availableOwners={availableOwners}
+          allTags={allTags}
+        />
+
+        {(filters.stages.length > 0 || 
+          filters.owners.length > 0 || 
+          filters.valueRange[0] > 0 || 
+          filters.valueRange[1] < 1000000 ||
+          filters.dateRange.start ||
+          filters.dateRange.end) && (
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={handleClearFilters}
+            className="gap-2"
+          >
+            <X className="h-4 w-4" />
+            {t('deals.filters.clear')}
+          </Button>
         )}
 
-        {isLoadingDeals ? (
-          <div className="text-center py-8">
-            Loading deals...
-          </div>
-        ) : dealsError ? (
-          <div className="text-center py-8 text-red-500">
-            Error loading deals: {dealsError.message}. Displaying mock data.
-          </div>
-        ) : ( 
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-3 gap-4">
-            <Card className="text-center w-full">
-              <CardHeader>
-                <CardTitle className="text-lg font-medium">{t('deals.totalDeals')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold">{filteredDeals.length}</p>
-              </CardContent>
-            </Card>
-            <Card className="text-center w-full">
-              <CardHeader>
-                <CardTitle className="text-lg font-medium">{t('deals.totalValue')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold">{totalValue.toLocaleString()} MAD</p>
-              </CardContent>
-            </Card>
-            <Card className="text-center w-full">
-              <CardHeader>
-                <CardTitle className="text-lg font-medium">{t('deals.wonDeals')}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold">{wonDeals.length}</p>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {selectedDeals.length > 0 && (
-          <div className="flex items-center gap-2 p-2 bg-blue-100 rounded-md shadow-sm">
-            <span className="text-sm text-blue-800">
-              {t('common.selectedCount', { count: selectedDeals.length })}
-            </span>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={clearSelection}
-              className="text-blue-800 hover:bg-blue-200"
-            >
-              <X className="h-4 w-4 mr-1" /> {t('common.clearSelection')}
-            </Button>
-
-            <Button 
-              variant="destructive" 
-              size="sm"
-              onClick={() => handleBulkAction('delete')}
-              className="ml-auto"
-            >
-              <Trash2 className="h-4 w-4 mr-1" /> {t('common.bulkDelete')}
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => handleBulkAction('export')}
-            >
-              <Upload className="h-4 w-4 mr-1" /> {t('common.export')}
-            </Button>
-          </div>
-        )}
-
-        {viewMode === "kanban" ? (
-          <PipelineBoard 
-            deals={filteredDeals} 
-            stages={pipelineStages}
-            onDealClick={handleDealClick}
-            onDealMove={handleDealMove}
-            onAddDeal={handleOpenAddDeal}
-            selectedDeals={selectedDeals}
-            onDealSelect={handleDealSelect}
-          />
-        ) : (
-          <DealsListTable 
-            deals={filteredDeals} 
-            onDealClick={handleDealClick}
-            selectedDeals={selectedDeals}
-            onDealSelect={handleDealSelect}
-            onBulkDelete={handleBulkDelete} 
-            onClearSelected={clearSelection} 
-          />
-        )}
+        <DealsViewToggle 
+          viewMode={viewMode} 
+          onViewModeChange={setViewMode} 
+        />
       </div>
 
-      <AddDealModal 
-        open={addDealModalOpen} 
-        onOpenChange={setAddDealModalOpen} 
-        onSubmit={handleAddDeal}
-        initialStage={addDealStage}
-      />
+      {/* Stats Cards */}
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              {t('deals.stats.totalValue')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{totalValue.toLocaleString()} MAD</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              {t('deals.stats.wonDeals')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{wonDeals.length}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              {t('deals.stats.avgDealSize')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {filteredDeals.length > 0 
+                ? Math.round(totalValue / filteredDeals.length).toLocaleString()
+                : 0} MAD
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
-      {selectedDeal && (
-        <DealModal 
-          open={dealModalOpen} 
-          onOpenChange={setDealModalOpen}
-          deal={selectedDeal}
-          onSave={handleDealSave}
-          onDelete={handleDealDelete}
+      {/* Deals Board/List */}
+      {viewMode === "kanban" ? (
+        <PipelineBoard
+          deals={filteredDeals}
+          stages={pipelineStages}
+          onDealClick={handleDealClick}
+          onDealMove={handleDealMove}
+          onAddDeal={handleOpenAddDeal}
+          onDealSelect={handleDealSelect}
+          selectedDeals={selectedDeals}
+        />
+      ) : (
+        <DealsListTable
+          deals={filteredDeals}
+          onDealClick={handleDealClick}
+          onDealSelect={handleDealSelect}
+          selectedDeals={selectedDeals}
         />
       )}
+
+      {/* Modals */}
+      <DealModal
+        deal={selectedDeal}
+        open={dealModalOpen}
+        onOpenChange={handleModalClose}
+        onSave={handleDealSave}
+        onDelete={handleDealDelete}
+      />
+
+      <AddDealModal
+        open={addDealModalOpen}
+        onOpenChange={setAddDealModalOpen}
+        onSubmit={handleAddDeal}
+      />
 
       <ImportDealsModal
         open={importModalOpen}
@@ -486,3 +470,5 @@ export default function Deals() {
     </div>
   );
 }
+
+export default withPageTitle(Deals, 'deals');

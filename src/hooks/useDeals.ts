@@ -11,16 +11,17 @@ import { useTranslation } from 'react-i18next';
 const transformDealFromDB = (dbDeal: any): Deal => ({
   id: dbDeal.id,
   name: dbDeal.name,
-  client: dbDeal.client_name || 'Unknown Client', // Use client_name from deals table
-  clientId: dbDeal.client_id,
+  client: dbDeal.client_name || 'Unknown Client',
+  clientId: dbDeal.client_id || null,
   value: Number(dbDeal.value),
   currency: dbDeal.currency || 'MAD',
   stage: mapDBStageToFrontend(dbDeal.stage, dbDeal.tags),
   probability: dbDeal.probability || 0,
   expectedCloseDate: dbDeal.expected_close_date || '',
   source: dbDeal.source || '',
-  owner: 'Unknown Owner', // TODO: Add owner join later when foreign key is set up
+  owner: dbDeal.owner ? `${dbDeal.owner.first_name || ''} ${dbDeal.owner.last_name || ''}`.trim() || dbDeal.owner.email : 'Unknown Owner',
   ownerId: dbDeal.owner_id,
+  ownerAvatar: dbDeal.owner?.avatar_url,
   tags: (dbDeal.tags || []).filter((tag: string) => tag !== '__lead_stage__'),
   priority: capitalizeFirst(dbDeal.priority) as 'Low' | 'Medium' | 'High',
   created_at: dbDeal.created_at?.split('T')[0] || '',
@@ -116,7 +117,7 @@ export function useDeals() {
   const [selectedDeals, setSelectedDeals] = useState<string[]>([]);
   const [isUsingMockData] = useState(false);
 
-  // Fetch all deals with joins
+  // Fetch all deals with owner information
   const {
     data: deals = [],
     isLoading,
@@ -124,10 +125,19 @@ export function useDeals() {
   } = useQuery({
     queryKey: ['deals'],
     queryFn: async () => {
-      console.log('Fetching deals without joins...');
+      console.log('Fetching deals with owner information...');
       const { data, error } = await supabase
         .from('deals')
-        .select('*')
+        .select(`
+          *,
+          owner:owner_id (
+            id,
+            first_name,
+            last_name,
+            email,
+            avatar_url
+          )
+        `)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -243,11 +253,30 @@ export function useDeals() {
       if (error) throw error;
       return transformDealFromDB(data);
     },
-    onSuccess: (updatedDeal) => {
+    onSuccess: async (updatedDeal) => {
       queryClient.invalidateQueries({ queryKey: ['deals'] });
+      
+      // Create notification if user context exists
+      if (user?.id && userProfile?.role) {
+        await notificationService.notifyDealUpdated(
+          updatedDeal.name,
+          updatedDeal.id,
+          {
+            userId: user.id,
+            userRole: userProfile.role as 'admin' | 'manager' | 'user'
+          },
+          {
+            title: t('deals.notifications.updated.title'),
+            description: t('deals.notifications.updated.description', { 
+              name: updatedDeal.name 
+            })
+          }
+        );
+      }
+
       toast({
-        title: 'Deal updated',
-        description: `${updatedDeal.name} has been updated successfully.`,
+        title: t('deals.toasts.updated.title'),
+        description: t('deals.toasts.updated.description')
       });
     },
     onError: (error) => {

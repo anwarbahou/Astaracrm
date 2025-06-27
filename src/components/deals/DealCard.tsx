@@ -19,7 +19,7 @@ interface DealCardProps {
   onEdit?: (deal: Deal) => void;
   onDelete?: (deal: Deal) => void;
   onMove?: (deal: Deal, stage: string) => void;
-  onSelect?: (deal: Deal, event: React.MouseEvent) => void;
+  onSelect?: (deal: Deal) => void;
   isSelected?: boolean;
 }
 
@@ -54,20 +54,8 @@ export function DealCard({
     if ((e.target as HTMLElement).closest('.deal-menu-trigger')) {
       return;
     }
-
-    // Check if modifier keys are pressed for selection
-    if (onSelect && (e.ctrlKey || e.metaKey || e.shiftKey)) {
-      onSelect(deal, e);
-    } else if (onSelect && isSelected) {
-      // If card is selected and no modifiers, deselect
-      onSelect(deal, e);
-    } else if (onSelect) {
-      // Normal selection
-      onSelect(deal, e);
-    } else {
-      // Fallback to normal click
-      onClick(deal);
-    }
+    e.stopPropagation();
+    onClick(deal);
   };
 
   return (
@@ -102,7 +90,17 @@ export function DealCard({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem onClick={() => onEdit?.(deal)}>
+            <DropdownMenuItem onClick={(e) => {
+              e.stopPropagation();
+              onSelect?.(deal);
+            }}>
+              {isSelected ? "Deselect" : "Select"}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={(e) => {
+              e.stopPropagation();
+              onEdit?.(deal);
+            }}>
               Edit Deal
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onDelete?.(deal)} className="text-red-500">
@@ -198,7 +196,7 @@ export function DealCard({
           </div>
         </div>
         
-        {/* Meta Info */}
+        {/* Footer Info */}
         <div className={cn(
           "flex items-center justify-between text-xs",
           isSelected ? "text-blue-200" : "text-gray-400"
@@ -209,35 +207,9 @@ export function DealCard({
           </div>
           <div className="flex items-center gap-1">
             <User className="h-3 w-3" />
-            <span className="truncate max-w-[80px]">{deal.owner}</span>
+            <span>{deal.owner}</span>
           </div>
         </div>
-
-        {/* Tags */}
-        {deal.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {deal.tags.slice(0, 2).map((tag, index) => (
-              <Badge key={index} variant="outline" className={cn(
-                "text-xs border-gray-600",
-                isSelected 
-                  ? "bg-blue-700 text-blue-100" 
-                  : "bg-gray-800 text-gray-300"
-              )}>
-                {tag}
-              </Badge>
-            ))}
-            {deal.tags.length > 2 && (
-              <Badge variant="outline" className={cn(
-                "text-xs border-gray-600",
-                isSelected 
-                  ? "bg-blue-700 text-blue-100" 
-                  : "bg-gray-800 text-gray-300"
-              )}>
-                +{deal.tags.length - 2}
-              </Badge>
-            )}
-          </div>
-        )}
       </div>
     </div>
   );

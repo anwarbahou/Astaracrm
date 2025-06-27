@@ -152,17 +152,40 @@ export function NotificationSidebar({ open, onOpenChange }: NotificationSidebarP
     const performerEmail = notification.data?.performerEmail || '';
     const entityName = notification.data?.entityName || notification.data?.contactName || notification.data?.clientName || notification.data?.dealName;
     
-    // For bulk operations, re-translate the content
-    if (notification.data?.isBulkOperation) {
-      const translationKey = notification.type === 'deal_added' ? 
-        'deals.notifications.BulkAdded' : 
-        'deals.notifications.BulkDeleted';
+    // Re-translate all deal notifications
+    if (notification.type.startsWith('deal_')) {
+      const translationKey = {
+        'deal_added': 'deals.notifications.created',
+        'deal_updated': 'deals.notifications.updated',
+        'deal_deleted': 'deals.notifications.deleted'
+      }[notification.type];
       
+      // Handle bulk operations separately
+      if (notification.data?.isBulkOperation) {
+        const bulkKey = notification.type === 'deal_added' ? 
+          'deals.notifications.BulkAdded' : 
+          'deals.notifications.BulkDeleted';
+        
+        return {
+          title: t(`${bulkKey}.title`),
+          description: t(`${bulkKey}.description`, {
+            count: notification.data.dealCount,
+            value: notification.data.totalValue?.toLocaleString()
+          }),
+          performerName,
+          performerRole,
+          performerEmail,
+          entityName,
+          timestamp: notification.created_at
+        };
+      }
+      
+      // Handle single deal operations
       return {
         title: t(`${translationKey}.title`),
         description: t(`${translationKey}.description`, {
-          count: notification.data.dealCount,
-          value: notification.data.totalValue?.toLocaleString()
+          name: entityName,
+          value: notification.data?.value?.toLocaleString()
         }),
         performerName,
         performerRole,

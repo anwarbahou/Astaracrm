@@ -1,12 +1,12 @@
-
 import { CalendarHeader } from "@/components/calendar/CalendarHeader";
 import { CalendarGrid } from "@/components/calendar/CalendarGrid";
 import { NewEventModal } from "@/components/calendar/NewEventModal";
 import { EventDetailDrawer } from "@/components/calendar/EventDetailDrawer";
 import { ExtendedAgendaView } from "@/components/calendar/ExtendedAgendaView";
 import { useCalendar } from "@/hooks/useCalendar";
+import { withPageTitle } from '@/components/withPageTitle';
 
-export default function Calendar() {
+function Calendar() {
   const {
     currentDate,
     setCurrentDate,
@@ -73,3 +73,5 @@ export default function Calendar() {
     </div>
   );
 }
+
+export default withPageTitle(Calendar, 'calendar');

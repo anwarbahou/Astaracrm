@@ -13,13 +13,14 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { withPageTitle } from '@/components/withPageTitle';
 import { AddClientModal } from "@/components/modals/AddClientModal";
 import { AddContactModal } from "@/components/modals/AddContactModal";
 import { format, isToday, isTomorrow } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
 import { arSA } from 'date-fns/locale/ar-SA';
 
-export default function Dashboard() {
+function Dashboard() {
   const { t, i18n } = useTranslation();
   const [addClientOpen, setAddClientOpen] = useState(false);
   const [addContactOpen, setAddContactOpen] = useState(false);
@@ -307,3 +308,5 @@ export default function Dashboard() {
     </>
   );
 }
+
+export default withPageTitle(Dashboard, 'dashboard');

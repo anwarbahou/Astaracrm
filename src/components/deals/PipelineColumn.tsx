@@ -199,16 +199,10 @@ export function PipelineColumn({
                   opacity: 0,
                   x: -50,
                   height: 0,
-                  marginTop: 0,
                   marginBottom: 0,
-                  transition: {
-                    opacity: { duration: 0.2, delay: index * 0.1 },
-                    x: { duration: 0.2, delay: index * 0.1 },
-                    height: { duration: 0.2, delay: index * 0.1 },
-                    marginTop: { duration: 0.2, delay: index * 0.1 },
-                    marginBottom: { duration: 0.2, delay: index * 0.1 }
-                  }
+                  transition: { duration: 0.2 }
                 }}
+                layout
               >
                 <DealCard
                   deal={deal}
@@ -216,9 +210,7 @@ export function PipelineColumn({
                   onDragStart={onDragStart}
                   onDragEnd={onDragEnd}
                   onEdit={onDealClick}
-                  onDelete={(deal) => handleBulkAction('delete', [deal])}
-                  onMove={(deal, newStage) => handleBulkAction(`move_${newStage.toLowerCase()}`, [deal])}
-                  onSelect={onDealSelect}
+                  onSelect={onDealSelect ? (d) => onDealSelect(d, {} as React.MouseEvent) : undefined}
                   isSelected={selectedDeals.includes(deal.id)}
                 />
               </motion.div>

@@ -1,11 +1,11 @@
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Task } from '@/hooks/useTasks';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { CalendarIcon, Clock, CheckCircle, AlertTriangle, User, Briefcase, Handshake } from 'lucide-react';
+import { CalendarIcon, Clock, CheckCircle, AlertTriangle, User, Briefcase, Handshake, X } from 'lucide-react';
 import { format, isPast } from "date-fns";
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
@@ -60,7 +60,11 @@ export const PreviewTaskModal: React.FC<PreviewTaskModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[800px] flex flex-col max-h-[90vh] overflow-hidden p-0" onClick={(e) => e.stopPropagation()}>
+      <DialogContent className="sm:max-w-[800px] flex flex-col max-h-[90vh] overflow-hidden p-0">
+        <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+          <X className="h-4 w-4" />
+          <span className="sr-only">Close</span>
+        </DialogClose>
         <DialogHeader className="p-6 pb-4 border-b border-border">
           <DialogTitle className="text-2xl font-bold flex items-center">
             <Badge
@@ -88,16 +92,15 @@ export const PreviewTaskModal: React.FC<PreviewTaskModalProps> = ({
 
             <div className="mb-6">
               <h2 className="text-lg font-semibold mb-2">{t('tasks.previewTaskModal.description')}</h2>
-              <div className="prose dark:prose-invert max-w-none text-[1px]">
+              <div className="prose dark:prose-invert max-w-none">
                 <ReactQuill
                   value={task.description || ''}
                   readOnly={true}
                   theme="bubble"
+                  modules={{ toolbar: false }}
                 />
               </div>
             </div>
-
-            {/* Additional Sections from Image - Placeholders or Not Applicable */}
           </div>
 
           {/* Right Sidebar for Details */}
@@ -127,7 +130,7 @@ export const PreviewTaskModal: React.FC<PreviewTaskModalProps> = ({
                 )}>
                   <CalendarIcon className="h-4 w-4" />
                   <span>{formattedDueDate}</span>
-                  {isOverdue && <span className="text-xs ml-2">({t('tasks.previewTaskModal.overdue')})</span>}
+                  {isOverdue && <span className="text-xs">({t('tasks.previewTaskModal.overdue')})</span>}
                 </div>
               </div>
 
@@ -147,25 +150,18 @@ export const PreviewTaskModal: React.FC<PreviewTaskModalProps> = ({
                     {task.related_entity === 'client' && <Briefcase className="h-4 w-4 text-blue-500" />}
                     {task.related_entity === 'contact' && <User className="h-4 w-4 text-green-500" />}
                     {task.related_entity === 'deal' && <Handshake className="h-4 w-4 text-orange-500" />}
-                    <span className="font-medium">{task.related_entity_name} ({t(`tasks.relatedEntity.${task.related_entity}`)})</span>
+                    <span className="font-medium">{task.related_entity_name} ({t(`tasks.addTaskModal.form.${task.related_entity}`)})</span>
                   </div>
                 </div>
               )}
 
-              {/* Time Tracking - Show actual time spent if present */}
+              {/* Time Tracking */}
               <div>
                 <p className="text-sm text-muted-foreground">{t('tasks.previewTaskModal.timeTracking')}</p>
-                {task.time_spent ? (
-                  <p className="text-foreground mt-1">{task.time_spent}</p>
-                ) : (
-                <p className="text-foreground mt-1">{t('tasks.previewTaskModal.noTimeLogged')}</p>
-                )}
-              </div>
-
-              {/* Labels - Placeholder */}
-              <div>
-                <p className="text-sm text-muted-foreground">{t('tasks.previewTaskModal.labels')}</p>
-                <Badge variant="secondary" className="bg-gray-200 text-gray-700 mt-1">{t('tasks.previewTaskModal.frontendLabel')}</Badge>
+                <div className="flex items-center gap-2 mt-1">
+                  <Clock className="h-4 w-4 text-muted-foreground" />
+                  <span>{task.time_spent || t('tasks.previewTaskModal.noTimeLogged')}</span>
+                </div>
               </div>
             </div>
           </div>

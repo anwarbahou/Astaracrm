@@ -1,9 +1,8 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { Database } from '@/integrations/supabase/types';
 
-type UserRole = Database['public']['Enums']['user_role'];
+type UserRole = string;
 
 interface RoleBasedRouteProps {
   children: React.ReactNode;
@@ -19,7 +18,7 @@ export const RoleBasedRoute: React.FC<RoleBasedRouteProps> = ({
   const { userProfile, loading } = useAuth();
 
   // Show loading while checking authentication
-  if (loading) {
+  if (loading || !userProfile) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -28,7 +27,7 @@ export const RoleBasedRoute: React.FC<RoleBasedRouteProps> = ({
   }
 
   // If user role is not in allowed roles, redirect to fallback
-  if (!userProfile?.role || !allowedRoles.includes(userProfile.role)) {
+  if (!userProfile.role || !allowedRoles.includes(userProfile.role)) {
     return <Navigate to={fallbackPath} replace />;
   }
 

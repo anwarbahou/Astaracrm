@@ -483,6 +483,8 @@
       "location": "Location",
       "position": "Position",
       "joinDate": "Join Date",
+      "tags": "Tags",
+      "tagsPlaceholder": "Add tags separated by commas",
       "notesPlaceholder": "Add notes about this contact...",
       "noNotes": "No notes available",
       "tabs": {
@@ -614,7 +616,29 @@
     "createDealsToTrack": "Create deals to track opportunities",
     "closeDate": "Date of close:",
     "notSet": "Not set",
-    "probability": "probability"
+    "probability": "probability",
+    "notifications": {
+      "created": {
+        "title": "New Deal Created",
+        "description": "Created deal {{name}} worth {{value}} MAD"
+      },
+      "updated": {
+        "title": "Deal Updated",
+        "description": "Updated deal {{name}}"
+      },
+      "deleted": {
+        "title": "Deal Deleted",
+        "description": "Deleted deal {{name}}"
+      },
+      "BulkAdded": {
+        "title": "Bulk Deals Created",
+        "description": "Created {{count}} deals with total value {{value}} MAD"
+      },
+      "BulkDeleted": {
+        "title": "Bulk Deals Deleted",
+        "description": "Deleted {{count}} deals"
+      }
+    }
   },
   "addDealModal": {
     "title": "Add New Deal",
@@ -731,7 +755,11 @@
     "callLead": "Call Lead",
     "assign": "Assign",
     "at": "at",
-    "notSpecified": "Not specified"
+    "notSpecified": "Not specified",
+    "selectedCount": "{{count}} items selected",
+    "clearSelection": "Clear Selection",
+    "bulkDelete": "Delete Selected",
+    "export": "Export"
   },
   "countries": {
     "morocco": "Morocco",
@@ -823,8 +851,8 @@
     "successDescription": "Contact added successfully.",
     "validationError": "Validation Error",
     "requiredFields": "First name, last name, and email are required.",
-    "errorTitle": "Error",
-    "errorDescription": "Failed to create contact. Please try again.",
+    "error": "Error",
+    "emailAlreadyExists": "A contact with this email already exists",
     "cancel": "Cancel",
     "save": "Save",
     "addContact": "Add Contact",
@@ -1115,5 +1143,21 @@
   "visibility": {
     "public": "Public",
     "private": "Private"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "actions": {
+      "sound": "Sound",
+      "test": "Test",
+      "enableSound": "Enable notification sounds",
+      "disableSound": "Disable notification sounds",
+      "testSound": "Test notification sound",
+      "markAllRead": "Mark all as read",
+      "clearAll": "Clear all"
+    },
+    "empty": {
+      "title": "No notifications",
+      "description": "You're all caught up! We'll notify you when there's new activity."
+    }
   }
 }

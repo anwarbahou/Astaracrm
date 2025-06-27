@@ -69,7 +69,7 @@ export function ImportContactsModal({ open, onOpenChange, onImport }: ImportCont
         // Transform and set default values
         return {
           ...contact,
-          owner: userProfile.id, // Use userProfile.id directly for owner
+          owner_id: userProfile.id, // Fixed: Use owner_id instead of owner
           company: contact.company || null,
           phone: contact.phone || null,
           role: contact.role || null,

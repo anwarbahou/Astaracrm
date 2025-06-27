@@ -38,7 +38,7 @@ export function ContactsCardGrid({ contacts, onContactClick }: ContactsCardGridP
                   <p className="font-medium leading-tight">
                     {contact.firstName} {contact.lastName}
                   </p>
-                  <p className="text-xs text-muted-foreground">{contact.role}</p>
+                  <p className="text-xs text-muted-foreground">{contact.role || t('common.notSpecified')}</p>
                 </div>
               </div>
               {/* Status + Visibility */}
@@ -56,6 +56,10 @@ export function ContactsCardGrid({ contacts, onContactClick }: ContactsCardGridP
                   {t(`visibility.${contact.visibility.toLowerCase()}`)}
                 </div>
               </div>
+              {/* Owner information */}
+              <div className="text-xs text-center text-muted-foreground">
+                {t('clients.table.owner')}: {contact.owner || t('common.notSpecified')}
+              </div>
               <Button
                 size="sm"
                 className="w-full"
@@ -71,16 +75,14 @@ export function ContactsCardGrid({ contacts, onContactClick }: ContactsCardGridP
                 <span className="rounded-full bg-muted p-1 flex items-center justify-center">
                   <Mail className="h-4 w-4 text-primary" />
                 </span>
-                {contact.email}
+                {contact.email || t('common.notSpecified')}
               </div>
-              {contact.phone && (
-                <div className="flex items-center gap-3 px-3 py-[6px]">
-                  <span className="rounded-full bg-muted p-1 flex items-center justify-center">
-                    <Phone className="h-4 w-4 text-primary" />
-                  </span>
-                  {contact.phone}
-                </div>
-              )}
+              <div className="flex items-center gap-3 px-3 py-[6px]">
+                <span className="rounded-full bg-muted p-1 flex items-center justify-center">
+                  <Phone className="h-4 w-4 text-primary" />
+                </span>
+                {contact.phone || t('common.notSpecified')}
+              </div>
               <div className="flex items-center gap-3 px-3 py-[6px]">
                 <span className="rounded-full bg-muted p-1 flex items-center justify-center">
                   <Building2 className="h-4 w-4 text-primary" />

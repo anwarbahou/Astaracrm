@@ -563,12 +563,16 @@ class NotificationService {
     dealTitle: string,
     dealId: string,
     dealValue: number,
-    userContext: UserContext
+    userContext: UserContext,
+    translations: {
+      title: string;
+      description: string;
+    }
   ): Promise<void> {
     await this.createNotifications({
       type: 'deal_added',
-      title: 'New Deal Created',
-      description: `created deal ${dealTitle} worth $${dealValue.toLocaleString()}`,
+      title: translations.title,
+      description: translations.description,
       entity_id: dealId,
       entity_type: 'deal',
       data: { dealName: dealTitle, value: dealValue, entityName: dealTitle },
@@ -582,12 +586,16 @@ class NotificationService {
   async notifyBulkDealsAdded(
     dealCount: number,
     totalValue: number,
-    userContext: UserContext
+    userContext: UserContext,
+    translations: {
+      title: string;
+      description: string;
+    }
   ): Promise<void> {
     await this.createNotifications({
       type: 'deal_added',
-      title: 'Bulk Deals Created',
-      description: `created ${dealCount} deals with total value ${totalValue.toLocaleString()} MAD`,
+      title: translations.title,
+      description: translations.description,
       entity_id: `bulk_${Date.now()}`, // Unique identifier for bulk operation
       entity_type: 'deal',
       data: { 
@@ -596,6 +604,156 @@ class NotificationService {
         entityName: `${dealCount} deals`,
         isBulkOperation: true 
       },
+      priority: 'high'
+    }, userContext);
+  }
+
+  /**
+   * Create notification when multiple deals are deleted in bulk
+   */
+  async notifyBulkDealsDeleted(
+    dealCount: number,
+    totalValue: number,
+    userContext: UserContext,
+    translations: {
+      title: string;
+      description: string;
+    }
+  ): Promise<void> {
+    await this.createNotifications({
+      type: 'deal_deleted',
+      title: translations.title,
+      description: translations.description,
+      entity_id: `bulk_${Date.now()}`, // Unique identifier for bulk operation
+      entity_type: 'deal',
+      data: { 
+        dealCount, 
+        totalValue, 
+        entityName: `${dealCount} deals`,
+        isBulkOperation: true 
+      },
+      priority: 'high'
+    }, userContext);
+  }
+
+  /**
+   * Create notification when a deal is updated
+   */
+  async notifyDealUpdated(
+    dealName: string,
+    dealId: string,
+    userContext: UserContext,
+    translations: {
+      title: string;
+      description: string;
+    }
+  ): Promise<void> {
+    await this.createNotifications({
+      type: 'deal_updated',
+      title: translations.title,
+      description: translations.description,
+      entity_id: dealId,
+      entity_type: 'deal',
+      data: { dealName, entityName: dealName },
+      priority: 'medium'
+    }, userContext);
+  }
+
+  /**
+   * Create notification when a deal is deleted
+   */
+  async notifyDealDeleted(
+    dealName: string,
+    dealId: string,
+    userContext: UserContext,
+    translations: {
+      title: string;
+      description: string;
+    }
+  ): Promise<void> {
+    await this.createNotifications({
+      type: 'deal_deleted',
+      title: translations.title,
+      description: translations.description,
+      entity_id: dealId,
+      entity_type: 'deal',
+      data: { dealName, entityName: dealName },
+      priority: 'high'
+    }, userContext);
+  }
+
+  /**
+   * Create notification when a client is updated
+   */
+  async notifyClientUpdated(
+    clientName: string,
+    clientId: string,
+    userContext: UserContext
+  ): Promise<void> {
+    await this.createNotifications({
+      type: 'client_updated',
+      title: 'Client Updated',
+      description: `updated client ${clientName}`,
+      entity_id: clientId,
+      entity_type: 'client',
+      data: { clientName, entityName: clientName },
+      priority: 'medium'
+    }, userContext);
+  }
+
+  /**
+   * Create notification when a client is deleted
+   */
+  async notifyClientDeleted(
+    clientName: string,
+    clientId: string,
+    userContext: UserContext
+  ): Promise<void> {
+    await this.createNotifications({
+      type: 'client_deleted',
+      title: 'Client Deleted',
+      description: `deleted client ${clientName}`,
+      entity_id: clientId,
+      entity_type: 'client',
+      data: { clientName, entityName: clientName },
+      priority: 'high'
+    }, userContext);
+  }
+
+  /**
+   * Create notification when a contact is updated
+   */
+  async notifyContactUpdated(
+    contactName: string,
+    contactId: string,
+    userContext: UserContext
+  ): Promise<void> {
+    await this.createNotifications({
+      type: 'contact_updated',
+      title: 'Contact Updated',
+      description: `updated contact ${contactName}`,
+      entity_id: contactId,
+      entity_type: 'contact',
+      data: { contactName, entityName: contactName },
+      priority: 'medium'
+    }, userContext);
+  }
+
+  /**
+   * Create notification when a contact is deleted
+   */
+  async notifyContactDeleted(
+    contactName: string,
+    contactId: string,
+    userContext: UserContext
+  ): Promise<void> {
+    await this.createNotifications({
+      type: 'contact_deleted',
+      title: 'Contact Deleted',
+      description: `deleted contact ${contactName}`,
+      entity_id: contactId,
+      entity_type: 'contact',
+      data: { contactName, entityName: contactName },
       priority: 'high'
     }, userContext);
   }

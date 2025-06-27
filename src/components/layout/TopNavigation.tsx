@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Plus, User, Bell, LogOut, RefreshCw } from "lucide-react";
+import { Search, Plus, User, Bell, LogOut, RefreshCw, Menu } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +22,12 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useNotifications } from "@/hooks/useNotifications";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { SimpleSidebarContent } from "@/components/layout/SimpleSidebarContent";
 
 const getRoleIcon = (role: string | null) => {
   switch (role) {
@@ -64,6 +70,7 @@ export function TopNavigation() {
     isManager,
     forceRefresh 
   } = useAuth();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleSignOut = async () => {
     try {
@@ -122,6 +129,24 @@ export function TopNavigation() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
+            {/* Mobile Menu Button */}
+            <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+              <SheetTrigger asChild className="xl:hidden">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 sm:h-9 sm:w-9 hover:bg-muted/50 transition-colors duration-200 rounded-xl"
+                >
+                  <Menu className="h-4 w-4" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-64 p-0 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+                <div className="h-full flex flex-col">
+                  <SimpleSidebarContent />
+                </div>
+              </SheetContent>
+            </Sheet>
+            
             {/* Theme Toggle */}
             <div className="hidden sm:block">
               <ThemeToggle />

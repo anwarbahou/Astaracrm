@@ -356,6 +356,42 @@
     "import": {
       "title": "Importer des contacts",
       "description": "Importez vos données de contacts à partir d'un fichier JSON ou collez-les directement"
+    },
+    "profile": {
+      "title": "Profil du contact",
+      "edit": "Modifier",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "delete": "Supprimer",
+      "deleting": "Suppression...",
+      "deleteContact": "Supprimer le contact",
+      "success": "Succès",
+      "error": "Erreur",
+      "contactUpdated": "Contact mis à jour avec succès",
+      "contactUpdatedDescription": "Les informations du contact ont été mises à jour avec succès.",
+      "contactDeleted": "Contact supprimé avec succès",
+      "contactDeletedDescription": "Le contact a été supprimé avec succès.",
+      "updateFailed": "Échec de la mise à jour du contact",
+      "deleteFailed": "Échec de la suppression du contact",
+      "contactInformation": "Informations du contact",
+      "professionalInfo": "Informations professionnelles",
+      "companyInformation": "Informations de l'entreprise",
+      "activitySummary": "Résumé des activités",
+      "created": "Créé le",
+      "lastContacted": "Dernier contact",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "email": "Email",
+      "phone": "Téléphone",
+      "role": "Rôle",
+      "company": "Entreprise",
+      "location": "Localisation",
+      "position": "Poste",
+      "joinDate": "Date d'entrée",
+      "tags": "Étiquettes",
+      "tagsPlaceholder": "Ajouter des étiquettes séparées par des virgules",
+      "notesPlaceholder": "Ajouter des notes sur ce contact...",
+      "noNotes": "Aucune note disponible"
     }
   },
   "deals": {
@@ -432,6 +468,28 @@
       "coldOutreach": "Démarchage à froid",
       "linkedIn": "LinkedIn",
       "existingClient": "Client existant"
+    },
+    "notifications": {
+      "created": {
+        "title": "Nouvelle Affaire Créée",
+        "description": "Affaire {{name}} créée d'une valeur de {{value}} MAD"
+      },
+      "updated": {
+        "title": "Affaire Mise à Jour",
+        "description": "Affaire {{name}} mise à jour"
+      },
+      "deleted": {
+        "title": "Affaire Supprimée",
+        "description": "Affaire {{name}} supprimée"
+      },
+      "BulkAdded": {
+        "title": "Affaires Créées en Masse",
+        "description": "{{count}} affaires créées d'une valeur totale de {{value}} MAD"
+      },
+      "BulkDeleted": {
+        "title": "Affaires Supprimées en Masse",
+        "description": "{{count}} affaires supprimées"
+      }
     }
   },
   "addDealModal": {
@@ -648,7 +706,11 @@
     "callLead": "Appeler le lead",
     "assign": "Assigner",
     "at": "chez" ,
-    "notSpecified": "Non spécifié"
+    "notSpecified": "Non spécifié",
+    "selectedCount": "{{count}} éléments sélectionnés",
+    "clearSelection": "Effacer la sélection",
+    "bulkDelete": "Supprimer la sélection",
+    "export": "Exporter"
   },
   "countries": {
     "morocco": "Maroc",
@@ -752,7 +814,9 @@
       "lastContacted": "Dernier contact"
     },
     "contactAdded": "Contact ajouté avec succès",
-    "visibilityLabel": "Visibilité"
+    "visibilityLabel": "Visibilité",
+    "error": "Erreur",
+    "emailAlreadyExists": "Un contact avec cet email existe déjà"
   },
   "aiLeads": {
     "title": "Intelligence des leads par IA",

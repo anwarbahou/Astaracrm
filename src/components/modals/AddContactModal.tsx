@@ -13,7 +13,7 @@ import { useRef } from "react";
 interface AddContactModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onContactAdded?: () => void;
+  onContactAdded?: (contact: any) => void;
 }
 
 export function AddContactModal({ open, onOpenChange, onContactAdded }: AddContactModalProps) {

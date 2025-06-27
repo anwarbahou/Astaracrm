@@ -202,7 +202,7 @@ const App = () => {
                 transition={{ duration: 0.5 }}
               >
                 <motion.div
-                  className="transition-theme duration-theme ease-theme"
+                  className="transition-theme duration-theme ease-theme hidden xl:block"
                   layout
                   transition={{ duration: 0.5, ease: "easeInOut" }}
                 >
@@ -212,7 +212,7 @@ const App = () => {
                 <motion.div 
                   className={cn(
                     "flex-1 flex flex-col transition-all duration-500 ease-in-out w-full min-w-0",
-                    mainContentMargin
+                    isSidebarCollapsed ? "xl:pl-[72px]" : "xl:pl-64"
                   )}
                   layout
                   transition={{ duration: 0.5, ease: "easeInOut" }}

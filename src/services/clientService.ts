@@ -1,9 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { notificationService } from '@/services/notificationService';
-import { Database } from '@/integrations/supabase/types';
 
-type Client = Database['public']['Tables']['clients']['Row'];
-type User = Database['public']['Tables']['users']['Row'];
+type Client = any;
 
 export interface ClientProfile {
   id: string;
@@ -17,20 +15,15 @@ export interface ClientProfile {
   avatar_url?: string | null;
   notes?: string | null;
   tags?: string[] | null;
-  stage?: Database["public"]["Enums"]["client_stage"] | null;
-  status?: Database["public"]["Enums"]["user_status"] | null;
+  stage?: string | null;
+  status?: string | null;
   owner_id?: string | null;
   contacts_count?: number | null;
   total_deal_value?: number | null;
   created_at?: string | null;
   updated_at?: string | null;
-  owner?: {
-    id: string;
-    first_name: string | null;
-    last_name: string | null;
-    email: string;
-    avatar_url: string | null;
-  };
+  owner?: any;
+  users?: any;
   company_name?: string;
   description?: string;
 }
@@ -46,8 +39,8 @@ export interface ClientInput {
   avatar_url?: string | null;
   notes?: string | null;
   tags?: string[] | null;
-  stage?: Database["public"]["Enums"]["client_stage"] | null;
-  status?: Database["public"]["Enums"]["user_status"] | null;
+  stage?: string | null;
+  status?: string | null;
   owner_id?: string | null;
   contacts_count?: number | null;
   total_deal_value?: number | null;
@@ -156,16 +149,22 @@ export class ClientService {
   // Update client profile
   static async updateClient(clientId: string, updates: Partial<ClientProfile>): Promise<boolean> {
     try {
-      // Extract only the database fields, excluding nested objects like 'owner'
+      // Only include fields that exist in the database table
       const {
-        owner, // Remove owner object
-        ...dbUpdates
+        id,
+        owner,
+        users,
+        company_name,
+        description,
+        created_at,
+        updated_at,
+        ...validUpdates
       } = updates;
 
       const { error } = await supabase
         .from('clients')
         .update({
-          ...dbUpdates,
+          ...validUpdates,
           updated_at: new Date().toISOString()
         })
         .eq('id', clientId);
@@ -180,13 +179,11 @@ export class ClientService {
       // Push notification
       const { data: user } = await supabase.auth.getUser();
       if (user?.user?.id) {
-        notificationService.createNotifications({
-          type: 'client_updated',
-          title: 'Client Updated',
-          description: `updated client ${updates.name || ''}`,
-          entity_id: clientId,
-          entity_type: 'client',
-        }, { userId: user.user.id, userRole: 'user' });
+        await notificationService.notifyClientUpdated(
+          updates.name || '',
+          clientId,
+          { userId: user.user.id, userRole: 'user' }
+        );
       }
       return true;
     } catch (error) {
@@ -198,6 +195,17 @@ export class ClientService {
   // Delete a client by ID
   static async deleteClient(clientId: string): Promise<boolean> {
     try {
+      // Fetch client name before deletion
+      const { data: clientData, error: fetchError } = await supabase
+        .from('clients')
+        .select('name')
+        .eq('id', clientId)
+        .single();
+      if (fetchError) {
+        console.error('Error fetching client before deletion:', fetchError);
+        return false;
+      }
+
       const { error } = await supabase
         .from('clients')
         .delete()
@@ -209,14 +217,13 @@ export class ClientService {
       }
 
       const { data: user } = await supabase.auth.getUser();
-      if (user?.user?.id) {
-        notificationService.createNotifications({
-          type: 'client_deleted',
-          title: 'Client Deleted',
-          description: 'deleted a client',
-          entity_id: clientId,
-          entity_type: 'client',
-        }, { userId: user.user.id, userRole: 'user' });
+      const userRole = user?.user?.user_metadata?.role || 'user';
+      if (user?.user?.id && clientData?.name) {
+        await notificationService.notifyClientDeleted(
+          clientData.name,
+          clientId,
+          { userId: user.user.id, userRole }
+        );
       }
 
       return true;
@@ -371,7 +378,7 @@ export class ClientService {
     clientsToImport: ClientInput[],
     options: UserContext
   ): Promise<void> {
-    const { userId } = options;
+    const { userId, userRole } = options;
     try {
       const dbInserts = clientsToImport.map(client => ({
         name: client.name,
@@ -387,8 +394,6 @@ export class ClientService {
         stage: client.stage || 'lead',
         status: client.status || 'active',
         owner_id: client.owner_id || userId,
-        // contacts_count and total_deal_value are typically calculated by the backend
-        // or initialized to 0 and updated later
         contacts_count: client.contacts_count || 0, 
         total_deal_value: client.total_deal_value || 0,
       }));
@@ -402,9 +407,77 @@ export class ClientService {
         throw error;
       }
       console.log(`🔗 Supabase: Successfully imported ${clientsToImport.length} clients.`);
+
+      // Robust notification: fetch all imported clients by email in one query
+      const emails = clientsToImport.map(c => c.email).filter(Boolean);
+      if (emails.length > 0) {
+        const { data: insertedClients, error: fetchError } = await supabase
+          .from('clients')
+          .select('id, email, name')
+          .in('email', emails);
+        if (!fetchError && insertedClients) {
+          // Map email to id
+          const emailToId: Record<string, string> = {};
+          insertedClients.forEach(c => {
+            if (c.email && c.id) emailToId[c.email] = c.id;
+          });
+          // Notify for each imported client
+          for (const client of clientsToImport) {
+            if (client.email && emailToId[client.email]) {
+              await notificationService.notifyClientAdded(
+                client.name,
+                emailToId[client.email],
+                { userId, userRole }
+              );
+            }
+          }
+        }
+      }
     } catch (error) {
       console.error('Error importing clients:', error);
       throw error;
+    }
+  }
+
+  // Add this method for creating a client with duplicate check and owner info
+  static async createClient(clientInput: ClientInput, options: UserContext): Promise<{ success: boolean, message?: string, owner?: string }> {
+    const { userId } = options;
+    try {
+      // Check if a client with the same email exists
+      if (clientInput.email) {
+        const { data: existing, error: findError } = await supabase
+          .from('clients')
+          .select('id, name, email, owner_id')
+          .eq('email', clientInput.email)
+          .single();
+        if (!findError && existing) {
+          // Optionally fetch owner info
+          let ownerName = 'Unknown';
+          if (existing.owner_id) {
+            const { data: ownerUser } = await supabase
+              .from('users')
+              .select('first_name, last_name, email')
+              .eq('id', existing.owner_id)
+              .single();
+            if (ownerUser) {
+              ownerName = `${ownerUser.first_name || ''} ${ownerUser.last_name || ownerUser.email || ''}`.trim();
+            }
+          }
+          return { success: false, message: 'Client already exists', owner: ownerName };
+        }
+      }
+      // Insert new client
+      const { data, error } = await supabase
+        .from('clients')
+        .insert({ ...clientInput, owner_id: clientInput.owner_id || userId })
+        .select()
+        .single();
+      if (error) {
+        return { success: false, message: error.message };
+      }
+      return { success: true };
+    } catch (error) {
+      return { success: false, message: (error as any).message };
     }
   }
 } 

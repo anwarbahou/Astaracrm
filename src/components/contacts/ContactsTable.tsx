@@ -49,6 +49,7 @@ export interface Contact {
   lastContacted: string;
   notes?: string;
   owner?: string;
+  owner_id?: string;
 }
 
 export interface ContactFilters {

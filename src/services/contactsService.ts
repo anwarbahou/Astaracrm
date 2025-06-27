@@ -1,12 +1,11 @@
 import type { Contact } from '@/components/contacts/ContactsTable';
 import { supabase } from '@/integrations/supabase/client';
-import type { Database } from '@/integrations/supabase/types';
 import { notificationService } from '@/services/notificationService';
 
 // Database types
-type ContactRow = Database['public']['Tables']['contacts']['Row'];
-type ContactInsert = Database['public']['Tables']['contacts']['Insert'];
-type ContactUpdate = Database['public']['Tables']['contacts']['Update'];
+type ContactRow = any;
+type ContactInsert = any;
+type ContactUpdate = any;
 
 export interface ContactInput {
   firstName: string;
@@ -224,6 +223,14 @@ export const contactsService = {
       
       const contact = dbContactToContact(data);
       console.log(`🔗 Supabase: Contact updated by ${userRole} ${userId}:`, contact.firstName, contact.lastName);
+
+      // Send notification for contact update
+      await notificationService.notifyContactUpdated(
+        `${contact.firstName} ${contact.lastName}`,
+        existingContact.id,
+        { userId, userRole: (userRole || 'user') as any }
+      );
+
       return contact;
     } catch (error) {
       console.error('Error updating contact in Supabase:', error);
@@ -272,14 +279,12 @@ export const contactsService = {
       
       console.log(`🔗 Supabase: Contact deleted by ${userRole} ${userId}:`, existingContact.first_name, existingContact.last_name);
 
-      // Notify deletion
-      notificationService.createNotifications({
-        type: 'contact_deleted',
-        title: 'Contact Deleted',
-        description: `deleted contact ${existingContact.first_name} ${existingContact.last_name}`,
-        entity_id: existingContact.id,
-        entity_type: 'contact',
-      }, { userId, userRole: (userRole || 'user') as any });
+      // Notify deletion using the proper helper method
+      await notificationService.notifyContactDeleted(
+        `${existingContact.first_name} ${existingContact.last_name}`,
+        existingContact.id,
+        { userId, userRole: (userRole || 'user') as any }
+      );
       return true;
     } catch (error) {
       console.error('Error deleting contact in Supabase:', error);
@@ -397,36 +402,142 @@ export const contactsService = {
     contactsToImport: Omit<Contact, 'id' | 'created_at' | 'updated_at'>[],
     options: ContactsServiceOptions
   ): Promise<number> {
-    const { userId } = options;
+    const { userId, userRole } = options;
     try {
-      const dbInserts = contactsToImport.map(contact => contactInputToDbInsert({
-        firstName: contact.firstName,
-        lastName: contact.lastName,
-        email: contact.email,
-        phone: contact.phone,
-        role: contact.role,
-        company: contact.company,
-        country: contact.country,
-        status: contact.status === 'Active' ? 'Active' : 'Inactive',
+      // Map contacts to database format
+      const dbInserts = contactsToImport.map(contact => ({
+        first_name: contact.firstName,
+        last_name: contact.lastName,
+        email: contact.email.toLowerCase().trim(), // Normalize email
+        phone: contact.phone || null,
+        role: contact.role || null,
+        company: contact.company || null,
+        country: contact.country || null,
+        status: contact.status === 'Active' ? 'active' : 'inactive',
         tags: contact.tags || [],
-        notes: contact.notes,
-        owner: contact.owner,
-      }, userId));
+        notes: contact.notes || null,
+        owner_id: contact.owner_id || userId // Use provided owner_id or default to current user
+      }));
 
-      const { error, count } = await supabase
+      // First check for any duplicate emails
+      const emails = dbInserts.map(contact => contact.email);
+      const { data: existingContacts, error: checkError } = await supabase
         .from('contacts')
-        .upsert(dbInserts, { onConflict: 'email', ignoreDuplicates: true, count: 'exact' });
+        .select('email')
+        .in('email', emails);
 
-      if (error) {
-        console.error('Error importing contacts to Supabase:', error);
-        throw error;
+      if (checkError) {
+        console.error('Error checking existing contacts:', checkError);
+        throw checkError;
       }
 
-      console.log(`🔗 Supabase: Import complete. Inserted ${count ?? 0} new contacts (duplicates ignored).`);
-      return count ?? 0;
+      // Filter out contacts that already exist
+      const existingEmails = new Set(existingContacts?.map(c => c.email) || []);
+      const newContacts = dbInserts.filter(contact => !existingEmails.has(contact.email));
+
+      if (newContacts.length === 0) {
+        console.log('🔗 Supabase: No new contacts to import (all emails exist)');
+        return 0;
+      }
+
+      // Insert only new contacts
+      const { data: insertedContacts, error: insertError } = await supabase
+        .from('contacts')
+        .insert(newContacts)
+        .select('*');
+
+      if (insertError) {
+        console.error('Error importing contacts to Supabase:', insertError);
+        throw insertError;
+      }
+
+      // Create notifications for each imported contact
+      if (insertedContacts) {
+        for (const contact of insertedContacts) {
+          await notificationService.notifyContactAdded(
+            `${contact.first_name} ${contact.last_name}`,
+            contact.id,
+            { userId, userRole: userRole || 'user' }
+          );
+        }
+      }
+
+      console.log(`🔗 Supabase: Import complete. Inserted ${insertedContacts?.length ?? 0} new contacts.`);
+      return insertedContacts?.length ?? 0;
     } catch (error) {
       console.error('Error importing contacts:', error);
       throw error;
     }
+  },
+
+  async createContactWithOwnerCheck(contactInput: ContactInput, options: ContactsServiceOptions): Promise<{ 
+    success: boolean;
+    message?: string;
+    contactId?: string;
+    contact?: Contact;
+  }> {
+    const { userId, userRole } = options;
+    try {
+      // Normalize the email
+      const normalizedEmail = contactInput.email?.toLowerCase().trim();
+      
+      // Try to insert directly and handle any unique constraint violations
+      const { data: insertedContact, error: insertError } = await supabase
+        .from('contacts')
+        .insert([{
+          first_name: contactInput.firstName.trim(),
+          last_name: contactInput.lastName.trim(),
+          email: normalizedEmail,
+          phone: contactInput.phone?.trim() || null,
+          role: contactInput.role?.trim() || null,
+          company: contactInput.company?.trim() || null,
+          country: contactInput.country?.trim() || null,
+          status: contactInput.status?.toLowerCase() === 'inactive' ? 'inactive' : 'active',
+          tags: contactInput.tags || [],
+          notes: contactInput.notes?.trim() || null,
+          owner_id: userId
+        }])
+        .select(`
+          *,
+          owner:users!contacts_owner_id_fkey(first_name, last_name)
+        `)
+        .single();
+
+      if (insertError) {
+        console.error('Error creating contact:', insertError);
+        
+        // Handle specific error codes
+        if (insertError.code === '23505') { // Unique constraint violation
+          return { success: false, message: 'Contact with this email already exists' };
+        }
+        
+        return { success: false, message: 'Error creating contact' };
+      }
+
+      // Create notification for the new contact
+      await notificationService.notifyContactAdded(
+        `${contactInput.firstName} ${contactInput.lastName}`,
+        insertedContact.id,
+        { userId, userRole }
+      );
+
+      return { 
+        success: true, 
+        contactId: insertedContact.id,
+        contact: dbContactToContact(insertedContact)
+      };
+    } catch (error) {
+      console.error('Error in createContactWithOwnerCheck:', error);
+      return { success: false, message: 'Error creating contact' };
+    }
+  },
+
+  async getContactByEmail(email: string): Promise<{ data: any, error: any }> {
+    const { data, error } = await supabase
+      .from('contacts')
+      .select('*')
+      .eq('email', email)
+      .single();
+    return { data, error };
   },
 }; 

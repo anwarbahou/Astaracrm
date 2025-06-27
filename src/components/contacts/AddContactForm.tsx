@@ -15,7 +15,7 @@ import {
 
 interface AddContactFormProps {
   onOpenChange: (open: boolean) => void;
-  onContactAdded?: () => void;
+  onContactAdded?: (contact: any) => void;
 }
 
 const initialFormData: ContactFormData = {
@@ -33,7 +33,7 @@ const initialFormData: ContactFormData = {
 };
 
 export const AddContactForm = forwardRef<HTMLFormElement, AddContactFormProps>(({ onOpenChange, onContactAdded }, formRef) => {
-  const { t } = useTranslation('addContactModal');
+  const { t } = useTranslation();
   const { toast } = useToast();
   const { user, userProfile } = useAuth();
   const [formData, setFormData] = useState<ContactFormData>(initialFormData);
@@ -90,22 +90,6 @@ export const AddContactForm = forwardRef<HTMLFormElement, AddContactFormProps>((
       return;
     }
 
-    // Check for duplicate email
-    try {
-      const { data: existingContact } = await contactsService.checkEmailExists(formData.email);
-      if (existingContact) {
-        toast({
-          title: t('addContactModal.error'),
-          description: t('addContactModal.emailAlreadyExists'),
-          variant: "destructive"
-        });
-        return;
-      }
-    } catch (emailCheckError) {
-      console.warn('Could not check for duplicate email:', emailCheckError);
-      // Continue with submission - let the database handle the constraint
-    }
-
     setLoading(true);
 
     try {
@@ -122,21 +106,22 @@ export const AddContactForm = forwardRef<HTMLFormElement, AddContactFormProps>((
         notes: formData.notes.trim(),
       };
 
-      const newContact = await contactsService.createContact(contactInput, {
+      const result = await contactsService.createContactWithOwnerCheck(contactInput, {
         userId: user.id,
-        userRole: userProfile.role
+        userRole: userProfile.role as 'user' | 'admin' | 'manager'
       });
 
-      // Create notifications for the new contact
-      if (newContact?.id) {
-        await notificationService.notifyContactAdded(
-          `${formData.firstName} ${formData.lastName}`,
-          newContact.id.toString(),
-          {
-            userId: user.id,
-            userRole: userProfile.role
-          }
-        );
+      if (!result.success) {
+        console.log('Duplicate contact result:', result);
+        const translatedMessage = t('addContactModal.emailAlreadyExists');
+        console.log('Translation being used:', translatedMessage);
+        toast({
+          title: t('addContactModal.error'),
+          description: translatedMessage,
+          variant: 'destructive'
+        });
+        setLoading(false);
+        return;
       }
 
       toast({
@@ -147,8 +132,10 @@ export const AddContactForm = forwardRef<HTMLFormElement, AddContactFormProps>((
       // Reset form
       setFormData(initialFormData);
       
-      // Call the callback to refresh the contacts list
-      onContactAdded?.();
+      // Call the callback to refresh the contacts list with the new contact
+      if (result.contact) {
+        onContactAdded?.(result.contact);
+      }
       
       // Close the modal
       onOpenChange(false);

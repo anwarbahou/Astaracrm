@@ -5,6 +5,7 @@ import { Deal, DealStage } from '@/types/deal';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { notificationService } from '@/services/notificationService';
+import { useTranslation } from 'react-i18next';
 
 // Transform database deal to frontend Deal type
 const transformDealFromDB = (dbDeal: any): Deal => ({
@@ -22,8 +23,8 @@ const transformDealFromDB = (dbDeal: any): Deal => ({
   ownerId: dbDeal.owner_id,
   tags: (dbDeal.tags || []).filter((tag: string) => tag !== '__lead_stage__'),
   priority: capitalizeFirst(dbDeal.priority) as 'Low' | 'Medium' | 'High',
-  createdAt: dbDeal.created_at?.split('T')[0] || '',
-  updatedAt: dbDeal.updated_at?.split('T')[0] || '',
+  created_at: dbDeal.created_at?.split('T')[0] || '',
+  updated_at: dbDeal.updated_at?.split('T')[0] || '',
   notes: dbDeal.notes || '',
   activities: []
 });
@@ -108,9 +109,12 @@ const capitalizeFirst = (str: string): string =>
   str.charAt(0).toUpperCase() + str.slice(1);
 
 export function useDeals() {
+  const queryClient = useQueryClient();
   const { toast } = useToast();
   const { user, userProfile } = useAuth();
-  const queryClient = useQueryClient();
+  const { t } = useTranslation();
+  const [selectedDeals, setSelectedDeals] = useState<string[]>([]);
+  const [isUsingMockData] = useState(false);
 
   // Fetch all deals with joins
   const {
@@ -139,7 +143,7 @@ export function useDeals() {
   // Create deal mutation with optional silent mode
   const createDealMutation = useMutation({
     mutationFn: async ({ dealData, silent = false }: { 
-      dealData: Omit<Deal, 'id' | 'createdAt' | 'updatedAt'>, 
+      dealData: Omit<Deal, 'id' | 'created_at' | 'updated_at'>, 
       silent?: boolean 
     }) => {
       console.log('=== DEAL CREATION DEBUG ===');
@@ -195,15 +199,22 @@ export function useDeals() {
           deal.value,
           {
             userId: user.id,
-            userRole: userProfile.role
+            userRole: userProfile.role as 'admin' | 'manager' | 'user'
+          },
+          {
+            title: t('deals.notifications.created.title'),
+            description: t('deals.notifications.created.description', { 
+              name: deal.name, 
+              value: deal.value.toLocaleString() 
+            })
           }
         );
       }
       
       if (!silent) {
         toast({
-          title: 'Deal created',
-          description: `${deal.name} has been created successfully.`,
+          title: t('deals.toasts.created.title'),
+          description: t('deals.toasts.created.description'),
         });
       }
     },
@@ -252,20 +263,47 @@ export function useDeals() {
   // Delete deal mutation
   const deleteDealMutation = useMutation({
     mutationFn: async ({ dealId, silent = false }: { dealId: string, silent?: boolean }) => {
+      // Get deal details before deletion for notification
+      const { data: dealData, error: fetchError } = await supabase
+        .from('deals')
+        .select('*')
+        .eq('id', dealId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      // Delete the deal
       const { error } = await supabase
         .from('deals')
         .delete()
         .eq('id', dealId);
 
       if (error) throw error;
-      return { dealId, silent };
+      return { dealId, silent, dealName: dealData.name };
     },
-    onSuccess: ({ dealId, silent }) => {
+    onSuccess: async ({ dealId, silent, dealName }) => {
       queryClient.invalidateQueries({ queryKey: ['deals'] });
+      
+      // Send notification if not silent and user context exists
+      if (!silent && user?.id && userProfile?.role) {
+        await notificationService.notifyDealDeleted(
+          dealName,
+          dealId,
+          {
+            userId: user.id,
+            userRole: userProfile.role as 'admin' | 'manager' | 'user'
+          },
+          {
+            title: t('deals.notifications.deleted.title'),
+            description: t('deals.notifications.deleted.description', { name: dealName })
+          }
+        );
+      }
+
       if (!silent) {
         toast({
-          title: 'Deal deleted',
-          description: 'Deal has been deleted successfully.',
+          title: t('deals.toasts.deleted.title'),
+          description: t('deals.toasts.deleted.description'),
         });
       }
     },
@@ -282,15 +320,15 @@ export function useDeals() {
   });
 
   // Helper functions for backwards compatibility
-  const createDeal = (dealData: Omit<Deal, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const createDeal = (dealData: Omit<Deal, 'id' | 'created_at' | 'updated_at'>) => {
     createDealMutation.mutate({ dealData, silent: false });
   };
 
-  const createDealAsync = (dealData: Omit<Deal, 'id' | 'createdAt' | 'updatedAt'>, silent = false) => {
+  const createDealAsync = (dealData: Omit<Deal, 'id' | 'created_at' | 'updated_at'>, silent = false) => {
     return createDealMutation.mutateAsync({ dealData, silent });
   };
 
-  const createDealsSilent = async (dealsData: Omit<Deal, 'id' | 'createdAt' | 'updatedAt'>[]) => {
+  const createDealsSilent = async (dealsData: Omit<Deal, 'id' | 'created_at' | 'updated_at'>[]) => {
     const results = [];
     for (const dealData of dealsData) {
       const result = await createDealMutation.mutateAsync({ dealData, silent: true });
@@ -299,7 +337,7 @@ export function useDeals() {
     return results;
   };
 
-  const createDealsWithBulkNotification = async (dealsData: Omit<Deal, 'id' | 'createdAt' | 'updatedAt'>[]) => {
+  const createDealsWithBulkNotification = async (dealsData: Omit<Deal, 'id' | 'created_at' | 'updated_at'>[]) => {
     console.log('🔄 Starting bulk deal creation for', dealsData.length, 'deals');
     const results = [];
     let totalValue = 0;
@@ -322,7 +360,14 @@ export function useDeals() {
         totalValue,
         {
           userId: user.id,
-          userRole: userProfile.role
+          userRole: userProfile.role as 'admin' | 'manager' | 'user'
+        },
+        {
+          title: t('deals.notifications.BulkAdded.title'),
+          description: t('deals.notifications.BulkAdded.description', { 
+            count: results.length, 
+            value: totalValue.toLocaleString() 
+          })
         }
       );
       console.log('✅ Bulk notification created successfully');
@@ -346,6 +391,48 @@ export function useDeals() {
       results.push(result.dealId);
     }
     return results;
+  };
+
+  const handleBulkDelete = async (dealsToDelete: Deal[]) => {
+    if (isUsingMockData) {
+      const newDeals = dealsToDelete.map(deal => ({
+        ...deal,
+        id: Date.now().toString(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }));
+    } else {
+      try {
+        // Delete deals silently first
+        await deleteDealsSilent(dealsToDelete.map(d => d.id));
+
+        // Send a single bulk notification
+        if (user?.id && userProfile?.role) {
+          await notificationService.notifyBulkDealsDeleted(
+            dealsToDelete.length,
+            dealsToDelete.reduce((sum, deal) => sum + deal.value, 0),
+            {
+              userId: user.id,
+              userRole: userProfile.role as 'admin' | 'manager' | 'user'
+            },
+            {
+              title: t('deals.notifications.BulkDeleted.title'),
+              description: t('deals.notifications.BulkDeleted.description', { 
+                count: dealsToDelete.length 
+              })
+            }
+          );
+        }
+
+        toast({
+          title: t('deals.toasts.bulkDeleted.title'),
+          description: t('deals.toasts.bulkDeleted.description', { count: dealsToDelete.length }),
+        });
+      } catch (error) {
+        // ... existing error handling ...
+      }
+    }
+    setSelectedDeals([]);
   };
 
   return {

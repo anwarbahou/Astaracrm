@@ -360,46 +360,53 @@
       "description": "قم باستيراد بيانات جهات الاتصال من ملف JSON أو الصقها مباشرةً"
     },
     "profile": {
-      "title": "ملف جهة الاتصال",
+      "title": "ملف التواصل",
       "edit": "تعديل",
-      "save": "حفظ التغييرات",
+      "save": "حفظ",
       "cancel": "إلغاء",
       "delete": "حذف",
       "deleting": "جاري الحذف...",
       "deleteContact": "حذف جهة الاتصال",
-      "success": "تم بنجاح",
+      "success": "نجاح",
       "error": "خطأ",
       "contactUpdated": "تم تحديث جهة الاتصال بنجاح",
       "contactUpdatedDescription": "تم تحديث معلومات جهة الاتصال بنجاح.",
       "contactDeleted": "تم حذف جهة الاتصال بنجاح",
       "contactDeletedDescription": "تم حذف جهة الاتصال بنجاح.",
-      "updateFailed": "فشل في تحديث جهة الاتصال",
-      "deleteFailed": "فشل في حذف جهة الاتصال",
+      "updateFailed": "فشل تحديث جهة الاتصال",
+      "deleteFailed": "فشل حذف جهة الاتصال",
       "contactInformation": "معلومات الاتصال",
       "professionalInfo": "المعلومات المهنية",
       "companyInformation": "معلومات الشركة",
       "activitySummary": "ملخص النشاط",
-      "created": "تاريخ الإنشاء",
-      "lastContacted": "آخر تواصل",
+      "created": "تم الإنشاء",
+      "lastContacted": "آخر اتصال",
       "firstName": "الاسم الأول",
       "lastName": "اسم العائلة",
       "email": "البريد الإلكتروني",
       "phone": "الهاتف",
-      "role": "الدور/المنصب",
+      "role": "الدور",
       "company": "الشركة",
       "location": "الموقع",
       "position": "المنصب",
       "joinDate": "تاريخ الانضمام",
-      "notesPlaceholder": "أضف ملاحظة حول جهة الاتصال هذه...",
+      "tags": "الوسوم",
+      "tagsPlaceholder": "أضف وسوم مفصولة بفواصل",
+      "notesPlaceholder": "أضف ملاحظات حول جهة الاتصال هذه...",
       "noNotes": "لا توجد ملاحظات متاحة",
       "tabs": {
-        "overview": "نظرة عامة",
+        "overview": "معاينة",
         "contacts": "جهات الاتصال",
         "deals": "الصفقات",
-        "notes": "ملاحظات",
-        "files": "ملفات",
+        "notes": "الملاحظات",
+        "files": "الملفات",
         "history": "التاريخ",
-        "messages": "رسائل"
+        "messages": "الرسائل",
+        "contactInformation": "معلومات جهة الاتصال",
+        "lastContacted": "آخر اتصال",
+        "activitySummary": "ملخص النشاط",
+        "acivitysummary": "ملخص النشاط",
+        "visibilityLabel": "الخصوصية"
       },
       "notes": {
         "title": "الملاحظات والتعليقات",
@@ -509,6 +516,28 @@
       "coldOutreach": "تواصل بارد",
       "linkedIn": "لينكدإن",
       "existingClient": "عميل حالي"
+    },
+    "notifications": {
+      "created": {
+        "title": "تم إنشاء صفقة جديدة",
+        "description": "تم إنشاء صفقة {{name}} بقيمة {{value}} درهم"
+      },
+      "updated": {
+        "title": "تم تحديث الصفقة",
+        "description": "تم تحديث صفقة {{name}}"
+      },
+      "deleted": {
+        "title": "تم حذف الصفقة",
+        "description": "تم حذف صفقة {{name}}"
+      },
+      "BulkAdded": {
+        "title": "تم إنشاء صفقات متعددة",
+        "description": "تم إنشاء {{count}} صفقات بقيمة إجمالية {{value}} درهم"
+      },
+      "BulkDeleted": {
+        "title": "تم حذف صفقات متعددة",
+        "description": "تم حذف {{count}} صفقات"
+      }
     }
   },
   "tasks": {
@@ -973,7 +1002,11 @@
     "callLead": "الاتصال بالعميل المحتمل",
     "assign": "تخصيص",
     "at": "في",
-    "notSpecified": "غير محدد"
+    "notSpecified": "غير محدد",
+    "selectedCount": "تم تحديد {{count}} عناصر",
+    "clearSelection": "مسح التحديد",
+    "bulkDelete": "حذف المحدد",
+    "export": "تصدير"
   },
   "countries": {
     "morocco": "المغرب",
@@ -1082,7 +1115,9 @@
       "visibilityLabel": "الخصوصية"
     },
     "contactAdded": "تمت إضافة جهة الاتصال بنجاح",
-    "visibilityLabel": "الخصوصية"
+    "visibilityLabel": "الخصوصية",
+    "error": "خطأ",
+    "emailAlreadyExists": "يوجد جهة اتصال بهذا البريد الإلكتروني"
   },
   "addDealModal": {
     "title": "إضافة صفقة جديدة",

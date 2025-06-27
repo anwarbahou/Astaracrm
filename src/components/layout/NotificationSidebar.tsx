@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -25,10 +24,13 @@ import {
   Building,
   DollarSign,
   Volume2,
-  VolumeX
+  VolumeX,
+  UserMinus,
+  Building2
 } from "lucide-react";
 import { useNotifications } from "@/hooks/useNotifications";
 import { type NotificationData } from "@/services/notificationService";
+import { useTranslation } from 'react-i18next';
 
 interface Notification {
   id: string;
@@ -46,6 +48,7 @@ interface NotificationSidebarProps {
 }
 
 export function NotificationSidebar({ open, onOpenChange }: NotificationSidebarProps) {
+  const { t } = useTranslation();
   const { 
     notifications, 
     unreadCount, 
@@ -99,6 +102,22 @@ export function NotificationSidebar({ open, onOpenChange }: NotificationSidebarP
         return <Building className="h-4 w-4 text-green-400" />;
       case "deal_updated":
         return <DollarSign className="h-4 w-4 text-emerald-400" />;
+      case "contact_deleted":
+        return <UserMinus className="h-4 w-4 text-red-500" />;
+      case "client_deleted":
+        return <Building2 className="h-4 w-4 text-red-500" />;
+      case "deal_deleted":
+        // Show multiple dollar signs with X for bulk deletions
+        if (data?.isBulkOperation) {
+          return (
+            <div className="flex items-center">
+              <DollarSign className="h-4 w-4 text-red-500" />
+              <DollarSign className="h-3 w-3 text-red-400 -ml-1" />
+              <X className="h-3 w-3 text-red-500 -ml-1" />
+            </div>
+          );
+        }
+        return <DollarSign className="h-4 w-4 text-red-500" />;
       default:
         return <Info className="h-4 w-4 text-gray-500" />;
     }
@@ -133,12 +152,30 @@ export function NotificationSidebar({ open, onOpenChange }: NotificationSidebarP
     const performerEmail = notification.data?.performerEmail || '';
     const entityName = notification.data?.entityName || notification.data?.contactName || notification.data?.clientName || notification.data?.dealName;
     
-    // Use the description as-is since it already contains the entity name
-    let description = notification.description;
+    // For bulk operations, re-translate the content
+    if (notification.data?.isBulkOperation) {
+      const translationKey = notification.type === 'deal_added' ? 
+        'deals.notifications.BulkAdded' : 
+        'deals.notifications.BulkDeleted';
+      
+      return {
+        title: t(`${translationKey}.title`),
+        description: t(`${translationKey}.description`, {
+          count: notification.data.dealCount,
+          value: notification.data.totalValue?.toLocaleString()
+        }),
+        performerName,
+        performerRole,
+        performerEmail,
+        entityName,
+        timestamp: notification.created_at
+      };
+    }
     
+    // For regular notifications, use the description as-is
     return {
       title: notification.title,
-      description,
+      description: notification.description,
       performerName,
       performerRole,
       performerEmail,
@@ -156,7 +193,7 @@ export function NotificationSidebar({ open, onOpenChange }: NotificationSidebarP
         <SheetHeader className="p-6 pb-4 border-b border-border">
           <div className="flex items-center justify-between">
             <SheetTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
-              Notifications
+              {t('notifications.title')}
               {unreadCount > 0 && (
                 <Badge className="bg-red-500 text-white text-xs animate-pulse">
                   {unreadCount}
@@ -172,10 +209,10 @@ export function NotificationSidebar({ open, onOpenChange }: NotificationSidebarP
               size="sm"
               onClick={toggleSound}
               className="gap-1 text-xs"
-              title={soundEnabled ? "Disable notification sounds" : "Enable notification sounds"}
+              title={soundEnabled ? t('notifications.actions.disableSound') : t('notifications.actions.enableSound')}
             >
               {soundEnabled ? <Volume2 size={12} /> : <VolumeX size={12} />}
-              Sound
+              {t('notifications.actions.sound')}
             </Button>
             
             {/* Test sound button (only show when sound is enabled) */}
@@ -185,9 +222,9 @@ export function NotificationSidebar({ open, onOpenChange }: NotificationSidebarP
                 size="sm"
                 onClick={testSound}
                 className="gap-1 text-xs"
-                title="Test notification sound"
+                title={t('notifications.actions.testSound')}
               >
-                🔊 Test
+                🔊 {t('notifications.actions.test')}
               </Button>
             )}
             
@@ -201,7 +238,7 @@ export function NotificationSidebar({ open, onOpenChange }: NotificationSidebarP
                   disabled={unreadCount === 0}
                 >
                   <CheckCheck size={12} />
-                  Tout lire
+                  {t('notifications.actions.markAllRead')}
                 </Button>
                 <Button
                   variant="outline"
@@ -210,7 +247,7 @@ export function NotificationSidebar({ open, onOpenChange }: NotificationSidebarP
                   className="gap-1 text-xs text-destructive hover:text-destructive"
                 >
                   <Trash2 size={12} />
-                  Effacer
+                  {t('notifications.actions.clearAll')}
                 </Button>
               </>
             )}
@@ -224,10 +261,10 @@ export function NotificationSidebar({ open, onOpenChange }: NotificationSidebarP
                 <Check className="h-8 w-8 text-muted-foreground" />
               </div>
               <h3 className="text-lg font-medium text-foreground mb-2">
-                Aucune notification
+                {t('notifications.empty.title')}
               </h3>
               <p className="text-sm text-muted-foreground">
-                Vous êtes à jour ! Nous vous tiendrons informé des nouvelles activités.
+                {t('notifications.empty.description')}
               </p>
             </div>
           ) : (

@@ -322,6 +322,24 @@ export function ContactProfileModal({ contact, open, onOpenChange, onSave }: Con
                         })}
                       />
                     </div>
+                    <div>
+                      <Label htmlFor="tags">{t('contacts.profile.tags')}</Label>
+                      <Input
+                        id="tags"
+                        placeholder={t('contacts.profile.tagsPlaceholder')}
+                        value={displayContact.tags.join(', ')}
+                        onChange={(e) => {
+                          const tagsArray = e.target.value
+                            .split(',')
+                            .map(tag => tag.trim())
+                            .filter(tag => tag.length > 0);
+                          setDisplayContact({
+                            ...displayContact,
+                            tags: tagsArray
+                          });
+                        }}
+                      />
+                    </div>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

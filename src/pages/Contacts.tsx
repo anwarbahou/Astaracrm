@@ -49,7 +49,7 @@ export default function Contacts() {
       setIsLoading(true);
       const fetchedContacts = await contactsService.getContacts({
         userId: user.id,
-        userRole: userProfile.role
+        userRole: userProfile.role as 'user' | 'admin' | 'manager'
       });
       setContacts(fetchedContacts);
     } catch (error) {
@@ -68,38 +68,23 @@ export default function Contacts() {
     if (!user?.id || !userProfile?.role) return;
     
     try {
-      await contactsService.updateContact(updatedContact.id, {
-        firstName: updatedContact.firstName,
-        lastName: updatedContact.lastName,
-        email: updatedContact.email,
-        phone: updatedContact.phone,
-        role: updatedContact.role,
-        company: updatedContact.company,
-        country: updatedContact.country,
-        status: updatedContact.status,
-        tags: updatedContact.tags,
-        notes: updatedContact.notes,
-      }, {
-        userId: user.id,
-        userRole: userProfile.role
-      });
-      
       // Reload contacts to reflect changes
       await loadContacts();
     } catch (error) {
-      console.error('Error saving contact:', error);
+      console.error('Error reloading contacts:', error);
     }
   };
 
-  const handleContactAdded = () => {
-    // Reload contacts when a new contact is added
+  const handleContactAdded = (newContact: Contact) => {
+    setContacts(prev => [newContact, ...prev]);
+    // Optionally, reload in the background for sync
     loadContacts();
   };
 
   const handleImportContacts = async (newContacts: Omit<Contact, 'id' | 'created_at' | 'updated_at'>[]): Promise<number> => {
     if (!user?.id || !userProfile?.role) return 0;
     try {
-      const inserted = await contactsService.importContacts(newContacts, { userId: user.id, userRole: userProfile.role });
+      const inserted = await contactsService.importContacts(newContacts, { userId: user.id, userRole: userProfile.role as 'user' | 'admin' | 'manager' });
       await loadContacts();
       toast({
         title: inserted > 0 ? 'Contacts Imported' : 'No New Contacts',

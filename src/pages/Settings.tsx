@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,7 +18,15 @@ import {
   Download,
   Upload,
   Trash2,
-  Save
+  Save,
+  Check,
+  X,
+  LineChart,
+  Handshake,
+  ListTodo,
+  Calendar,
+  MessageSquare,
+  Zap
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
@@ -28,6 +36,9 @@ import { uploadAvatar } from '@/lib/uploadAvatar';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { withPageTitle } from '@/components/withPageTitle';
+import { useTranslation } from 'react-i18next';
+import { SecuritySettings } from "@/components/settings/SecuritySettings";
+import { cn } from "@/lib/utils";
 
 function Settings() {
   const [settings, setSettings] = useState({
@@ -54,11 +65,6 @@ function Settings() {
     dealAlerts: true,
     taskReminders: true,
     
-    // Security
-    twoFactorAuth: false,
-    sessionTimeout: 30,
-    passwordExpiry: 90,
-    
     // Email
     smtpServer: "smtp.gmail.com",
     smtpPort: "587",
@@ -72,8 +78,18 @@ function Settings() {
     zapierWebhooks: true,
   });
 
+  // Password reset state
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+
   const { userProfile, refreshUserProfile } = useAuth();
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   // Sync settings with userProfile when it loads/changes
   useEffect(() => {
@@ -99,10 +115,6 @@ function Settings() {
         weeklyReports: settings.weeklyReports,
         dealAlerts: settings.dealAlerts,
         taskReminders: settings.taskReminders,
-        // Security (keep defaults or fetch from userProfile if available)
-        twoFactorAuth: settings.twoFactorAuth,
-        sessionTimeout: settings.sessionTimeout,
-        passwordExpiry: settings.passwordExpiry,
         // Email (keep defaults or fetch from userProfile if available)
         smtpServer: settings.smtpServer,
         smtpPort: settings.smtpPort,
@@ -150,6 +162,57 @@ function Settings() {
     setSettings(prev => ({ ...prev, [key]: value }));
   };
 
+  const handlePasswordChange = async () => {
+    if (!userProfile) return;
+    
+    // Reset error state
+    setPasswordError(null);
+    
+    // Validate passwords match
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setPasswordError(t('settings.security.passwordMismatch'));
+      return;
+    }
+    
+    // Validate password requirements
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(passwordData.newPassword)) {
+      setPasswordError(t('settings.security.passwordRequirements'));
+      return;
+    }
+
+    setIsUpdatingPassword(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: passwordData.newPassword
+      });
+
+      if (error) throw error;
+
+      // Clear password fields
+      setPasswordData({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      });
+
+      toast({
+        title: t('settings.security.passwordUpdated'),
+        description: t('settings.security.passwordUpdatedDesc')
+      });
+    } catch (error: any) {
+      console.error('Error updating password:', error);
+      setPasswordError(error.message);
+      toast({
+        title: t('settings.security.passwordUpdateError'),
+        description: error.message,
+        variant: 'destructive'
+      });
+    } finally {
+      setIsUpdatingPassword(false);
+    }
+  };
+
   const SettingRow = ({ icon: Icon, title, description, children }: any) => (
     <div className="flex items-start gap-4 p-4 rounded-lg border border-border">
       <Icon className="h-5 w-5 text-muted-foreground mt-1" />
@@ -167,18 +230,20 @@ function Settings() {
     </div>
   );
 
+  const isAdmin = userProfile?.role === 'admin';
+
   return (
     <div className="space-y-6 animate-in">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Settings</h1>
+          <h1 className="text-3xl font-bold">{t('settings.title')}</h1>
           <p className="text-muted-foreground mt-1">
-            Configure your CRM system preferences and integrations.
+            {t('settings.description')}
           </p>
         </div>
         <Button className="gap-2" onClick={async () => {
-          if (!userProfile) return toast({ title: 'User not loaded', variant: 'destructive' });
+          if (!userProfile) return toast({ title: t('settings.userNotLoaded'), variant: 'destructive' });
           const { error } = await supabase.from('users').update({
             first_name: settings.firstName,
             last_name: settings.lastName,
@@ -187,106 +252,148 @@ function Settings() {
             timezone: settings.timezone
           }).eq('id', userProfile.id);
           if (error) {
-            toast({ title: 'Failed to save changes', description: error.message, variant: 'destructive' });
+            toast({ title: t('settings.saveFailed'), description: error.message, variant: 'destructive' });
           } else {
-            toast({ title: 'Settings saved' });
+            toast({ title: t('settings.saved') });
             refreshUserProfile();
           }
         }}>
           <Save size={16} />
-          Save All Changes
+          {t('settings.saveChanges')}
         </Button>
       </div>
 
       {/* Settings Tabs */}
-      <Tabs defaultValue="general" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="general">General</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="security">Security</TabsTrigger>
-          <TabsTrigger value="email">Email</TabsTrigger>
-          <TabsTrigger value="integrations">Integrations</TabsTrigger>
-          <TabsTrigger value="data">Data</TabsTrigger>
+      <Tabs defaultValue="profile" className="space-y-4">
+        <TabsList className={cn(
+          "grid w-full",
+          isAdmin ? "grid-cols-5" : "grid-cols-3"
+        )}>
+          <TabsTrigger value="profile" className="gap-2">
+            <User size={16} />
+            {t('settings.tabs.profile')}
+          </TabsTrigger>
+          <TabsTrigger value="notifications" className="gap-2">
+            <Bell size={16} />
+            {t('settings.tabs.notifications')}
+          </TabsTrigger>
+          <TabsTrigger value="security" className="gap-2">
+            <Shield size={16} />
+            {t('settings.tabs.security')}
+          </TabsTrigger>
+          {isAdmin && (
+            <>
+          <TabsTrigger value="email" className="gap-2">
+            <Mail size={16} />
+            {t('settings.tabs.email')}
+          </TabsTrigger>
+          <TabsTrigger value="integrations" className="gap-2">
+            <Globe size={16} />
+            {t('settings.tabs.integrations')}
+          </TabsTrigger>
+            </>
+          )}
         </TabsList>
 
-        <TabsContent value="general" className="space-y-6">
+        {/* Profile Tab */}
+        <TabsContent value="profile">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5" />
-                Profile Information
-              </CardTitle>
+              <CardTitle>{t('settings.profile.title')}</CardTitle>
+              <CardDescription>{t('settings.profile.description')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="flex items-center gap-6">
-                <Avatar className="h-20 w-20">
+              {/* Profile Photo */}
+              <div className="flex items-center gap-4">
+                <Avatar className="h-20 w-20 cursor-pointer" onClick={handlePhotoClick}>
                   <AvatarImage src={userProfile?.avatar_url || ''} />
-                  <AvatarFallback>{initials || 'UP'}</AvatarFallback>
+                  <AvatarFallback className="text-lg">{initials}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <Button variant="outline" onClick={handlePhotoClick}>Change Photo</Button>
-                  <input type="file" accept="image/*" ref={fileRef} onChange={handleFileChange} className="hidden" />
-                  <p className="text-xs text-muted-foreground mt-1">PNG or JPG up to 2MB</p>
+                  <h4 className="font-medium mb-1">{t('settings.profile.photo')}</h4>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    {t('settings.profile.photoDesc')}
+                  </p>
+                  <input
+                    type="file"
+                    ref={fileRef}
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                  />
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={handlePhotoClick}>
+                      <Upload size={16} className="mr-2" />
+                      {t('settings.profile.upload')}
+                    </Button>
+                    {userProfile?.avatar_url && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={async () => {
+                          if (!userProfile) return;
+                          const { error } = await supabase
+                            .from('users')
+                            .update({ avatar_url: null })
+                            .eq('id', userProfile.id);
+                          if (error) {
+                            toast({
+                              title: t('settings.profile.removePhotoError'),
+                              variant: 'destructive'
+                            });
+                          } else {
+                            toast({ title: t('settings.profile.photoRemoved') });
+                            refreshUserProfile();
+                          }
+                        }}
+                      >
+                        <Trash2 size={16} className="mr-2" />
+                        {t('settings.profile.remove')}
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input id="firstName" value={settings.firstName} onChange={e => handleSettingChange('firstName', e.target.value)} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Input id="lastName" value={settings.lastName} onChange={e => handleSettingChange('lastName', e.target.value)} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" value={settings.email} onChange={e => handleSettingChange('email', e.target.value)} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input id="phone" value={settings.phone} onChange={e => handleSettingChange('phone', e.target.value)} placeholder="+1 (555) 123-4567" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="timezone">Timezone</Label>
-                  <Input id="timezone" value={settings.timezone} onChange={e => handleSettingChange('timezone', e.target.value)} />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              <Separator />
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Globe className="h-5 w-5" />
-                Regional Settings
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4 md:grid-cols-3">
-                <div className="space-y-2">
-                  <Label htmlFor="currency">Currency</Label>
+              {/* Basic Info */}
+              <div className="grid gap-4">
+                <div className="grid gap-2">
+                  <Label>{t('settings.profile.firstName')}</Label>
                   <Input
-                    id="currency"
-                    value={settings.currency}
-                    onChange={(e) => handleSettingChange('currency', e.target.value)}
-                    placeholder="MAD"
+                    value={settings.firstName}
+                    onChange={(e) => handleSettingChange('firstName', e.target.value)}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="dateFormat">Date Format</Label>
+                <div className="grid gap-2">
+                  <Label>{t('settings.profile.lastName')}</Label>
                   <Input
-                    id="dateFormat"
-                    value={settings.dateFormat}
-                    onChange={(e) => handleSettingChange('dateFormat', e.target.value)}
+                    value={settings.lastName}
+                    onChange={(e) => handleSettingChange('lastName', e.target.value)}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="language">Language</Label>
+                <div className="grid gap-2">
+                  <Label>{t('settings.profile.email')}</Label>
                   <Input
-                    id="language"
-                    value="English (US)"
-                    disabled
+                    type="email"
+                    value={settings.email}
+                    onChange={(e) => handleSettingChange('email', e.target.value)}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label>{t('settings.profile.phone')}</Label>
+                  <Input
+                    type="tel"
+                    value={settings.phone}
+                    onChange={(e) => handleSettingChange('phone', e.target.value)}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label>{t('settings.profile.timezone')}</Label>
+                  <Input
+                    value={settings.timezone}
+                    onChange={(e) => handleSettingChange('timezone', e.target.value)}
                   />
                 </div>
               </div>
@@ -294,63 +401,58 @@ function Settings() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="notifications" className="space-y-6">
+        {/* Notifications Tab */}
+        <TabsContent value="notifications">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Bell className="h-5 w-5" />
-                Notification Preferences
-              </CardTitle>
+              <CardTitle>{t('settings.notifications.title')}</CardTitle>
+              <CardDescription>{t('settings.notifications.description')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <SettingRow
                 icon={Mail}
-                title="Email Notifications"
-                description="Receive notifications via email"
+                title={t('settings.notifications.emailNotifs')}
+                description={t('settings.notifications.emailNotifsDesc')}
               >
                 <Switch
                   checked={settings.emailNotifications}
                   onCheckedChange={(checked) => handleSettingChange('emailNotifications', checked)}
                 />
               </SettingRow>
-
               <SettingRow
                 icon={Bell}
-                title="Push Notifications"
-                description="Receive browser push notifications"
+                title={t('settings.notifications.pushNotifs')}
+                description={t('settings.notifications.pushNotifsDesc')}
               >
                 <Switch
                   checked={settings.pushNotifications}
                   onCheckedChange={(checked) => handleSettingChange('pushNotifications', checked)}
                 />
               </SettingRow>
-
               <SettingRow
-                icon={Mail}
-                title="Weekly Reports"
-                description="Get weekly performance summaries"
+                icon={LineChart}
+                title={t('settings.notifications.weeklyReports')}
+                description={t('settings.notifications.weeklyReportsDesc')}
               >
                 <Switch
                   checked={settings.weeklyReports}
                   onCheckedChange={(checked) => handleSettingChange('weeklyReports', checked)}
                 />
               </SettingRow>
-
               <SettingRow
-                icon={Bell}
-                title="Deal Alerts"
-                description="Notifications for deal stage changes"
+                icon={Handshake}
+                title={t('settings.notifications.dealAlerts')}
+                description={t('settings.notifications.dealAlertsDesc')}
               >
                 <Switch
                   checked={settings.dealAlerts}
                   onCheckedChange={(checked) => handleSettingChange('dealAlerts', checked)}
                 />
               </SettingRow>
-
               <SettingRow
-                icon={Bell}
-                title="Task Reminders"
-                description="Reminders for upcoming and overdue tasks"
+                icon={ListTodo}
+                title={t('settings.notifications.taskReminders')}
+                description={t('settings.notifications.taskRemindersDesc')}
               >
                 <Switch
                   checked={settings.taskReminders}
@@ -361,279 +463,112 @@ function Settings() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="security" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5" />
-                Security Settings
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <SettingRow
-                icon={Shield}
-                title="Two-Factor Authentication"
-                description="Add an extra layer of security to your account"
-              >
-                <div className="flex items-center gap-2">
-                  <Switch
-                    checked={settings.twoFactorAuth}
-                    onCheckedChange={(checked) => handleSettingChange('twoFactorAuth', checked)}
-                  />
-                  {settings.twoFactorAuth && <Badge variant="secondary">Enabled</Badge>}
-                </div>
-              </SettingRow>
-
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="sessionTimeout">Session Timeout (minutes)</Label>
-                  <Input
-                    id="sessionTimeout"
-                    type="number"
-                    value={settings.sessionTimeout}
-                    onChange={(e) => handleSettingChange('sessionTimeout', parseInt(e.target.value))}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="passwordExpiry">Password Expiry (days)</Label>
-                  <Input
-                    id="passwordExpiry"
-                    type="number"
-                    value={settings.passwordExpiry}
-                    onChange={(e) => handleSettingChange('passwordExpiry', parseInt(e.target.value))}
-                  />
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="space-y-4">
-                <h4 className="font-medium">Password Requirements</h4>
-                <div className="grid gap-2 md:grid-cols-2">
-                  <div className="flex items-center gap-2">
-                    <input type="checkbox" defaultChecked disabled />
-                    <span className="text-sm">Minimum 8 characters</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <input type="checkbox" defaultChecked disabled />
-                    <span className="text-sm">Include uppercase letters</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <input type="checkbox" defaultChecked disabled />
-                    <span className="text-sm">Include numbers</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <input type="checkbox" defaultChecked disabled />
-                    <span className="text-sm">Include special characters</span>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Security Tab */}
+        <TabsContent value="security">
+          <div className="mt-4">
+            <SecuritySettings />
+          </div>
         </TabsContent>
 
-        <TabsContent value="email" className="space-y-6">
+        {isAdmin && (
+          <>
+        <TabsContent value="email">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Mail className="h-5 w-5" />
-                Email Configuration
-              </CardTitle>
+              <CardTitle>{t('settings.email.title')}</CardTitle>
+              <CardDescription>{t('settings.email.description')}</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="smtpServer">SMTP Server</Label>
+            <CardContent className="space-y-4">
+              <div className="grid gap-4">
+                <div className="grid gap-2">
+                  <Label>{t('settings.email.smtpServer')}</Label>
                   <Input
-                    id="smtpServer"
                     value={settings.smtpServer}
                     onChange={(e) => handleSettingChange('smtpServer', e.target.value)}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="smtpPort">SMTP Port</Label>
+                <div className="grid gap-2">
+                  <Label>{t('settings.email.smtpPort')}</Label>
                   <Input
-                    id="smtpPort"
                     value={settings.smtpPort}
                     onChange={(e) => handleSettingChange('smtpPort', e.target.value)}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="smtpUsername">SMTP Username</Label>
+                <div className="grid gap-2">
+                  <Label>{t('settings.email.smtpUsername')}</Label>
                   <Input
-                    id="smtpUsername"
                     value={settings.smtpUsername}
                     onChange={(e) => handleSettingChange('smtpUsername', e.target.value)}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="smtpPassword">SMTP Password</Label>
+                <div className="grid gap-2">
+                  <Label>{t('settings.email.smtpPassword')}</Label>
                   <Input
-                    id="smtpPassword"
                     type="password"
                     value={settings.smtpPassword}
                     onChange={(e) => handleSettingChange('smtpPassword', e.target.value)}
                   />
                 </div>
               </div>
-
-              <div className="flex gap-2">
-                <Button variant="outline">Test Connection</Button>
-                <Button>Save Email Settings</Button>
-              </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="integrations" className="space-y-6">
+        <TabsContent value="integrations">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Globe className="h-5 w-5" />
-                Third-Party Integrations
-              </CardTitle>
+              <CardTitle>{t('settings.integrations.title')}</CardTitle>
+              <CardDescription>{t('settings.integrations.description')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <SettingRow
-                icon={Globe}
-                title="Google Calendar"
-                description="Sync appointments with Google Calendar"
+                icon={Calendar}
+                title={t('settings.integrations.googleCalendar')}
+                description={t('settings.integrations.googleCalendarDesc')}
               >
-                <div className="flex items-center gap-2">
-                  <Switch
-                    checked={settings.googleCalendar}
-                    onCheckedChange={(checked) => handleSettingChange('googleCalendar', checked)}
-                  />
-                  {!settings.googleCalendar && <Button variant="outline" size="sm">Connect</Button>}
-                </div>
+                <Switch
+                  checked={settings.googleCalendar}
+                  onCheckedChange={(checked) => handleSettingChange('googleCalendar', checked)}
+                />
               </SettingRow>
-
               <SettingRow
-                icon={Globe}
-                title="Outlook Calendar"
-                description="Sync appointments with Outlook Calendar"
+                icon={Calendar}
+                title={t('settings.integrations.outlookCalendar')}
+                description={t('settings.integrations.outlookCalendarDesc')}
               >
-                <div className="flex items-center gap-2">
-                  <Switch
-                    checked={settings.outlookCalendar}
-                    onCheckedChange={(checked) => handleSettingChange('outlookCalendar', checked)}
-                  />
-                  {settings.outlookCalendar && <Badge variant="secondary">Connected</Badge>}
-                </div>
+                <Switch
+                  checked={settings.outlookCalendar}
+                  onCheckedChange={(checked) => handleSettingChange('outlookCalendar', checked)}
+                />
               </SettingRow>
-
               <SettingRow
-                icon={Globe}
-                title="Slack Integration"
-                description="Send notifications to Slack channels"
+                icon={MessageSquare}
+                title={t('settings.integrations.slack')}
+                description={t('settings.integrations.slackDesc')}
               >
-                <div className="flex items-center gap-2">
-                  <Switch
-                    checked={settings.slackIntegration}
-                    onCheckedChange={(checked) => handleSettingChange('slackIntegration', checked)}
-                  />
-                  {!settings.slackIntegration && <Button variant="outline" size="sm">Connect</Button>}
-                </div>
+                <Switch
+                  checked={settings.slackIntegration}
+                  onCheckedChange={(checked) => handleSettingChange('slackIntegration', checked)}
+                />
               </SettingRow>
-
               <SettingRow
-                icon={Globe}
-                title="Zapier Webhooks"
-                description="Automate workflows with Zapier"
+                icon={Zap}
+                title={t('settings.integrations.zapier')}
+                description={t('settings.integrations.zapierDesc')}
               >
-                <div className="flex items-center gap-2">
-                  <Switch
-                    checked={settings.zapierWebhooks}
-                    onCheckedChange={(checked) => handleSettingChange('zapierWebhooks', checked)}
-                  />
-                  {settings.zapierWebhooks && <Badge variant="secondary">Active</Badge>}
-                </div>
+                <Switch
+                  checked={settings.zapierWebhooks}
+                  onCheckedChange={(checked) => handleSettingChange('zapierWebhooks', checked)}
+                />
               </SettingRow>
             </CardContent>
           </Card>
         </TabsContent>
-
-        <TabsContent value="data" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Database className="h-5 w-5" />
-                Data Management
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <div className="p-4 rounded-lg border border-border">
-                  <h4 className="font-medium mb-2">Export Data</h4>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Download your CRM data in CSV or JSON format
-                  </p>
-                  <div className="flex gap-2">
-                    <Button variant="outline" className="gap-2">
-                      <Download size={16} />
-                      Export CSV
-                    </Button>
-                    <Button variant="outline" className="gap-2">
-                      <Download size={16} />
-                      Export JSON
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-lg border border-border">
-                  <h4 className="font-medium mb-2">Import Data</h4>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Import contacts, deals, and other data from CSV files
-                  </p>
-                  <Button variant="outline" className="gap-2">
-                    <Upload size={16} />
-                    Import CSV
-                  </Button>
-                </div>
-
-                <div className="p-4 rounded-lg border border-red-200 bg-red-50">
-                  <h4 className="font-medium mb-2 text-red-800">Danger Zone</h4>
-                  <p className="text-sm text-red-600 mb-4">
-                    Permanently delete all CRM data. This action cannot be undone.
-                  </p>
-                  <Button variant="destructive" className="gap-2">
-                    <Trash2 size={16} />
-                    Delete All Data
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Data Statistics</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <div className="text-center p-4 bg-muted/50 rounded-lg">
-                  <p className="text-2xl font-bold">247</p>
-                  <p className="text-sm text-muted-foreground">Total Clients</p>
-                </div>
-                <div className="text-center p-4 bg-muted/50 rounded-lg">
-                  <p className="text-2xl font-bold">1,234</p>
-                  <p className="text-sm text-muted-foreground">Total Contacts</p>
-                </div>
-                <div className="text-center p-4 bg-muted/50 rounded-lg">
-                  <p className="text-2xl font-bold">89</p>
-                  <p className="text-sm text-muted-foreground">Active Deals</p>
-                </div>
-                <div className="text-center p-4 bg-muted/50 rounded-lg">
-                  <p className="text-2xl font-bold">456</p>
-                  <p className="text-sm text-muted-foreground">Total Tasks</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+          </>
+        )}
       </Tabs>
     </div>
   );
 }
 
-export default withPageTitle(Settings, 'settings');
+export default withPageTitle(Settings, 'Settings');

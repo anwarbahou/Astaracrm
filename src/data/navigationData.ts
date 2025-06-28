@@ -14,9 +14,8 @@ import {
   Zap,
   History,
 } from "lucide-react";
-import { Database } from "@/integrations/supabase/types";
 
-type UserRole = Database['public']['Enums']['user_role'];
+type UserRole = 'admin' | 'manager' | 'user';
 
 interface NavigationItem {
   id: string;
@@ -44,5 +43,5 @@ export const navigationItems: NavigationItem[] = [
   
   // Admin only
   { id: 'users', path: '/dashboard/users', icon: UserCog, labelKey: 'users', roles: ['admin'] },
-  { id: 'settings', path: '/dashboard/settings', icon: Settings, labelKey: 'settings', roles: ['admin'] },
+  { id: 'settings', path: '/dashboard/settings', icon: Settings, labelKey: 'settings' }, // Accessible to all users
 ];

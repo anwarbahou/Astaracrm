@@ -14,12 +14,12 @@ export const usePerformanceMonitor = (componentName: string) => {
     const loadTime = endTime - startTimeRef.current;
 
     // Only log in development
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.log(`${componentName} loaded in ${loadTime.toFixed(2)}ms`);
     }
 
     // Report to analytics or monitoring service in production
-    if (process.env.NODE_ENV === 'production' && loadTime > 1000) {
+    if (import.meta.env.PROD && loadTime > 1000) {
       // Report slow loading components
       console.warn(`Slow loading component: ${componentName} (${loadTime.toFixed(2)}ms)`);
     }
@@ -30,7 +30,7 @@ export const usePerformanceMonitor = (componentName: string) => {
       const endTime = performance.now();
       const totalTime = endTime - startTimeRef.current;
       
-      if (process.env.NODE_ENV === 'development') {
+      if (import.meta.env.DEV) {
         console.log(`${componentName} completed in ${totalTime.toFixed(2)}ms`);
       }
       

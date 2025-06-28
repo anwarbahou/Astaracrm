@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar, User, MoreVertical, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,6 +35,17 @@ export function DealCard({
   onSelect,
   isSelected = false
 }: DealCardProps) {
+  const { user, isAdmin } = useAuth();
+  
+  // Check if the current user is the owner of the deal
+  const isOwner = user?.id === deal.ownerId;
+  
+  // Only allow edit/delete if user is admin or the owner of the deal
+  const canEditDelete = isAdmin || isOwner;
+  
+  // Only show menu if user is admin or owner
+  const showMenu = isAdmin || isOwner;
+
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'High': return 'bg-red-500/20 text-red-400 border-red-500/30';
@@ -78,74 +90,81 @@ export function DealCard({
         </div>
       )}
 
-      <div className="absolute top-2 right-2">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="h-6 w-6 p-0 text-gray-400 hover:text-white hover:bg-gray-600 deal-menu-trigger"
-            >
-              <MoreVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem onClick={(e) => {
-              e.stopPropagation();
-              onSelect?.(deal);
-            }}>
-              {isSelected ? "Deselect" : "Select"}
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={(e) => {
-              e.stopPropagation();
-              onEdit?.(deal);
-            }}>
-              Edit Deal
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onDelete?.(deal)} className="text-red-500">
-              Delete Deal
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={(e) => {
-              e.stopPropagation();
-              onMove?.(deal, 'Prospect');
-            }}>
-              Move to Prospect
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={(e) => {
-              e.stopPropagation();
-              onMove?.(deal, 'Lead');
-            }}>
-              Move to Lead
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={(e) => {
-              e.stopPropagation();
-              onMove?.(deal, 'Qualified');
-            }}>
-              Move to Qualified
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={(e) => {
-              e.stopPropagation();
-              onMove?.(deal, 'Proposal');
-            }}>
-              Move to Proposal
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={(e) => {
-              e.stopPropagation();
-              onMove?.(deal, 'Negotiation');
-            }}>
-              Move to Negotiation
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={(e) => {
-              e.stopPropagation();
-              onMove?.(deal, 'Won/Lost');
-            }}>
-              Move to Won/Lost
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+      {/* Only show menu for owners and admins */}
+      {showMenu && (
+        <div className="absolute top-2 right-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-6 w-6 p-0 text-gray-400 hover:text-white hover:bg-gray-600 deal-menu-trigger"
+              >
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={(e) => {
+                e.stopPropagation();
+                onSelect?.(deal);
+              }}>
+                {isSelected ? "Deselect" : "Select"}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              {canEditDelete && (
+                <>
+                  <DropdownMenuItem onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit?.(deal);
+                  }}>
+                    Edit Deal
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => onDelete?.(deal)} className="text-red-500">
+                    Delete Deal
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </>
+              )}
+              <DropdownMenuItem onClick={(e) => {
+                e.stopPropagation();
+                onMove?.(deal, 'Prospect');
+              }}>
+                Move to Prospect
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={(e) => {
+                e.stopPropagation();
+                onMove?.(deal, 'Lead');
+              }}>
+                Move to Lead
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={(e) => {
+                e.stopPropagation();
+                onMove?.(deal, 'Qualified');
+              }}>
+                Move to Qualified
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={(e) => {
+                e.stopPropagation();
+                onMove?.(deal, 'Proposal');
+              }}>
+                Move to Proposal
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={(e) => {
+                e.stopPropagation();
+                onMove?.(deal, 'Negotiation');
+              }}>
+                Move to Negotiation
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={(e) => {
+                e.stopPropagation();
+                onMove?.(deal, 'Won/Lost');
+              }}>
+                Move to Won/Lost
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )}
 
       <div className="space-y-3">
         {/* Deal Name */}
@@ -179,35 +198,42 @@ export function DealCard({
         <div className="space-y-1">
           <div className="flex items-center justify-between text-xs">
             <span className={cn(
-              isSelected ? "text-blue-200" : "text-gray-400"
+              isSelected ? "text-blue-100" : "text-gray-400"
             )}>Probability</span>
             <span className={cn(
-              isSelected ? "text-blue-100" : "text-gray-300"
+              isSelected ? "text-blue-100" : "text-gray-400"
             )}>{deal.probability}%</span>
           </div>
-          <div className="w-full bg-gray-800 rounded-full h-2">
+          <div className="h-1.5 bg-gray-600 rounded-full overflow-hidden">
             <div 
               className={cn(
-                "h-2 rounded-full transition-all duration-300",
+                "h-full rounded-full transition-all",
                 isSelected ? "bg-blue-300" : "bg-blue-500"
               )}
               style={{ width: `${deal.probability}%` }}
             />
           </div>
         </div>
-        
-        {/* Footer Info */}
-        <div className={cn(
-          "flex items-center justify-between text-xs",
-          isSelected ? "text-blue-200" : "text-gray-400"
-        )}>
+
+        {/* Footer */}
+        <div className="flex items-center justify-between text-xs text-gray-400">
+          {/* Owner Avatar */}
+          <div className="flex items-center gap-2">
+            {deal.ownerAvatar ? (
+              <img 
+                src={deal.ownerAvatar} 
+                alt={deal.owner}
+                className="h-6 w-6 rounded-full"
+              />
+            ) : (
+              <User className="h-4 w-4" />
+            )}
+          </div>
+          
+          {/* Due Date */}
           <div className="flex items-center gap-1">
             <Calendar className="h-3 w-3" />
-            <span>{new Date(deal.expectedCloseDate).toLocaleDateString()}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <User className="h-3 w-3" />
-            <span>{deal.owner}</span>
+            <span>{deal.expectedCloseDate}</span>
           </div>
         </div>
       </div>

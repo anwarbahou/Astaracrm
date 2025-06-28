@@ -16,7 +16,8 @@
       "workflows": "Workflows",
       "activityLogs": "Activity Logs",
       "expand": "Expand",
-      "collapse": "Collapse"
+      "collapse": "Collapse",
+      "soon": "Coming Soon"
     },
     "topNav": {
       "searchPlaceholder": "Search...",
@@ -30,6 +31,7 @@
         "profile": "Profile",
         "settings": "Settings",
         "signOut": "Sign Out",
+        "refresh": "Refresh Session",
         "ariaLabel": "User menu"
       },
       "pageTitle": {
@@ -591,7 +593,10 @@
       "avgDealSize": "Average Deal Size"
     },
     "pipeline": {
-      "dropDeal": "Drop deal here"
+      "dropDeal": "Drop deal here",
+      "noDeals": "No deals in this stage",
+      "addFirstDeal": "Add your first deal",
+      "addDeal": "Add Deal"
     },
     "toasts": {
       "created": {
@@ -644,6 +649,15 @@
         "title": "Multiple Deals Deleted",
         "description": "{{count}} deals have been deleted"
       }
+    },
+    "stages": {
+      "prospect": "Prospect",
+      "lead": "Lead",
+      "qualified": "Qualified",
+      "proposal": "Proposal",
+      "negotiation": "Negotiation",
+      "won": "Won",
+      "lost": "Lost"
     }
   },
   "addDealModal": {
@@ -1164,6 +1178,102 @@
     "empty": {
       "title": "No notifications",
       "description": "You're all caught up! We'll notify you when there's new activity."
+    }
+  },
+  "auth": {
+    "signOut": {
+      "success": {
+        "title": "Signed Out",
+        "description": "You have been successfully signed out."
+      },
+      "error": {
+        "title": "Sign Out Error",
+        "description": "Failed to sign out. Please try again."
+      }
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "description": "Configure your CRM system preferences and integrations.",
+    "userNotLoaded": "User not loaded",
+    "saveFailed": "Failed to save changes",
+    "saved": "Settings saved",
+    "saveChanges": "Save All Changes",
+    "tabs": {
+      "profile": "Profile",
+      "notifications": "Notifications",
+      "security": "Security",
+      "email": "Email",
+      "integrations": "Integrations"
+    },
+    "profile": {
+      "title": "Profile Information",
+      "description": "Manage your personal information and preferences",
+      "photo": "Profile Photo",
+      "photoDesc": "Upload a profile picture or avatar",
+      "upload": "Upload Photo",
+      "remove": "Remove Photo",
+      "removePhotoError": "Failed to remove photo",
+      "photoRemoved": "Photo removed",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Phone",
+      "timezone": "Timezone"
+    },
+    "notifications": {
+      "title": "Notification Preferences",
+      "description": "Configure how you want to receive notifications",
+      "emailNotifs": "Email Notifications",
+      "emailNotifsDesc": "Receive notifications via email",
+      "pushNotifs": "Push Notifications",
+      "pushNotifsDesc": "Receive browser push notifications",
+      "weeklyReports": "Weekly Reports",
+      "weeklyReportsDesc": "Get weekly performance summaries",
+      "dealAlerts": "Deal Alerts",
+      "dealAlertsDesc": "Notifications for deal stage changes",
+      "taskReminders": "Task Reminders",
+      "taskRemindersDesc": "Reminders for upcoming and overdue tasks"
+    },
+    "security": {
+      "title": "Security Settings",
+      "description": "Manage your account security and password",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm Password",
+      "requirements": "Password Requirements",
+      "reqLength": "At least 8 characters long",
+      "reqUppercase": "Include at least one uppercase letter",
+      "reqLowercase": "Include at least one lowercase letter",
+      "reqNumber": "Include at least one number",
+      "reqSpecial": "Include at least one special character (@$!%*?&)",
+      "passwordMismatch": "New password and confirmation do not match",
+      "passwordRequirements": "Password does not meet the requirements",
+      "passwordUpdated": "Password Updated",
+      "passwordUpdatedDesc": "Your password has been successfully updated",
+      "passwordUpdateError": "Failed to update password",
+      "updating": "Updating Password...",
+      "updatePassword": "Update Password"
+    },
+    "email": {
+      "title": "Email Configuration",
+      "description": "Configure your email server settings",
+      "smtpServer": "SMTP Server",
+      "smtpPort": "SMTP Port",
+      "smtpUsername": "SMTP Username",
+      "smtpPassword": "SMTP Password"
+    },
+    "integrations": {
+      "title": "Third-Party Integrations",
+      "description": "Connect and manage external services",
+      "googleCalendar": "Google Calendar",
+      "googleCalendarDesc": "Sync appointments with Google Calendar",
+      "outlookCalendar": "Outlook Calendar",
+      "outlookCalendarDesc": "Sync appointments with Outlook Calendar",
+      "slack": "Slack Integration",
+      "slackDesc": "Send notifications to Slack channels",
+      "zapier": "Zapier Webhooks",
+      "zapierDesc": "Automate workflows with Zapier"
     }
   }
 }

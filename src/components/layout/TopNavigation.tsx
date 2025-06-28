@@ -76,18 +76,28 @@ export function TopNavigation() {
     try {
       const { error } = await signOut();
       if (error) {
+        console.error('Sign out error:', error);
         toast({
-          title: "Error",
-          description: "Failed to sign out",
+          title: t('auth.signOut.error.title'),
+          description: t('auth.signOut.error.description'),
           variant: "destructive",
         });
       } else {
-        navigate("/login");
+        // Clear any local storage or state if needed
+        localStorage.clear();
+        // Navigate to the login page
+        navigate("/login", { replace: true });
+        // Show success toast
+        toast({
+          title: t('auth.signOut.success.title'),
+          description: t('auth.signOut.success.description'),
+        });
       }
     } catch (error) {
+      console.error('Sign out error:', error);
       toast({
-        title: "Error",
-        description: "Failed to sign out",
+        title: t('auth.signOut.error.title'),
+        description: t('auth.signOut.error.description'),
         variant: "destructive",
       });
     }

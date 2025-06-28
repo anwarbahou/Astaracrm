@@ -5,23 +5,36 @@ import type { Database } from './types';
 // Debug: Log environment variables
 console.log('=== SUPABASE CLIENT DEBUG ===');
 console.log('VITE_SUPABASE_URL:', import.meta.env.VITE_SUPABASE_URL);
-console.log('VITE_SUPABASE_ANON_KEY:', import.meta.env.VITE_SUPABASE_ANON_KEY);
-console.log('All import.meta.env:', import.meta.env);
+console.log('VITE_SUPABASE_ANON_KEY:', import.meta.env.VITE_SUPABASE_ANON_KEY ? 'SET' : 'NOT SET');
+console.log('NEXT_PUBLIC_SUPABASE_URL:', import.meta.env.NEXT_PUBLIC_SUPABASE_URL);
+console.log('NEXT_PUBLIC_SUPABASE_ANON_KEY:', import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'SET' : 'NOT SET');
 console.log('================================');
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// Try both VITE_ and NEXT_PUBLIC_ prefixes
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_PUBLIC_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 console.log('Final SUPABASE_URL:', SUPABASE_URL);
-console.log('Final SUPABASE_PUBLISHABLE_KEY:', SUPABASE_PUBLISHABLE_KEY ? 'SET' : 'NOT SET');
+console.log('Final SUPABASE_ANON_KEY:', SUPABASE_ANON_KEY ? 'SET' : 'NOT SET');
 
-if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   console.error('❌ Missing Supabase environment variables!');
-  console.log('Available env vars:', Object.keys(import.meta.env));
+  console.error('Please ensure you have the following in your .env file:');
+  console.error('VITE_SUPABASE_URL=your_project_url');
+  console.error('VITE_SUPABASE_ANON_KEY=your_anon_key');
+  console.error('Or with NEXT_PUBLIC_ prefix:');
+  console.error('NEXT_PUBLIC_SUPABASE_URL=your_project_url');
+  console.error('NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key');
   throw new Error('Missing Supabase environment variables. Please check your .env file.');
 }
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true
+  }
+});

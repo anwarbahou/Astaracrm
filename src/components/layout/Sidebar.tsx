@@ -132,7 +132,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                     {!isCollapsed && (
                       <motion.span
                         className={cn(
-                          "font-medium truncate min-w-0",
+                          "font-medium truncate min-w-0 flex items-center gap-2",
                           isActive ? "text-white" : "text-gray-800 dark:text-gray-200"
                         )}
                         initial={{ opacity: 0, x: -10 }}
@@ -141,6 +141,11 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                         transition={{ duration: 0.2 }}
                       >
                         {t(`app.sidebar.${item.labelKey}`)}
+                        {item.id === 'ai-leads' && (
+                          <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded">
+                            {t('app.sidebar.soon')}
+                          </span>
+                        )}
                       </motion.span>
                     )}
                   </AnimatePresence>

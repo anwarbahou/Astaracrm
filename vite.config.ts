@@ -6,20 +6,29 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   // Load env file based on `mode` in the current working directory.
-  const env = loadEnv(mode, process.cwd(), '');
+  // Allow both NEXT_PUBLIC_ and VITE_ prefixes
+  const env = loadEnv(mode, process.cwd(), ['VITE_', 'NEXT_PUBLIC_']);
   
   // Debug: Log what we're loading from .env
-  console.log('🔍 Vite Config Debug:');
-  console.log('NEXT_PUBLIC_SUPABASE_URL from env:', env.NEXT_PUBLIC_SUPABASE_URL);
-  console.log('NEXT_PUBLIC_SUPABASE_ANON_KEY from env:', env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'SET' : 'NOT SET');
+  console.log('=== SUPABASE CLIENT DEBUG ===');
+  console.log('VITE_SUPABASE_URL:', env.NEXT_PUBLIC_SUPABASE_URL);
+  console.log('VITE_SUPABASE_ANON_KEY:', env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'SET' : 'NOT SET');
+  console.log('================================');
   
   return {
     server: {
       host: "::",
       port: 8080,
+      fs: {
+        // Allow serving files from one level up to the project root
+        allow: ['..']
+      }
     },
     plugins: [
-      react(),
+      react({
+        // Enable TypeScript with SWC
+        tsDecorators: true
+      }),
       mode === 'development' &&
       componentTagger(),
     ].filter(Boolean),
@@ -27,13 +36,18 @@ export default defineConfig(({ mode }) => {
       alias: {
         "@": path.resolve(__dirname, "./src"),
       },
+      extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json']
     },
     define: {
-      // Expose NEXT_PUBLIC_ variables as VITE_ variables
+      // Map NEXT_PUBLIC_ variables to VITE_ variables
       'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(env.NEXT_PUBLIC_SUPABASE_URL || ''),
       'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''),
+      // Also expose them with NEXT_PUBLIC_ prefix for backward compatibility
+      'import.meta.env.NEXT_PUBLIC_SUPABASE_URL': JSON.stringify(env.NEXT_PUBLIC_SUPABASE_URL || ''),
+      'import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY': JSON.stringify(env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '')
     },
-    envPrefix: ['VITE_', 'NEXT_PUBLIC_'], // This tells Vite to also load NEXT_PUBLIC_ variables
+    // Allow both VITE_ and NEXT_PUBLIC_ prefixes
+    envPrefix: ['VITE_', 'NEXT_PUBLIC_'],
     build: {
       // Optimize chunk size
       chunkSizeWarningLimit: 1000,
@@ -53,7 +67,7 @@ export default defineConfig(({ mode }) => {
         },
       },
       // Enable source maps for better debugging in production
-      sourcemap: false,
+      sourcemap: true,
       // Optimize build performance
       target: 'esnext',
       minify: 'esbuild',
@@ -67,6 +81,14 @@ export default defineConfig(({ mode }) => {
         'framer-motion',
         '@supabase/supabase-js',
       ],
+      esbuildOptions: {
+        target: 'esnext',
+        // Add support for JSX/TSX in dependencies
+        loader: {
+          '.js': 'jsx',
+          '.ts': 'tsx'
+        }
+      }
     },
   };
 });

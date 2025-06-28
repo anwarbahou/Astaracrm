@@ -16,7 +16,8 @@
       "workflows": "مسارات العمل",
       "activityLogs": "سجلات النشاط",
       "expand": "توسيع",
-      "collapse": "تقليص"
+      "collapse": "تقليص",
+      "soon": "قريباً"
     },
     "topNav": {
       "searchPlaceholder": "ابحث عن أي شيء...",
@@ -1140,5 +1141,89 @@
     "notesLabel": "ملاحظات",
     "notesPlaceholder": "أضف أي ملاحظات إضافية حول هذه الصفقة...",
     "submitButton": "إنشاء الصفقة"
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "description": "تكوين تفضيلات نظام إدارة علاقات العملاء والتكاملات.",
+    "userNotLoaded": "لم يتم تحميل المستخدم",
+    "saveFailed": "فشل حفظ التغييرات",
+    "saved": "تم حفظ الإعدادات",
+    "saveChanges": "حفظ جميع التغييرات",
+    "tabs": {
+      "profile": "الملف الشخصي",
+      "notifications": "الإشعارات",
+      "security": "الأمان",
+      "email": "البريد الإلكتروني",
+      "integrations": "التكاملات"
+    },
+    "profile": {
+      "title": "معلومات الملف الشخصي",
+      "description": "إدارة معلوماتك الشخصية وتفضيلاتك",
+      "photo": "الصورة الشخصية",
+      "photoDesc": "تحميل صورة شخصية أو رمز",
+      "upload": "تحميل صورة",
+      "remove": "إزالة الصورة",
+      "removePhotoError": "فشل إزالة الصورة",
+      "photoRemoved": "تمت إزالة الصورة",
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "email": "البريد الإلكتروني",
+      "phone": "الهاتف",
+      "timezone": "المنطقة الزمنية"
+    },
+    "notifications": {
+      "title": "تفضيلات الإشعارات",
+      "description": "تكوين كيفية تلقي الإشعارات",
+      "emailNotifs": "إشعارات البريد الإلكتروني",
+      "emailNotifsDesc": "تلقي الإشعارات عبر البريد الإلكتروني",
+      "pushNotifs": "إشعارات الدفع",
+      "pushNotifsDesc": "تلقي إشعارات المتصفح",
+      "weeklyReports": "التقارير الأسبوعية",
+      "weeklyReportsDesc": "الحصول على ملخصات الأداء الأسبوعية",
+      "dealAlerts": "تنبيهات الصفقات",
+      "dealAlertsDesc": "إشعارات لتغييرات مراحل الصفقات",
+      "taskReminders": "تذكيرات المهام",
+      "taskRemindersDesc": "تذكيرات للمهام القادمة والمتأخرة"
+    },
+    "security": {
+      "title": "إعدادات الأمان",
+      "description": "إدارة أمان حسابك وكلمة المرور",
+      "currentPassword": "كلمة المرور الحالية",
+      "newPassword": "كلمة المرور الجديدة",
+      "confirmPassword": "تأكيد كلمة المرور",
+      "requirements": "متطلبات كلمة المرور",
+      "reqLength": "8 أحرف على الأقل",
+      "reqUppercase": "حرف كبير واحد على الأقل",
+      "reqLowercase": "حرف صغير واحد على الأقل",
+      "reqNumber": "رقم واحد على الأقل",
+      "reqSpecial": "حرف خاص واحد على الأقل (@$!%*?&)",
+      "passwordMismatch": "كلمة المرور الجديدة والتأكيد غير متطابقين",
+      "passwordRequirements": "كلمة المرور لا تلبي المتطلبات",
+      "passwordUpdated": "تم تحديث كلمة المرور",
+      "passwordUpdatedDesc": "تم تحديث كلمة المرور الخاصة بك بنجاح",
+      "passwordUpdateError": "فشل تحديث كلمة المرور",
+      "updating": "جاري تحديث كلمة المرور...",
+      "updatePassword": "تحديث كلمة المرور"
+    },
+    "email": {
+      "title": "تكوين البريد الإلكتروني",
+      "description": "تكوين إعدادات خادم البريد الإلكتروني",
+      "smtpServer": "خادم SMTP",
+      "smtpPort": "منفذ SMTP",
+      "smtpUsername": "اسم مستخدم SMTP",
+      "smtpPassword": "كلمة مرور SMTP"
+    },
+    "integrations": {
+      "title": "التكاملات الخارجية",
+      "description": "ربط وإدارة الخدمات الخارجية",
+      "googleCalendar": "تقويم Google",
+      "googleCalendarDesc": "مزامنة المواعيد مع تقويم Google",
+      "outlookCalendar": "تقويم Outlook",
+      "outlookCalendarDesc": "مزامنة المواعيد مع تقويم Outlook",
+      "slack": "تكامل Slack",
+      "slackDesc": "إرسال الإشعارات إلى قنوات Slack",
+      "zapier": "Webhooks Zapier",
+      "zapierDesc": "أتمتة سير العمل مع Zapier"
+    }
   }
 }

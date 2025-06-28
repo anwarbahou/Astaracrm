@@ -11,13 +11,12 @@ import { withPageTitle } from '@/components/withPageTitle';
 const Tasks: React.FC = () => {
   const { t } = useTranslation();
   const [isAddTaskModalOpen, setAddTaskModalOpen] = useState(false);
-  const { tasks } = useTasks();
   const [selectedOwners, setSelectedOwners] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRelatedEntity, setSelectedRelatedEntity] = useState<string>("");
   const [selectedPriority, setSelectedPriority] = useState<string>("");
-
-  console.log("Tasks component - current tasks:", tasks);
+  
+  const { tasks } = useTasks(selectedOwners);
 
   const handleSelectOwner = (ownerId: string) => {
     setSelectedOwners(prev =>
@@ -28,7 +27,6 @@ const Tasks: React.FC = () => {
   };
 
   const filteredTasks = tasks.filter(task => {
-    const matchesOwner = selectedOwners.length === 0 || selectedOwners.includes(task.assigned_to || '');
     const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           task.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           task.user?.first_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -37,7 +35,7 @@ const Tasks: React.FC = () => {
     const matchesRelatedEntity = selectedRelatedEntity === "" || task.related_entity === selectedRelatedEntity;
     const matchesPriority = selectedPriority === "" || task.priority === selectedPriority;
 
-    return matchesOwner && matchesSearch && matchesRelatedEntity && matchesPriority;
+    return matchesSearch && matchesRelatedEntity && matchesPriority;
   });
 
   return (

@@ -47,6 +47,11 @@ export class TaskServiceError extends Error {
   }
 }
 
+export interface TaskServiceOptions {
+  userId: string;
+  userRole: 'admin' | 'manager' | 'user';
+}
+
 class TaskService {
   private async validateInput(input: unknown): Promise<TaskInput> {
     try {
@@ -86,9 +91,9 @@ class TaskService {
     }
   }
 
-  async getTasks(): Promise<TaskRow[]> {
+  async getTasks(options: TaskServiceOptions & { assignedUsers?: string[] }): Promise<TaskRow[]> {
     try {
-      const { data, error } = await supabase
+      let query = supabase
         .from('tasks')
         .select(`
           *,
@@ -100,6 +105,13 @@ class TaskService {
           )
         `)
         .order('created_at', { ascending: false });
+
+      // Filter by assigned users if provided
+      if (options.assignedUsers?.length) {
+        query = query.in('assigned_to', options.assignedUsers);
+      }
+
+      const { data, error } = await query;
 
       if (error) {
         throw new TaskServiceError(

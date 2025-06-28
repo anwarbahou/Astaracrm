@@ -64,7 +64,7 @@ function Notes() {
                        filters.tags.some(tag => note.tags.includes(tag));
     
     const matchesDateRange = filters.dateRange === null || 
-                            (note.createdAt >= filters.dateRange.start && note.createdAt <= filters.dateRange.end));
+                            (note.createdAt >= filters.dateRange.start && note.createdAt <= filters.dateRange.end);
     
     const matchesPriority = filters.priority === null || note.priority === filters.priority;
     

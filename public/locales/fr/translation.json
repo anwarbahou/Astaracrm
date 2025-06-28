@@ -16,7 +16,8 @@
       "workflows": "Workflows",
       "activityLogs": "Journaux d'activité",
       "expand": "Agrandir",
-      "collapse": "Réduire"
+      "collapse": "Réduire",
+      "soon": "Bientôt disponible"
     },
     "topNav": {
       "searchPlaceholder": "Rechercher...",
@@ -1076,5 +1077,89 @@
   "visibility": {
     "public": "Public",
     "private": "Privé"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "description": "Configurez vos préférences et intégrations CRM.",
+    "userNotLoaded": "Utilisateur non chargé",
+    "saveFailed": "Échec de l'enregistrement des modifications",
+    "saved": "Paramètres enregistrés",
+    "saveChanges": "Enregistrer les modifications",
+    "tabs": {
+      "profile": "Profil",
+      "notifications": "Notifications",
+      "security": "Sécurité",
+      "email": "Email",
+      "integrations": "Intégrations"
+    },
+    "profile": {
+      "title": "Informations du profil",
+      "description": "Gérez vos informations personnelles et préférences",
+      "photo": "Photo de profil",
+      "photoDesc": "Téléchargez une photo de profil ou un avatar",
+      "upload": "Télécharger une photo",
+      "remove": "Supprimer la photo",
+      "removePhotoError": "Échec de la suppression de la photo",
+      "photoRemoved": "Photo supprimée",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "email": "Email",
+      "phone": "Téléphone",
+      "timezone": "Fuseau horaire"
+    },
+    "notifications": {
+      "title": "Préférences de notification",
+      "description": "Configurez la façon dont vous souhaitez recevoir les notifications",
+      "emailNotifs": "Notifications par email",
+      "emailNotifsDesc": "Recevoir les notifications par email",
+      "pushNotifs": "Notifications push",
+      "pushNotifsDesc": "Recevoir les notifications du navigateur",
+      "weeklyReports": "Rapports hebdomadaires",
+      "weeklyReportsDesc": "Recevoir des résumés hebdomadaires de performance",
+      "dealAlerts": "Alertes d'opportunités",
+      "dealAlertsDesc": "Notifications pour les changements d'étape des opportunités",
+      "taskReminders": "Rappels de tâches",
+      "taskRemindersDesc": "Rappels pour les tâches à venir et en retard"
+    },
+    "security": {
+      "title": "Paramètres de sécurité",
+      "description": "Gérez la sécurité de votre compte et votre mot de passe",
+      "currentPassword": "Mot de passe actuel",
+      "newPassword": "Nouveau mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "requirements": "Exigences du mot de passe",
+      "reqLength": "Au moins 8 caractères",
+      "reqUppercase": "Au moins une lettre majuscule",
+      "reqLowercase": "Au moins une lettre minuscule",
+      "reqNumber": "Au moins un chiffre",
+      "reqSpecial": "Au moins un caractère spécial (@$!%*?&)",
+      "passwordMismatch": "Le nouveau mot de passe et la confirmation ne correspondent pas",
+      "passwordRequirements": "Le mot de passe ne répond pas aux exigences",
+      "passwordUpdated": "Mot de passe mis à jour",
+      "passwordUpdatedDesc": "Votre mot de passe a été mis à jour avec succès",
+      "passwordUpdateError": "Échec de la mise à jour du mot de passe",
+      "updating": "Mise à jour du mot de passe...",
+      "updatePassword": "Mettre à jour le mot de passe"
+    },
+    "email": {
+      "title": "Configuration email",
+      "description": "Configurez vos paramètres de serveur email",
+      "smtpServer": "Serveur SMTP",
+      "smtpPort": "Port SMTP",
+      "smtpUsername": "Nom d'utilisateur SMTP",
+      "smtpPassword": "Mot de passe SMTP"
+    },
+    "integrations": {
+      "title": "Intégrations tierces",
+      "description": "Connectez et gérez les services externes",
+      "googleCalendar": "Google Calendar",
+      "googleCalendarDesc": "Synchroniser les rendez-vous avec Google Calendar",
+      "outlookCalendar": "Outlook Calendar",
+      "outlookCalendarDesc": "Synchroniser les rendez-vous avec Outlook Calendar",
+      "slack": "Intégration Slack",
+      "slackDesc": "Envoyer des notifications aux canaux Slack",
+      "zapier": "Webhooks Zapier",
+      "zapierDesc": "Automatiser les flux de travail avec Zapier"
+    }
   }
 }

@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from '@/contexts/AuthContext';
 
 interface TaskFiltersProps {
   selectedOwners: string[];
@@ -42,6 +43,7 @@ export function TaskFilters({
   setSelectedPriority,
 }: TaskFiltersProps) {
   const { users, isLoading: isLoadingUsers } = useUsersForSelection();
+  const { userProfile } = useAuth();
 
   if (isLoadingUsers) {
     return null; // Or a loading spinner

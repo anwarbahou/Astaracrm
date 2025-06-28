@@ -141,13 +141,12 @@ function AnimatedRoutes() {
                 </ProtectedRoute>
               } 
             />
+            {/* Settings accessible to all users */}
             <Route 
               path="settings" 
               element={
                 <ProtectedRoute>
-                  <AdminOnlyRoute>
-                    <LazyWrapper><Settings /></LazyWrapper>
-                  </AdminOnlyRoute>
+                  <LazyWrapper><Settings /></LazyWrapper>
                 </ProtectedRoute>
               } 
             />

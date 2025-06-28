@@ -6,10 +6,10 @@ import { useTranslation } from 'react-i18next';
 
 export type Task = TaskRow;
 
-export function useTasks() {
+export function useTasks(selectedUsers: string[] = []) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const { t } = useTranslation();
 
   const {
@@ -18,8 +18,18 @@ export function useTasks() {
     error,
     refetch
   } = useQuery<Task[]>({
-    queryKey: ['tasks'],
-    queryFn: () => taskService.getTasks(),
+    queryKey: ['tasks', user?.id, userProfile?.role, selectedUsers],
+    queryFn: async () => {
+      if (!user?.id || !userProfile?.role) {
+        throw new Error('User not authenticated');
+      }
+      return taskService.getTasks({
+        userId: user.id,
+        userRole: userProfile.role as 'admin' | 'manager' | 'user',
+        assignedUsers: selectedUsers.length ? selectedUsers : undefined
+      });
+    },
+    enabled: !!user?.id && !!userProfile?.role
   });
 
   const addTaskMutation = useMutation({

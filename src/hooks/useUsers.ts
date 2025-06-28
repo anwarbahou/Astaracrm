@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
 import type { Database } from '@/integrations/supabase/types';
+import { useAuth } from '@/contexts/AuthContext';
 import { useQuery } from '@tanstack/react-query';
 
 type User = Database['public']['Tables']['users']['Row'];
@@ -10,14 +10,14 @@ export const useUsers = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user, userProfile, isAdmin, isManager } = useAuth();
+  const { isAdmin, isManager } = useAuth();
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         setLoading(true);
         
-        // If user is admin or manager, show all users
+        // If user is admin or manager, show all user details
         if (isAdmin || isManager) {
           const { data, error } = await supabase
             .from('users')
@@ -33,45 +33,32 @@ export const useUsers = () => {
 
           setUsers(data || []);
         } 
-        // If regular user, only show themselves
-        else if (user?.id && userProfile) {
-          // Convert UserProfile to User type with required fields
-          const currentUserAsUser: User = {
-            id: userProfile.id,
-            email: userProfile.email,
-            first_name: userProfile.first_name,
-            last_name: userProfile.last_name,
-            role: userProfile.role || 'user',
-            avatar_url: userProfile.avatar_url,
-            phone: userProfile.phone,
-            status: userProfile.status || 'active',
-            created_at: userProfile.created_at || new Date().toISOString(),
-            updated_at: userProfile.updated_at || new Date().toISOString(),
-            // Add missing fields with defaults
-            last_login_at: new Date().toISOString(),
-            preferences: {},
-            timezone: 'UTC'
-          };
-          
-          setUsers([currentUserAsUser]);
-        }
-        // If no user or profile, show empty list
+        // For regular users, show limited user information
         else {
-          setUsers([]);
+          const { data, error } = await supabase
+            .from('users')
+            .select('id, email, first_name, last_name, avatar_url, role, status, created_at, updated_at')
+            .eq('status', 'active')
+            .order('first_name', { ascending: true });
+
+          if (error) {
+            console.error('Error fetching users:', error);
+            setError(error.message);
+            return;
+          }
+
+          setUsers(data || []);
         }
       } catch (err) {
-        console.error('Unexpected error fetching users:', err);
-        setError('Failed to fetch users');
+        console.error('Error in fetchUsers:', err);
+        setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
         setLoading(false);
       }
     };
 
-    // Only fetch when we have user profile information
-    if (userProfile !== null) {
-      fetchUsers();
-    }
-  }, [user?.id, userProfile, isAdmin, isManager]);
+    fetchUsers();
+  }, [isAdmin, isManager]);
 
   return { users, loading, error };
 };
@@ -98,11 +85,6 @@ export function useUsersForSelection() {
         .select('id, email, first_name, last_name, role, avatar_url')
         .eq('status', 'active')
         .order('first_name', { ascending: true });
-
-      // If user is not admin/manager, only show themselves
-      if (userProfile?.role !== 'admin' && userProfile?.role !== 'manager') {
-        query = query.eq('id', user.id);
-      }
 
       const { data, error } = await query;
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTasks, Task } from '@/hooks/useTasks';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,6 +42,10 @@ export const TaskCard: React.FC<{ task: Task }> = ({ task }) => {
   const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
   const dropdownTriggerRef = React.useRef<HTMLButtonElement>(null);
   const { t } = useTranslation();
+  const { user, isAdmin } = useAuth();
+
+  // Only show menu if user is admin or owner/assignee of the task
+  const canManageTask = isAdmin || task.owner === user?.id || task.assigned_to === user?.id;
 
   const handleEdit = () => {
     setEditModalOpen(true);
@@ -70,6 +75,7 @@ export const TaskCard: React.FC<{ task: Task }> = ({ task }) => {
           <div className="font-semibold text-base truncate pr-8" title={task.title}>
             {task.title}
           </div>
+          {canManageTask && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
@@ -91,6 +97,7 @@ export const TaskCard: React.FC<{ task: Task }> = ({ task }) => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          )}
         </div>
 
         <div className="flex items-center gap-2 text-sm text-muted-foreground">

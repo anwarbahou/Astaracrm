@@ -59,7 +59,8 @@ function Deals() {
     createDeal, 
     updateDeal, 
     deleteDeal,
-    deleteDealsSilent
+    deleteDealsSilent,
+    createDealsWithBulkNotification
   } = useDeals();
   
   // Use backend deals if available, otherwise fallback to mock data
@@ -257,8 +258,22 @@ function Deals() {
         description: t('deals.toasts.imported.description', { count: dealsToImport.length }),
       });
     } else {
-      // Use the bulk creation function
-      await createDeal(dealsToImport[0]); // For now, just import the first deal
+      try {
+        // Use the bulk creation function with a single notification
+        await createDealsWithBulkNotification(dealsToImport);
+        
+        toast({
+          title: t('deals.toasts.imported.title'),
+          description: t('deals.toasts.imported.description', { count: dealsToImport.length }),
+        });
+      } catch (error) {
+        console.error('Error importing deals:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to import deals. Please try again.',
+          variant: 'destructive',
+        });
+      }
     }
   };
 

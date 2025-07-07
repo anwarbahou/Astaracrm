@@ -102,68 +102,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Computed properties for role checking
   const isAdmin = userProfile?.role === 'admin';
   const isManager = userProfile?.role === 'manager' || userProfile?.role === 'admin';
 
   const refreshUserProfile = async () => {
-    if (user) {
-      console.log('🔄 Manually refreshing user profile...');
-      const profile = await fetchUserProfile(user.id);
-      setUserProfile(profile);
-      console.log('✅ User profile refreshed:', profile);
-    }
-  };
-
-  const forceRefresh = async () => {
-    console.log('🔄 Force refreshing user session and profile...');
-    console.log('Current user:', user);
-    console.log('Current userProfile:', userProfile);
-    
-    // Get fresh session
-    const { data: { session }, error } = await supabase.auth.getSession();
-    if (error) {
-      console.error('Error getting session:', error);
-      return;
-    }
-    
-    if (session?.user) {
-      console.log('Session user:', session.user);
-      // Force refresh user profile
-      const profile = await fetchUserProfile(session.user.id);
-      console.log('Fresh profile from database:', profile);
-      setUserProfile(profile);
-      console.log('✅ Force refresh complete. New userProfile:', profile);
-      console.log('isAdmin should be:', profile?.role === 'admin');
-      console.log('isManager should be:', profile?.role === 'manager' || profile?.role === 'admin');
-    }
-  };
-
-  useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        await ensureUserProfile(session.user);
-        const profile = await fetchUserProfile(session.user.id);
+    try {
+      if (user) {
+        console.log('🔄 Manually refreshing user profile...');
+        const profile = await fetchUserProfile(user.id);
         setUserProfile(profile);
+        console.log('✅ User profile refreshed:', profile);
       }
-      
-      setLoading(false);
-    });
+    } catch (err) {
+      console.error('Error refreshing user profile:', err);
+      setError('Failed to refresh user profile');
+    }
+  };
 
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+  const handleAuthStateChange = async (event: string, session: Session | null) => {
+    try {
       console.log('Auth state changed:', event, session?.user?.email);
       setSession(session);
       setUser(session?.user ?? null);
       
-      // Ensure user profile exists when user signs in or signs up
       if (session?.user && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
         await ensureUserProfile(session.user);
         const profile = await fetchUserProfile(session.user.id);
@@ -171,11 +135,53 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else if (event === 'SIGNED_OUT') {
         setUserProfile(null);
       }
-      
+    } catch (err) {
+      console.error('Error handling auth state change:', err);
+      setError('Failed to update auth state');
+    } finally {
       setLoading(false);
-    });
+    }
+  };
 
-    return () => subscription.unsubscribe();
+  useEffect(() => {
+    let mounted = true;
+
+    const initializeAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!mounted) return;
+        
+        if (session?.user) {
+          await ensureUserProfile(session.user);
+          const profile = await fetchUserProfile(session.user.id);
+          
+          if (!mounted) return;
+          
+          setSession(session);
+          setUser(session.user);
+          setUserProfile(profile);
+        }
+      } catch (err) {
+        console.error('Error initializing auth:', err);
+        if (mounted) {
+          setError('Failed to initialize authentication');
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    initializeAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthStateChange);
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   // Add real-time subscription for user profile changes
@@ -266,6 +272,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (error) {
       console.error('Error updating user role:', error);
       return { error };
+    }
+  };
+
+  const forceRefresh = async () => {
+    console.log('🔄 Force refreshing user session and profile...');
+    console.log('Current user:', user);
+    console.log('Current userProfile:', userProfile);
+    
+    // Get fresh session
+    const { data: { session }, error } = await supabase.auth.getSession();
+    if (error) {
+      console.error('Error getting session:', error);
+      return;
+    }
+    
+    if (session?.user) {
+      console.log('Session user:', session.user);
+      // Force refresh user profile
+      const profile = await fetchUserProfile(session.user.id);
+      console.log('Fresh profile from database:', profile);
+      setUserProfile(profile);
+      console.log('✅ Force refresh complete. New userProfile:', profile);
+      console.log('isAdmin should be:', profile?.role === 'admin');
+      console.log('isManager should be:', profile?.role === 'manager' || profile?.role === 'admin');
     }
   };
 

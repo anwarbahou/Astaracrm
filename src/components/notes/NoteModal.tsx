@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,24 +19,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { X } from "lucide-react";
+import { X, User, Briefcase, Handshake } from "lucide-react";
 import type { Note } from "@/types/note";
 import { noteService } from '@/services/noteService';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { useClientsForSelection } from '@/hooks/useClients';
+import { contactsService } from '@/services/contactsService';
+import { useDeals } from '@/hooks/useDeals';
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface NoteModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (note: Partial<Note>) => void;
   note?: Note;
-  relatedEntityOptions?: Array<{ id: string; name: string; type: 'client' | 'contact' | 'deal' }>;
 }
 
-export function NoteModal({ isOpen, onClose, onSave, note, relatedEntityOptions }: NoteModalProps) {
+export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
   const { t } = useTranslation();
   const { user, userProfile } = useAuth();
   const { toast } = useToast();
+  const { clients, isLoading: clientsLoading } = useClientsForSelection();
+  const { deals, isLoading: dealsLoading } = useDeals();
+  const [contacts, setContacts] = useState<any[]>([]);
+  const [contactsLoading, setContactsLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
 
   const [title, setTitle] = useState(note?.title || "");
   const [content, setContent] = useState(note?.content || "");
@@ -45,12 +54,23 @@ export function NoteModal({ isOpen, onClose, onSave, note, relatedEntityOptions 
   const [isPinned, setIsPinned] = useState(note?.isPinned || false);
   const [relatedEntityType, setRelatedEntityType] = useState<Note["relatedEntityType"]>(note?.relatedEntityType || null);
   const [relatedEntityId, setRelatedEntityId] = useState<string | null>(note?.relatedEntityId || null);
+  const [relatedEntityName, setRelatedEntityName] = useState<string | null>(null);
+  const [priority, setPriority] = useState<Note["priority"]>(note?.priority || "medium");
+  const [status, setStatus] = useState<Note["status"]>(note?.status || 'active');
+
+  useEffect(() => {
+    if (userProfile) {
+      setContactsLoading(true);
+      contactsService.getContacts({ 
+        userId: userProfile.id, 
+        userRole: (userProfile.role || 'user') as 'user' | 'admin' | 'manager'
+      })
+        .then(data => setContacts(data.map(c => ({ id: c.id, name: c.firstName + ' ' + c.lastName }))))
+        .finally(() => setContactsLoading(false));
+    }
+  }, [userProfile]);
 
   const predefinedTags = ["meeting", "idea", "task", "general"];
-
-  function isUUID(str: string) {
-    return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
-  }
 
   const handleAddTag = () => {
     if (currentTag.trim() && !tags.includes(currentTag.trim())) {
@@ -63,15 +83,11 @@ export function NoteModal({ isOpen, onClose, onSave, note, relatedEntityOptions 
     setTags(tags.filter(tag => tag !== tagToRemove));
   };
 
-  const handleRelatedEntityChange = (value: string) => {
-    if (value === "none") {
-      setRelatedEntityType(null);
-      setRelatedEntityId(null);
-    } else {
-      const [type, id] = value.split(":");
-      setRelatedEntityType(type as Note["relatedEntityType"]);
-      setRelatedEntityId(id);
-    }
+  const handleRelatedEntityChange = (entityType: "client" | "contact" | "deal", id: string, name: string) => {
+    setRelatedEntityType(entityType);
+    setRelatedEntityId(id);
+    setRelatedEntityName(name);
+    setDropdownOpen(null);
   };
 
   const handleSave = async () => {
@@ -79,6 +95,15 @@ export function NoteModal({ isOpen, onClose, onSave, note, relatedEntityOptions 
       toast({
         title: "Authentication Error",
         description: "User not authenticated. Please log in again.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!title.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Title is required.",
         variant: "destructive",
       });
       return;
@@ -92,6 +117,8 @@ export function NoteModal({ isOpen, onClose, onSave, note, relatedEntityOptions 
       related_entity_type: relatedEntityType,
       related_entity_id: relatedEntityId,
       owner_id: user.id,
+      priority,
+      status
     };
 
     try {
@@ -127,6 +154,9 @@ export function NoteModal({ isOpen, onClose, onSave, note, relatedEntityOptions 
     setIsPinned(false);
     setRelatedEntityType(null);
     setRelatedEntityId(null);
+    setRelatedEntityName(null);
+    setPriority("medium");
+    setStatus('active');
     onClose();
   };
 
@@ -185,6 +215,158 @@ export function NoteModal({ isOpen, onClose, onSave, note, relatedEntityOptions 
             </div>
           </div>
 
+          {/* Related Entity */}
+          <div className="space-y-2">
+            <Label>{t('tasks.addTaskModal.form.relatedEntity')}</Label>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant={!relatedEntityType ? "default" : "outline"}
+                onClick={() => {
+                  setRelatedEntityType(null);
+                  setRelatedEntityId(null);
+                  setRelatedEntityName(null);
+                }}
+              >
+                {t('tasks.addTaskModal.form.none')}
+              </Button>
+
+              <Popover open={dropdownOpen === 'client'} onOpenChange={(open) => setDropdownOpen(open ? 'client' : null)}>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant={relatedEntityType === "client" ? "default" : "outline"}
+                  >
+                    <Briefcase className="mr-2 h-4 w-4" />
+                    {t('tasks.addTaskModal.form.client')}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80">
+                  <div className="space-y-4">
+                    <Input
+                      placeholder={t('tasks.addTaskModal.form.searchEntities')}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    <div className="max-h-48 overflow-auto">
+                      {clientsLoading ? (
+                        <div className="text-center py-2">{t('tasks.addTaskModal.form.loading')}</div>
+                      ) : clients.length === 0 ? (
+                        <div className="text-center py-2">{t('tasks.addTaskModal.form.noEntitiesFound')}</div>
+                      ) : (
+                        clients
+                          .filter(client => client.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                          .map((client) => (
+                            <Button
+                              key={client.id}
+                              variant="ghost"
+                              className="w-full justify-start"
+                              onClick={() => handleRelatedEntityChange("client", client.id, client.name)}
+                            >
+                              {client.name}
+                            </Button>
+                          ))
+                      )}
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              <Popover open={dropdownOpen === 'contact'} onOpenChange={(open) => setDropdownOpen(open ? 'contact' : null)}>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant={relatedEntityType === "contact" ? "default" : "outline"}
+                  >
+                    <User className="mr-2 h-4 w-4" />
+                    {t('tasks.addTaskModal.form.contact')}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80">
+                  <div className="space-y-4">
+                    <Input
+                      placeholder={t('tasks.addTaskModal.form.searchEntities')}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    <div className="max-h-48 overflow-auto">
+                      {contactsLoading ? (
+                        <div className="text-center py-2">{t('tasks.addTaskModal.form.loading')}</div>
+                      ) : contacts.length === 0 ? (
+                        <div className="text-center py-2">{t('tasks.addTaskModal.form.noEntitiesFound')}</div>
+                      ) : (
+                        contacts
+                          .filter(contact => contact.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                          .map((contact) => (
+                            <Button
+                              key={contact.id}
+                              variant="ghost"
+                              className="w-full justify-start"
+                              onClick={() => handleRelatedEntityChange("contact", contact.id, contact.name)}
+                            >
+                              {contact.name}
+                            </Button>
+                          ))
+                      )}
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+
+              <Popover open={dropdownOpen === 'deal'} onOpenChange={(open) => setDropdownOpen(open ? 'deal' : null)}>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant={relatedEntityType === "deal" ? "default" : "outline"}
+                  >
+                    <Handshake className="mr-2 h-4 w-4" />
+                    {t('tasks.addTaskModal.form.deal')}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80">
+                  <div className="space-y-4">
+                    <Input
+                      placeholder={t('tasks.addTaskModal.form.searchEntities')}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    <div className="max-h-48 overflow-auto">
+                      {dealsLoading ? (
+                        <div className="text-center py-2">{t('tasks.addTaskModal.form.loading')}</div>
+                      ) : deals.length === 0 ? (
+                        <div className="text-center py-2">{t('tasks.addTaskModal.form.noEntitiesFound')}</div>
+                      ) : (
+                        deals
+                          .filter(deal => deal.name.toLowerCase().includes(searchQuery.toLowerCase()))
+                          .map((deal) => (
+                            <Button
+                              key={deal.id}
+                              variant="ghost"
+                              className="w-full justify-start"
+                              onClick={() => handleRelatedEntityChange("deal", deal.id, deal.name)}
+                            >
+                              {deal.name}
+                            </Button>
+                          ))
+                      )}
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
+            {relatedEntityName && (
+              <div className="mt-2 flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">{t('notes.modal.selectedEntity')}:</span>
+                <Badge variant="secondary" className="flex items-center gap-1">
+                  {relatedEntityType === 'client' && <Briefcase className="h-3 w-3" />}
+                  {relatedEntityType === 'contact' && <User className="h-3 w-3" />}
+                  {relatedEntityType === 'deal' && <Handshake className="h-3 w-3" />}
+                  {relatedEntityName}
+                </Badge>
+              </div>
+            )}
+          </div>
+
           {/* Content */}
           <div className="space-y-2">
             <Label htmlFor="content">{t('notes.modal.contentLabel')}</Label>
@@ -197,25 +379,44 @@ export function NoteModal({ isOpen, onClose, onSave, note, relatedEntityOptions 
             />
           </div>
 
-          {/* Related Entity */}
+          {/* Priority */}
           <div className="space-y-2">
-            <Label>{t('notes.modal.relatedToLabel')}</Label>
-            <Select
-              value={relatedEntityType && relatedEntityId ? `${relatedEntityType}:${relatedEntityId}` : "none"}
-              onValueChange={handleRelatedEntityChange}
-            >
+            <Label>{t('notes.modal.priorityLabel', 'Priority')}</Label>
+            <Select value={priority} onValueChange={(value) => setPriority(value as Note["priority"])}>
               <SelectTrigger>
-                <SelectValue placeholder="Select a related entity (optional)" />
+                <SelectValue placeholder="Select priority" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">None</SelectItem>
-                {relatedEntityOptions?.map((entity) => (
-                  <SelectItem key={entity.id} value={`${entity.type}:${entity.id}`}>
-                    {entity.name} ({entity.type})
-                  </SelectItem>
-                ))}
+                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="medium">Medium</SelectItem>
+                <SelectItem value="high">High</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          {/* Status */}
+          <div className="space-y-2">
+            <Label>{t('notes.modal.statusLabel', 'Status')}</Label>
+            <Select value={status} onValueChange={(value) => setStatus(value as Note["status"])}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="archived">Archived</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Is Pinned */}
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="is-pinned"
+              checked={isPinned}
+              onCheckedChange={setIsPinned}
+            />
+            <Label htmlFor="is-pinned">{t('notes.modal.pinnedLabel', 'Pin this note')}</Label>
           </div>
         </div>
 

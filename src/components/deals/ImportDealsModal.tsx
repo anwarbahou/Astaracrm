@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Deal } from '@/types/deal';
+import { Deal, DealStage } from '@/types/deal';
 import { AlertCircle, Upload, FileText, X } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -42,61 +42,113 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
         throw new Error('User not authenticated. Please refresh the page and try again.');
       }
       
-      const parsedDeals = JSON.parse(jsonData);
+      let parsedDeals;
+      try {
+        parsedDeals = JSON.parse(jsonData);
+      } catch (e) {
+        throw new Error('Invalid JSON format. Please check your input.');
+      }
       
       // Validate the JSON structure
       if (!Array.isArray(parsedDeals)) {
         throw new Error('JSON must be an array of deals');
       }
 
+      if (parsedDeals.length === 0) {
+        throw new Error('No deals found in the import data');
+      }
+
       // Get current user info for owner assignment
-      const ownerName = userProfile?.first_name && userProfile?.last_name 
+      const ownerName = userProfile.first_name && userProfile.last_name 
         ? `${userProfile.first_name} ${userProfile.last_name}`
-        : userProfile?.first_name || userProfile?.email || 'Unknown Owner';
+        : userProfile.email?.split('@')[0] || 'Unknown';
 
-      console.log('Using ownerId:', userProfile.id, 'ownerName:', ownerName);
+      console.log(`Importing deals with owner: ${ownerName} ID: ${userProfile.id}`);
+      console.log(`Number of deals to import: ${parsedDeals.length}`);
+      console.log('Raw deals data:', parsedDeals);
 
-      // Validate each deal has required fields and transform data
-      const requiredFields = ['name', 'value']; // Deal name and value are required
-      const transformedDeals = parsedDeals.map((deal, index) => {
-        // Check required fields
-        requiredFields.forEach(field => {
-          if (deal[field] === undefined || deal[field] === null) {
-            throw new Error(`Deal at index ${index} is missing required field: ${field}`);
-          }
+      return parsedDeals.map((deal: any) => {
+        // Parse and validate value
+        let dealValue = deal.value;
+        if (typeof dealValue === 'string') {
+          // Remove currency symbols, commas, and spaces
+          dealValue = dealValue.replace(/[^0-9.-]/g, '');
+          dealValue = parseFloat(dealValue);
+        }
+
+        console.log('Deal value parsing:', {
+          original: deal.value,
+          parsed: dealValue,
+          name: deal.name
         });
 
-        // Transform and set default values
+        // Allow 0 as a valid value for prospect deals
+        if (isNaN(dealValue) || dealValue < 0) {
+          console.log('Invalid value for deal:', {
+            dealName: deal.name,
+            originalValue: deal.value,
+            parsedValue: dealValue
+          });
+          throw new Error(`Deal "${deal.name}" has an invalid value (${deal.value}). Please provide a non-negative number.`);
+        }
+
+        // Normalize stage value
+        const normalizedStage = (deal.stage || 'prospect').toLowerCase();
+        const validStages = ['prospect', 'lead', 'opportunity', 'proposal', 'negotiation', 'closed_won', 'closed_lost'];
+        if (!validStages.includes(normalizedStage)) {
+          throw new Error(`Deal "${deal.name}" has an invalid stage. Valid stages are: ${validStages.join(', ')}`);
+        }
+
+        // Normalize priority value
+        const normalizedPriority = (deal.priority || 'medium').toLowerCase();
+        const validPriorities = ['low', 'medium', 'high'];
+        if (!validPriorities.includes(normalizedPriority)) {
+          throw new Error(`Deal "${deal.name}" has an invalid priority. Valid priorities are: ${validPriorities.join(', ')}`);
+        }
+
+        // Set default probability based on stage if not provided
+        let probability = deal.probability;
+        if (probability === undefined || probability === null) {
+          switch (normalizedStage) {
+            case 'prospect': probability = 10; break;
+            case 'lead': probability = 25; break;
+            case 'opportunity': probability = 50; break;
+            case 'proposal': probability = 75; break;
+            case 'negotiation': probability = 90; break;
+            case 'closed_won': probability = 100; break;
+            case 'closed_lost': probability = 0; break;
+            default: probability = 25;
+          }
+        }
+
+        // Return normalized deal object
         return {
-          ...deal,
-          owner_id: userProfile.id, // Use userProfile.id directly for owner
-          actual_close_date: deal.actual_close_date || null,
-          client_email: deal.client_email || null,
-          client_id: deal.client_id || null,
-          client_name: deal.client_name || null,
-          client_phone: deal.client_phone || null,
-          contact_id: deal.contact_id || null,
-          currency: deal.currency || null,
-          description: deal.description || null,
-          expected_close_date: deal.expected_close_date || null,
-          notes: deal.notes || null,
-          priority: deal.priority || 'medium', // Default priority
-          probability: deal.probability || 0, // Default probability
-          source: deal.source || null,
-          stage: deal.stage || 'prospect', // Default stage
+          name: deal.name,
+          client: deal.client || 'Unknown Client',
+          clientId: deal.clientId || null,
+          value: dealValue,
+          stage: normalizedStage,
+          probability: probability,
+          expectedCloseDate: deal.expectedCloseDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          source: deal.source || '',
+          priority: normalizedPriority,
           tags: Array.isArray(deal.tags) ? deal.tags : [],
+          notes: deal.notes || '',
+          owner: ownerName,
+          ownerId: userProfile.id,
+          currency: deal.currency || 'MAD'
         };
       });
-
-      return transformedDeals;
-    } catch (err) {
-      throw err instanceof Error ? err : new Error('Invalid JSON format');
+    } catch (error) {
+      console.log('Deal validation error:', error);
+      throw error;
     }
   };
 
   const handleImport = () => {
     try {
       const parsedDeals = validateAndParseDeals(jsonInput);
+      console.log('Importing deals:', parsedDeals);
       onImport(parsedDeals);
       onOpenChange(false);
       setJsonInput('');
@@ -107,6 +159,7 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
         description: `${parsedDeals.length} deals imported successfully`,
       });
     } catch (err) {
+      console.error('Import error:', err);
       setError(err instanceof Error ? err.message : 'Invalid JSON format');
     }
   };
@@ -122,14 +175,17 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
     reader.onload = (e) => {
       try {
         const content = e.target?.result as string;
+        console.log('File content:', content); // Log the raw file content
         validateAndParseDeals(content); // Validate but don't import yet
         setJsonInput(content);
         setError(null);
       } catch (err) {
+        console.error('File parsing error:', err);
         setError(err instanceof Error ? err.message : 'Invalid JSON format');
       }
     };
     reader.onerror = () => {
+      console.error('FileReader error:', reader.error);
       setError('Error reading file');
     };
     reader.readAsText(file);

@@ -110,7 +110,7 @@ export function NoteCard({ note, onClick, onDelete }: NoteCardProps) {
           </span>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 ml-2">
+              <Button variant="ghost" size="icon" className="h-8 w-8 ml-2" onClick={(e) => e.stopPropagation()}>
                 <Trash2 className="h-4 w-4 text-red-500" />
               </Button>
             </AlertDialogTrigger>
@@ -123,8 +123,11 @@ export function NoteCard({ note, onClick, onDelete }: NoteCardProps) {
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={() => onDelete(note.id)}>
+                <AlertDialogCancel onClick={(e) => e.stopPropagation()}>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(note.id);
+                }}>
                   Continue
                 </AlertDialogAction>
               </AlertDialogFooter>

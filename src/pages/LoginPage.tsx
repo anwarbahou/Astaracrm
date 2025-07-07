@@ -5,7 +5,7 @@ import { AnimatedSection } from '@/components/Landing/AnimatedSection';
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { signIn, user } = useAuth();
+  const { signIn, user, loading: authLoading } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -14,16 +14,24 @@ export default function LoginPage() {
 
   // Redirect if already logged in
   useEffect(() => {
-    if (user) {
+    if (user && !authLoading) {
       navigate('/dashboard');
     }
-  }, [user, navigate]);
+  }, [user, authLoading, navigate]);
 
-  // Lazy load background image
+  // Lazy load background image with timeout
   useEffect(() => {
     const img = new Image();
-    img.onload = () => setImageLoaded(true);
+    const timeoutId = setTimeout(() => setImageLoaded(true), 3000); // Fallback after 3s
+
+    img.onload = () => {
+      clearTimeout(timeoutId);
+      setImageLoaded(true);
+    };
+
     img.src = '/src/components/Landing/Assets/Auta-1.jpg';
+
+    return () => clearTimeout(timeoutId);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,23 +42,40 @@ export default function LoginPage() {
       return;
     }
 
+    if (loading) return; // Prevent multiple submissions
+
     setLoading(true);
     setError('');
 
     try {
-      const { error } = await signIn(email, password);
+      const { error: signInError } = await signIn(email, password);
       
-      if (error) {
-        setError(error.message);
-      } else {
-        navigate('/dashboard');
+      if (signInError) {
+        setError(signInError.message);
+        return;
       }
+      
+      // Don't navigate here - let the useEffect handle it
+      // This prevents race conditions with auth state updates
     } catch (err) {
+      console.error('Login error:', err);
       setError('An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
   };
+
+  // Show loading state if auth is still initializing
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-2 text-muted-foreground">Initializing...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <main 
@@ -58,9 +83,9 @@ export default function LoginPage() {
         imageLoaded ? 'opacity-100' : 'opacity-90'
       }`}
       style={{
-        background: imageLoaded 
-          ? `linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 50%, rgba(0, 0, 0, 0.4) 100%), url(/src/components/Landing/Assets/Auta-1.jpg) center/cover fixed no-repeat`
-          : 'linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 50%, rgba(0, 0, 0, 0.4) 100%)'
+        background: `linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 50%, rgba(0, 0, 0, 0.4) 100%)${
+          imageLoaded ? `, url(/src/components/Landing/Assets/Auta-1.jpg) center/cover fixed no-repeat` : ''
+        }`
       }}
       role="main"
       aria-label="Login Page"

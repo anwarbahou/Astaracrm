@@ -1,25 +1,25 @@
 import { supabase } from '@/integrations/supabase/client';
-import { Note } from '@/types/note';
+import { Note, NoteInput } from '@/types/note';
 
 // Database types
-// Using 'any' placeholders due to missing generated types
-type NoteRow = any;
-type NoteInsert = any;
-type NoteUpdate = any;
-
-export interface NoteInput {
+type NoteRow = {
+  id: string;
   title: string;
   content: string;
-  tags?: string[];
-  is_pinned?: boolean;
-  related_entity_type?: 'client' | 'contact' | 'deal' | null;
-  related_entity_id?: string | null;
+  tags: string[];
+  is_pinned: boolean;
+  related_entity_type: 'client' | 'contact' | 'deal' | null;
+  related_entity_id: string | null;
   owner_id: string;
-}
+  created_at: string;
+  updated_at: string;
+  priority: 'low' | 'medium' | 'high' | null;
+  status: 'active' | 'archived' | 'completed' | null;
+};
 
 export interface NoteServiceOptions {
   userId: string;
-  userRole: 'admin' | 'manager' | 'user' | null;
+  userRole: 'user' | 'admin' | 'manager';
 }
 
 // Convert database note to UI note format
@@ -36,11 +36,13 @@ const dbNoteToNote = (dbNote: NoteRow & { owner?: any }): Note => {
     updatedAt: dbNote.updated_at || '',
     ownerId: dbNote.owner_id || '',
     owner: dbNote.owner ? `${dbNote.owner.first_name} ${dbNote.owner.last_name}` : 'Unknown',
+    priority: dbNote.priority || 'medium',
+    status: dbNote.status || 'active',
   };
 };
 
 // Convert UI note input to database format for insert
-const noteInputToDbInsert = (input: NoteInput): NoteInsert => {
+const noteInputToDbInsert = (input: NoteInput): Omit<NoteRow, 'id' | 'created_at' | 'updated_at'> => {
   return {
     title: input.title,
     content: input.content,
@@ -49,20 +51,26 @@ const noteInputToDbInsert = (input: NoteInput): NoteInsert => {
     related_entity_type: input.related_entity_type || null,
     related_entity_id: input.related_entity_id || null,
     owner_id: input.owner_id,
+    priority: input.priority || 'medium',
+    status: input.status || 'active'
   };
 };
 
 // Convert UI note input to database format for update
-const noteInputToDbUpdate = (input: Partial<NoteInput>): NoteUpdate => {
-  return {
-    title: input.title,
-    content: input.content,
-    tags: input.tags,
-    is_pinned: input.is_pinned,
-    related_entity_type: input.related_entity_type,
-    related_entity_id: input.related_entity_id,
-    owner_id: input.owner_id,
-  };
+const noteInputToDbUpdate = (input: Partial<NoteInput>): Partial<Omit<NoteRow, 'id' | 'created_at' | 'updated_at'>> => {
+  const update: any = {};
+  
+  if (input.title !== undefined) update.title = input.title;
+  if (input.content !== undefined) update.content = input.content;
+  if (input.tags !== undefined) update.tags = input.tags;
+  if (input.is_pinned !== undefined) update.is_pinned = input.is_pinned;
+  if (input.related_entity_type !== undefined) update.related_entity_type = input.related_entity_type;
+  if (input.related_entity_id !== undefined) update.related_entity_id = input.related_entity_id;
+  if (input.owner_id !== undefined) update.owner_id = input.owner_id;
+  if (input.priority !== undefined) update.priority = input.priority || 'medium';
+  if (input.status !== undefined) update.status = input.status || 'active';
+  
+  return update;
 };
 
 export const noteService = {
@@ -181,12 +189,13 @@ export const noteService = {
 
       if (error) {
         console.error('Error deleting note from Supabase:', error);
-        throw error;
+        return false;
       }
+
       return true;
     } catch (error) {
       console.error('Error in deleteNote:', error);
-      throw error;
+      return false;
     }
   },
 }; 

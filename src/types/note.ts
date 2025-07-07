@@ -24,3 +24,15 @@ export interface NoteFilters {
   priority: 'low' | 'medium' | 'high' | null;
   status: 'active' | 'archived' | 'completed' | null;
 }
+
+export interface NoteInput {
+  title: string;
+  content: string;
+  tags?: string[];
+  is_pinned?: boolean;
+  related_entity_type?: 'client' | 'contact' | 'deal' | null;
+  related_entity_id?: string | null;
+  owner_id: string;
+  priority?: 'low' | 'medium' | 'high' | null;
+  status?: 'active' | 'archived' | 'completed' | null;
+}

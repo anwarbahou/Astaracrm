@@ -85,7 +85,7 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
 
   const handleRelatedEntityChange = (entityType: "client" | "contact" | "deal", id: string, name: string) => {
     setRelatedEntityType(entityType);
-    setRelatedEntityId(id);
+      setRelatedEntityId(id);
     setRelatedEntityName(name);
     setDropdownOpen(null);
   };

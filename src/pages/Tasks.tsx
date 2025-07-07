@@ -15,7 +15,7 @@ const Tasks: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRelatedEntity, setSelectedRelatedEntity] = useState<string>("");
   const [selectedPriority, setSelectedPriority] = useState<string>("");
-  
+
   const { tasks } = useTasks(selectedOwners);
 
   const handleSelectOwner = (ownerId: string) => {

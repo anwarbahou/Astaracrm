@@ -35,6 +35,7 @@ const Settings = lazy(() => import("./pages/Settings"));
 const Workflows = lazy(() => import("./pages/Workflows"));
 const ActivityLogs = lazy(() => import("./pages/ActivityLogs"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const Messaging = lazy(() => import("./pages/Messaging"));
 
 // Keep login pages and landing page as regular imports since they're needed immediately
 import LoginPage from "./pages/LoginPage";
@@ -88,6 +89,7 @@ function AnimatedRoutes() {
           <Route path="/signup" element={<SIgnupPage />} />
           <Route path="/dashboard">
             <Route index element={<ProtectedRoute><LazyWrapper><Dashboard /></LazyWrapper></ProtectedRoute>} />
+            <Route path="messaging" element={<ProtectedRoute><LazyWrapper><Messaging /></LazyWrapper></ProtectedRoute>} />
             <Route path="clients" element={<ProtectedRoute><LazyWrapper><Clients /></LazyWrapper></ProtectedRoute>} />
             <Route path="clients/:id" element={<ProtectedRoute><LazyWrapper><ClientProfile /></LazyWrapper></ProtectedRoute>} />
             <Route path="contacts" element={<ProtectedRoute><LazyWrapper><Contacts /></LazyWrapper></ProtectedRoute>} />

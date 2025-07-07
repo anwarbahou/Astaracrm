@@ -17,7 +17,8 @@
       "activityLogs": "Activity Logs",
       "expand": "Expand",
       "collapse": "Collapse",
-      "soon": "Coming Soon"
+      "soon": "Coming Soon",
+      "messaging": "Messaging"
     },
     "topNav": {
       "searchPlaceholder": "Search...",
@@ -49,7 +50,8 @@
         "activityLogs": "Activity Logs and Audit Trail",
         "settings": "Settings",
         "aiLeads": "AI Lead Intelligence",
-        "fallback": "WOLFHUNT CRM"
+        "fallback": "WOLFHUNT CRM",
+        "messaging": "Messaging Center"
       },
       "pageDescription": {
         "dashboard": "Overview of your CRM performance",
@@ -61,7 +63,8 @@
         "email": "Communicate with your clients",
         "notes": "Capture important information",
         "activityLogs": "Track all system activities and user actions.",
-        "aiLeads": "Advanced AI lead generation for MENA and Europe"
+        "aiLeads": "Advanced AI lead generation for MENA and Europe",
+        "messaging": "Chat and communicate with your team and clients"
       }
     },
     "languageSwitcher": {

@@ -17,7 +17,8 @@
       "activityLogs": "Journaux d'activité",
       "expand": "Agrandir",
       "collapse": "Réduire",
-      "soon": "Bientôt disponible"
+      "soon": "Bientôt disponible",
+      "messaging": "Messagerie"
     },
     "topNav": {
       "searchPlaceholder": "Rechercher...",
@@ -48,7 +49,8 @@
         "activityLogs": "Journaux d'activité et piste d'audit",
         "settings": "Paramètres",
         "aiLeads": "Intelligence des leads par IA",
-        "fallback": "WOLFHUNT CRM"
+        "fallback": "WOLFHUNT CRM",
+        "messaging": "Centre de Messagerie"
       },
       "pageDescription": {
         "dashboard": "Aperçu des performances de votre CRM",
@@ -60,7 +62,8 @@
         "email": "Communiquez avec vos clients",
         "notes": "Capturez les informations importantes",
         "activityLogs": "Suivez toutes les activités du système et les actions des utilisateurs.",
-        "aiLeads": "Génération de leads MENA et Europe avec IA avancée"
+        "aiLeads": "Génération de leads MENA et Europe avec IA avancée",
+        "messaging": "Chattez et communiquez avec votre équipe et vos clients"
       }
     },
     "languageSwitcher": {

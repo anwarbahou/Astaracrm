@@ -57,7 +57,7 @@ export const useUsers = () => {
       }
     };
 
-    fetchUsers();
+      fetchUsers();
   }, [isAdmin, isManager]);
 
   return { users, loading, error };

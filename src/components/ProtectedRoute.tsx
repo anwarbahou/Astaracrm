@@ -12,9 +12,18 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const [timedOut, setTimedOut] = useState(false);
 
   useEffect(() => {
+    console.log('ProtectedRoute:', { loading, error, user });
+  }, [loading, error, user]);
+
+  useEffect(() => {
     const timeoutId = setTimeout(() => setTimedOut(true), 10000);
     return () => clearTimeout(timeoutId);
   }, []);
+
+  // If user is set, always render children
+  if (user) {
+    return <>{children}</>;
+  }
 
   if ((loading && !timedOut) && !error) {
     return (
@@ -28,7 +37,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     );
   }
 
-  if (error || timedOut) {
+  if ((error || timedOut) && !user) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background">
         <div className="text-center">
@@ -46,12 +55,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     );
   }
 
-  if (!user) {
-    // Save the attempted URL for redirecting after login
-    const currentPath = location.pathname + location.search + location.hash;
-    sessionStorage.setItem('redirectAfterLogin', currentPath);
-    return <Navigate to="/login" replace />;
-  }
-
-  return <>{children}</>;
+  // Save the attempted URL for redirecting after login
+  const currentPath = location.pathname + location.search + location.hash;
+  sessionStorage.setItem('redirectAfterLogin', currentPath);
+  return <Navigate to="/login" replace />;
 }; 

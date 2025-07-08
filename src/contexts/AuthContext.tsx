@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session, AuthError } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
 
 interface UserProfile {
   id: string;
@@ -106,6 +107,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [autoRetryCount, setAutoRetryCount] = useState(0);
+  const navigate = useNavigate();
 
   // Computed properties for role checking
   const isAdmin = userProfile?.role === 'admin';
@@ -115,6 +118,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
     setLoading(true);
     setRetryCount(c => c + 1);
+    setAutoRetryCount(0);
+  };
+
+  // Helper to handle logout and redirect
+  const forceLogout = (msg?: string) => {
+    setUser(null);
+    setUserProfile(null);
+    setSession(null);
+    setLoading(false);
+    setError(msg || 'Session expired. Please log in again.');
+    localStorage.clear();
+    setTimeout(() => {
+      navigate('/login', { replace: true, state: { error: msg || 'Session expired. Please log in again.' } });
+    }, 1000);
   };
 
   const refreshUserProfile = async () => {
@@ -153,14 +170,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
+    console.log('AuthContext state:', { loading, error, user, userProfile });
+  }, [loading, error, user, userProfile]);
+
+  useEffect(() => {
     let mounted = true;
+    let retryTimeout: NodeJS.Timeout | null = null;
 
     const initializeAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (!mounted) return;
         
+        if (sessionError) {
+          if (sessionError.message?.toLowerCase().includes('jwt expired') || sessionError.message?.toLowerCase().includes('token')) {
+            forceLogout('Session expired. Please log in again.');
+            return;
+          }
+          setError('Network error. Please check your connection.');
+          setLoading(false);
+          return;
+        }
+
         if (session?.user) {
           await ensureUserProfile(session.user);
           const profile = await fetchUserProfile(session.user.id);
@@ -170,28 +202,53 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setSession(session);
           setUser(session.user);
           setUserProfile(profile);
+          setError(null);
+          setLoading(false);
+          console.log('AuthContext: Auth/profile fetch successful, loading set to false, error cleared.');
+        } else {
+          forceLogout('Session expired. Please log in again.');
+          return;
         }
-      } catch (err) {
-        console.error('Error initializing auth:', err);
-        if (mounted) {
-          setError('Failed to initialize authentication.');
+      } catch (err: any) {
+        if (!mounted) return;
+        if (err?.message?.toLowerCase().includes('jwt expired') || err?.message?.toLowerCase().includes('token')) {
+          forceLogout('Session expired. Please log in again.');
+          return;
         }
+        if (err?.message?.toLowerCase().includes('network')) {
+          setError('Network error. Please check your connection.');
+        } else {
+          setError('Unknown error. Please try again.');
+        }
+        setLoading(false);
       } finally {
         if (mounted) {
-          setLoading(false);
+          // setLoading(false); // Already set above after success/error
         }
       }
     };
 
-    initializeAuth();
+    // Auto-retry logic
+    if (autoRetryCount < 3) {
+      initializeAuth();
+      if (loading && !error) {
+        retryTimeout = setTimeout(() => {
+          setAutoRetryCount(c => c + 1);
+        }, 3000);
+      }
+    } else if (error && !loading) {
+      // After 3 auto-retries, show error
+      setLoading(false);
+    }
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthStateChange);
 
     return () => {
       mounted = false;
+      if (retryTimeout) clearTimeout(retryTimeout);
       subscription.unsubscribe();
     };
-  }, [retryCount]);
+  }, [retryCount, autoRetryCount]);
 
   // Add real-time subscription for user profile changes
   useEffect(() => {

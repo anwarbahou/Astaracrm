@@ -12,6 +12,7 @@ import { ClientService } from "@/services/clientService";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
+import { TableSkeleton } from "@/components/ui/skeleton-loader";
 
 function Clients() {
   const {
@@ -73,10 +74,7 @@ function Clients() {
           onImportClients={() => setIsImportModalOpen(true)}
         />
         <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading clients...</p>
-          </div>
+          <TableSkeleton rows={8} columns={6} />
         </div>
       </div>
     );
@@ -96,7 +94,7 @@ function Clients() {
               onClick={() => refreshClients()}
               className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
             >
-              Try Again
+              Retry
             </button>
           </div>
         </div>

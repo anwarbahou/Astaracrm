@@ -5,6 +5,7 @@ import { EventDetailDrawer } from "@/components/calendar/EventDetailDrawer";
 import { ExtendedAgendaView } from "@/components/calendar/ExtendedAgendaView";
 import { useCalendar } from "@/hooks/useCalendar";
 import { withPageTitle } from '@/components/withPageTitle';
+import { TableSkeleton } from "@/components/ui/skeleton-loader";
 
 function Calendar() {
   const {

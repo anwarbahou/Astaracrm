@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Search, Send, Paperclip, MoreVertical, Phone, Video, Plus, Hash, Users, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
@@ -32,6 +32,7 @@ type Message = {
     avatar: string;
   };
   created_at: string;
+  channel_id: string;
 };
 
 type ChannelResponse = {
@@ -72,6 +73,10 @@ export default function Messaging() {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [pendingDMUser, setPendingDMUser] = useState<any>(null);
+  const PAGE_SIZE = 20;
+  const [paginationLoading, setPaginationLoading] = useState(false);
+  const [hasMoreMessages, setHasMoreMessages] = useState(true);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   // Fetch channels
   useEffect(() => {
@@ -182,88 +187,79 @@ export default function Messaging() {
     }
   }, [user]);
 
-  // Subscribe to channel messages
+  // Fetch messages with pagination
+  const fetchMessages = async (channelId: string, before?: string) => {
+    setPaginationLoading(true);
+    let query = supabase
+      .from('messages')
+      .select('id, content, created_at, sender_id, channel_id')
+      .eq('channel_id', channelId)
+      .order('created_at', { ascending: false })
+      .limit(PAGE_SIZE);
+    if (before) {
+      query = query.lt('created_at', before);
+    }
+    const { data, error } = await query;
+    setPaginationLoading(false);
+    if (error) {
+      console.error('Error fetching messages:', error);
+      return [];
+    }
+    return data || [];
+  };
+
+  // Always fetch latest messages when selectedChannel changes
   useEffect(() => {
     if (!selectedChannel) return;
-
-    // Fetch existing messages
-    const fetchMessages = async () => {
-      const { data, error } = await supabase
-        .from('messages')
-        .select(`
-          id,
-          content,
-          created_at,
-          sender_id,
-          users:sender_id (
-            id,
-            email
-          )
-        `)
-        .eq('channel_id', selectedChannel.id)
-        .order('created_at', { ascending: true });
-
-      if (error) {
-        console.error('Error fetching messages:', error);
-        return;
-      }
-
-      if (!data) return;
-
-      const messages: Message[] = (data as MessageWithUser[]).map(msg => ({
-        id: msg.id,
-        content: msg.content,
-        created_at: msg.created_at,
-        sender: {
-          id: msg.sender_id,
-          name: msg.users[0]?.email.split('@')[0] || 'Unknown',
-          avatar: msg.users[0]?.email[0].toUpperCase() || 'U'
-        }
-      }));
-
-      setMessages(messages);
-    };
-
-    fetchMessages();
-
-    // Subscribe to new messages
-    const subscription = supabase
-      .channel(`channel-${selectedChannel.id}`)
-      .on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'messages',
-        filter: `channel_id=eq.${selectedChannel.id}`
-      }, async payload => {
-        const newMessage = payload.new as any;
-        
-        // Use a more robust approach for sender details
-        // Since we can't reliably access the users table, use the current user's info as fallback
-        const senderName = user?.id === newMessage.sender_id 
-          ? (user?.email?.split('@')[0] || 'You')
-          : `User-${newMessage.sender_id.slice(0, 4)}`;
-        
-        const senderAvatar = user?.id === newMessage.sender_id
-          ? (user?.email?.[0].toUpperCase() || 'U')
-          : 'U';
-
-        setMessages(prev => [...prev, {
-          id: newMessage.id,
-          content: newMessage.content,
-          created_at: newMessage.created_at,
+    setMessages([]);
+    setHasMoreMessages(true);
+    (async () => {
+      const data = await fetchMessages(selectedChannel.id);
+      if (data.length < PAGE_SIZE) setHasMoreMessages(false);
+      // Reverse to show oldest at top
+      const mapped = data.reverse().map(msg => {
+        const sender = users.find((u: any) => u.id === msg.sender_id);
+        return {
+          id: msg.id,
+          content: msg.content,
+          created_at: msg.created_at,
+          channel_id: msg.channel_id,
           sender: {
-            id: newMessage.sender_id,
-            name: senderName,
-            avatar: senderAvatar
+            id: msg.sender_id,
+            name: sender ? sender.email.split('@')[0] : 'Unknown',
+            avatar: sender ? sender.email[0].toUpperCase() : 'U'
           }
-        }]);
-      })
-      .subscribe();
+        };
+      });
+      setMessages(mapped);
+    })();
+  }, [selectedChannel, users]);
 
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [selectedChannel]);
+  // Load more messages on scroll top
+  const handleScroll = async (e: React.UIEvent<HTMLDivElement>) => {
+    if (paginationLoading || !hasMoreMessages) return;
+    if (e.currentTarget.scrollTop === 0 && messages.length > 0 && selectedChannel) {
+      const oldest = messages[0];
+      const data = await fetchMessages(selectedChannel.id, oldest.created_at);
+      if (data.length < PAGE_SIZE) setHasMoreMessages(false);
+      // Reverse to show oldest at top
+      const mapped = data.reverse().map(msg => {
+        const sender = users.find((u: any) => u.id === msg.sender_id);
+        return {
+          id: msg.id,
+          content: msg.content,
+          created_at: msg.created_at,
+          channel_id: msg.channel_id,
+          sender: {
+            id: msg.sender_id,
+            name: sender ? sender.email.split('@')[0] : 'Unknown',
+            avatar: sender ? sender.email[0].toUpperCase() : 'U'
+          }
+        };
+      });
+      setMessages(prev => [...mapped, ...prev]);
+    }
+  };
 
   const createChannel = async () => {
     if (!newChannelName.trim() || !user) return;
@@ -359,90 +355,67 @@ export default function Messaging() {
     }
   };
 
+  const scrollToBottom = () => {
+    if (scrollAreaRef.current) {
+      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+    }
+  };
+
   const sendMessage = async () => {
-    if (!messageInput.trim() || loading) return;
-    if (selectedChannel) {
-      if (!user) return;
-      try {
-        setLoading(true);
-        const { error } = await supabase
-          .from('messages')
-          .insert({
-            content: messageInput,
-            channel_id: selectedChannel.id,
-            sender_id: user.id
-          });
-        if (error) throw error;
-        setMessageInput('');
-      } catch (error) {
-        console.error('Error sending message:', error);
-        toast({
-          title: 'Error',
-          description: 'Failed to send message',
-          variant: 'destructive'
-        });
-      } finally {
-        setLoading(false);
+    if (!messageInput.trim() || loading || !selectedChannel || !user) return;
+
+    // Optimistically add the message
+    const optimisticMessage = {
+      id: `optimistic-${Date.now()}`,
+      content: messageInput,
+      created_at: new Date().toISOString(),
+      channel_id: selectedChannel.id,
+      sender: {
+        id: user.id,
+        name: user.email?.split('@')[0] || 'User',
+        avatar: user.email?.[0].toUpperCase() || 'U'
       }
-    } else if (pendingDMUser && user) {
-      // Create the DM channel and send the first message
-      try {
-        setLoading(true);
-        const channelName = `dm-${user.id}-${pendingDMUser.id}`;
-        const { data: newChannel, error: createError } = await supabase
-          .from('channels')
-          .insert({
-            name: channelName,
-            created_by: user.id,
-            is_private: true
-          })
-          .select()
-          .single();
-        if (createError) throw createError;
-        const channelId = newChannel.id;
-        await supabase.from('channel_members').insert([
-          { channel_id: channelId, user_id: user.id },
-          { channel_id: channelId, user_id: pendingDMUser.id }
-        ]);
-        await supabase.from('messages').insert({
-          content: messageInput,
-          channel_id: channelId,
+    };
+    setMessages(prev => [...prev, optimisticMessage]);
+    setMessageInput('');
+    setTimeout(scrollToBottom, 0);
+
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('messages')
+        .insert({
+          content: optimisticMessage.content,
+          channel_id: selectedChannel.id,
           sender_id: user.id
-        });
-        // Add to local state and select
-        const dmChannel = {
-          id: newChannel.id,
-          name: newChannel.name,
-          is_private: newChannel.is_private,
-          created_by: newChannel.created_by,
-          members: [
-            {
-              id: user.id,
-              name: user.email?.split('@')[0] || 'User',
-              avatar: user.email?.[0].toUpperCase() || 'U'
-            },
-            {
-              id: pendingDMUser.id,
-              name: pendingDMUser.email?.split('@')[0] || 'User',
-              avatar: pendingDMUser.email?.[0].toUpperCase() || 'U'
-            }
-          ]
-        };
-        setChannels((prev) => [...prev, dmChannel]);
-        setSelectedChannel(dmChannel);
-        setSelectedUser(pendingDMUser);
-        setPendingDMUser(null);
-        setMessageInput('');
-      } catch (error) {
-        console.error('Error sending message:', error);
-        toast({
-          title: 'Error',
-          description: 'Failed to send message',
-          variant: 'destructive'
-        });
-      } finally {
-        setLoading(false);
-      }
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Replace the optimistic message with the real one (by ID)
+      setMessages(prev =>
+        prev
+          .filter(msg => msg.id !== optimisticMessage.id)
+          .concat({
+            id: data.id,
+            content: data.content,
+            created_at: data.created_at,
+            channel_id: data.channel_id,
+            sender: optimisticMessage.sender
+          })
+      );
+      setTimeout(scrollToBottom, 0);
+    } catch (error) {
+      setMessages(prev => prev.filter(msg => msg.id !== optimisticMessage.id));
+      toast({
+        title: 'Error',
+        description: 'Failed to send message',
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -459,12 +432,17 @@ export default function Messaging() {
     if (!user || !targetUser) return;
     setLoading(true);
     try {
-      // Try to find an existing private channel between these two users
+      // Normalize channel name for this DM
+      const ids = [user.id, targetUser.id].sort();
+      const channelName = `dm-${ids[0]}-${ids[1]}`;
+
+      // Try to find an existing private channel with this name
       const { data: existingChannels, error: findError } = await supabase
         .from('channels')
-        .select('id, name, is_private, created_by, channel_members!inner(user_id)')
+        .select('id, name, is_private, created_by')
         .eq('is_private', true)
-        .contains('channel_members', [{ user_id: user.id }, { user_id: targetUser.id }]);
+        .eq('name', channelName);
+
       if (!findError && existingChannels && existingChannels.length > 0) {
         // Use the first found channel
         const dmChannel = channels.find((c) => c.id === existingChannels[0].id);
@@ -474,11 +452,7 @@ export default function Messaging() {
           setPendingDMUser(null);
         } else {
           // Fetch channel details if not in state
-          const { data: channelData } = await supabase
-            .from('channels')
-            .select('id, name, is_private, created_by')
-            .eq('id', existingChannels[0].id)
-            .single();
+          const channelData = existingChannels[0];
           const newChannel = {
             id: channelData.id,
             name: channelData.name,
@@ -514,6 +488,60 @@ export default function Messaging() {
       setLoading(false);
     }
   };
+
+  function getChannelDisplayName(channel: Channel, user: any, users: any[]) {
+    if (channel.is_private && channel.name.startsWith('dm-')) {
+      // Remove 'dm-' prefix and split only on the first dash
+      const idsPart = channel.name.slice(3); // remove 'dm-'
+      // Find the split point between the two UUIDs
+      // Both UUIDs are 36 chars, so split at 36
+      const id1 = idsPart.slice(0, 36);
+      const id2 = idsPart.slice(37); // skip the dash
+      const otherUserId = id1 === user.id ? id2 : id1;
+      const otherUser = users.find(u => u.id === otherUserId);
+      return otherUser ? otherUser.email : 'Direct Message';
+    }
+    return channel.name;
+  }
+
+  // In the subscription handler, deduplicate by ID and scroll to bottom
+  useEffect(() => {
+    if (!selectedChannel) return;
+    const subscription = supabase
+      .channel(`channel-${selectedChannel.id}`)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages',
+        filter: `channel_id=eq.${selectedChannel.id}`
+      }, async payload => {
+        const newMessage = payload.new as any;
+        const sender = users.find((u: any) => u.id === newMessage.sender_id);
+        setMessages(prev => {
+          if (prev.some(msg => msg.id === newMessage.id)) return prev;
+          return [
+            ...prev,
+            {
+              id: newMessage.id,
+              content: newMessage.content,
+              created_at: newMessage.created_at,
+              channel_id: newMessage.channel_id,
+              sender: {
+                id: newMessage.sender_id,
+                name: sender ? sender.email.split('@')[0] : 'Unknown',
+                avatar: sender ? sender.email[0].toUpperCase() : 'U'
+              }
+            }
+          ];
+        });
+        setTimeout(scrollToBottom, 0);
+      })
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [selectedChannel, users]);
 
   return (
     <div className="h-[calc(100vh-4rem)] flex">
@@ -615,7 +643,7 @@ CREATE TABLE IF NOT EXISTS public.messages (
                   >
                     <div className="flex items-center gap-2">
                       <Hash className="h-4 w-4 text-muted-foreground" />
-                      <span>{channel.name}</span>
+                      <span>{getChannelDisplayName(channel, user, users)}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       {channel.created_by === user?.id && (
@@ -671,7 +699,7 @@ CREATE TABLE IF NOT EXISTS public.messages (
                   <div className="flex items-center gap-3">
                     <Hash className="h-5 w-5" />
                     <div>
-                      <h2 className="font-semibold">{selectedChannel.name}</h2>
+                      <h2 className="font-semibold">{getChannelDisplayName(selectedChannel, user, users)}</h2>
                       <p className="text-sm text-muted-foreground">
                         {selectedChannel.members.length} members
                       </p>
@@ -704,36 +732,41 @@ CREATE TABLE IF NOT EXISTS public.messages (
               </Card>
             )}
             {/* Messages area */}
-            <ScrollArea className="flex-1 p-4">
+            <ScrollArea className="flex-1 p-4" ref={scrollAreaRef} onScroll={handleScroll}>
               <div className="space-y-4">
-                {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex ${message.sender.id === user?.id ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div className={`flex gap-2 max-w-[70%] ${message.sender.id === user?.id ? 'flex-row-reverse' : ''}`}>
-                      <Avatar className="h-8 w-8">
-                        <div className="bg-primary h-full w-full flex items-center justify-center text-primary-foreground text-xs">
-                          {message.sender.avatar}
+                {paginationLoading && (
+                  <div className="text-center text-xs text-muted-foreground">Loading...</div>
+                )}
+                {messages
+                  .filter((message) => selectedChannel && message.channel_id === selectedChannel.id)
+                  .map((message) => (
+                    <div
+                      key={message.id}
+                      className={`flex ${message.sender.id === user?.id ? 'justify-end' : 'justify-start'}`}
+                    >
+                      <div className={`flex gap-2 max-w-[70%] ${message.sender.id === user?.id ? 'flex-row-reverse' : ''}`}>
+                        <Avatar className="h-8 w-8">
+                          <div className="bg-primary h-full w-full flex items-center justify-center text-primary-foreground text-xs">
+                            {message.sender.avatar}
+                          </div>
+                        </Avatar>
+                        <div>
+                          <div
+                            className={`rounded-lg p-3 ${
+                              message.sender.id === user?.id
+                                ? 'bg-primary text-primary-foreground'
+                                : 'bg-muted'
+                            }`}
+                          >
+                            {message.content}
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {new Date(message.created_at).toLocaleTimeString()}
+                          </p>
                         </div>
-                      </Avatar>
-                      <div>
-                        <div
-                          className={`rounded-lg p-3 ${
-                            message.sender.id === user?.id
-                              ? 'bg-primary text-primary-foreground'
-                              : 'bg-muted'
-                          }`}
-                        >
-                          {message.content}
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {new Date(message.created_at).toLocaleTimeString()}
-                        </p>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </ScrollArea>
             {pendingDMUser && !selectedChannel && (

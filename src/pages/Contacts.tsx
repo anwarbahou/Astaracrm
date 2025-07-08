@@ -12,6 +12,7 @@ import { ImportContactsModal } from "@/components/contacts/ImportContactsModal";
 import { useToast } from "@/hooks/use-toast";
 import { Contact } from "@/components/contacts/ContactsTable";
 import { withPageTitle } from '@/components/withPageTitle';
+import { TableSkeleton } from "@/components/ui/skeleton-loader";
 
 export default withPageTitle(function Contacts() {
   const { t } = useTranslation();

@@ -29,6 +29,8 @@ interface AuthContextType {
   updateUserRole: (userId: string, role: string) => Promise<{ error: any }>;
   refreshUserProfile: () => Promise<void>;
   forceRefresh: () => Promise<void>;
+  error: string | null;
+  retry: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -103,10 +105,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   // Computed properties for role checking
   const isAdmin = userProfile?.role === 'admin';
   const isManager = userProfile?.role === 'manager' || userProfile?.role === 'admin';
+
+  const retry = () => {
+    setError(null);
+    setLoading(true);
+    setRetryCount(c => c + 1);
+  };
 
   const refreshUserProfile = async () => {
     try {
@@ -165,7 +174,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } catch (err) {
         console.error('Error initializing auth:', err);
         if (mounted) {
-          setError('Failed to initialize authentication');
+          setError('Failed to initialize authentication.');
         }
       } finally {
         if (mounted) {
@@ -182,7 +191,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       mounted = false;
       subscription.unsubscribe();
     };
-  }, []);
+  }, [retryCount]);
 
   // Add real-time subscription for user profile changes
   useEffect(() => {
@@ -312,6 +321,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     updateUserRole,
     refreshUserProfile,
     forceRefresh,
+    error,
+    retry,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

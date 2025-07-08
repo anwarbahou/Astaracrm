@@ -7,6 +7,7 @@ import { TaskFilters } from '@/components/tasks/TaskFilters';
 import TasksTable from '@/components/tasks/TasksTable';
 import { useTasks } from '@/hooks/useTasks';
 import { withPageTitle } from '@/components/withPageTitle';
+import { TableSkeleton } from "@/components/ui/skeleton-loader";
 
 const Tasks: React.FC = () => {
   const { t } = useTranslation();
@@ -16,7 +17,7 @@ const Tasks: React.FC = () => {
   const [selectedRelatedEntity, setSelectedRelatedEntity] = useState<string>("");
   const [selectedPriority, setSelectedPriority] = useState<string>("");
 
-  const { tasks } = useTasks(selectedOwners);
+  const { tasks, loading, error, refreshTasks } = useTasks(selectedOwners);
 
   const handleSelectOwner = (ownerId: string) => {
     setSelectedOwners(prev =>
@@ -37,6 +38,39 @@ const Tasks: React.FC = () => {
 
     return matchesSearch && matchesRelatedEntity && matchesPriority;
   });
+
+  if (loading) {
+    return (
+      <div className="space-y-6 animate-in">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Tasks</h1>
+        </div>
+        <div className="flex items-center justify-center py-12">
+          <TableSkeleton rows={8} columns={6} />
+        </div>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="space-y-6 animate-in">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Tasks</h1>
+        </div>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <p className="text-destructive mb-4">Error loading tasks: {error}</p>
+            <button
+              onClick={refreshTasks}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">

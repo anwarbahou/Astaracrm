@@ -18,7 +18,7 @@ interface SidebarProps {
 export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
   const { t, i18n } = useTranslation();
   const location = useLocation();
-  const { userProfile } = useAuth();
+  const { userProfile, loading: authLoading, error: authError } = useAuth();
   
   const isRtl = i18n.dir() === 'rtl';
 
@@ -73,105 +73,120 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
           </AnimatePresence>
         </div>
       </motion.div>
-
-      {/* Navigation */}
-      <motion.nav 
-        className="flex-1 p-2 overflow-y-auto bg-white dark:bg-gray-900 scrollbar-thin"
-        variants={containerVariants}
-        animate="animate"
-      >
-        <div className="space-y-1">
-          {filteredNavigationItems.map((item, index) => {
-            const isActive = location.pathname === item.path;
-            const Icon = item.icon;
-
-            return (
-              <motion.div 
-                key={item.id} 
-                className="relative"
-                variants={itemVariants}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Link
-                  to={item.path}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 relative group text-sm w-full",
-                    isActive 
-                      ? "bg-blue-600 text-white font-medium" 
-                      : "text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
-                  )}
-                  title={isCollapsed ? t(`app.sidebar.${item.labelKey}`) : undefined}
-                >
-                  {/* Active indicator */}
-                  <AnimatePresence>
-                    {isActive && (
-                      <motion.div
-                        className={cn(
-                          "absolute top-1/2 w-1 h-6 bg-blue-600 rounded-full left-0",
-                          "transform -translate-y-1/2"
-                        )}
-                        initial={{ opacity: 0, scaleY: 0 }}
-                        animate={{ opacity: 1, scaleY: 1 }}
-                        exit={{ opacity: 0, scaleY: 0 }}
-                        transition={{ duration: 0.2 }}
-                      />
-                    )}
-                  </AnimatePresence>
-
-                  {/* Icon */}
-                  <div className={cn(
-                    "flex-shrink-0 transition-colors duration-200",
-                    isActive ? "text-white" : "text-gray-800 dark:text-gray-200"
-                  )}>
-                    <Icon size={18} />
-                  </div>
-
-                  {/* Label */}
-                  <AnimatePresence mode="wait">
-                    {!isCollapsed && (
-                      <motion.span
-                        className={cn(
-                          "font-medium truncate min-w-0 flex items-center gap-2",
-                          isActive ? "text-white" : "text-gray-800 dark:text-gray-200"
-                        )}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -10 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        {t(`app.sidebar.${item.labelKey}`)}
-                        {item.id === 'ai-leads' && (
-                          <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded">
-                            {t('app.sidebar.soon')}
-                          </span>
-                        )}
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                </Link>
-              </motion.div>
-            );
-          })}
-        </div>
-
-        {/* Debug info */}
-        <AnimatePresence>
-          {!isCollapsed && (
-            <motion.div 
-              className="mt-4 p-2 text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.3, delay: 0.2 }}
-            >
-              <div>Theme: {document.documentElement.classList.contains('dark') ? 'dark' : 'light'}</div>
-              <div>Items: {filteredNavigationItems.length}</div>
-              <div>User: {userProfile?.role || 'none'}</div>
-            </motion.div>
+      {/* Loading/Error State */}
+      {(authLoading || authError) ? (
+        <div className="flex flex-col items-center justify-center h-full p-4">
+          {authLoading && (
+            <div className="flex flex-col items-center gap-2">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+              <span className="text-muted-foreground text-sm">Loading user...</span>
+            </div>
           )}
-        </AnimatePresence>
-      </motion.nav>
+          {authError && (
+            <div className="flex flex-col items-center gap-2">
+              <span className="text-destructive text-sm">{authError}</span>
+            </div>
+          )}
+        </div>
+      ) : (
+        // ... existing navigation code ...
+        <motion.nav 
+          className="flex-1 p-2 overflow-y-auto bg-white dark:bg-gray-900 scrollbar-thin"
+          variants={containerVariants}
+          animate="animate"
+        >
+          <div className="space-y-1">
+            {filteredNavigationItems.map((item, index) => {
+              const isActive = location.pathname === item.path;
+              const Icon = item.icon;
+              return (
+                <motion.div 
+                  key={item.id} 
+                  className="relative"
+                  variants={itemVariants}
+                  whileHover={authLoading || authError ? undefined : { scale: 1.02 }}
+                  whileTap={authLoading || authError ? undefined : { scale: 0.98 }}
+                >
+                  <Link
+                    to={authLoading || authError ? '#' : item.path}
+                    className={cn(
+                      "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 relative group text-sm w-full",
+                      isActive 
+                        ? "bg-blue-600 text-white font-medium" 
+                        : "text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800",
+                      (authLoading || authError) && "pointer-events-none opacity-60"
+                    )}
+                    title={isCollapsed ? t(`app.sidebar.${item.labelKey}`) : undefined}
+                    tabIndex={authLoading || authError ? -1 : 0}
+                    aria-disabled={!!(authLoading || authError)}
+                  >
+                    {/* Active indicator */}
+                    <AnimatePresence>
+                      {isActive && (
+                        <motion.div
+                          className={cn(
+                            "absolute top-1/2 w-1 h-6 bg-blue-600 rounded-full left-0",
+                            "transform -translate-y-1/2"
+                          )}
+                          initial={{ opacity: 0, scaleY: 0 }}
+                          animate={{ opacity: 1, scaleY: 1 }}
+                          exit={{ opacity: 0, scaleY: 0 }}
+                          transition={{ duration: 0.2 }}
+                        />
+                      )}
+                    </AnimatePresence>
+                    {/* Icon */}
+                    <div className={cn(
+                      "flex-shrink-0 transition-colors duration-200",
+                      isActive ? "text-white" : "text-gray-800 dark:text-gray-200"
+                    )}>
+                      <Icon size={18} />
+                    </div>
+                    {/* Label */}
+                    <AnimatePresence mode="wait">
+                      {!isCollapsed && (
+                        <motion.span
+                          className={cn(
+                            "font-medium truncate min-w-0 flex items-center gap-2",
+                            isActive ? "text-white" : "text-gray-800 dark:text-gray-200"
+                          )}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -10 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          {t(`app.sidebar.${item.labelKey}`)}
+                          {item.id === 'ai-leads' && (
+                            <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded">
+                              {t('app.sidebar.soon')}
+                            </span>
+                          )}
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </Link>
+                </motion.div>
+              );
+            })}
+          </div>
+          {/* Debug info */}
+          <AnimatePresence>
+            {!isCollapsed && (
+              <motion.div 
+                className="mt-4 p-2 text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.3, delay: 0.2 }}
+              >
+                <div>Theme: {document.documentElement.classList.contains('dark') ? 'dark' : 'light'}</div>
+                <div>Items: {filteredNavigationItems.length}</div>
+                <div>User: {userProfile && (userProfile.role === 'user' || userProfile.role === 'admin' || userProfile.role === 'manager') ? userProfile.role : 'none'}</div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.nav>
+      )}
     </motion.div>
   );
 

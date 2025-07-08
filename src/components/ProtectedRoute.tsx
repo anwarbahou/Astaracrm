@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -7,23 +7,16 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { user, loading, error, retry } = useAuth();
   const location = useLocation();
+  const [timedOut, setTimedOut] = useState(false);
 
-  // Add loading timeout to prevent infinite loading
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (loading) {
-        console.warn('Auth loading state took too long, redirecting to login');
-        // Force redirect to login if loading takes too long
-        window.location.href = '/login';
-      }
-    }, 10000); // 10 second timeout
-
+    const timeoutId = setTimeout(() => setTimedOut(true), 10000);
     return () => clearTimeout(timeoutId);
-  }, [loading]);
+  }, []);
 
-  if (loading) {
+  if ((loading && !timedOut) && !error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
@@ -35,11 +28,28 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     );
   }
 
+  if (error || timedOut) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background">
+        <div className="text-center">
+          <p className="text-destructive mb-4">
+            {error || "Loading took too long. Please check your connection or try again."}
+          </p>
+          <button
+            onClick={retry}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (!user) {
     // Save the attempted URL for redirecting after login
     const currentPath = location.pathname + location.search + location.hash;
     sessionStorage.setItem('redirectAfterLogin', currentPath);
-    
     return <Navigate to="/login" replace />;
   }
 

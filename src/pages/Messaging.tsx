@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Search, Send, Paperclip, MoreVertical, Phone, Video, Plus, Hash, Users, Trash2 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
@@ -60,6 +60,31 @@ type Channel = {
     avatar: string;
   }>;
 };
+
+// Helper to get display name from user object
+function getUserDisplayName(user) {
+  if (user?.first_name && user?.last_name) {
+    return `${user.first_name} ${user.last_name}`;
+  } else if (user?.first_name) {
+    return user.first_name;
+  } else if (user?.email) {
+    return user.email.split('@')[0];
+  } else {
+    return 'User';
+  }
+}
+
+function getUserInitials(user) {
+  if (user?.first_name && user?.last_name) {
+    return `${user.first_name[0]}${user.last_name[0]}`.toUpperCase();
+  } else if (user?.first_name) {
+    return user.first_name[0].toUpperCase();
+  } else if (user?.email) {
+    return user.email[0].toUpperCase();
+  } else {
+    return 'U';
+  }
+}
 
 export default function Messaging() {
   const { user } = useAuth();
@@ -226,7 +251,7 @@ export default function Messaging() {
           channel_id: msg.channel_id,
           sender: {
             id: msg.sender_id,
-            name: sender ? sender.email.split('@')[0] : 'Unknown',
+            name: sender ? getUserDisplayName(sender) : 'Unknown',
             avatar: sender ? sender.email[0].toUpperCase() : 'U'
           }
         };
@@ -252,7 +277,7 @@ export default function Messaging() {
           channel_id: msg.channel_id,
           sender: {
             id: msg.sender_id,
-            name: sender ? sender.email.split('@')[0] : 'Unknown',
+            name: sender ? getUserDisplayName(sender) : 'Unknown',
             avatar: sender ? sender.email[0].toUpperCase() : 'U'
           }
         };
@@ -362,7 +387,69 @@ export default function Messaging() {
   };
 
   const sendMessage = async () => {
-    if (!messageInput.trim() || loading || !selectedChannel || !user) return;
+    if (!messageInput.trim() || loading || !user) return;
+
+    // If in a pending DM (no selectedChannel, but pendingDMUser is set), create the channel first
+    if (!selectedChannel && pendingDMUser) {
+      setLoading(true);
+      try {
+        // Normalize channel name for this DM
+        const ids = [user.id, pendingDMUser.id].sort();
+        const channelName = `dm-${ids[0]}-${ids[1]}`;
+        // Create the channel
+        const { data: newChannelData, error: channelError } = await supabase
+          .from('channels')
+          .insert({
+            name: channelName,
+            is_private: true,
+            created_by: user.id
+          })
+          .select()
+          .single();
+        if (channelError) throw channelError;
+        // Add both users as members
+        await supabase.from('channel_members').insert([
+          { channel_id: newChannelData.id, user_id: user.id },
+          { channel_id: newChannelData.id, user_id: pendingDMUser.id }
+        ]);
+        // Add to local state
+        const newChannel = {
+          id: newChannelData.id,
+          name: newChannelData.name,
+          is_private: true,
+          created_by: user.id,
+          members: [
+            {
+              id: user.id,
+              name: user.email?.split('@')[0] || 'User',
+              avatar: user.email?.[0] ? user.email?.[0].toUpperCase() : 'U'
+            },
+            {
+              id: pendingDMUser.id,
+              name: pendingDMUser.email?.split('@')[0] || 'User',
+              avatar: pendingDMUser.email?.[0] ? pendingDMUser.email?.[0].toUpperCase() : 'U'
+            }
+          ]
+        };
+        setChannels((prev) => [...prev, newChannel]);
+        setSelectedChannel(newChannel);
+        setSelectedUser(pendingDMUser);
+        setPendingDMUser(null);
+        // Now send the message to the new channel
+        setTimeout(() => {
+          setMessageInput(messageInput); // restore input
+          setTimeout(sendMessage, 0); // call sendMessage again with new selectedChannel
+        }, 0);
+        setLoading(false);
+        return;
+      } catch (err) {
+        toast({ title: 'Error', description: 'Failed to start conversation', variant: 'destructive' });
+        setLoading(false);
+        return;
+      }
+    }
+
+    if (!selectedChannel) return;
 
     // Optimistically add the message
     const optimisticMessage = {
@@ -372,8 +459,8 @@ export default function Messaging() {
       channel_id: selectedChannel.id,
       sender: {
         id: user.id,
-        name: user.email?.split('@')[0] || 'User',
-        avatar: user.email?.[0].toUpperCase() || 'U'
+        name: getUserDisplayName(user),
+        avatar: user.email?.[0] ? user.email[0].toUpperCase() : 'U'
       }
     };
     setMessages(prev => [...prev, optimisticMessage]);
@@ -421,7 +508,8 @@ export default function Messaging() {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const { data, error } = await supabase.from('users').select('id, email');
+      // Fetch id, email, first_name, last_name, avatar_url for user display
+      const { data, error } = await supabase.from('users').select('id, email, first_name, last_name, avatar_url');
       if (!error) setUsers(data || []);
     };
     fetchUsers();
@@ -499,7 +587,7 @@ export default function Messaging() {
       const id2 = idsPart.slice(37); // skip the dash
       const otherUserId = id1 === user.id ? id2 : id1;
       const otherUser = users.find(u => u.id === otherUserId);
-      return otherUser ? otherUser.email : 'Direct Message';
+      return otherUser ? getUserDisplayName(otherUser) : 'Direct Message';
     }
     return channel.name;
   }
@@ -528,7 +616,7 @@ export default function Messaging() {
               channel_id: newMessage.channel_id,
               sender: {
                 id: newMessage.sender_id,
-                name: sender ? sender.email.split('@')[0] : 'Unknown',
+                name: sender ? getUserDisplayName(sender) : 'Unknown',
                 avatar: sender ? sender.email[0].toUpperCase() : 'U'
               }
             }
@@ -597,7 +685,7 @@ CREATE TABLE IF NOT EXISTS public.messages (
         <>
           {/* Sidebar with channels and users */}
           <Card className="w-80 h-full border-r flex flex-col">
-            <div className="p-4 border-b">
+            <div className="p-6 border-b">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="font-semibold">Channels</h2>
                 <Dialog>
@@ -629,47 +717,65 @@ CREATE TABLE IF NOT EXISTS public.messages (
               </div>
             </div>
             <ScrollArea className="flex-1">
-              <div className="space-y-2 p-2">
-                {channels.map((channel) => (
-                  <div
-                    key={channel.id}
-                    className={`flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 cursor-pointer ${
-                      selectedChannel?.id === channel.id ? 'bg-muted' : ''
-                    }`}
-                    onClick={() => {
-                      setSelectedChannel(channel);
-                      setSelectedUser(null);
-                    }}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Hash className="h-4 w-4 text-muted-foreground" />
-                      <span>{getChannelDisplayName(channel, user, users)}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {channel.created_by === user?.id && (
+              <div className="p-6 space-y-2">
+                {channels.map((channel) => {
+                  const isDM = channel.is_private && channel.name.startsWith('dm-');
+                  let dmUser = null;
+                  if (isDM) {
+                    const idsPart = channel.name.slice(3);
+                    const id1 = idsPart.slice(0, 36);
+                    const id2 = idsPart.slice(37);
+                    const otherUserId = id1 === user.id ? id2 : id1;
+                    dmUser = users.find(u => u.id === otherUserId);
+                  }
+                  return (
+                    <div
+                      key={channel.id}
+                      className={`flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 cursor-pointer ${
+                        selectedChannel?.id === channel.id ? 'bg-muted' : ''
+                      }`}
+                      onClick={() => {
+                        setSelectedChannel(channel);
+                        setSelectedUser(null);
+                      }}
+                    >
+                      <div className="flex items-center gap-2">
+                        {isDM && dmUser ? (
+                          <Avatar className="h-5 w-5">
+                            <AvatarImage src={dmUser.avatar_url} alt={getUserDisplayName(dmUser)} />
+                            <AvatarFallback>{getUserInitials(dmUser)}</AvatarFallback>
+                          </Avatar>
+                        ) : (
+                          <Hash className="h-4 w-4 text-muted-foreground" />
+                        )}
+                        <span>{getChannelDisplayName(channel, user, users)}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {channel.created_by === user?.id && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteChannel(channel.id);
+                            }}
+                            disabled={loading}
+                          >
+                            <Trash2 className="h-4 w-4 text-muted-foreground" />
+                          </Button>
+                        )}
                         <Button
                           variant="ghost"
                           size="icon"
                           className="h-6 w-6"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteChannel(channel.id);
-                          }}
-                          disabled={loading}
                         >
-                          <Trash2 className="h-4 w-4 text-muted-foreground" />
+                          <Users className="h-4 w-4 text-muted-foreground" />
                         </Button>
-                      )}
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6"
-                      >
-                        <Users className="h-4 w-4 text-muted-foreground" />
-                      </Button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
                 <Separator className="my-4" />
                 <h2 className="font-semibold text-sm mb-2">Users</h2>
                 {users.filter(u => u.id !== user?.id).map((u) => (
@@ -679,11 +785,10 @@ CREATE TABLE IF NOT EXISTS public.messages (
                     onClick={() => openDirectMessage(u)}
                   >
                     <Avatar className="h-6 w-6">
-                      <div className="bg-primary h-full w-full flex items-center justify-center text-primary-foreground text-xs">
-                        {u.email?.[0]?.toUpperCase() || 'U'}
-                      </div>
+                      <AvatarImage src={u.avatar_url} alt={getUserDisplayName(u)} />
+                      <AvatarFallback>{getUserInitials(u)}</AvatarFallback>
                     </Avatar>
-                    <span>{u.email}</span>
+                    <span>{getUserDisplayName(u)}</span>
                   </div>
                 ))}
               </div>
@@ -697,7 +802,21 @@ CREATE TABLE IF NOT EXISTS public.messages (
               <Card className="border-b rounded-none p-4">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-3">
-                    <Hash className="h-5 w-5" />
+                    {selectedChannel.is_private && selectedChannel.name.startsWith('dm-') ? (() => {
+                      const idsPart = selectedChannel.name.slice(3);
+                      const id1 = idsPart.slice(0, 36);
+                      const id2 = idsPart.slice(37);
+                      const otherUserId = id1 === user.id ? id2 : id1;
+                      const dmUser = users.find(u => u.id === otherUserId);
+                      return (
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={dmUser?.avatar_url} alt={getUserDisplayName(dmUser)} />
+                          <AvatarFallback>{getUserInitials(dmUser)}</AvatarFallback>
+                        </Avatar>
+                      );
+                    })() : (
+                      <Hash className="h-5 w-5" />
+                    )}
                     <div>
                       <h2 className="font-semibold">{getChannelDisplayName(selectedChannel, user, users)}</h2>
                       <p className="text-sm text-muted-foreground">
@@ -720,12 +839,11 @@ CREATE TABLE IF NOT EXISTS public.messages (
               <Card className="border-b rounded-none p-4">
                 <div className="flex items-center gap-3">
                   <Avatar className="h-8 w-8">
-                    <div className="bg-primary h-full w-full flex items-center justify-center text-primary-foreground text-xs">
-                      {pendingDMUser.email?.[0]?.toUpperCase() || 'U'}
-                    </div>
+                    <AvatarImage src={pendingDMUser.avatar_url} alt={getUserDisplayName(pendingDMUser)} />
+                    <AvatarFallback>{getUserInitials(pendingDMUser)}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <h2 className="font-semibold">{pendingDMUser.email}</h2>
+                    <h2 className="font-semibold">{getUserDisplayName(pendingDMUser)}</h2>
                     <p className="text-sm text-muted-foreground">Start a new conversation</p>
                   </div>
                 </div>
@@ -746,9 +864,8 @@ CREATE TABLE IF NOT EXISTS public.messages (
                     >
                       <div className={`flex gap-2 max-w-[70%] ${message.sender.id === user?.id ? 'flex-row-reverse' : ''}`}>
                         <Avatar className="h-8 w-8">
-                          <div className="bg-primary h-full w-full flex items-center justify-center text-primary-foreground text-xs">
-                            {message.sender.avatar}
-                          </div>
+                          <AvatarImage src={message.sender.avatar} alt={message.sender.name} />
+                          <AvatarFallback>{getUserInitials(message.sender)}</AvatarFallback>
                         </Avatar>
                         <div>
                           <div

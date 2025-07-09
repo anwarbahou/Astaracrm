@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session, AuthError } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 interface UserProfile {
   id: string;
@@ -109,6 +109,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [retryCount, setRetryCount] = useState(0);
   const [autoRetryCount, setAutoRetryCount] = useState(0);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Clear error when navigating to /login
+  useEffect(() => {
+    if (location.pathname === '/login' && error) {
+      setError(null);
+    }
+  }, [location.pathname]);
 
   // Computed properties for role checking
   const isAdmin = userProfile?.role === 'admin';
@@ -127,11 +135,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUserProfile(null);
     setSession(null);
     setLoading(false);
-    setError(msg || 'Session expired. Please log in again.');
+    setError(null); // Clear error so sidebar never shows it
     localStorage.clear();
     setTimeout(() => {
       navigate('/login', { replace: true, state: { error: msg || 'Session expired. Please log in again.' } });
-    }, 1000);
+    }, 100);
   };
 
   const refreshUserProfile = async () => {

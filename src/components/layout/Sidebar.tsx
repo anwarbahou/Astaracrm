@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -15,22 +15,24 @@ interface SidebarProps {
   onToggle: (collapsed: boolean) => void;
 }
 
-export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
+export const Sidebar = React.memo(function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
   const { t, i18n } = useTranslation();
   const location = useLocation();
   const { userProfile, loading: authLoading, error: authError } = useAuth();
-  
   const isRtl = i18n.dir() === 'rtl';
+
+  const filteredNavigationItems = useMemo(() => navigationItems.filter(item => {
+    if (!item.roles) return true;
+    const role = userProfile?.role;
+    if (role === 'user' || role === 'admin' || role === 'manager') {
+      return item.roles.includes(role);
+    }
+    return false;
+  }), [userProfile]);
 
   const toggleSidebar = () => {
     onToggle(!isCollapsed);
   };
-
-  // Filter navigation items based on user role
-  const filteredNavigationItems = navigationItems.filter(item => {
-    if (!item.roles) return true;
-    return userProfile?.role && item.roles.includes(userProfile.role);
-  });
 
   // Animated sidebar content with framer-motion
   const AnimatedSidebarContent = () => (
@@ -38,10 +40,12 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
       className="h-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
       animate={isCollapsed ? "collapsed" : "expanded"}
       variants={sidebarVariants}
+      layout // Enable layout animations
     >
       {/* Header */}
       <motion.div 
         className="p-4 border-b border-gray-200 dark:border-gray-700"
+        layout // Enable layout animation for header
       >
         <div className="flex items-center gap-3">
           {/* Logo icon - always visible */}
@@ -49,10 +53,10 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
             className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
+            layout // Enable layout animation for logo
           >
             <span className="text-white font-bold text-sm">W</span>
           </motion.div>
-          
           {/* Logo text - only visible when expanded */}
           <AnimatePresence mode="wait">
             {!isCollapsed && (
@@ -61,6 +65,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -10 }}
                 transition={{ duration: 0.3, delay: 0.1 }}
+                layout // Enable layout animation for logo text
               >
                 <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   WOLFHUNT
@@ -89,11 +94,11 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
           )}
         </div>
       ) : (
-        // ... existing navigation code ...
         <motion.nav 
           className="flex-1 p-2 overflow-y-auto bg-white dark:bg-gray-900 scrollbar-thin"
           variants={containerVariants}
           animate="animate"
+          layout // Enable layout animation for nav
         >
           <div className="space-y-1">
             {filteredNavigationItems.map((item, index) => {
@@ -106,6 +111,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                   variants={itemVariants}
                   whileHover={authLoading || authError ? undefined : { scale: 1.02 }}
                   whileTap={authLoading || authError ? undefined : { scale: 0.98 }}
+                  layout // Enable layout animation for nav items
                 >
                   <Link
                     to={authLoading || authError ? '#' : item.path}
@@ -132,6 +138,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                           animate={{ opacity: 1, scaleY: 1 }}
                           exit={{ opacity: 0, scaleY: 0 }}
                           transition={{ duration: 0.2 }}
+                          layout // Enable layout animation for active indicator
                         />
                       )}
                     </AnimatePresence>
@@ -154,6 +161,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: -10 }}
                           transition={{ duration: 0.2 }}
+                          layout // Enable layout animation for label
                         >
                           {t(`app.sidebar.${item.labelKey}`)}
                           {item.id === 'ai-leads' && (
@@ -178,6 +186,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
                 transition={{ duration: 0.3, delay: 0.2 }}
+                layout // Enable layout animation for debug info
               >
                 <div>Theme: {document.documentElement.classList.contains('dark') ? 'dark' : 'light'}</div>
                 <div>Items: {filteredNavigationItems.length}</div>
@@ -198,9 +207,9 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
       )}
       animate={{ width: isCollapsed ? 72 : 256 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
+      layout // Enable layout animation for aside
     >
       <AnimatedSidebarContent />
-      
       {/* Collapse Toggle Button */}
       <Button
         variant="ghost"
@@ -219,4 +228,4 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
       </Button>
     </motion.aside>
   );
-}
+});

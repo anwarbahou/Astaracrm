@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Search, Send, Paperclip, MoreVertical, Phone, Video, Plus, Hash, Users, Trash2 } from "lucide-react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useLayoutEffect, useState, useRef, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
@@ -102,6 +102,21 @@ export default function Messaging() {
   const [paginationLoading, setPaginationLoading] = useState(false);
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  // Ref for the scrollable viewport
+  const scrollViewportRef = useRef<HTMLDivElement | null>(null);
+  const lastMessageRef = useRef<HTMLDivElement | null>(null);
+
+  // Helper to set the ref to the Viewport
+  const setScrollViewportRef = useCallback((node: HTMLDivElement | null) => {
+    if (node) scrollViewportRef.current = node;
+  }, []);
+
+  const scrollToBottom = () => {
+    if (scrollViewportRef.current) {
+      scrollViewportRef.current.scrollTop = scrollViewportRef.current.scrollHeight;
+    }
+  };
 
   // Fetch channels
   useEffect(() => {
@@ -380,12 +395,6 @@ export default function Messaging() {
     }
   };
 
-  const scrollToBottom = () => {
-    if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
-    }
-  };
-
   const sendMessage = async () => {
     if (!messageInput.trim() || loading || !user) return;
 
@@ -607,6 +616,11 @@ export default function Messaging() {
         const sender = users.find((u: any) => u.id === newMessage.sender_id);
         setMessages(prev => {
           if (prev.some(msg => msg.id === newMessage.id)) return prev;
+          // Play sound if message is from another user
+          if (newMessage.sender_id !== user?.id && audioRef.current) {
+            audioRef.current.currentTime = 0;
+            audioRef.current.play();
+          }
           return [
             ...prev,
             {
@@ -631,8 +645,21 @@ export default function Messaging() {
     };
   }, [selectedChannel, users]);
 
+  useLayoutEffect(() => {
+    setTimeout(() => {
+      scrollToBottom();
+    }, 0);
+  }, [messages, selectedChannel]);
+
+  useEffect(() => {
+    if (lastMessageRef.current) {
+      lastMessageRef.current.scrollIntoView({ behavior: "auto" });
+    }
+  }, [messages, selectedChannel]);
+
   return (
     <div className="h-[calc(100vh-4rem)] flex">
+      <audio ref={audioRef} src="/notificationsound.mp3" preload="auto" />
       {tablesExist === false ? (
         <div className="flex-1 flex items-center justify-center">
           <Card className="w-96 p-6">
@@ -850,16 +877,17 @@ CREATE TABLE IF NOT EXISTS public.messages (
               </Card>
             )}
             {/* Messages area */}
-            <ScrollArea className="flex-1 p-4" ref={scrollAreaRef} onScroll={handleScroll}>
+            <ScrollArea className="flex-1 p-4" onScroll={handleScroll} ref={setScrollViewportRef}>
               <div className="space-y-4">
                 {paginationLoading && (
                   <div className="text-center text-xs text-muted-foreground">Loading...</div>
                 )}
                 {messages
                   .filter((message) => selectedChannel && message.channel_id === selectedChannel.id)
-                  .map((message) => (
+                  .map((message, idx, arr) => (
                     <div
                       key={message.id}
+                      ref={idx === arr.length - 1 ? lastMessageRef : null}
                       className={`flex ${message.sender.id === user?.id ? 'justify-end' : 'justify-start'}`}
                     >
                       <div className={`flex gap-2 max-w-[70%] ${message.sender.id === user?.id ? 'flex-row-reverse' : ''}`}>

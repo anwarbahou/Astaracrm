@@ -118,6 +118,13 @@ export default function Messaging() {
     }
   };
 
+  // Ask for notification permission on mount
+  useEffect(() => {
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+  }, []);
+
   // Fetch channels
   useEffect(() => {
     const fetchChannels = async () => {
@@ -616,10 +623,14 @@ export default function Messaging() {
         const sender = users.find((u: any) => u.id === newMessage.sender_id);
         setMessages(prev => {
           if (prev.some(msg => msg.id === newMessage.id)) return prev;
-          // Play sound if message is from another user
-          if (newMessage.sender_id !== user?.id && audioRef.current) {
+          // Play sound if message is from another user and permission is granted
+          if (
+            newMessage.sender_id !== user?.id &&
+            audioRef.current &&
+            (!('Notification' in window) || Notification.permission === 'granted')
+          ) {
             audioRef.current.currentTime = 0;
-            audioRef.current.play();
+            audioRef.current.play().catch(() => {});
           }
           return [
             ...prev,

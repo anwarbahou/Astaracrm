@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session, AuthError } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, SUPABASE_URL_EXPORT, SUPABASE_ANON_KEY_EXPORT } from '@/integrations/supabase/client';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 interface UserProfile {
@@ -25,7 +25,7 @@ interface AuthContextType {
   isAdmin: boolean;
   isManager: boolean;
   signUp: (email: string, password: string, name: string) => Promise<{ error: AuthError | null }>;
-  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
+  signIn: (email: string, password: string, rememberMe?: boolean) => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<{ error: AuthError | null }>;
   updateUserRole: (userId: string, role: string) => Promise<{ error: any }>;
   refreshUserProfile: () => Promise<void>;
@@ -312,12 +312,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    return { error };
+  const signIn = async (email: string, password: string, rememberMe: boolean = true) => {
+    if (rememberMe) {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      return { error };
+    } else {
+      // Create a temporary client with persistSession: false
+      const { createClient } = await import('@supabase/supabase-js');
+      const tempClient = createClient(
+        SUPABASE_URL_EXPORT,
+        SUPABASE_ANON_KEY_EXPORT,
+        {
+          auth: {
+            autoRefreshToken: false,
+            persistSession: false,
+            detectSessionInUrl: true,
+          },
+        }
+      );
+      const { data, error } = await tempClient.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (data?.session) {
+        // Set the session in the main client (in-memory only)
+        await supabase.auth.setSession({
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token,
+        });
+        // Remove persisted session from localStorage (if any)
+        try {
+          const key = Object.keys(localStorage).find(k => k.includes('supabase.auth.token'));
+          if (key) localStorage.removeItem(key);
+        } catch (e) { /* ignore */ }
+      }
+      return { error };
+    }
   };
 
   const signOut = async () => {

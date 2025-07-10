@@ -227,7 +227,7 @@ const App = () => {
                   
                   <motion.main 
                     key={i18n.language}
-                    className="flex-1 h-full min-h-screen overflow-hidden bg-background transition-theme duration-theme ease-theme min-w-0"
+                    className="flex-1 h-full min-h-screen overflow-hidden bg-background transition-theme duration-theme ease-theme min-w-0 p-6"
                     layout
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}

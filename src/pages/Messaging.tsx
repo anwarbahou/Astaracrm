@@ -4,7 +4,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Search, Send, Paperclip, MoreVertical, Phone, Video, Plus, Hash, Users, Trash2 } from "lucide-react";
+import { Search, Send, Paperclip, MoreVertical, Phone, Video, Plus, Hash, Users, Trash2, Info, X } from "lucide-react";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { useEffect, useLayoutEffect, useState, useRef, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { supabase } from "@/lib/supabaseClient";
@@ -106,6 +107,10 @@ export default function Messaging() {
   // Ref for the scrollable viewport
   const scrollViewportRef = useRef<HTMLDivElement | null>(null);
   const lastMessageRef = useRef<HTMLDivElement | null>(null);
+  const [showChannelInfo, setShowChannelInfo] = useState(false);
+  const [addUserId, setAddUserId] = useState<string | undefined>(undefined);
+  const [addUserLoading, setAddUserLoading] = useState(false);
+  const [channelDialogOpen, setChannelDialogOpen] = useState(false);
 
   // Helper to set the ref to the Viewport
   const setScrollViewportRef = useCallback((node: HTMLDivElement | null) => {
@@ -311,14 +316,30 @@ export default function Messaging() {
   const createChannel = async () => {
     if (!newChannelName.trim() || !user) return;
 
+    // Optimistically add to UI
+    const optimisticId = `optimistic-${Date.now()}`;
+    const optimisticChannel = {
+      id: optimisticId,
+      name: newChannelName.toLowerCase().replace(/\s+/g, '-'),
+      is_private: false,
+      created_by: user.id,
+      members: [{
+        id: user.id,
+        name: user.email?.split('@')[0] || 'User',
+        avatar: user.email?.[0].toUpperCase() || 'U'
+      }]
+    };
+    setChannels(prev => [...prev, optimisticChannel]);
+    setNewChannelName('');
+    setChannelDialogOpen(false);
+    setLoading(true);
+
     try {
-      setLoading(true);
-      
-      // Create channel
+      // Insert channel
       const { data: channelData, error: channelError } = await supabase
         .from('channels')
         .insert({
-          name: newChannelName.toLowerCase().replace(/\s+/g, '-'),
+          name: optimisticChannel.name,
           created_by: user.id,
           is_private: false
         })
@@ -327,7 +348,7 @@ export default function Messaging() {
 
       if (channelError) throw channelError;
 
-      // Add creator as member
+      // Insert member
       const { error: memberError } = await supabase
         .from('channel_members')
         .insert({
@@ -337,31 +358,18 @@ export default function Messaging() {
 
       if (memberError) throw memberError;
 
-      // Add to local state
-      setChannels(prev => [...prev, {
-        id: channelData.id,
-        name: channelData.name,
-        is_private: channelData.is_private,
-        created_by: channelData.created_by,
-        members: [{
-          id: user.id,
-          name: user.email?.split('@')[0] || 'User',
-          avatar: user.email?.[0].toUpperCase() || 'U'
-        }]
-      }]);
-
-      setNewChannelName('');
-      toast({
-        title: "Success",
-        description: "Channel created successfully"
-      });
+      // Replace optimistic channel with real one
+      setChannels(prev =>
+        prev.map(ch => ch.id === optimisticId
+          ? { ...optimisticChannel, id: channelData.id }
+          : ch
+        )
+      );
+      toast({ title: "Success", description: "Channel created successfully" });
     } catch (error) {
-      console.error('Error creating channel:', error);
-      toast({
-        title: "Error",
-        description: "Failed to create channel",
-        variant: "destructive"
-      });
+      // Remove optimistic channel
+      setChannels(prev => prev.filter(ch => ch.id !== optimisticId));
+      toast({ title: "Error", description: "Failed to create channel", variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -668,6 +676,35 @@ export default function Messaging() {
     }
   }, [messages, selectedChannel]);
 
+  // Helper to refresh channel members from Supabase
+  const refreshChannelMembers = async (channelId: string) => {
+    const { data, error } = await supabase
+      .from('channel_members')
+      .select('user_id')
+      .eq('channel_id', channelId);
+    if (!error && data) {
+      setSelectedChannel(prev =>
+        prev && prev.id === channelId
+          ? { ...prev, members: data.map(row => ({ id: row.user_id, name: '', avatar: '' })) }
+          : prev
+      );
+      setChannels(prev =>
+        prev.map(ch =>
+          ch.id === channelId
+            ? { ...ch, members: data.map(row => ({ id: row.user_id, name: '', avatar: '' })) }
+            : ch
+        )
+      );
+    }
+  };
+
+  // Refresh members when opening the channel info sidebar
+  useEffect(() => {
+    if (showChannelInfo && selectedChannel) {
+      refreshChannelMembers(selectedChannel.id);
+    }
+  }, [showChannelInfo, selectedChannel]);
+
   return (
     <div className="h-[calc(100vh-4rem)] flex">
       <audio ref={audioRef} src="/notificationsound.mp3" preload="auto" />
@@ -723,10 +760,66 @@ CREATE TABLE IF NOT EXISTS public.messages (
         <>
           {/* Sidebar with channels and users */}
           <Card className="w-80 h-full border-r flex flex-col">
+            {/* Conversations section */}
+            <div className="p-6 border-b">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="font-semibold">Conversations</h2>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="icon" disabled={loading}>
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Create New Conversation</DialogTitle>
+                    </DialogHeader>
+                    <div className="flex gap-2 mt-4">
+                      <Input
+                        placeholder="Conversation name..."
+                        value={''}
+                        onChange={() => {}}
+                        disabled
+                      />
+                      <Button disabled>
+                        Create
+                      </Button>
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-2">(Coming soon)</div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+              <div className="space-y-2">
+                {channels.filter(c => c.is_private && c.name.startsWith('dm-')).length === 0 && (
+                  <div className="text-muted-foreground text-sm italic">No conversations yet.</div>
+                )}
+                {channels.filter(c => c.is_private && c.name.startsWith('dm-')).map((channel) => {
+                  // Find the other user in the DM
+                  const idsPart = channel.name.slice(3);
+                  const id1 = idsPart.slice(0, 36);
+                  const id2 = idsPart.slice(37);
+                  const otherUserId = id1 === user.id ? id2 : id1;
+                  const dmUser = users.find(u => u.id === otherUserId);
+                  return (
+                    <div
+                      key={channel.id}
+                      className={`flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 cursor-pointer group ${selectedChannel?.id === channel.id ? 'bg-muted' : ''}`}
+                      onClick={() => {
+                        setSelectedChannel(channel);
+                        setSelectedUser(dmUser);
+                      }}
+                    >
+                      <span>{getUserDisplayName(dmUser)}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            {/* Channels section */}
             <div className="p-6 border-b">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="font-semibold">Channels</h2>
-                <Dialog>
+                <Dialog open={channelDialogOpen} onOpenChange={setChannelDialogOpen}>
                   <DialogTrigger asChild>
                     <Button variant="outline" size="icon" disabled={loading}>
                       <Plus className="h-4 w-4" />
@@ -741,8 +834,9 @@ CREATE TABLE IF NOT EXISTS public.messages (
                         placeholder="Channel name..."
                         value={newChannelName}
                         onChange={(e) => setNewChannelName(e.target.value)}
+                        disabled={loading}
                       />
-                      <Button onClick={createChannel} disabled={loading}>
+                      <Button onClick={createChannel} disabled={loading || !newChannelName.trim()}>
                         Create
                       </Button>
                     </div>
@@ -756,64 +850,67 @@ CREATE TABLE IF NOT EXISTS public.messages (
             </div>
             <ScrollArea className="flex-1">
               <div className="p-6 space-y-2">
-                {channels.map((channel) => {
-                  const isDM = channel.is_private && channel.name.startsWith('dm-');
-                  let dmUser = null;
-                  if (isDM) {
-                    const idsPart = channel.name.slice(3);
-                    const id1 = idsPart.slice(0, 36);
-                    const id2 = idsPart.slice(37);
-                    const otherUserId = id1 === user.id ? id2 : id1;
-                    dmUser = users.find(u => u.id === otherUserId);
-                  }
-                  return (
-                    <div
-                      key={channel.id}
-                      className={`flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 cursor-pointer ${
-                        selectedChannel?.id === channel.id ? 'bg-muted' : ''
-                      }`}
-                      onClick={() => {
-                        setSelectedChannel(channel);
-                        setSelectedUser(null);
-                      }}
-                    >
-                      <div className="flex items-center gap-2">
-                        {isDM && dmUser ? (
-                          <Avatar className="h-5 w-5">
-                            <AvatarImage src={dmUser.avatar_url} alt={getUserDisplayName(dmUser)} />
-                            <AvatarFallback>{getUserInitials(dmUser)}</AvatarFallback>
-                          </Avatar>
-                        ) : (
-                          <Hash className="h-4 w-4 text-muted-foreground" />
-                        )}
-                        <span>{getChannelDisplayName(channel, user, users)}</span>
+                {channels
+                  .filter(channel => !(channel.is_private && channel.name.startsWith('dm-')))
+                  .map((channel) => {
+                    const isDM = channel.is_private && channel.name.startsWith('dm-');
+                    let dmUser = null;
+                    if (isDM) {
+                      const idsPart = channel.name.slice(3);
+                      const id1 = idsPart.slice(0, 36);
+                      const id2 = idsPart.slice(37);
+                      const otherUserId = id1 === user.id ? id2 : id1;
+                      dmUser = users.find(u => u.id === otherUserId);
+                    }
+                    return (
+                      <div
+                        key={channel.id}
+                        className={`flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 cursor-pointer group ${
+                          selectedChannel?.id === channel.id ? 'bg-muted' : ''
+                        }`}
+                        onClick={() => {
+                          setSelectedChannel(channel);
+                          setSelectedUser(null);
+                        }}
+                      >
+                        <div className="flex items-center gap-2">
+                          {/* Only show icon/avatar for non-DM channels */}
+                          {!isDM ? (
+                            <Hash className="h-4 w-4 text-muted-foreground" />
+                          ) : null}
+                          {/* For non-DM, show channel name; for DM, show user name */}
+                          <span>{getChannelDisplayName(channel, user, users)}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {/* Only show trash icon, and only on hover (group-hover:opacity-100) */}
+                          {channel.created_by === user?.id && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteChannel(channel.id);
+                              }}
+                              disabled={loading}
+                            >
+                              <Trash2 className="h-4 w-4 text-muted-foreground" />
+                            </Button>
+                          )}
+                          {/* Only show users icon for non-DM channels */}
+                          {!isDM && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6"
+                            >
+                              <Users className="h-4 w-4 text-muted-foreground" />
+                            </Button>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        {channel.created_by === user?.id && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteChannel(channel.id);
-                            }}
-                            disabled={loading}
-                          >
-                            <Trash2 className="h-4 w-4 text-muted-foreground" />
-                          </Button>
-                        )}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6"
-                        >
-                          <Users className="h-4 w-4 text-muted-foreground" />
-                        </Button>
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
                 <Separator className="my-4" />
                 <h2 className="font-semibold text-sm mb-2">Users</h2>
                 {users.filter(u => u.id !== user?.id).map((u) => (
@@ -833,130 +930,256 @@ CREATE TABLE IF NOT EXISTS public.messages (
             </ScrollArea>
           </Card>
 
-          {/* Main chat area */}
-          <div className="flex-1 flex flex-col">
-            {/* Chat header */}
-            {selectedChannel && (
-              <Card className="border-b rounded-none p-4">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-3">
-                    {selectedChannel.is_private && selectedChannel.name.startsWith('dm-') ? (() => {
-                      const idsPart = selectedChannel.name.slice(3);
-                      const id1 = idsPart.slice(0, 36);
-                      const id2 = idsPart.slice(37);
-                      const otherUserId = id1 === user.id ? id2 : id1;
-                      const dmUser = users.find(u => u.id === otherUserId);
-                      return (
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={dmUser?.avatar_url} alt={getUserDisplayName(dmUser)} />
-                          <AvatarFallback>{getUserInitials(dmUser)}</AvatarFallback>
-                        </Avatar>
-                      );
-                    })() : (
-                      <Hash className="h-5 w-5" />
-                    )}
-                    <div>
-                      <h2 className="font-semibold">{getChannelDisplayName(selectedChannel, user, users)}</h2>
-                      <p className="text-sm text-muted-foreground">
-                        {selectedChannel.members.length} members
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon">
-                      <Users className="h-5 w-5" />
-                    </Button>
-                    <Button variant="ghost" size="icon">
-                      <MoreVertical className="h-5 w-5" />
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            )}
-            {pendingDMUser && !selectedChannel && (
-              <Card className="border-b rounded-none p-4">
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={pendingDMUser.avatar_url} alt={getUserDisplayName(pendingDMUser)} />
-                    <AvatarFallback>{getUserInitials(pendingDMUser)}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <h2 className="font-semibold">{getUserDisplayName(pendingDMUser)}</h2>
-                    <p className="text-sm text-muted-foreground">Start a new conversation</p>
-                  </div>
-                </div>
-              </Card>
-            )}
-            {/* Messages area */}
-            <ScrollArea className="flex-1 p-4" onScroll={handleScroll} ref={setScrollViewportRef}>
-              <div className="space-y-4">
-                {paginationLoading && (
-                  <div className="text-center text-xs text-muted-foreground">Loading...</div>
-                )}
-                {messages
-                  .filter((message) => selectedChannel && message.channel_id === selectedChannel.id)
-                  .map((message, idx, arr) => (
-                    <div
-                      key={message.id}
-                      ref={idx === arr.length - 1 ? lastMessageRef : null}
-                      className={`flex ${message.sender.id === user?.id ? 'justify-end' : 'justify-start'}`}
-                    >
-                      <div className={`flex gap-2 max-w-[70%] ${message.sender.id === user?.id ? 'flex-row-reverse' : ''}`}>
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={message.sender.avatar} alt={message.sender.name} />
-                          <AvatarFallback>{getUserInitials(message.sender)}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div
-                            className={`rounded-lg p-3 ${
-                              message.sender.id === user?.id
-                                ? 'bg-primary text-primary-foreground'
-                                : 'bg-muted'
-                            }`}
-                          >
-                            {message.content}
-                          </div>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {new Date(message.created_at).toLocaleTimeString()}
+          {/* Main chat and info sidebar layout */}
+          <div className="flex-1 flex overflow-hidden">
+            {/* Chat area (flex-1) */}
+            <div className={`flex-1 flex flex-col ${showChannelInfo ? 'border-r' : ''}`}>
+              {/* Chat header */}
+              {selectedChannel && (
+                <Card className="border-b rounded-none p-4">
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-3">
+                      {selectedChannel.is_private && selectedChannel.name.startsWith('dm-') ? (() => {
+                        const idsPart = selectedChannel.name.slice(3);
+                        const id1 = idsPart.slice(0, 36);
+                        const id2 = idsPart.slice(37);
+                        const otherUserId = id1 === user.id ? id2 : id1;
+                        const dmUser = users.find(u => u.id === otherUserId);
+                        return (
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage src={dmUser?.avatar_url} alt={getUserDisplayName(dmUser)} />
+                            <AvatarFallback>{getUserInitials(dmUser)}</AvatarFallback>
+                          </Avatar>
+                        );
+                      })() : (
+                        <Hash className="h-5 w-5" />
+                      )}
+                      <div>
+                        <h2 className="font-semibold">{getChannelDisplayName(selectedChannel, user, users)}</h2>
+                        <div className="flex items-center gap-2 mt-1">
+                          <p className="text-sm text-muted-foreground">
+                            {selectedChannel.members.length} members
                           </p>
+                          <div className="flex -space-x-2">
+                            {selectedChannel.members.slice(0, 5).map((member) => {
+                              const userObj = users.find(u => u.id === member.id);
+                              return (
+                                <Avatar key={member.id} className="h-6 w-6 border-2 border-background">
+                                  <AvatarImage src={userObj?.avatar_url || undefined} alt={getUserDisplayName(userObj)} />
+                                  <AvatarFallback>{getUserInitials(userObj)}</AvatarFallback>
+                                </Avatar>
+                              );
+                            })}
+                            {selectedChannel.members.length > 5 && (
+                              <span className="text-xs text-muted-foreground ml-2">+{selectedChannel.members.length - 5}</span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  ))}
-              </div>
-            </ScrollArea>
-            {pendingDMUser && !selectedChannel && (
-              <ScrollArea className="flex-1 p-4">
-                <div className="flex items-center justify-center h-full text-muted-foreground">
-                  No messages yet. Say hello!
+                    <div className="flex items-center gap-2">
+                      <Button variant="ghost" size="icon">
+                        <Users className="h-5 w-5" />
+                      </Button>
+                      {/* Info icon only for channels, not DMs */}
+                      {!selectedChannel.is_private || !selectedChannel.name.startsWith('dm-') ? (
+                        <Button variant="ghost" size="icon" onClick={() => setShowChannelInfo((v) => !v)}>
+                          <Info className="h-5 w-5" />
+                        </Button>
+                      ) : null}
+                      <Button variant="ghost" size="icon">
+                        <MoreVertical className="h-5 w-5" />
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              )}
+              {pendingDMUser && !selectedChannel && (
+                <Card className="border-b rounded-none p-4">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={pendingDMUser.avatar_url} alt={getUserDisplayName(pendingDMUser)} />
+                      <AvatarFallback>{getUserInitials(pendingDMUser)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h2 className="font-semibold">{getUserDisplayName(pendingDMUser)}</h2>
+                      <p className="text-sm text-muted-foreground">Start a new conversation</p>
+                    </div>
+                  </div>
+                </Card>
+              )}
+              {/* Messages area */}
+              <ScrollArea className="flex-1 p-4" onScroll={handleScroll} ref={setScrollViewportRef}>
+                <div className="space-y-4">
+                  {paginationLoading && (
+                    <div className="text-center text-xs text-muted-foreground">Loading...</div>
+                  )}
+                  {messages
+                    .filter((message) => selectedChannel && message.channel_id === selectedChannel.id)
+                    .map((message, idx, arr) => {
+                      const senderUser = users.find(u => u.id === message.sender.id);
+                      return (
+                        <div
+                          key={message.id}
+                          ref={idx === arr.length - 1 ? lastMessageRef : null}
+                          className={`flex ${message.sender.id === user?.id ? 'justify-end' : 'justify-start'}`}
+                        >
+                          <div className={`flex gap-2 max-w-[70%] ${message.sender.id === user?.id ? 'flex-row-reverse' : ''}`}>
+                            <Avatar className="h-8 w-8">
+                              <AvatarImage src={senderUser?.avatar_url || undefined} alt={getUserDisplayName(senderUser)} />
+                              <AvatarFallback>{getUserInitials(senderUser)}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <div
+                                className={`rounded-lg p-3 ${
+                                  message.sender.id === user?.id
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'bg-muted'
+                                }`}
+                              >
+                                {message.content}
+                              </div>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {new Date(message.created_at).toLocaleTimeString()}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
                 </div>
               </ScrollArea>
-            )}
-            {/* Message input */}
-            {(selectedChannel || (pendingDMUser && !selectedChannel)) && (
-              <Card className="border-t rounded-none p-4">
-                <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="icon">
-                    <Paperclip className="h-5 w-5" />
-                  </Button>
-                  <Input
-                    placeholder="Type a message..."
-                    className="flex-1"
-                    value={messageInput}
-                    onChange={(e) => setMessageInput(e.target.value)}
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        sendMessage();
-                      }
-                    }}
-                  />
-                  <Button onClick={sendMessage} disabled={loading}>
-                    <Send className="h-5 w-5 mr-2" />
-                    Send
+              {pendingDMUser && !selectedChannel && (
+                <ScrollArea className="flex-1 p-4">
+                  <div className="flex items-center justify-center h-full text-muted-foreground">
+                    No messages yet. Say hello!
+                  </div>
+                </ScrollArea>
+              )}
+              {/* Message input */}
+              {(selectedChannel || (pendingDMUser && !selectedChannel)) && (
+                <Card className="border-t rounded-none p-4">
+                  <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="icon">
+                      <Paperclip className="h-5 w-5" />
+                    </Button>
+                    <Input
+                      placeholder="Type a message..."
+                      className="flex-1"
+                      value={messageInput}
+                      onChange={(e) => setMessageInput(e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          sendMessage();
+                        }
+                      }}
+                    />
+                    <Button onClick={sendMessage} disabled={loading}>
+                      <Send className="h-5 w-5 mr-2" />
+                      Send
+                    </Button>
+                  </div>
+                </Card>
+              )}
+            </div>
+            {/* Channel info sidebar */}
+            {showChannelInfo && selectedChannel && (!selectedChannel.is_private || !selectedChannel.name.startsWith('dm-')) && (
+              <div className="w-80 bg-card border-l p-6 flex flex-col gap-4 overflow-y-auto">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold">Channel Info</h3>
+                  <Button variant="ghost" size="icon" onClick={() => setShowChannelInfo(false)}>
+                    <X className="h-5 w-5" />
                   </Button>
                 </div>
-              </Card>
+                <div>
+                  <div className="font-semibold text-base mb-1">{selectedChannel.name}</div>
+                  <div className="text-xs text-muted-foreground mb-2">
+                    {selectedChannel.is_private ? 'Private' : 'Public'} channel
+                  </div>
+                  <div className="text-xs mb-2">
+                    Created by: {(() => {
+                      const creator = users.find(u => u.id === selectedChannel.created_by);
+                      return creator ? getUserDisplayName(creator) : selectedChannel.created_by;
+                    })()}
+                  </div>
+                </div>
+                {/* Members list restored */}
+                <div>
+                  <div className="font-semibold text-sm mb-2">Members ({selectedChannel.members.length})</div>
+                  <div className="grid grid-cols-2 gap-3">
+                    {selectedChannel.members.map(member => {
+                      const userObj = users.find(u => u.id === member.id);
+                      return (
+                        <div key={member.id} className="flex items-center gap-2">
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage src={userObj?.avatar_url || undefined} alt={getUserDisplayName(userObj)} />
+                            <AvatarFallback>{getUserInitials(userObj)}</AvatarFallback>
+                          </Avatar>
+                          <span className="truncate text-sm">{getUserDisplayName(userObj)}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                {/* Add user dropdown and button */}
+                <div className="flex gap-2 items-end mt-4">
+                  <div className="flex-1">
+                    <Select
+                      value={addUserId}
+                      onValueChange={setAddUserId}
+                      disabled={addUserLoading || users.length === 0}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select user..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {users
+                          .filter(u => !selectedChannel.members.some(m => m.id === u.id))
+                          .map(u => (
+                            <SelectItem key={u.id} value={u.id}>{getUserDisplayName(u)}</SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button
+                    size="sm"
+                    className="h-9"
+                    disabled={!addUserId || addUserLoading}
+                    onClick={async () => {
+                      if (!addUserId) return;
+                      setAddUserLoading(true);
+                      try {
+                        const { error } = await supabase
+                          .from('channel_members')
+                          .insert({ channel_id: selectedChannel.id, user_id: addUserId });
+                        if (error) {
+                          console.error('Supabase insert error:', error);
+                          if (error.code === '23505') {
+                            toast({ title: "Already a member", description: "This user is already in the channel.", variant: "destructive" });
+                          } else {
+                            toast({ title: "Error", description: "Failed to add user.", variant: "destructive" });
+                          }
+                          setAddUserLoading(false);
+                          // Always refresh members in case of race condition
+                          await refreshChannelMembers(selectedChannel.id);
+                          return;
+                        }
+                        // Always refresh members after add
+                        await refreshChannelMembers(selectedChannel.id);
+                        setAddUserId(undefined);
+                        toast({ title: "User added", description: "User was added to the channel." });
+                      } catch (err) {
+                        toast({ title: "Error", description: "Failed to add user.", variant: "destructive" });
+                      } finally {
+                        setAddUserLoading(false);
+                      }
+                    }}
+                  >
+                    Add
+                  </Button>
+                </div>
+              </div>
             )}
           </div>
         </>

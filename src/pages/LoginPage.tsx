@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [initTimedOut, setInitTimedOut] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
 
   // Redirect if already logged in
   useEffect(() => {
@@ -55,7 +56,7 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const { error: signInError } = await signIn(email, password);
+      const { error: signInError } = await signIn(email, password, rememberMe);
       
       if (signInError) {
         setError(signInError.message);
@@ -165,6 +166,19 @@ export default function LoginPage() {
                 onChange={e => setPassword(e.target.value)}
                 required
               />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <label className="flex items-center text-white/80 text-sm select-none cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="form-checkbox accent-primary mr-2"
+                  checked={rememberMe}
+                  onChange={e => setRememberMe(e.target.checked)}
+                />
+                Remember Me
+              </label>
+              <Link to="/forgot-password" className="text-xs text-primary hover:underline">Forgot password?</Link>
             </div>
 
             {error && (

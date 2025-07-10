@@ -162,7 +162,7 @@ function Dashboard() {
 
   return (
     <>
-      <div className="space-y-4 sm:space-y-6 animate-in px-1 sm:px-0">
+      <div className="space-y-4 sm:space-y-6 animate-in px-16 sm:px-0 24px">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="min-w-0 flex-1">

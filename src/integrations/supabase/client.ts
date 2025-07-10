@@ -38,3 +38,6 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, 
     detectSessionInUrl: true
   }
 });
+
+export const SUPABASE_URL_EXPORT = SUPABASE_URL;
+export const SUPABASE_ANON_KEY_EXPORT = SUPABASE_ANON_KEY;

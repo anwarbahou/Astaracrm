@@ -11,8 +11,9 @@ import type { ClientInput } from "@/services/clientService";
 import { ClientService } from "@/services/clientService";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TableSkeleton } from "@/components/ui/skeleton-loader";
+import { useLocation } from 'react-router-dom';
 
 function Clients() {
   const {
@@ -36,6 +37,13 @@ function Clients() {
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const { user, userProfile } = useAuth();
   const { toast } = useToast();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (user?.id && userProfile?.role && location.pathname === '/dashboard/clients') {
+      refreshClients();
+    }
+  }, [user?.id, userProfile?.role, location.pathname]);
 
   const handleImportClients = async (newClients: Omit<Client, 'id' | 'created_at' | 'updated_at'>[]) => {
     if (!user?.id || !userProfile?.role) {
@@ -49,7 +57,7 @@ function Clients() {
     try {
       await ClientService.importClients(newClients as unknown as ClientInput[], {
         userId: user.id,
-        userRole: userProfile.role,
+        userRole: userProfile.role as 'user' | 'admin' | 'manager',
       });
       await refreshClients();
       toast({

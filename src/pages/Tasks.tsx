@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from 'lucide-react';
@@ -8,6 +8,7 @@ import TasksTable from '@/components/tasks/TasksTable';
 import { useTasks } from '@/hooks/useTasks';
 import { withPageTitle } from '@/components/withPageTitle';
 import { TableSkeleton } from "@/components/ui/skeleton-loader";
+import { useLocation } from 'react-router-dom';
 
 const Tasks: React.FC = () => {
   const { t } = useTranslation();
@@ -17,7 +18,12 @@ const Tasks: React.FC = () => {
   const [selectedRelatedEntity, setSelectedRelatedEntity] = useState<string>("");
   const [selectedPriority, setSelectedPriority] = useState<string>("");
 
-  const { tasks, loading, error, refreshTasks } = useTasks(selectedOwners);
+  const { tasks, isLoading, error, refetch } = useTasks(selectedOwners);
+  const location = useLocation();
+
+  useEffect(() => {
+    refetch();
+  }, [location.pathname, refetch]);
 
   const handleSelectOwner = (ownerId: string) => {
     setSelectedOwners(prev =>
@@ -39,7 +45,7 @@ const Tasks: React.FC = () => {
     return matchesSearch && matchesRelatedEntity && matchesPriority;
   });
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="space-y-6 animate-in">
         <div className="flex items-center justify-between">
@@ -59,9 +65,9 @@ const Tasks: React.FC = () => {
         </div>
         <div className="flex items-center justify-center py-12">
           <div className="text-center">
-            <p className="text-destructive mb-4">Error loading tasks: {error}</p>
+            <p className="text-destructive mb-4">Error loading tasks: {typeof error === 'string' ? error : (error instanceof Error ? error.message : 'Unknown error')}</p>
             <button
-              onClick={refreshTasks}
+              onClick={() => refetch()}
               className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
             >
               Retry

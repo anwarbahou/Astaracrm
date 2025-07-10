@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +28,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useDeals } from "@/hooks/useDeals";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { withPageTitle } from '@/components/withPageTitle';
+import { useLocation } from 'react-router-dom';
 
 function Deals() {
   const { t } = useTranslation();
@@ -50,6 +51,7 @@ function Deals() {
   });
   
   const { toast } = useToast();
+  const location = useLocation();
   
   // Try to use backend data, fallback to mock data if deals table doesn't exist
   const { 
@@ -60,7 +62,7 @@ function Deals() {
     updateDeal, 
     deleteDeal,
     deleteDealsSilent,
-    createDealsWithBulkNotification
+    createDealsWithBulkNotification,
   } = useDeals();
   
   // Use backend deals if available, otherwise fallback to mock data
@@ -69,6 +71,8 @@ function Deals() {
   const isUsingMockData = !!dealsError;
 
   const queryClient = useQueryClient();
+
+  // Data will be automatically refetched by React Query on mount and window focus
 
   const filteredDeals = deals.filter(deal => {
     const matchesSearch = 

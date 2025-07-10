@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import type { Note, NoteFilters as NoteFiltersType } from "@/types/note";
 import { withPageTitle } from '@/components/withPageTitle';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 
 function Notes() {
   const { t } = useTranslation();
@@ -26,23 +27,28 @@ function Notes() {
   const [filters, setFilters] = useState<NoteFiltersType>({
     search: '',
     tags: [],
+    relatedEntityType: 'all',
+    isPinned: 'all',
+    sortBy: 'modified',
     dateRange: null,
     priority: null,
     status: null
   });
+
+  const location = useLocation();
 
   // Fetch notes
   useEffect(() => {
     if (user?.id && userProfile?.role) {
       loadNotes();
     }
-  }, [user?.id, userProfile?.role]);
+  }, [user?.id, userProfile?.role, location.pathname]);
 
   const loadNotes = async () => {
     if (!user?.id || !userProfile?.role) return;
     setLoading(true);
     try {
-      const fetchedNotes = await noteService.getNotes({ userId: user.id, userRole: userProfile.role });
+      const fetchedNotes = await noteService.getNotes({ userId: user.id, userRole: userProfile.role as 'user' | 'admin' | 'manager' });
       setNotes(fetchedNotes);
     } catch (error) {
       console.error("Error fetching notes:", error);
@@ -108,7 +114,7 @@ function Notes() {
       return;
     }
     try {
-      await noteService.deleteNote(noteId, { userId: user.id, userRole: userProfile.role });
+      await noteService.deleteNote(noteId, { userId: user.id, userRole: userProfile.role as 'user' | 'admin' | 'manager' });
       toast({
         title: "Note Deleted",
         description: "Note deleted successfully.",
@@ -193,7 +199,6 @@ function Notes() {
         isOpen={noteModalOpen}
         onClose={() => setNoteModalOpen(false)}
         onSave={handleNoteSave}
-        relatedEntityOptions={relatedEntityOptions}
       />
 
       <NoteDetailDrawer

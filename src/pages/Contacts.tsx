@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Contact } from "@/components/contacts/ContactsTable";
 import { withPageTitle } from '@/components/withPageTitle';
 import { TableSkeleton } from "@/components/ui/skeleton-loader";
+import { useLocation } from 'react-router-dom';
 
 export default withPageTitle(function Contacts() {
   const { t } = useTranslation();
@@ -36,13 +37,14 @@ export default withPageTitle(function Contacts() {
     lastContactedTo: '',
   });
   const { toast } = useToast();
+  const location = useLocation();
 
   // Load contacts on component mount
   useEffect(() => {
     if (user?.id && userProfile?.role) {
       loadContacts();
     }
-  }, [user?.id, userProfile?.role]);
+  }, [user?.id, userProfile?.role, location.pathname]);
 
   const loadContacts = async () => {
     if (!user?.id || !userProfile?.role) return;

@@ -1,22 +1,23 @@
-# Welcome to astara sales CRM project
+# Skultix - Digital Agency CRM
 
-## Project info
+## About Skultix
 
-**URL**: https://lovable.dev/projects/e657471f-448a-4f76-9983-347d70b2509b
+**Skultix** is a comprehensive Customer Relationship Management (CRM) solution designed specifically for modern digital agencies. Our platform empowers agencies to streamline client management, track deals, manage projects, and boost productivity with AI-powered insights.
+
+### Our Mission
+Transform how digital agencies operate by providing an intuitive, powerful CRM that grows with your business.
+
+## Project Overview
+
+This is the Skultix CRM application - a modern, feature-rich platform built with cutting-edge technologies to deliver exceptional user experience and powerful functionality.
 
 ## How can I edit this code?
 
 There are several ways of editing your application.
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/e657471f-448a-4f76-9983-347d70b2509b) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
 **Use your preferred IDE**
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+Clone this repo and work locally with your preferred development environment.
 
 The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
@@ -59,15 +60,27 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- Supabase (Backend & Database)
+
+## Features
+
+- **Client Management**: Comprehensive client profiles and relationship tracking
+- **Deal Pipeline**: Visual deal management with customizable stages
+- **Task Management**: AI-powered task organization and prioritization
+- **Calendar Integration**: Seamless scheduling and event management
+- **Email Center**: Integrated email communication
+- **Analytics & Reporting**: Data-driven insights for business growth
+- **Multi-language Support**: Internationalization ready
+- **Role-based Access**: Secure user management and permissions
 
 ## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/e657471f-448a-4f76-9983-347d70b2509b) and click on Share -> Publish.
+The project can be deployed to various platforms:
 
-## Can I connect a custom domain to my Lovable project?
+- **Netlify**: Connect your repository for automatic deployments
+- **Vercel**: Deploy with zero configuration
+- **Custom Domain**: Configure your own domain for professional branding
 
-Yes, you can!
+## Support
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+For support and inquiries, contact the Skultix team at support@skultix.com

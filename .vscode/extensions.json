@@ -6,6 +6,7 @@
     "bradlc.vscode-tailwindcss",
     "formulahendry.auto-rename-tag",
     "christian-kohler.path-intellisense",
-    "ms-vscode.vscode-json"
+    "ms-vscode.vscode-json",
+    "stagewise.stagewise-vscode-extension"
   ]
 } 

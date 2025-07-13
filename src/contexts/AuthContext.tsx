@@ -89,14 +89,12 @@ const ensureUserProfile = async (user: User) => {
 
       if (error) {
         console.error('Error creating user profile:', error);
-        // Don't throw here - let auth continue even if profile creation fails
       } else {
         console.log('✅ User profile created successfully with default user role');
       }
     }
   } catch (error) {
     console.error('Error ensuring user profile:', error);
-    // Don't throw here - let auth continue even if profile creation fails
   }
 };
 
@@ -106,8 +104,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [retryCount, setRetryCount] = useState(0);
-  const [autoRetryCount, setAutoRetryCount] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -125,8 +121,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const retry = () => {
     setError(null);
     setLoading(true);
-    setRetryCount(c => c + 1);
-    setAutoRetryCount(0);
+    // Simple retry - just reinitialize auth
+    initializeAuth();
   };
 
   // Helper to handle logout and redirect
@@ -135,7 +131,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUserProfile(null);
     setSession(null);
     setLoading(false);
-    setError(null); // Clear error so sidebar never shows it
+    setError(null);
     localStorage.clear();
     setTimeout(() => {
       navigate('/login', { replace: true, state: { error: msg || 'Session expired. Please log in again.' } });
@@ -177,92 +173,73 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // Simplified auth initialization
+  const initializeAuth = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        console.error('Session error:', sessionError);
+        if (sessionError.message?.toLowerCase().includes('jwt expired') || 
+            sessionError.message?.toLowerCase().includes('token')) {
+          forceLogout('Session expired. Please log in again.');
+          return;
+        }
+        setError('Network error. Please check your connection.');
+        setLoading(false);
+        return;
+      }
+
+      if (session?.user) {
+        await ensureUserProfile(session.user);
+        const profile = await fetchUserProfile(session.user.id);
+        
+        setSession(session);
+        setUser(session.user);
+        setUserProfile(profile);
+        setError(null);
+        console.log('✅ Auth initialized successfully');
+      } else {
+        // No session - user needs to login
+        setUser(null);
+        setUserProfile(null);
+        setSession(null);
+      }
+    } catch (err: any) {
+      console.error('Auth initialization error:', err);
+      if (err?.message?.toLowerCase().includes('jwt expired') || 
+          err?.message?.toLowerCase().includes('token')) {
+        forceLogout('Session expired. Please log in again.');
+        return;
+      }
+      setError('Failed to initialize authentication');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     console.log('AuthContext state:', { loading, error, user, userProfile });
   }, [loading, error, user, userProfile]);
 
+  // Initialize auth on mount
   useEffect(() => {
-    let mounted = true;
-    let retryTimeout: NodeJS.Timeout | null = null;
-
-    const initializeAuth = async () => {
-      try {
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (!mounted) return;
-        
-        if (sessionError) {
-          if (sessionError.message?.toLowerCase().includes('jwt expired') || sessionError.message?.toLowerCase().includes('token')) {
-            forceLogout('Session expired. Please log in again.');
-            return;
-          }
-          setError('Network error. Please check your connection.');
-          setLoading(false);
-          return;
-        }
-
-        if (session?.user) {
-          await ensureUserProfile(session.user);
-          const profile = await fetchUserProfile(session.user.id);
-          
-          if (!mounted) return;
-          
-          setSession(session);
-          setUser(session.user);
-          setUserProfile(profile);
-          setError(null);
-          setLoading(false);
-          console.log('AuthContext: Auth/profile fetch successful, loading set to false, error cleared.');
-        } else {
-          forceLogout('Session expired. Please log in again.');
-          return;
-        }
-      } catch (err: any) {
-        if (!mounted) return;
-        if (err?.message?.toLowerCase().includes('jwt expired') || err?.message?.toLowerCase().includes('token')) {
-          forceLogout('Session expired. Please log in again.');
-          return;
-        }
-        if (err?.message?.toLowerCase().includes('network')) {
-          setError('Network error. Please check your connection.');
-        } else {
-          setError('Unknown error. Please try again.');
-        }
-        setLoading(false);
-      } finally {
-        if (mounted) {
-          // setLoading(false); // Already set above after success/error
-        }
-      }
-    };
-
-    // Auto-retry logic
-    if (autoRetryCount < 3) {
-      initializeAuth();
-      if (loading && !error) {
-        retryTimeout = setTimeout(() => {
-          setAutoRetryCount(c => c + 1);
-        }, 3000);
-      }
-    } else if (error && !loading) {
-      // After 3 auto-retries, show error
-      setLoading(false);
-    }
-
+    initializeAuth();
+    
     const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthStateChange);
 
     return () => {
-      mounted = false;
-      if (retryTimeout) clearTimeout(retryTimeout);
       subscription.unsubscribe();
     };
-  }, [retryCount, autoRetryCount]);
+  }, []);
 
   // Add real-time subscription for user profile changes
   useEffect(() => {
     if (!user?.id) return;
 
-    // Subscribe to changes in the users table for the current user
     const profileSubscription = supabase
       .channel('user-profile-changes')
       .on(
@@ -275,7 +252,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         },
         (payload) => {
           console.log('User profile updated:', payload);
-          // Update the user profile state with the new data
           setUserProfile(payload.new as UserProfile);
         }
       )
@@ -299,10 +275,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         },
       });
 
-      // If signup succeeds but user is returned (email confirmation disabled)
       if (data.user && !error) {
         console.log('✅ Signup successful:', data.user.email);
-        // User profile will be created by the auth state change listener
       }
 
       return { error };
@@ -313,43 +287,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signIn = async (email: string, password: string, rememberMe: boolean = true) => {
-    if (rememberMe) {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      return { error };
-    } else {
-      // Create a temporary client with persistSession: false
-      const { createClient } = await import('@supabase/supabase-js');
-      const tempClient = createClient(
-        SUPABASE_URL_EXPORT,
-        SUPABASE_ANON_KEY_EXPORT,
-        {
-          auth: {
-            autoRefreshToken: false,
-            persistSession: false,
-            detectSessionInUrl: true,
-          },
-        }
-      );
-      const { data, error } = await tempClient.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (data?.session) {
-        // Set the session in the main client (in-memory only)
-        await supabase.auth.setSession({
-          access_token: data.session.access_token,
-          refresh_token: data.session.refresh_token,
+    try {
+      if (rememberMe) {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
         });
-        // Remove persisted session from localStorage (if any)
-        try {
-          const key = Object.keys(localStorage).find(k => k.includes('supabase.auth.token'));
-          if (key) localStorage.removeItem(key);
-        } catch (e) { /* ignore */ }
+        return { error };
+      } else {
+        // Create a temporary client with persistSession: false
+        const { createClient } = await import('@supabase/supabase-js');
+        const tempClient = createClient(
+          SUPABASE_URL_EXPORT,
+          SUPABASE_ANON_KEY_EXPORT,
+          {
+            auth: {
+              autoRefreshToken: false,
+              persistSession: false,
+              detectSessionInUrl: true,
+            },
+          }
+        );
+        const { data, error } = await tempClient.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (data?.session) {
+          // Set the session in the main client (in-memory only)
+          await supabase.auth.setSession({
+            access_token: data.session.access_token,
+            refresh_token: data.session.refresh_token,
+          });
+          // Remove persisted session from localStorage (if any)
+          try {
+            const key = Object.keys(localStorage).find(k => k.includes('supabase.auth.token'));
+            if (key) localStorage.removeItem(key);
+          } catch (e) { /* ignore */ }
+        }
+        return { error };
       }
-      return { error };
+    } catch (err) {
+      console.error('Signin error:', err);
+      return { error: err as AuthError };
     }
   };
 
@@ -384,8 +363,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const forceRefresh = async () => {
     console.log('🔄 Force refreshing user session and profile...');
-    console.log('Current user:', user);
-    console.log('Current userProfile:', userProfile);
     
     // Get fresh session
     const { data: { session }, error } = await supabase.auth.getSession();
@@ -401,8 +378,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log('Fresh profile from database:', profile);
       setUserProfile(profile);
       console.log('✅ Force refresh complete. New userProfile:', profile);
-      console.log('isAdmin should be:', profile?.role === 'admin');
-      console.log('isManager should be:', profile?.role === 'manager' || profile?.role === 'admin');
     }
   };
 

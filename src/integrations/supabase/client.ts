@@ -25,6 +25,15 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   console.error('Or with NEXT_PUBLIC_ prefix:');
   console.error('NEXT_PUBLIC_SUPABASE_URL=your_project_url');
   console.error('NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key');
+  
+  // In development, show a more helpful error
+  if (import.meta.env.DEV) {
+    console.error('📝 To fix this:');
+    console.error('1. Create a .env file in your project root');
+    console.error('2. Add your Supabase credentials');
+    console.error('3. Restart your development server');
+  }
+  
   throw new Error('Missing Supabase environment variables. Please check your .env file.');
 }
 
@@ -35,7 +44,13 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, 
   auth: {
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: true
+    detectSessionInUrl: true,
+    flowType: 'pkce'
+  },
+  realtime: {
+    params: {
+      eventsPerSecond: 10
+    }
   }
 });
 

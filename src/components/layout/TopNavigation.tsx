@@ -83,11 +83,7 @@ export function TopNavigation() {
           variant: "destructive",
         });
       } else {
-        // Clear any local storage or state if needed
-        localStorage.clear();
-        // Navigate to the login page
         navigate("/login", { replace: true });
-        // Show success toast
         toast({
           title: t('auth.signOut.success.title'),
           description: t('auth.signOut.success.description'),

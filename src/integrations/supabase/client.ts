@@ -37,6 +37,38 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   throw new Error('Missing Supabase environment variables. Please check your .env file.');
 }
 
+// Custom storage implementation to conditionally persist session
+const customStorage = {
+  getItem: (key: string): string | null => {
+    try {
+      // Prefer localStorage for persistent sessions, fallback to sessionStorage
+      return localStorage.getItem(key) || sessionStorage.getItem(key);
+    } catch (error) {
+      console.error('Storage access error:', error);
+      return null;
+    }
+  },
+  setItem: (key: string, value: string): void => {
+    try {
+      // Session persistence is determined by the `persist` flag in sessionStorage
+      if (sessionStorage.getItem('persist') === 'true') {
+        localStorage.setItem(key, value);
+      }
+      sessionStorage.setItem(key, value);
+    } catch (error) {
+      console.error('Storage write error:', error);
+    }
+  },
+  removeItem: (key: string): void => {
+    try {
+      localStorage.removeItem(key);
+      sessionStorage.removeItem(key);
+    } catch (error) {
+      console.error('Storage remove error:', error);
+    }
+  },
+};
+
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
@@ -45,13 +77,26 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, 
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
-    flowType: 'pkce'
+    flowType: 'pkce',
+    storage: customStorage,
+    storageKey: 'supabase.auth.token',
+    debug: true
   },
   realtime: {
     params: {
       eventsPerSecond: 10
     }
   }
+});
+
+// Debug any auth state changes
+supabase.auth.onAuthStateChange((event, session) => {
+  console.log('🔐 Auth State Change:', {
+    event,
+    sessionExists: !!session,
+    userId: session?.user?.id,
+    timestamp: new Date().toISOString()
+  });
 });
 
 export const SUPABASE_URL_EXPORT = SUPABASE_URL;

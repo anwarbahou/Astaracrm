@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { User, Session, AuthError } from '@supabase/supabase-js';
 import { supabase, SUPABASE_URL_EXPORT, SUPABASE_ANON_KEY_EXPORT } from '@/integrations/supabase/client';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -28,10 +28,9 @@ interface AuthContextType {
   signIn: (email: string, password: string, rememberMe?: boolean) => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<{ error: AuthError | null }>;
   updateUserRole: (userId: string, role: string) => Promise<{ error: any }>;
-  refreshUserProfile: () => Promise<void>;
+  refreshUserProfile: () => Promise<UserProfile | null>;
   forceRefresh: () => Promise<void>;
   error: string | null;
-  retry: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -44,8 +43,15 @@ export const useAuth = () => {
   return context;
 };
 
-// Function to fetch user profile from our custom users table
+// Optimized profile fetching with caching
 const fetchUserProfile = async (userId: string): Promise<UserProfile | null> => {
+  const cacheKey = `user_profile_${userId}`;
+  const cachedProfile = sessionStorage.getItem(cacheKey);
+  
+  if (cachedProfile) {
+    return JSON.parse(cachedProfile);
+  }
+
   try {
     const { data, error } = await supabase
       .from('users')
@@ -53,22 +59,23 @@ const fetchUserProfile = async (userId: string): Promise<UserProfile | null> => 
       .eq('id', userId)
       .single();
 
-    if (error) {
-      console.error('Error fetching user profile:', error);
-      return null;
-    }
-
+    if (error) throw error;
+    
+    if (data) {
+      sessionStorage.setItem(cacheKey, JSON.stringify(data));
     return data as UserProfile;
+    }
+    
+    return null;
   } catch (error) {
     console.error('Error fetching user profile:', error);
     return null;
   }
 };
 
-// Function to ensure user profile exists in our custom users table
-const ensureUserProfile = async (user: User) => {
+// Optimized profile creation with retry
+const ensureUserProfile = async (user: User, retryCount = 0): Promise<void> => {
   try {
-    // Check if user profile exists
     const { data: existingUser } = await supabase
       .from('users')
       .select('id')
@@ -76,21 +83,21 @@ const ensureUserProfile = async (user: User) => {
       .single();
 
     if (!existingUser) {
-      // Create user profile if it doesn't exist with default 'user' role
-      const { error } = await supabase
-        .from('users')
-        .insert({
-          id: user.id,
-          email: user.email || '',
-          first_name: user.user_metadata?.first_name || '',
-          last_name: user.user_metadata?.last_name || '',
-          role: 'user', // Default role for new users
-        });
+      const { error } = await supabase.from('users').insert({
+        id: user.id,
+        email: user.email || '',
+        first_name: user.user_metadata?.first_name || '',
+        last_name: user.user_metadata?.last_name || '',
+        role: 'user',
+        status: 'active',
+      });
 
       if (error) {
-        console.error('Error creating user profile:', error);
-      } else {
-        console.log('✅ User profile created successfully with default user role');
+        if (retryCount < 2) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          return ensureUserProfile(user, retryCount + 1);
+        }
+        throw error;
       }
     }
   } catch (error) {
@@ -98,150 +105,116 @@ const ensureUserProfile = async (user: User) => {
   }
 };
 
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000;
+const SESSION_TIMEOUT = 1000 * 60 * 60 * 24; // 24 hours
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [initializing, setInitializing] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Clear error when navigating to /login
+  // Memoized role checks to prevent unnecessary re-renders
+  const isAdmin = useMemo(() => userProfile?.role === 'admin', [userProfile?.role]);
+  const isManager = useMemo(() => 
+    userProfile?.role === 'manager' || userProfile?.role === 'admin', 
+    [userProfile?.role]
+  );
+
+  // Clear error on navigation to login
   useEffect(() => {
     if (location.pathname === '/login' && error) {
       setError(null);
     }
-  }, [location.pathname]);
+  }, [location.pathname, error]);
 
-  // Computed properties for role checking
-  const isAdmin = userProfile?.role === 'admin';
-  const isManager = userProfile?.role === 'manager' || userProfile?.role === 'admin';
-
-  const retry = () => {
-    setError(null);
-    setLoading(true);
-    // Simple retry - just reinitialize auth
-    initializeAuth();
-  };
-
-  // Helper to handle logout and redirect
-  const forceLogout = (msg?: string) => {
+  // Optimized logout with cleanup
+  const forceLogout = useCallback((msg?: string) => {
+    // Clear all auth state
     setUser(null);
     setUserProfile(null);
     setSession(null);
     setLoading(false);
     setError(null);
-    localStorage.clear();
-    setTimeout(() => {
-      navigate('/login', { replace: true, state: { error: msg || 'Session expired. Please log in again.' } });
-    }, 100);
-  };
-
-  const refreshUserProfile = async () => {
-    try {
-      if (user) {
-        console.log('🔄 Manually refreshing user profile...');
-        const profile = await fetchUserProfile(user.id);
-        setUserProfile(profile);
-        console.log('✅ User profile refreshed:', profile);
-      }
-    } catch (err) {
-      console.error('Error refreshing user profile:', err);
-      setError('Failed to refresh user profile');
-    }
-  };
-
-  const handleAuthStateChange = async (event: string, session: Session | null) => {
-    try {
-      console.log('Auth state changed:', event, session?.user?.email);
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
-        await ensureUserProfile(session.user);
-        const profile = await fetchUserProfile(session.user.id);
-        setUserProfile(profile);
-      } else if (event === 'SIGNED_OUT') {
-        setUserProfile(null);
-      }
-    } catch (err) {
-      console.error('Error handling auth state change:', err);
-      setError('Failed to update auth state');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Simplified auth initialization
-  const initializeAuth = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
-      if (sessionError) {
-        console.error('Session error:', sessionError);
-        if (sessionError.message?.toLowerCase().includes('jwt expired') || 
-            sessionError.message?.toLowerCase().includes('token')) {
-          forceLogout('Session expired. Please log in again.');
-          return;
-        }
-        setError('Network error. Please check your connection.');
-        setLoading(false);
-        return;
-      }
-
-      if (session?.user) {
-        await ensureUserProfile(session.user);
-        const profile = await fetchUserProfile(session.user.id);
-        
-        setSession(session);
-        setUser(session.user);
-        setUserProfile(profile);
-        setError(null);
-        console.log('✅ Auth initialized successfully');
-      } else {
-        // No session - user needs to login
-        setUser(null);
-        setUserProfile(null);
-        setSession(null);
-      }
-    } catch (err: any) {
-      console.error('Auth initialization error:', err);
-      if (err?.message?.toLowerCase().includes('jwt expired') || 
-          err?.message?.toLowerCase().includes('token')) {
-        forceLogout('Session expired. Please log in again.');
-        return;
-      }
-      setError('Failed to initialize authentication');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    console.log('AuthContext state:', { loading, error, user, userProfile });
-  }, [loading, error, user, userProfile]);
-
-  // Initialize auth on mount
-  useEffect(() => {
-    initializeAuth();
     
+    // Clear storage
+    try {
+      sessionStorage.clear();
+    localStorage.clear();
+    } catch (e) {
+      console.error('Error clearing storage:', e);
+    }
+    
+    // Redirect with minimal delay
+    requestAnimationFrame(() => {
+      navigate('/login', { 
+        replace: true, 
+        state: { error: msg || 'Session expired. Please log in again.' } 
+      });
+    });
+  }, [navigate]);
+
+  // Optimized profile refresh
+  const refreshUserProfile = useCallback(async () => {
+    if (!user?.id) return null;
+    
+    // Invalidate cache before fetching
+    sessionStorage.removeItem(`user_profile_${user.id}`);
+    
+    try {
+      const profile = await fetchUserProfile(user.id);
+      if (profile) {
+        setUserProfile(profile);
+        return profile;
+      }
+      throw new Error('Failed to fetch profile');
+    } catch (err) {
+      console.error('Error refreshing profile:', err);
+      setError('Failed to refresh user profile');
+      return null;
+    }
+  }, [user?.id]);
+
+  const handleAuthStateChange = useCallback(async (event: string, session: Session | null) => {
+    setInitializing(true);
+    setSession(session);
+    setUser(session?.user ?? null);
+    
+    if (session?.user) {
+      if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        const profile = await fetchUserProfile(session.user.id);
+        setUserProfile(profile);
+        if (!profile) {
+          await ensureUserProfile(session.user);
+          const newProfile = await fetchUserProfile(session.user.id);
+          setUserProfile(newProfile);
+        }
+      }
+    } else {
+      setUserProfile(null);
+    }
+    setInitializing(false);
+  }, []);
+
+  useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthStateChange);
 
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
-
-  // Add real-time subscription for user profile changes
+  }, [handleAuthStateChange]);
+  
+  // Optimized profile subscription
   useEffect(() => {
     if (!user?.id) return;
 
     const profileSubscription = supabase
-      .channel('user-profile-changes')
+      .channel(`user-profile-${user.id}`)
       .on(
         'postgres_changes',
         {
@@ -250,9 +223,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           table: 'users',
           filter: `id=eq.${user.id}`,
         },
-        (payload) => {
-          console.log('User profile updated:', payload);
+        async (payload) => {
+          console.log('Profile updated:', payload.new);
           setUserProfile(payload.new as UserProfile);
+          sessionStorage.setItem(
+            `user_profile_${user.id}`,
+            JSON.stringify(payload.new)
+          );
         }
       )
       .subscribe();
@@ -288,44 +265,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async (email: string, password: string, rememberMe: boolean = true) => {
     try {
+      // Set the persistence flag before signing in
       if (rememberMe) {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        return { error };
+        sessionStorage.setItem('persist', 'true');
       } else {
-        // Create a temporary client with persistSession: false
-        const { createClient } = await import('@supabase/supabase-js');
-        const tempClient = createClient(
-          SUPABASE_URL_EXPORT,
-          SUPABASE_ANON_KEY_EXPORT,
-          {
-            auth: {
-              autoRefreshToken: false,
-              persistSession: false,
-              detectSessionInUrl: true,
-            },
-          }
-        );
-        const { data, error } = await tempClient.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (data?.session) {
-          // Set the session in the main client (in-memory only)
-          await supabase.auth.setSession({
-            access_token: data.session.access_token,
-            refresh_token: data.session.refresh_token,
-          });
-          // Remove persisted session from localStorage (if any)
-          try {
-            const key = Object.keys(localStorage).find(k => k.includes('supabase.auth.token'));
-            if (key) localStorage.removeItem(key);
-          } catch (e) { /* ignore */ }
-        }
-        return { error };
+        sessionStorage.removeItem('persist');
       }
+      
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      return { error };
     } catch (err) {
       console.error('Signin error:', err);
       return { error: err as AuthError };
@@ -333,8 +285,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    return { error };
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Error signing out:', error);
+        return { error };
+      }
+      // Perform comprehensive cleanup
+      setUser(null);
+      setUserProfile(null);
+      setSession(null);
+      if (user?.id) {
+        sessionStorage.removeItem(`user_profile_${user.id}`);
+      }
+      return { error: null };
+    } catch (err) {
+      console.error('Signout error:', err);
+      return { error: err as AuthError };
+    }
   };
 
   const updateUserRole = async (userId: string, role: string) => {
@@ -373,7 +341,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     if (session?.user) {
       console.log('Session user:', session.user);
-      // Force refresh user profile
+      // Force refresh user profile by clearing cache first
+      sessionStorage.removeItem(`user_profile_${session.user.id}`);
       const profile = await fetchUserProfile(session.user.id);
       console.log('Fresh profile from database:', profile);
       setUserProfile(profile);
@@ -381,11 +350,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const value = {
+  const value = useMemo(() => ({
     user,
     userProfile,
     session,
-    loading,
+    loading: loading || initializing,
     isAdmin,
     isManager,
     signUp,
@@ -395,8 +364,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     refreshUserProfile,
     forceRefresh,
     error,
-    retry,
-  };
+  }), [
+    user,
+    userProfile,
+    session,
+    loading,
+    initializing,
+    isAdmin,
+    isManager,
+    signUp,
+    signIn,
+    signOut,
+    updateUserRole,
+    refreshUserProfile,
+    forceRefresh,
+    error,
+  ]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }; 

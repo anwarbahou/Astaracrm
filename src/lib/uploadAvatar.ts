@@ -5,13 +5,13 @@ import { supabase } from '@/integrations/supabase/client';
  */
 export async function uploadAvatar(file: File, userId: string): Promise<string> {
   const ext = file.name.split('.').pop();
-  const filePath = `${userId}.${ext}`;
+  const fileName = `${userId}-${new Date().getTime()}.${ext}`;
 
-  console.log('[uploadAvatar] Uploading', filePath, 'to userprofileimage bucket');
+  console.log('[uploadAvatar] Uploading to userprofileimage bucket:', fileName);
 
   const { error } = await supabase.storage
     .from('userprofileimage')
-    .upload(filePath, file, { upsert: true });
+    .upload(fileName, file, { upsert: false });
 
   if (error) {
     console.error('[uploadAvatar] Upload error', error);
@@ -20,7 +20,7 @@ export async function uploadAvatar(file: File, userId: string): Promise<string> 
 
   console.log('[uploadAvatar] Upload successful');
 
-  const { data } = supabase.storage.from('userprofileimage').getPublicUrl(filePath);
+  const { data } = supabase.storage.from('userprofileimage').getPublicUrl(fileName);
   console.log('[uploadAvatar] Public URL generated', data.publicUrl);
   return data.publicUrl;
 } 

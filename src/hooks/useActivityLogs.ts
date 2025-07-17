@@ -15,7 +15,7 @@ export const useActivityLogs = () => {
     queryKey: ['activity-logs', user?.id, userProfile?.role],
     queryFn: async () => {
       if (!user?.id || !userProfile?.role) {
-        throw new Error('User not authenticated');
+        return [];
       }
 
       return await activityLogsService.getActivityLogs({

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Search, Filter } from "lucide-react";
@@ -13,14 +13,15 @@ import type { Note, NoteFilters as NoteFiltersType } from "@/types/note";
 import { withPageTitle } from '@/components/withPageTitle';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 function Notes() {
   const { t } = useTranslation();
   const { user, userProfile } = useAuth();
   const { toast } = useToast();
-  const [notes, setNotes] = useState<Note[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+  const location = useLocation();
+  
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [detailDrawerOpen, setDetailDrawerOpen] = useState(false);
   const [noteModalOpen, setNoteModalOpen] = useState(false);
@@ -35,32 +36,51 @@ function Notes() {
     status: null
   });
 
-  const location = useLocation();
+  // Fetch notes with React Query
+  const { 
+    data: notes = [], 
+    isLoading, 
+    error 
+  } = useQuery({
+    queryKey: ['notes', user?.id, userProfile?.role],
+    queryFn: async () => {
+      if (!user?.id || !userProfile?.role) return [];
+      return noteService.getNotes({ 
+        userId: user.id, 
+        userRole: userProfile.role as 'user' | 'admin' | 'manager' 
+      });
+    },
+    enabled: !!user?.id && !!userProfile?.role,
+    staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
+    retry: 2,
+  });
 
-  // Fetch notes
-  useEffect(() => {
-    if (user?.id && userProfile?.role) {
-      loadNotes();
-    }
-  }, [user?.id, userProfile?.role, location.pathname]);
-
-  const loadNotes = async () => {
-    if (!user?.id || !userProfile?.role) return;
-    setLoading(true);
-    try {
-      const fetchedNotes = await noteService.getNotes({ userId: user.id, userRole: userProfile.role as 'user' | 'admin' | 'manager' });
-      setNotes(fetchedNotes);
-    } catch (error) {
-      console.error("Error fetching notes:", error);
+  // Delete note mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (noteId: string) => {
+      if (!user?.id || !userProfile?.role) {
+        throw new Error("User not authenticated");
+      }
+      return noteService.deleteNote(noteId, { 
+        userId: user.id, 
+        userRole: userProfile.role as 'user' | 'admin' | 'manager' 
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notes'] });
+      toast({
+        title: "Note Deleted",
+        description: "Note deleted successfully.",
+      });
+    },
+    onError: (error: Error) => {
       toast({
         title: "Error",
-        description: "Failed to load notes.",
+        description: error.message || "Failed to delete note.",
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
     }
-  };
+  });
 
   const filteredNotes = notes.filter(note => {
     const matchesSearch = note.title.toLowerCase().includes(filters.search.toLowerCase()) ||
@@ -99,34 +119,13 @@ function Notes() {
   };
 
   const handleNoteSave = () => {
-    loadNotes(); // Re-fetch notes after save/create
+    queryClient.invalidateQueries({ queryKey: ['notes'] });
     setNoteModalOpen(false);
-    setSelectedNote(null); // Clear selected note after editing
+    setSelectedNote(null);
   };
 
   const handleNoteDelete = async (noteId: string) => {
-    if (!user?.id || !userProfile?.role) {
-      toast({
-        title: "Authentication Error",
-        description: "User not authenticated. Please log in again.",
-        variant: "destructive",
-      });
-      return;
-    }
-    try {
-      await noteService.deleteNote(noteId, { userId: user.id, userRole: userProfile.role as 'user' | 'admin' | 'manager' });
-      toast({
-        title: "Note Deleted",
-        description: "Note deleted successfully.",
-      });
-      loadNotes(); // Re-fetch notes after deletion
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to delete note.",
-        variant: "destructive",
-      });
-    }
+    deleteMutation.mutate(noteId);
   };
 
   // Mock related entity options for now. In a real app, these would be fetched.
@@ -136,10 +135,25 @@ function Notes() {
     { id: "1a2b3c4d-5e6f-7890-abcd-ef0123456789", name: "Deal C", type: "deal" as const },
   ];
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center h-screen">
-        <p className="text-lg text-muted-foreground">Loading notes...</p>
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+        <p className="text-lg text-muted-foreground mt-4">Loading notes...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <p className="text-lg text-destructive mb-4">Failed to load notes</p>
+        <Button 
+          onClick={() => queryClient.invalidateQueries({ queryKey: ['notes'] })}
+          variant="outline"
+        >
+          Retry
+        </Button>
       </div>
     );
   }

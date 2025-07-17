@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -46,9 +46,15 @@ export function SecuritySettings() {
     try {
       setIsLoading(true);
       
-      // First verify the current password
+      // First get the current user's email
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user?.email) {
+        throw new Error('No user email found');
+      }
+
+      // Then verify the current password
       const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: supabase.auth.getUser()?.data?.user?.email || "",
+        email: user.email,
         password: data.currentPassword,
       });
 

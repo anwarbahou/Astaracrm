@@ -11,23 +11,23 @@ export const useUsers = () => {
   return useQuery({
     queryKey: ['users', { isAdmin, isManager }],
     queryFn: async () => {
-      if (isAdmin || isManager) {
-        const { data, error } = await supabase
-          .from('users')
-          .select('*')
-          .eq('status', 'active')
-          .order('first_name', { ascending: true });
+        if (isAdmin || isManager) {
+          const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('status', 'active')
+            .order('first_name', { ascending: true });
         if (error) throw error;
         return data || [];
       } else {
-        const { data, error } = await supabase
-          .from('users')
-          .select('id, email, first_name, last_name, avatar_url, role, status, created_at, updated_at')
-          .eq('status', 'active')
-          .order('first_name', { ascending: true });
+          const { data, error } = await supabase
+            .from('users')
+            .select('id, email, first_name, last_name, avatar_url, role, status, created_at, updated_at')
+            .eq('status', 'active')
+            .order('first_name', { ascending: true });
         if (error) throw error;
         return data || [];
-      }
+        }
     },
     staleTime: 1000 * 60 * 5,
     retry: 2,

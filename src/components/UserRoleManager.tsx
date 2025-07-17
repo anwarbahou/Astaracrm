@@ -20,9 +20,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Shield, User, Crown, Mail, Calendar } from 'lucide-react';
+import { Loader2, Shield, User, Crown, Mail, Calendar, Trash2 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { format } from 'date-fns';
+// Dialog components
+import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 type UserRole = 'admin' | 'manager' | 'user';
 type UserProfile = Database['public']['Tables']['users']['Row'];
@@ -61,7 +63,10 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({ searchQuery = 
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
-  const { updateUserRole, isAdmin } = useAuth();
+  const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [pendingDeleteUser, setPendingDeleteUser] = useState<UserProfile | null>(null);
+  const { updateUserRole, isAdmin, user: currentUser } = useAuth();
   const { toast } = useToast();
 
   const fetchUsers = async () => {
@@ -126,6 +131,39 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({ searchQuery = 
       });
     } finally {
       setUpdatingUserId(null);
+    }
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    console.log('[DeleteUser] Attempting to delete user:', userId);
+    setDeletingUserId(userId);
+    try {
+      const { error, data } = await supabase.from('users').delete().eq('id', userId);
+      console.log('[DeleteUser] Supabase response:', { error, data });
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to delete user: " + error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+      setUsers(prev => prev.filter(user => user.id !== userId));
+      toast({
+        title: "Success",
+        description: "User deleted successfully",
+      });
+    } catch (error) {
+      console.error('[DeleteUser] Exception:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete user: " + (error instanceof Error ? error.message : String(error)),
+        variant: "destructive",
+      });
+    } finally {
+      setDeletingUserId(null);
+      setConfirmDialogOpen(false);
+      setPendingDeleteUser(null);
     }
   };
 
@@ -296,6 +334,24 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({ searchQuery = 
                       {updatingUserId === user.id && (
                         <Loader2 className="h-4 w-4 animate-spin text-primary" />
                       )}
+                      {currentUser?.id !== user.id && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            setPendingDeleteUser(user);
+                            setConfirmDialogOpen(true);
+                          }}
+                          disabled={deletingUserId === user.id}
+                          aria-label="Delete user"
+                        >
+                          {deletingUserId === user.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin text-destructive" />
+                          ) : (
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          )}
+                        </Button>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -304,6 +360,27 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({ searchQuery = 
           </TableBody>
         </Table>
       </div>
+      {/* Confirmation Dialog */}
+      <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete User</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete {pendingDeleteUser?.first_name || pendingDeleteUser?.email}? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="secondary" onClick={() => setConfirmDialogOpen(false)} disabled={!!deletingUserId}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={() => pendingDeleteUser && handleDeleteUser(pendingDeleteUser.id)} disabled={!!deletingUserId}>
+              {deletingUserId ? <Loader2 className="h-4 w-4 animate-spin" /> : "Delete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
-}; 
+};
+
+export default UserRoleManager; 

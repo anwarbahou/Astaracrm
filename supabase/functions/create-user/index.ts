@@ -43,6 +43,17 @@ serve(async (req: Request): Promise<Response> => {
 
     if (authError) {
       console.error('❌ Auth creation failed:', authError);
+      // Check for duplicate email error from Supabase
+      if (authError.message && authError.message.toLowerCase().includes('user already registered')) {
+        return new Response(JSON.stringify({ error: 'This email is already in use. Please use a different email.' }), {
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+          },
+          status: 400,
+        });
+      }
       throw authError;
     }
     
@@ -63,25 +74,21 @@ serve(async (req: Request): Promise<Response> => {
 
       // If insert fails due to duplicate key, update instead
       if (insertError && insertError.code === '23505') {
-        const { error: updateError } = await supabaseAdmin
-          .from('users')
-          .update({
-            role,
-            avatar_url: avatarUrl,
-          })
-          .eq('id', authData.user.id);
-        
-                 if (updateError) {
-           console.error('❌ Profile update failed:', updateError);
-           throw updateError;
-         }
-         console.log('✅ User profile updated');
-       } else if (insertError) {
-         console.error('❌ Profile insert failed:', insertError);
-         throw insertError;
-       } else {
-         console.log('✅ User profile created');
-       }
+        // This means the user already exists in the users table, but we still want to show the friendly message if this is due to duplicate email
+        return new Response(JSON.stringify({ error: 'This email is already in use. Please use a different email.' }), {
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+          },
+          status: 400,
+        });
+      } else if (insertError) {
+        console.error('❌ Profile insert failed:', insertError);
+        throw insertError;
+      } else {
+        console.log('✅ User profile created');
+      }
     }
 
     return new Response(JSON.stringify({ user: authData.user }), {

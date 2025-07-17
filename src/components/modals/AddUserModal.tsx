@@ -64,50 +64,40 @@ export function AddUserModal({ open, onOpenChange, onUserCreated }: AddUserModal
 
       // 3. Call the Edge Function to create the user
       console.log('📤 Calling create-user function with:', { ...formData, avatarUrl, password: '[REDACTED]' });
-      const { data, error } = await supabase.functions.invoke('create-user', {
-        body: { ...formData, avatarUrl },
+      // Get the current user's access token
+      let accessToken = undefined;
+      if (supabase.auth.getSession) {
+        const sessionResult = await supabase.auth.getSession();
+        accessToken = sessionResult.data.session?.access_token;
+      } else if (supabase.auth.session) {
+        accessToken = supabase.auth.session()?.access_token;
+      }
+      // Use fetch directly for more control over error handling
+      const res = await fetch('https://purgvbzgbdinporjahra.functions.supabase.co/create-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(accessToken ? { 'Authorization': `Bearer ${accessToken}` } : {}),
+        },
+        body: JSON.stringify({ ...formData, avatarUrl }),
       });
-      let errorMsg = error?.message || error?.error || data?.error;
-
-      // Debugging: log error and context
-      console.log('Supabase function error:', error);
-      if (error?.context) {
-        console.log('Supabase function error context:', error.context);
+      let responseJson: any = {};
+      try {
+        responseJson = await res.json();
+      } catch (e) {
+        // If response is not JSON, treat as error
+        throw new Error('Invalid server response. Please try again.');
       }
-
-      // Try to extract the error message from the response body if available
-      if (
-        error &&
-        error instanceof FunctionsHttpError &&
-        error.context &&
-        error.context.response
-      ) {
-        try {
-          // Always read as text
-          const errorText = await error.context.response.text();
-          let parsedError = errorText;
-          if (errorText && errorText.trim().length > 0) {
-            try {
-              const parsed = JSON.parse(errorText);
-              if (parsed && typeof parsed === 'object' && parsed.error) {
-                parsedError = parsed.error;
-              }
-            } catch {
-              parsedError = errorText;
-            }
-          }
-          // Force user-friendly message for any 400 error
-          if (error.context.response.status === 400) {
-            errorMsg = 'This email is already in use. Please use a different email.';
-          } else {
-            errorMsg = parsedError;
-          }
-        } catch (e) {
-          errorMsg = `HTTP ${error.context.response.status} at ${error.context.response.url}`;
+      if (!res.ok) {
+        let errorMsg = responseJson.error || 'An error occurred while creating the user.';
+        if (
+          typeof errorMsg === 'string' &&
+          (errorMsg.toLowerCase().includes('email') ||
+           errorMsg.toLowerCase().includes('already in use') ||
+           errorMsg.toLowerCase().includes('duplicate'))
+        ) {
+          errorMsg = 'This email is already in use. Please use a different email.';
         }
-      }
-
-      if (errorMsg) {
         toast({
           title: 'Error',
           description: errorMsg,
@@ -115,16 +105,13 @@ export function AddUserModal({ open, onOpenChange, onUserCreated }: AddUserModal
         });
         return;
       }
-
       toast({
         title: 'Success',
         description: 'User has been created successfully',
       });
-
+      onOpenChange(false); // Close the modal immediately after success toast
       // Call the callback to refresh the users list
       onUserCreated?.();
-
-      onOpenChange(false);
       setFormData({
         email: '',
         firstName: '',
@@ -134,7 +121,7 @@ export function AddUserModal({ open, onOpenChange, onUserCreated }: AddUserModal
       });
       setAvatarSeed(Math.random().toString());
     } catch (error: any) {
-      console.error('🔥 An error occurred during the user creation process:', error);
+      // Only show error toast here for truly unexpected errors
       let userMessage = error?.message || 'An unexpected error occurred. Please try again.';
       toast({
         title: 'Error',

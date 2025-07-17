@@ -1,66 +1,37 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
 import { useAuth } from '@/contexts/AuthContext';
-import { useQuery } from '@tanstack/react-query';
 
 type User = Database['public']['Tables']['users']['Row'];
 
 export const useUsers = () => {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const { isAdmin, isManager } = useAuth();
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        setLoading(true);
-        
-        // If user is admin or manager, show all user details
-        if (isAdmin || isManager) {
-          const { data, error } = await supabase
-            .from('users')
-            .select('*')
-            .eq('status', 'active')
-            .order('first_name', { ascending: true });
-
-          if (error) {
-            console.error('Error fetching all users:', error);
-            setError(error.message);
-            return;
-          }
-
-          setUsers(data || []);
-        } 
-        // For regular users, show limited user information
-        else {
-          const { data, error } = await supabase
-            .from('users')
-            .select('id, email, first_name, last_name, avatar_url, role, status, created_at, updated_at')
-            .eq('status', 'active')
-            .order('first_name', { ascending: true });
-
-          if (error) {
-            console.error('Error fetching users:', error);
-            setError(error.message);
-            return;
-          }
-
-          setUsers(data || []);
-        }
-      } catch (err) {
-        console.error('Error in fetchUsers:', err);
-        setError(err instanceof Error ? err.message : 'An error occurred');
-      } finally {
-        setLoading(false);
+  return useQuery({
+    queryKey: ['users', { isAdmin, isManager }],
+    queryFn: async () => {
+      if (isAdmin || isManager) {
+        const { data, error } = await supabase
+          .from('users')
+          .select('*')
+          .eq('status', 'active')
+          .order('first_name', { ascending: true });
+        if (error) throw error;
+        return data || [];
+      } else {
+        const { data, error } = await supabase
+          .from('users')
+          .select('id, email, first_name, last_name, avatar_url, role, status, created_at, updated_at')
+          .eq('status', 'active')
+          .order('first_name', { ascending: true });
+        if (error) throw error;
+        return data || [];
       }
-    };
-
-      fetchUsers();
-  }, [isAdmin, isManager]);
-
-  return { users, loading, error };
+    },
+    staleTime: 1000 * 60 * 5,
+    retry: 2,
+  });
 };
 
 export interface UserOption {

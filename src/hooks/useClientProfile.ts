@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useQuery, useQueries, useQueryClient } from '@tanstack/react-query';
 import { 
   ClientService, 
   ClientProfile, 
@@ -21,106 +21,71 @@ export interface UseClientProfileData {
 }
 
 export function useClientProfile(clientId: string | null): UseClientProfileData {
-  const [client, setClient] = useState<ClientProfile | null>(null);
-  const [contacts, setContacts] = useState<Contact[]>([]);
-  const [deals, setDeals] = useState<Deal[]>([]);
-  const [activities, setActivities] = useState<Activity[]>([]);
-  const [documents, setDocuments] = useState<Document[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  const loadClientData = async (id: string) => {
-    console.log('🚀 useClientProfile.loadClientData called with id:', id);
-    setLoading(true);
-    setError(null);
-    
-    try {
-      // Load all client-related data in parallel
-      const [
-        clientData,
-        contactsData,
-        dealsData,
-        activitiesData,
-        documentsData
-      ] = await Promise.all([
-        ClientService.getClientProfile(id),
-        ClientService.getClientContacts(id),
-        ClientService.getClientDeals(id),
-        ClientService.getClientActivities(id),
-        ClientService.getClientDocuments(id)
-      ]);
+  // Queries for each resource
+  const clientQuery = useQuery({
+    queryKey: ['clientProfile', clientId],
+    queryFn: () => clientId ? ClientService.getClientProfile(clientId) : Promise.resolve(null),
+    enabled: !!clientId,
+    staleTime: 1000 * 60 * 5,
+  });
+  const contactsQuery = useQuery({
+    queryKey: ['clientContacts', clientId],
+    queryFn: () => clientId ? ClientService.getClientContacts(clientId) : Promise.resolve([]),
+    enabled: !!clientId,
+    staleTime: 1000 * 60 * 5,
+  });
+  const dealsQuery = useQuery({
+    queryKey: ['clientDeals', clientId],
+    queryFn: () => clientId ? ClientService.getClientDeals(clientId) : Promise.resolve([]),
+    enabled: !!clientId,
+    staleTime: 1000 * 60 * 5,
+  });
+  const activitiesQuery = useQuery({
+    queryKey: ['clientActivities', clientId],
+    queryFn: () => clientId ? ClientService.getClientActivities(clientId) : Promise.resolve([]),
+    enabled: !!clientId,
+    staleTime: 1000 * 60 * 5,
+  });
+  const documentsQuery = useQuery({
+    queryKey: ['clientDocuments', clientId],
+    queryFn: () => clientId ? ClientService.getClientDocuments(clientId) : Promise.resolve([]),
+    enabled: !!clientId,
+    staleTime: 1000 * 60 * 5,
+  });
 
-      console.log('📦 useClientProfile - clientData:', clientData);
-      console.log('👥 useClientProfile - contactsData:', contactsData);
-      console.log('💼 useClientProfile - dealsData:', dealsData);
-
-      setClient(clientData);
-      setContacts(contactsData);
-      setDeals(dealsData);
-      setActivities(activitiesData);
-      setDocuments(documentsData);
-
-      console.log('✅ useClientProfile - all data set successfully');
-    } catch (err) {
-      console.error('❌ useClientProfile - Error loading client data:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load client data');
-    } finally {
-      console.log('🏁 useClientProfile - loadClientData finished, setting loading to false');
-      setLoading(false);
-    }
-  };
+  const loading = [clientQuery, contactsQuery, dealsQuery, activitiesQuery, documentsQuery].some(q => q.isLoading);
+  const error = [clientQuery, contactsQuery, dealsQuery, activitiesQuery, documentsQuery].find(q => q.error)?.error?.message || null;
 
   const refreshData = async () => {
     if (clientId) {
-      await loadClientData(clientId);
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['clientProfile', clientId] }),
+        queryClient.invalidateQueries({ queryKey: ['clientContacts', clientId] }),
+        queryClient.invalidateQueries({ queryKey: ['clientDeals', clientId] }),
+        queryClient.invalidateQueries({ queryKey: ['clientActivities', clientId] }),
+        queryClient.invalidateQueries({ queryKey: ['clientDocuments', clientId] }),
+      ]);
     }
   };
 
   const updateClient = async (updates: Partial<ClientProfile>): Promise<boolean> => {
     if (!clientId) return false;
-    
     const success = await ClientService.updateClient(clientId, updates);
-    if (success && client) {
-      // Update local state optimistically
-      setClient({ ...client, ...updates });
+    if (success) {
+      // Optimistically update cache
+      queryClient.setQueryData(['clientProfile', clientId], (old: ClientProfile | null) => old ? { ...old, ...updates } : old);
     }
     return success;
   };
 
-  useEffect(() => {
-    console.log('🔄 useClientProfile useEffect triggered with clientId:', clientId);
-    
-    if (clientId) {
-      console.log('🔍 Loading client data for ID:', clientId);
-      loadClientData(clientId);
-    } else {
-      console.log('🚫 No clientId provided, resetting state');
-      // Reset state when clientId is null
-      setClient(null);
-      setContacts([]);
-      setDeals([]);
-      setActivities([]);
-      setDocuments([]);
-      setError(null);
-      setLoading(false);
-    }
-  }, [clientId]);
-
-  // Add logging whenever state changes
-  useEffect(() => {
-    console.log('📊 Client state changed:', { 
-      client: client ? { id: client.id, name: client.name } : null, 
-      loading, 
-      error 
-    });
-  }, [client, loading, error]);
-
   return {
-    client,
-    contacts,
-    deals,
-    activities,
-    documents,
+    client: clientQuery.data ?? null,
+    contacts: contactsQuery.data ?? [],
+    deals: dealsQuery.data ?? [],
+    activities: activitiesQuery.data ?? [],
+    documents: documentsQuery.data ?? [],
     loading,
     error,
     refreshData,

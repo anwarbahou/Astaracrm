@@ -20,7 +20,7 @@ interface BusinessInfoSectionProps {
 
 export const BusinessInfoSection = ({ formData, setFormData }: BusinessInfoSectionProps) => {
     const { t } = useTranslation();
-    const { users, loading } = useUsers();
+    const { data: users = [], isLoading: loading } = useUsers();
     const { user, isAdmin, isManager } = useAuth();
 
     // Set current user as default owner when users are loaded

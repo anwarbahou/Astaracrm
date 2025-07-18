@@ -77,6 +77,17 @@ export default function LoginPage() {
     return () => clearTimeout(timeoutId);
   }, [authLoading]);
 
+  useEffect(() => {
+    if (initTimedOut) {
+      // Auto-reset session and reload if initialization times out
+      localStorage.clear();
+      sessionStorage.clear();
+      // Optionally, clear cookies if you use them for auth
+      // document.cookie = "supabase.auth.token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      window.location.reload();
+    }
+  }, [initTimedOut]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     

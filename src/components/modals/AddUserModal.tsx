@@ -121,13 +121,17 @@ export function AddUserModal({ open, onOpenChange, onUserCreated }: AddUserModal
       });
       setAvatarSeed(Math.random().toString());
     } catch (error: any) {
-      // Only show error toast here for truly unexpected errors
-      let userMessage = error?.message || 'An unexpected error occurred. Please try again.';
-      toast({
-        title: 'Error',
-        description: typeof userMessage === 'string' ? userMessage : JSON.stringify(userMessage, null, 2),
-        variant: 'destructive',
-      });
+      // Only show error toast if we are sure the user was not created
+      if (error?.message && error.message.toLowerCase().includes('already in use')) {
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
+      } else {
+        // Log unexpected errors for debugging, but do not show a toast if creation succeeded
+        console.error('Unexpected error during user creation:', error);
+      }
     } finally {
       setLoading(false);
     }

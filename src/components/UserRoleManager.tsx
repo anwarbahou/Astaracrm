@@ -138,27 +138,48 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({ searchQuery = 
     console.log('[DeleteUser] Attempting to delete user:', userId);
     setDeletingUserId(userId);
     try {
-      const { error, data } = await supabase.from('users').delete().eq('id', userId);
-      console.log('[DeleteUser] Supabase response:', { error, data });
-      if (error) {
+      // Get the current user's access token (if needed for auth)
+      let accessToken = undefined;
+      if (supabase.auth.getSession) {
+        const sessionResult = await supabase.auth.getSession();
+        accessToken = sessionResult.data.session?.access_token;
+      } else if (supabase.auth.session) {
+        accessToken = supabase.auth.session()?.access_token;
+      }
+      // Call the edge function to delete user from both Auth and users table
+      const res = await fetch('https://purgvbzgbdinporjahra.functions.supabase.co/delete-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(accessToken ? { 'Authorization': `Bearer ${accessToken}` } : {}),
+        },
+        body: JSON.stringify({ userId }),
+      });
+      let responseJson: any = {};
+      try {
+        responseJson = await res.json();
+      } catch (e) {
+        throw new Error('Invalid server response. Please try again.');
+      }
+      if (!res.ok) {
         toast({
-          title: "Error",
-          description: "Failed to delete user: " + error.message,
-          variant: "destructive",
+          title: 'Error',
+          description: responseJson.error || 'Failed to delete user.',
+          variant: 'destructive',
         });
         return;
       }
       setUsers(prev => prev.filter(user => user.id !== userId));
       toast({
-        title: "Success",
-        description: "User deleted successfully",
+        title: 'Success',
+        description: 'User deleted successfully',
       });
     } catch (error) {
       console.error('[DeleteUser] Exception:', error);
       toast({
-        title: "Error",
-        description: "Failed to delete user: " + (error instanceof Error ? error.message : String(error)),
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to delete user: ' + (error instanceof Error ? error.message : String(error)),
+        variant: 'destructive',
       });
     } finally {
       setDeletingUserId(null);

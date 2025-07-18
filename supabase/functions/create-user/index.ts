@@ -1,114 +1,79 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.52.0";
 
-interface UserCreationRequest {
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: 'admin' | 'manager' | 'user';
-  avatarUrl: string;
-  password?: string;
-}
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+};
 
 serve(async (req: Request): Promise<Response> => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response('ok', {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-      },
-    });
+    return new Response('ok', { headers: corsHeaders });
   }
 
   try {
-    const requestBody = await req.json();
-    console.log('📝 Received request:', { ...requestBody, password: '[REDACTED]' });
-    
-    const { email, firstName, lastName, role, avatarUrl, password }: UserCreationRequest = requestBody;
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
-    const supabaseAdmin = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
+    if (!supabaseUrl || !serviceRoleKey) {
+      return new Response(
+        JSON.stringify({ error: 'Missing environment variables' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      );
+    }
 
-    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+    const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
+
+    // Parse request body
+    let body: any = {};
+    try {
+      body = await req.json();
+    } catch (err) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid JSON in request body' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
+
+    const { email, password, firstName, lastName, role, avatarUrl } = body;
+    if (!email || !password || !firstName || !lastName || !role) {
+      return new Response(
+        JSON.stringify({ error: 'Missing required fields' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
+
+    // Create user in Supabase Auth
+    const { data, error } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
-      email_confirm: true,
       user_metadata: {
-        first_name: firstName,
-        last_name: lastName,
+        firstName,
+        lastName,
+        role,
+        avatarUrl,
       },
+      email_confirm: true,
     });
 
-    if (authError) {
-      console.error('❌ Auth creation failed:', authError);
-      // Check for duplicate email error from Supabase
-      if (authError.message && authError.message.toLowerCase().includes('user already registered')) {
-        return new Response(JSON.stringify({ error: 'This email is already in use. Please use a different email.' }), {
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-          },
-          status: 400,
-        });
-      }
-      throw authError;
-    }
-    
-    console.log('✅ User created in auth:', authData.user?.id);
-
-    if (authData.user) {
-      // First try to insert, if it already exists (from auth trigger), update it
-      const { error: insertError } = await supabaseAdmin
-        .from('users')
-        .insert({
-          id: authData.user.id,
-          email: authData.user.email,
-          first_name: firstName,
-          last_name: lastName,
-          role,
-          avatar_url: avatarUrl,
-        });
-
-      // If insert fails due to duplicate key, update instead
-      if (insertError && insertError.code === '23505') {
-        // This means the user already exists in the users table, but we still want to show the friendly message if this is due to duplicate email
-        return new Response(JSON.stringify({ error: 'This email is already in use. Please use a different email.' }), {
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-          },
-          status: 400,
-        });
-      } else if (insertError) {
-        console.error('❌ Profile insert failed:', insertError);
-        throw insertError;
-      } else {
-        console.log('✅ User profile created');
-      }
+    if (error) {
+      return new Response(
+        JSON.stringify({ error: error.message }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
     }
 
-    return new Response(JSON.stringify({ user: authData.user }), {
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-      },
-      status: 200,
-    });
+    return new Response(
+      JSON.stringify({ user: data.user }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+    );
   } catch (error) {
-    console.error('🔥 Function error:', error);
-    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-    return new Response(JSON.stringify({ error: errorMessage }), {
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-      },
-      status: 400,
-    });
+    console.error('Unexpected error:', error);
+    return new Response(
+      JSON.stringify({ error: 'Unexpected error occurred', details: error instanceof Error ? error.message : String(error) }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+    );
   }
 });

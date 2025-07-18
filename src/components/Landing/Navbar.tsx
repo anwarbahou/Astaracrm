@@ -27,7 +27,7 @@ export const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation Links */}
-          <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
+          <div className="hidden md:flex items-center space-x-6 lg:space-x-8 ml-auto justify-end">
             <Link to="/" className="text-white/80 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 rounded px-2 py-1">Home</Link>
             <Link to="/services" className="text-white/80 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 rounded px-2 py-1">Services</Link>
             <Link to="/projects" className="text-white/80 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 rounded px-2 py-1">Projects</Link>
@@ -35,27 +35,6 @@ export const Navbar = () => {
             <Link to="/contact" className="text-white/80 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 rounded px-2 py-1">Contact Us</Link>
             <Link to="/careers" className="text-white/80 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 rounded px-2 py-1">Careers</Link>
             <Link to="/blogs" className="text-white/80 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 rounded px-2 py-1">Blogs</Link>
-          </div>
-
-          {/* Auth Buttons - Desktop */}
-          <div className="hidden sm:flex items-center gap-3 lg:gap-4">
-            {/* Create Account Button */}
-            <Link
-              to="/signup"
-              className="px-4 lg:px-6 py-2 lg:py-3 rounded-full bg-transparent border border-white/30 text-white/90 font-medium transition-all duration-200 hover:border-white/60 hover:text-white hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-white/50 text-sm lg:text-base"
-              aria-label="Create new account"
-            >
-              Create Account
-            </Link>
-
-            {/* Sign In Button */}
-            <Link
-              to="/login"
-              className="px-4 lg:px-6 py-2 lg:py-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white font-medium transition-all duration-200 hover:bg-white/20 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/50 shadow-lg text-sm lg:text-base"
-              aria-label="Sign in to your account"
-            >
-              Sign In
-            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -114,24 +93,6 @@ export const Navbar = () => {
               >
                 Contact
               </a>
-              
-              {/* Mobile Auth Buttons */}
-              <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-white/10">
-                <Link
-                  to="/signup"
-                  className="px-6 py-3 rounded-full bg-transparent border border-white/30 text-white/90 font-medium transition-all duration-200 hover:border-white/60 hover:text-white hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-white/50 text-center"
-                  onClick={toggleMobileMenu}
-                >
-                  Create Account
-                </Link>
-                <Link
-                  to="/login"
-                  className="px-6 py-3 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white font-medium transition-all duration-200 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 text-center"
-                  onClick={toggleMobileMenu}
-                >
-                  Sign In
-                </Link>
-              </div>
             </div>
           </div>
         )}

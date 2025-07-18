@@ -396,6 +396,12 @@
   }
 }
 
+@layer components {
+  .landing-font {
+    font-family: 'Sora', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  }
+}
+
 /* Enhanced Animations with Theme Support */
 @layer utilities {
   .animate-fade-in {
@@ -709,3 +715,12 @@ textarea,
 .animate-scroll-scale-in {
   animation: scrollScaleIn 1s ease-out forwards;
 }
+
+.sora-hero {
+  color: #fff;
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  font-size: 2.25rem; /* 36px for base */
+}
+@media (min-width: 640px) { .sora-hero { font-size: 2.75rem; } } /* 44px */
+@media (min-width: 1024px) { .sora-hero { font-size: 3.625rem; } } /* 58px */

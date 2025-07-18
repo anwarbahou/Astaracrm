@@ -91,95 +91,82 @@ function AnimatedRoutes() {
   const location = useLocation();
   
   return (
-    <AnimatePresence mode="wait" initial={false}>
-      <motion.div
-        key={location.pathname}
-        variants={pageVariants}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        className="flex-1 transition-theme duration-theme ease-theme"
-      >
-        <Routes location={location}>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/services" element={<SimplePageLayout><Services /></SimplePageLayout>} />
-          <Route path="/projects" element={<SimplePageLayout><Projects /></SimplePageLayout>} />
-          <Route path="/about" element={<SimplePageLayout><About /></SimplePageLayout>} />
-          <Route path="/contact" element={<SimplePageLayout><Contact /></SimplePageLayout>} />
-          <Route path="/careers" element={<SimplePageLayout><Careers /></SimplePageLayout>} />
-          <Route path="/blogs" element={<SimplePageLayout><Blogs /></SimplePageLayout>} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SIgnupPage />} />
-          <Route path="/dashboard">
-            <Route index element={<ProtectedRoute><LazyWrapper><Dashboard /></LazyWrapper></ProtectedRoute>} />
-            <Route path="messaging" element={<ProtectedRoute><LazyWrapper><Messaging /></LazyWrapper></ProtectedRoute>} />
-            <Route path="clients" element={<ProtectedRoute><LazyWrapper><Clients /></LazyWrapper></ProtectedRoute>} />
-            <Route path="clients/:id" element={<ProtectedRoute><LazyWrapper><ClientProfile /></LazyWrapper></ProtectedRoute>} />
-            <Route path="contacts" element={<ProtectedRoute><LazyWrapper><Contacts /></LazyWrapper></ProtectedRoute>} />
-            <Route path="deals" element={<ProtectedRoute><LazyWrapper><Deals /></LazyWrapper></ProtectedRoute>} />
-            <Route path="ai-leads" element={<ProtectedRoute><LazyWrapper><AILeads /></LazyWrapper></ProtectedRoute>} />
-            <Route path="tasks" element={<ProtectedRoute><LazyWrapper><Tasks /></LazyWrapper></ProtectedRoute>} />
-            <Route path="calendar" element={<ProtectedRoute><LazyWrapper><Calendar /></LazyWrapper></ProtectedRoute>} />
-            <Route path="email" element={<ProtectedRoute><LazyWrapper><EmailCenter /></LazyWrapper></ProtectedRoute>} />
-            <Route path="notes" element={<ProtectedRoute><LazyWrapper><Notes /></LazyWrapper></ProtectedRoute>} />
-            
-            {/* Manager and Admin only routes */}
-            <Route 
-              path="reports" 
-              element={
-                <ProtectedRoute>
-                  <AdminManagerRoute>
-                    <LazyWrapper><Reports /></LazyWrapper>
-                  </AdminManagerRoute>
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="workflows" 
-              element={
-                <ProtectedRoute>
-                  <AdminManagerRoute>
-                    <LazyWrapper><Workflows /></LazyWrapper>
-                  </AdminManagerRoute>
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="activity-logs" 
-              element={
-                <ProtectedRoute>
-                  <AdminManagerRoute>
-                    <LazyWrapper><ActivityLogs /></LazyWrapper>
-                  </AdminManagerRoute>
-                </ProtectedRoute>
-              } 
-            />
-            
-            {/* Admin only routes */}
-            <Route 
-              path="users" 
-              element={
-                <ProtectedRoute>
-                  <AdminOnlyRoute>
-                    <LazyWrapper><Users /></LazyWrapper>
-                  </AdminOnlyRoute>
-                </ProtectedRoute>
-              } 
-            />
-            {/* Settings accessible to all users */}
-            <Route 
-              path="settings" 
-              element={
-                <ProtectedRoute>
-                  <LazyWrapper><Settings /></LazyWrapper>
-                </ProtectedRoute>
-              } 
-            />
-          </Route>
-          <Route path="*" element={<LazyWrapper><NotFound /></LazyWrapper>} />
-        </Routes>
-      </motion.div>
-    </AnimatePresence>
+    <Routes location={location}>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/services" element={<SimplePageLayout><Services /></SimplePageLayout>} />
+      <Route path="/projects" element={<SimplePageLayout><Projects /></SimplePageLayout>} />
+      <Route path="/about" element={<SimplePageLayout><About /></SimplePageLayout>} />
+      <Route path="/contact" element={<SimplePageLayout><Contact /></SimplePageLayout>} />
+      <Route path="/careers" element={<SimplePageLayout><Careers /></SimplePageLayout>} />
+      <Route path="/blogs" element={<SimplePageLayout><Blogs /></SimplePageLayout>} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SIgnupPage />} />
+      <Route path="/dashboard">
+        <Route index element={<ProtectedRoute><LazyWrapper><Dashboard /></LazyWrapper></ProtectedRoute>} />
+        <Route path="messaging" element={<ProtectedRoute><LazyWrapper><Messaging /></LazyWrapper></ProtectedRoute>} />
+        <Route path="clients" element={<ProtectedRoute><LazyWrapper><Clients /></LazyWrapper></ProtectedRoute>} />
+        <Route path="clients/:id" element={<ProtectedRoute><LazyWrapper><ClientProfile /></LazyWrapper></ProtectedRoute>} />
+        <Route path="contacts" element={<ProtectedRoute><LazyWrapper><Contacts /></LazyWrapper></ProtectedRoute>} />
+        <Route path="deals" element={<ProtectedRoute><LazyWrapper><Deals /></LazyWrapper></ProtectedRoute>} />
+        <Route path="ai-leads" element={<ProtectedRoute><LazyWrapper><AILeads /></LazyWrapper></ProtectedRoute>} />
+        <Route path="tasks" element={<ProtectedRoute><LazyWrapper><Tasks /></LazyWrapper></ProtectedRoute>} />
+        <Route path="calendar" element={<ProtectedRoute><LazyWrapper><Calendar /></LazyWrapper></ProtectedRoute>} />
+        <Route path="email" element={<ProtectedRoute><LazyWrapper><EmailCenter /></LazyWrapper></ProtectedRoute>} />
+        <Route path="notes" element={<ProtectedRoute><LazyWrapper><Notes /></LazyWrapper></ProtectedRoute>} />
+        {/* Manager and Admin only routes */}
+        <Route 
+          path="reports" 
+          element={
+            <ProtectedRoute>
+              <AdminManagerRoute>
+                <LazyWrapper><Reports /></LazyWrapper>
+              </AdminManagerRoute>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="workflows" 
+          element={
+            <ProtectedRoute>
+              <AdminManagerRoute>
+                <LazyWrapper><Workflows /></LazyWrapper>
+              </AdminManagerRoute>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="activity-logs" 
+          element={
+            <ProtectedRoute>
+              <AdminManagerRoute>
+                <LazyWrapper><ActivityLogs /></LazyWrapper>
+              </AdminManagerRoute>
+            </ProtectedRoute>
+          } 
+        />
+        {/* Admin only routes */}
+        <Route 
+          path="users" 
+          element={
+            <ProtectedRoute>
+              <AdminOnlyRoute>
+                <LazyWrapper><Users /></LazyWrapper>
+              </AdminOnlyRoute>
+            </ProtectedRoute>
+          } 
+        />
+        {/* Settings accessible to all users */}
+        <Route 
+          path="settings" 
+          element={
+            <ProtectedRoute>
+              <LazyWrapper><Settings /></LazyWrapper>
+            </ProtectedRoute>
+          } 
+        />
+      </Route>
+      <Route path="*" element={<LazyWrapper><NotFound /></LazyWrapper>} />
+    </Routes>
   );
 }
 

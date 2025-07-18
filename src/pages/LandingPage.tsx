@@ -7,13 +7,10 @@ import { LazySection } from "@/components/Landing/LazySection";
 export default function LandingPage() {
   return (
     <main 
-      className="w-full relative"
+      className="w-full relative landing-font"
       role="main"
       aria-label="Astara CRM Landing Page"
     >
-      {/* Background animation - Fixed positioning */}
-      <BlobBackground />
-      
       {/* Navbar and Hero wrapper with gradient overlay */}
       <div className="relative">
         {/* Black gradient overlay - bottom to top (100% to 40%) */}

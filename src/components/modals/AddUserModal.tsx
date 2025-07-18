@@ -63,7 +63,8 @@ export function AddUserModal({ open, onOpenChange, onUserCreated }: AddUserModal
       const avatarUrl = publicUrlData.publicUrl;
 
       // 3. Call the Edge Function to create the user
-      console.log('📤 Calling create-user function with:', { ...formData, avatarUrl, password: '[REDACTED]' });
+      const payload = { ...formData, avatarUrl };
+      if (!payload.lastName) delete payload.lastName;
       // Get the current user's access token
       let accessToken = undefined;
       if (supabase.auth.getSession) {
@@ -79,7 +80,7 @@ export function AddUserModal({ open, onOpenChange, onUserCreated }: AddUserModal
           'Content-Type': 'application/json',
           ...(accessToken ? { 'Authorization': `Bearer ${accessToken}` } : {}),
         },
-        body: JSON.stringify({ ...formData, avatarUrl }),
+        body: JSON.stringify(payload),
       });
       let responseJson: any = {};
       try {
@@ -195,12 +196,12 @@ export function AddUserModal({ open, onOpenChange, onUserCreated }: AddUserModal
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
+                <Label htmlFor="lastName">Last Name (optional)</Label>
                 <Input
                   id="lastName"
                   value={formData.lastName}
                   onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
-                  required
+                  // No required attribute here
                 />
               </div>
             </div>

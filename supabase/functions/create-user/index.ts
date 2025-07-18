@@ -38,23 +38,28 @@ serve(async (req: Request): Promise<Response> => {
     }
 
     const { email, password, firstName, lastName, role, avatarUrl } = body;
-    if (!email || !password || !firstName || !lastName || !role) {
+    if (!email || !password || !firstName || !role) {
       return new Response(
         JSON.stringify({ error: 'Missing required fields' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
       );
     }
 
+    // Debug log the received payload and userMeta
+    console.log('Received payload:', body);
     // Create user in Supabase Auth
+    const userMeta: any = {
+      first_name: firstName,
+      role,
+      avatar_url: avatarUrl,
+    };
+    if (lastName) userMeta.last_name = lastName;
+    console.log('Constructed userMeta:', userMeta);
+
     const { data, error } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
-      user_metadata: {
-        firstName,
-        lastName,
-        role,
-        avatarUrl,
-      },
+      user_metadata: userMeta,
       email_confirm: true,
     });
 

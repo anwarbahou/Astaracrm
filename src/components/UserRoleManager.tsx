@@ -20,11 +20,15 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Shield, User, Crown, Mail, Calendar, Trash2 } from 'lucide-react';
+import { Loader2, Shield, User, Crown, Mail, Calendar, Trash2, Edit, RefreshCw, Upload } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { format } from 'date-fns';
 // Dialog components
 import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog as EditDialog, DialogContent as EditDialogContent, DialogHeader as EditDialogHeader, DialogFooter as EditDialogFooter, DialogTitle as EditDialogTitle, DialogDescription as EditDialogDescription } from "@/components/ui/dialog";
+import { createAvatar } from '@dicebear/core';
+import * as micah from '@dicebear/micah';
+import { Input } from '@/components/ui/input';
 
 type UserRole = 'admin' | 'manager' | 'user';
 type UserProfile = Database['public']['Tables']['users']['Row'];
@@ -66,8 +70,20 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({ searchQuery = 
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [pendingDeleteUser, setPendingDeleteUser] = useState<UserProfile | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
+  const [editForm, setEditForm] = useState({ firstName: '', lastName: '', email: '', avatar_url: '', role: 'user' as UserRole });
+  const [avatarSeed, setAvatarSeed] = useState(Math.random().toString());
+  const [savingEdit, setSavingEdit] = useState(false);
   const { updateUserRole, isAdmin, user: currentUser } = useAuth();
   const { toast } = useToast();
+
+  const avatarSvg = useMemo(() => {
+    return createAvatar(micah, {
+      seed: avatarSeed,
+      radius: 50,
+    }).toString();
+  }, [avatarSeed]);
 
   const fetchUsers = async () => {
     try {
@@ -185,6 +201,138 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({ searchQuery = 
       setDeletingUserId(null);
       setConfirmDialogOpen(false);
       setPendingDeleteUser(null);
+    }
+  };
+
+  const openEditDialog = (user: UserProfile) => {
+    setEditingUser(user);
+    setEditForm({
+      firstName: user.first_name || '',
+      lastName: user.last_name || '',
+      email: user.email || '',
+      avatar_url: user.avatar_url || '',
+      role: user.role || 'user',
+    });
+    setAvatarSeed(Math.random().toString());
+    setEditDialogOpen(true);
+  };
+
+  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleRoleChange = (value: UserRole) => {
+    setEditForm(prev => ({ ...prev, role: value }));
+  };
+
+  const handleAvatarUpload = async () => {
+    // Upload the SVG avatar to Supabase Storage
+    const avatarFileName = `public/${Date.now()}_${Math.random().toString(36).substring(2)}.svg`;
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(avatarFileName, avatarSvg, {
+        contentType: 'image/svg+xml',
+        upsert: false,
+      });
+    if (uploadError) {
+      toast({ title: 'Error', description: uploadError.message, variant: 'destructive' });
+      return;
+    }
+    const { data: publicUrlData } = supabase.storage
+      .from('avatars')
+      .getPublicUrl(uploadData.path);
+    setEditForm(prev => ({ ...prev, avatar_url: publicUrlData.publicUrl }));
+    toast({ title: 'Success', description: 'Avatar updated!' });
+  };
+
+  const handleNewAvatar = async () => {
+    // Generate a new avatar SVG
+    const newSeed = Math.random().toString();
+    setAvatarSeed(newSeed);
+    const newAvatarSvg = createAvatar(micah, { seed: newSeed, radius: 50 }).toString();
+    // Upload the new avatar SVG to Supabase Storage
+    const avatarFileName = `public/${Date.now()}_${Math.random().toString(36).substring(2)}.svg`;
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(avatarFileName, newAvatarSvg, {
+        contentType: 'image/svg+xml',
+        upsert: false,
+      });
+    if (uploadError) {
+      toast({ title: 'Error', description: uploadError.message, variant: 'destructive' });
+      return;
+    }
+    const { data: publicUrlData } = supabase.storage
+      .from('avatars')
+      .getPublicUrl(uploadData.path);
+    setEditForm(prev => ({ ...prev, avatar_url: publicUrlData.publicUrl }));
+    toast({ title: 'Success', description: 'Avatar updated!' });
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingUser) return;
+    setSavingEdit(true);
+    try {
+      let accessToken = undefined;
+      if (supabase.auth.getSession) {
+        const sessionResult = await supabase.auth.getSession();
+        accessToken = sessionResult.data.session?.access_token;
+      } else if (supabase.auth.session) {
+        accessToken = supabase.auth.session()?.access_token;
+      }
+      const payload: any = {
+        userId: editingUser.id,
+        firstName: editForm.firstName,
+        email: editForm.email,
+        role: editForm.role,
+        avatarUrl: editForm.avatar_url,
+      };
+      if (editForm.lastName) payload.lastName = editForm.lastName;
+      const res = await fetch('https://purgvbzgbdinporjahra.functions.supabase.co/update-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(accessToken ? { 'Authorization': `Bearer ${accessToken}` } : {}),
+        },
+        body: JSON.stringify(payload),
+      });
+      let responseJson: any = {};
+      try {
+        responseJson = await res.json();
+      } catch (e) {
+        throw new Error('Invalid server response. Please try again.');
+      }
+      if (!res.ok) {
+        toast({
+          title: 'Error',
+          description: responseJson.error || 'Failed to update user.',
+          variant: 'destructive',
+        });
+        return;
+      }
+      // Update user in local state
+      setUsers(prev => prev.map(u => u.id === editingUser.id ? {
+        ...u,
+        first_name: editForm.firstName,
+        last_name: editForm.lastName,
+        email: editForm.email,
+        avatar_url: editForm.avatar_url,
+        role: editForm.role,
+      } : u));
+      toast({
+        title: 'Success',
+        description: 'User updated successfully',
+      });
+      setEditDialogOpen(false);
+      setEditingUser(null);
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to update user: ' + (error instanceof Error ? error.message : String(error)),
+        variant: 'destructive',
+      });
+    } finally {
+      setSavingEdit(false);
     }
   };
 
@@ -308,10 +456,7 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({ searchQuery = 
                       </Avatar>
                       <div>
                         <div className="font-medium">
-                          {user.first_name && user.last_name
-                            ? `${user.first_name} ${user.last_name}`
-                            : user.email.split('@')[0]
-                          }
+                          <div onClick={() => openEditDialog(user)}>{user.first_name} {user.last_name}</div>
                         </div>
                       </div>
                     </div>
@@ -355,6 +500,15 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({ searchQuery = 
                       {updatingUserId === user.id && (
                         <Loader2 className="h-4 w-4 animate-spin text-primary" />
                       )}
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => openEditDialog(user)}
+                        aria-label="Edit user"
+                        className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
                       {currentUser?.id !== user.id && (
                         <Button
                           variant="ghost"
@@ -400,6 +554,65 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({ searchQuery = 
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <EditDialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <EditDialogContent>
+          <EditDialogHeader>
+            <EditDialogTitle>Edit User Profile</EditDialogTitle>
+            <EditDialogDescription>Update user details below.</EditDialogDescription>
+          </EditDialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="flex flex-col items-center space-y-4">
+              <Avatar className="h-24 w-24">
+                <AvatarImage src={editForm.avatar_url ? editForm.avatar_url : `data:image/svg+xml;utf8,${encodeURIComponent(avatarSvg)}`} />
+                <AvatarFallback>AV</AvatarFallback>
+              </Avatar>
+              <Button type="button" variant="outline" onClick={handleNewAvatar}>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                New Avatar
+              </Button>
+              <Button type="button" variant="outline" onClick={handleAvatarUpload}>
+                <Upload className="mr-2 h-4 w-4" />
+                Upload Avatar
+              </Button>
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="email">Email</label>
+              <Input id="email" name="email" type="email" value={editForm.email} onChange={handleEditChange} />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label htmlFor="firstName">First Name</label>
+                <Input id="firstName" name="firstName" value={editForm.firstName} onChange={handleEditChange} />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="lastName">Last Name (optional)</label>
+                <Input id="lastName" name="lastName" value={editForm.lastName} onChange={handleEditChange} />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label htmlFor="role">Role</label>
+              <Select value={editForm.role} onValueChange={handleRoleChange}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="user">User</SelectItem>
+                  <SelectItem value="manager">Manager</SelectItem>
+                  <SelectItem value="admin">Admin</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <EditDialogFooter>
+            <Button variant="secondary" onClick={() => setEditDialogOpen(false)} disabled={savingEdit}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveEdit} disabled={savingEdit}>
+              {savingEdit ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Save'}
+            </Button>
+          </EditDialogFooter>
+        </EditDialogContent>
+      </EditDialog>
     </div>
   );
 };

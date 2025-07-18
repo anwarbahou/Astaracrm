@@ -56,8 +56,8 @@ serve(async (req: Request): Promise<Response> => {
 
     // 2. Update Supabase Auth user metadata
     const userMeta: any = {};
-    if (firstName !== undefined) userMeta.firstName = firstName;
-    if (lastName !== undefined) userMeta.lastName = lastName;
+    if (firstName !== undefined) userMeta.first_name = firstName;
+    if (lastName !== undefined) userMeta.last_name = lastName;
     if (role !== undefined) userMeta.role = role;
     if (avatarUrl !== undefined) userMeta.avatarUrl = avatarUrl;
     // Only update email if provided

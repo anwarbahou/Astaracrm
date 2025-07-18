@@ -16,7 +16,7 @@ serve(async (req: Request): Promise<Response> => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-
+    
     if (!supabaseUrl || !serviceRoleKey) {
       return new Response(
         JSON.stringify({ error: 'Missing environment variables' }),
@@ -25,7 +25,7 @@ serve(async (req: Request): Promise<Response> => {
     }
 
     const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
-
+    
     // Parse request body
     let body: any = {};
     try {

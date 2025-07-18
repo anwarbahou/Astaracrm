@@ -48,7 +48,7 @@ export const Sidebar = React.memo(function Sidebar({ isCollapsed, onToggle }: Si
         layout // Enable layout animation for header
       >
         <div className={isCollapsed ? "flex items-center justify-center" : "flex items-center justify-center w-full"}>
-          <motion.div
+          <motion.div 
             className={isCollapsed ? "w-8 h-8 flex items-center justify-center" : "w-40 h-12 flex items-center justify-center mx-auto"}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}

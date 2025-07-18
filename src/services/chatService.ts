@@ -186,16 +186,16 @@ class ChatService {
       return (data as MessageWithUser[]).map(msg => {
         const user = msg.users[0];
         return {
-          id: msg.id,
-          content: msg.content,
-          created_at: msg.created_at,
-          sender: {
-            id: msg.sender_id,
+        id: msg.id,
+        content: msg.content,
+        created_at: msg.created_at,
+        sender: {
+          id: msg.sender_id,
             name: user
               ? `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email.split('@')[0]
               : 'Unknown',
             avatar: user?.avatar_url || (user?.first_name ? user.first_name[0].toUpperCase() : (user?.email ? user.email[0].toUpperCase() : 'U')),
-          }
+        }
         };
       });
     } catch (error) {

@@ -184,7 +184,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setInitializing(true);
     setSession(session);
     setUser(session?.user ?? null);
-    
+
+    // --- SESSION EXPIRY & INVALID TOKEN HANDLING ---
+    if (event === 'SIGNED_OUT' || event === 'USER_DELETED' || !session) {
+      // If the user was previously logged in, force logout and show message
+      forceLogout('Your session has expired or is invalid. Please log in again.');
+      setInitializing(false);
+      return;
+    }
+    // --- END SESSION HANDLING ---
+
     if (session?.user) {
       if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
         const profile = await fetchUserProfile(session.user.id);
@@ -199,7 +208,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUserProfile(null);
     }
     setInitializing(false);
-  }, []);
+  }, [forceLogout]);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthStateChange);

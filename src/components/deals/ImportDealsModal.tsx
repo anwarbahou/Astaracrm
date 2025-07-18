@@ -54,7 +54,7 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
             .filter(line => line)
             .map(line => JSON.parse(line));
         } catch {
-          throw new Error('Invalid JSON format. Please check your input.');
+        throw new Error('Invalid JSON format. Please check your input.');
         }
       }
       

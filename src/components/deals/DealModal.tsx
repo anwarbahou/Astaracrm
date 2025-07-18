@@ -218,7 +218,7 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
                         <SelectItem value="loading" disabled>Loading clients...</SelectItem>
                       ) : allClients.length === 0 ? (
                         <SelectItem value="none" disabled>No clients available</SelectItem>
-                      ) : (
+                  ) : (
                         allClients.map((client) => (
                           <SelectItem key={client.id} value={client.id}>{client.name}</SelectItem>
                         ))
@@ -283,7 +283,7 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
                       <SelectItem value="Low">Low</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
+                  </div>
                 <div>
                   <Label htmlFor="tags">Tags (comma separated)</Label>
                   <Input id="tags" value={editedDeal.tags.join(', ')} onChange={e => updateField('tags', e.target.value.split(',').map(t => t.trim()))} disabled={!isEditing} />
@@ -309,9 +309,9 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
                 <div>
                   <Label htmlFor="expectedCloseDate">Expected Close Date</Label>
                   <Input id="expectedCloseDate" type="date" value={editedDeal.expectedCloseDate} onChange={e => updateField('expectedCloseDate', e.target.value)} disabled={!isEditing} />
-                </div>
-              </div>
-            </div>
+                          </div>
+                        </div>
+                      </div>
             {/* Details Section */}
             <div className="space-y-4">
               <h3 className="font-semibold text-lg">Details</h3>
@@ -325,7 +325,7 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
                   <Textarea id="notes" value={editedDeal.notes || ''} onChange={e => updateField('notes', e.target.value)} disabled={!isEditing} />
                 </div>
               </div>
-            </div>
+                  </div>
           </div>
         </ScrollArea>
       </SheetContent>

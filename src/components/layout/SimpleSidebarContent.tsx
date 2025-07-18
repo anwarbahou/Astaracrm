@@ -3,11 +3,15 @@ import { cn } from "@/lib/utils";
 import { navigationItems } from "@/data/navigationData";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
+import IconLogo from '/public/Logos/ICON.svg?react';
+import SkultixLogo from '/public/Logos/SKULTIX.svg?react';
+import { useSidebar } from '@/components/ui/sidebar/SidebarContext';
 
 export function SimpleSidebarContent() {
   const { t } = useTranslation();
   const location = useLocation();
   const { userProfile } = useAuth();
+  const { open: isSidebarOpen } = useSidebar();
 
   // Filter navigation items based on user role
   const filteredNavigationItems = navigationItems.filter(item => {
@@ -20,17 +24,11 @@ export function SimpleSidebarContent() {
       {/* Header */}
       <div className="p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">W</span>
-          </div>
-          <div>
-            <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-              WOLFHUNT
-            </h1>
-            <p className="text-xs text-gray-600 dark:text-gray-400">
-              CRM Platform
-            </p>
-          </div>
+          {isSidebarOpen ? (
+            <SkultixLogo className="h-8" />
+          ) : (
+            <IconLogo className="h-8" />
+          )}
         </div>
       </div>
 

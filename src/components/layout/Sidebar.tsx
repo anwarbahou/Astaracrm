@@ -37,45 +37,29 @@ export const Sidebar = React.memo(function Sidebar({ isCollapsed, onToggle }: Si
   // Animated sidebar content with framer-motion
   const AnimatedSidebarContent = () => (
     <motion.div 
-      className="h-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+      className="h-full bg-gray-900 text-white"
       animate={isCollapsed ? "collapsed" : "expanded"}
       variants={sidebarVariants}
       layout // Enable layout animations
     >
       {/* Header */}
       <motion.div 
-        className="p-4 border-b border-gray-200 dark:border-gray-700"
+        className="p-4 border-b border-gray-800"
         layout // Enable layout animation for header
       >
-        <div className="flex items-center gap-3">
-          {/* Logo icon - always visible */}
-          <motion.div 
-            className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0"
+        <div className={isCollapsed ? "flex items-center justify-center" : "flex items-center justify-center w-full"}>
+          <motion.div
+            className={isCollapsed ? "w-8 h-8 flex items-center justify-center" : "w-40 h-12 flex items-center justify-center mx-auto"}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            layout // Enable layout animation for logo
+            layout
           >
-            <span className="text-white font-bold text-sm">W</span>
+            <img
+              src={isCollapsed ? "/Logos/ICON.svg" : "/Logos/SKULTIX.svg"}
+              alt="Logo"
+              className={isCollapsed ? "w-8 h-8 object-contain" : "w-40 h-12 object-contain"}
+            />
           </motion.div>
-          {/* Logo text - only visible when expanded */}
-          <AnimatePresence mode="wait">
-            {!isCollapsed && (
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                transition={{ duration: 0.3, delay: 0.1 }}
-                layout // Enable layout animation for logo text
-              >
-                <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  WOLFHUNT
-                </h1>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
-                  CRM Platform
-                </p>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
       </motion.div>
       {/* Loading/Error State */}
@@ -83,19 +67,19 @@ export const Sidebar = React.memo(function Sidebar({ isCollapsed, onToggle }: Si
         <div className="flex flex-col items-center justify-center h-full p-4">
           {authLoading && (
             <div className="flex flex-col items-center gap-2">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-              <span className="text-muted-foreground text-sm">Loading user...</span>
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+              <span className="text-gray-300 text-sm">Loading user...</span>
             </div>
           )}
           {authError && (
             <div className="flex flex-col items-center gap-2">
-              <span className="text-destructive text-sm">{authError}</span>
+              <span className="text-red-400 text-sm">{authError}</span>
             </div>
           )}
         </div>
       ) : (
         <motion.nav 
-          className="flex-1 p-2 overflow-y-auto bg-white dark:bg-gray-900 scrollbar-thin"
+          className="flex-1 p-2 overflow-y-auto bg-gray-900 scrollbar-thin"
           variants={containerVariants}
           animate="animate"
           layout // Enable layout animation for nav
@@ -118,8 +102,8 @@ export const Sidebar = React.memo(function Sidebar({ isCollapsed, onToggle }: Si
                     className={cn(
                       "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 relative group text-sm w-full",
                       isActive 
-                        ? "bg-blue-600 text-white font-medium" 
-                        : "text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800",
+                        ? "bg-gray-800 text-white font-medium" 
+                        : "text-white hover:text-white hover:bg-gray-800",
                       (authLoading || authError) && "pointer-events-none opacity-60"
                     )}
                     title={isCollapsed ? t(`app.sidebar.${item.labelKey}`) : undefined}
@@ -131,7 +115,7 @@ export const Sidebar = React.memo(function Sidebar({ isCollapsed, onToggle }: Si
                       {isActive && (
                         <motion.div
                           className={cn(
-                            "absolute top-1/2 w-1 h-6 bg-blue-600 rounded-full left-0",
+                            "absolute top-1/2 w-1 h-6 bg-white rounded-full left-0",
                             "transform -translate-y-1/2"
                           )}
                           initial={{ opacity: 0, scaleY: 0 }}
@@ -145,7 +129,7 @@ export const Sidebar = React.memo(function Sidebar({ isCollapsed, onToggle }: Si
                     {/* Icon */}
                     <div className={cn(
                       "flex-shrink-0 transition-colors duration-200",
-                      isActive ? "text-white" : "text-gray-800 dark:text-gray-200"
+                      isActive ? "text-white" : "text-white"
                     )}>
                       <Icon size={18} />
                     </div>
@@ -155,7 +139,7 @@ export const Sidebar = React.memo(function Sidebar({ isCollapsed, onToggle }: Si
                         <motion.span
                           className={cn(
                             "font-medium truncate min-w-0 flex items-center gap-2",
-                            isActive ? "text-white" : "text-gray-800 dark:text-gray-200"
+                            isActive ? "text-white" : "text-white"
                           )}
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
@@ -165,7 +149,7 @@ export const Sidebar = React.memo(function Sidebar({ isCollapsed, onToggle }: Si
                         >
                           {t(`app.sidebar.${item.labelKey}`)}
                           {item.id === 'ai-leads' && (
-                            <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded">
+                            <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-gray-700 text-white rounded">
                               {t('app.sidebar.soon')}
                             </span>
                           )}
@@ -181,7 +165,7 @@ export const Sidebar = React.memo(function Sidebar({ isCollapsed, onToggle }: Si
           <AnimatePresence>
             {!isCollapsed && (
               <motion.div 
-                className="mt-4 p-2 text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700"
+                className="mt-4 p-2 text-xs text-gray-400 border-t border-gray-800"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}

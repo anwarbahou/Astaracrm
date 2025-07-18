@@ -31,8 +31,6 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  console.log('ImportDealsModal - userProfile:', userProfile);
-
   const validateAndParseDeals = (jsonData: string) => {
     try {
       setError(null);
@@ -72,10 +70,6 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
         ? `${userProfile.first_name} ${userProfile.last_name}`
         : userProfile.email?.split('@')[0] || 'Unknown';
 
-      console.log(`Importing deals with owner: ${ownerName} ID: ${userProfile.id}`);
-      console.log(`Number of deals to import: ${parsedDeals.length}`);
-      console.log('Raw deals data:', parsedDeals);
-
       return parsedDeals.map((deal: any) => {
         // Parse and validate value
         let dealValue = deal.value;
@@ -88,19 +82,8 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
           dealValue = parseFloat(dealValue);
         }
 
-        console.log('Deal value parsing:', {
-          original: deal.value,
-          parsed: dealValue,
-          name: deal.name
-        });
-
         // Allow 0 as a valid value for prospect deals
         if (isNaN(dealValue) || dealValue < 0) {
-          console.log('Invalid value for deal:', {
-            dealName: deal.name,
-            originalValue: deal.value,
-            parsedValue: dealValue
-          });
           throw new Error(`Deal "${deal.name}" has an invalid value (${deal.value}). Please provide a non-negative number.`);
         }
 
@@ -152,7 +135,6 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
         };
       });
     } catch (error) {
-      console.log('Deal validation error:', error);
       throw error;
     }
   };
@@ -160,7 +142,6 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
   const handleImport = () => {
     try {
       const parsedDeals = validateAndParseDeals(jsonInput);
-      console.log('Importing deals:', parsedDeals);
       onImport(parsedDeals);
       onOpenChange(false);
       setJsonInput('');
@@ -171,7 +152,6 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
         description: `${parsedDeals.length} deals imported successfully`,
       });
     } catch (err) {
-      console.error('Import error:', err);
       setError(err instanceof Error ? err.message : 'Invalid JSON format');
     }
   };
@@ -187,17 +167,14 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
     reader.onload = (e) => {
       try {
         const content = e.target?.result as string;
-        console.log('File content:', content); // Log the raw file content
         validateAndParseDeals(content); // Validate but don't import yet
         setJsonInput(content);
         setError(null);
       } catch (err) {
-        console.error('File parsing error:', err);
         setError(err instanceof Error ? err.message : 'Invalid JSON format');
       }
     };
     reader.onerror = () => {
-      console.error('FileReader error:', reader.error);
       setError('Error reading file');
     };
     reader.readAsText(file);

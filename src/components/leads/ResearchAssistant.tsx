@@ -254,7 +254,7 @@ export function ResearchAssistant() {
   };
 
   const handleExport = () => {
-    console.log("Exporting leads to CRM:", currentLeads);
+    
   };
 
   // Pagination logic

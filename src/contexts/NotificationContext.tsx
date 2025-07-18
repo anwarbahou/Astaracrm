@@ -65,7 +65,6 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
         if (playPromise !== undefined) {
           playPromise
             .then(() => {
-              console.log('🔊 Notification sound played successfully');
             })
             .catch((error) => {
               console.warn('⚠️ Could not play notification sound:', error);
@@ -223,7 +222,6 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
           filter: `target_user_id=eq.${user.id}`,
         },
         (payload) => {
-          console.log('New notification received:', payload);
           const newNotification = payload.new as NotificationData;
           
           setNotifications(prev => [newNotification, ...prev]);
@@ -242,7 +240,6 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
           filter: `target_user_id=eq.${user.id}`,
         },
         (payload) => {
-          console.log('Notification updated:', payload);
           const updatedNotification = payload.new as NotificationData;
           
           setNotifications(prev => 
@@ -275,7 +272,6 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
           filter: `target_user_id=eq.${user.id}`,
         },
         (payload) => {
-          console.log('Notification deleted:', payload);
           const deletedNotification = payload.old as NotificationData;
           
           setNotifications(prev => 

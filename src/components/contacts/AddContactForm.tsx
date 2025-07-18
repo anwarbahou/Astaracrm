@@ -112,9 +112,7 @@ export const AddContactForm = forwardRef<HTMLFormElement, AddContactFormProps>((
       });
 
       if (!result.success) {
-        console.log('Duplicate contact result:', result);
         const translatedMessage = t('addContactModal.emailAlreadyExists');
-        console.log('Translation being used:', translatedMessage);
         toast({
           title: t('addContactModal.error'),
           description: translatedMessage,

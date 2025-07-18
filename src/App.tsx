@@ -36,6 +36,12 @@ const Workflows = lazy(() => import("./pages/Workflows"));
 const ActivityLogs = lazy(() => import("./pages/ActivityLogs"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Messaging = lazy(() => import("./pages/Messaging"));
+import Services from "./pages/Services";
+import Projects from "./pages/Projects";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import Careers from "./pages/Careers";
+import Blogs from "./pages/Blogs";
 
 // Keep login pages and landing page as regular imports since they're needed immediately
 import LoginPage from "./pages/LoginPage";
@@ -43,6 +49,7 @@ import SIgnupPage from "./pages/SIgnupPage";
 import LandingPage from "./pages/LandingPage";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { AdminOnlyRoute, AdminManagerRoute } from "@/components/RoleBasedRoute";
+import { Navbar } from "@/components/Landing/Navbar";
 
 // Enhanced loading component
 const PageLoader = () => (
@@ -59,6 +66,16 @@ const LazyWrapper = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<PageLoader />}>
     {children}
   </Suspense>
+);
+
+// Add a simple layout for the new pages
+const SimplePageLayout = ({ children }: { children: React.ReactNode }) => (
+  <div className="min-h-screen w-full bg-background">
+    <Navbar />
+    <div className="flex items-center justify-center min-h-[calc(100vh-80px)]">
+      {children}
+    </div>
+  </div>
 );
 
 const queryClient = new QueryClient({
@@ -85,6 +102,12 @@ function AnimatedRoutes() {
       >
         <Routes location={location}>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/services" element={<SimplePageLayout><Services /></SimplePageLayout>} />
+          <Route path="/projects" element={<SimplePageLayout><Projects /></SimplePageLayout>} />
+          <Route path="/about" element={<SimplePageLayout><About /></SimplePageLayout>} />
+          <Route path="/contact" element={<SimplePageLayout><Contact /></SimplePageLayout>} />
+          <Route path="/careers" element={<SimplePageLayout><Careers /></SimplePageLayout>} />
+          <Route path="/blogs" element={<SimplePageLayout><Blogs /></SimplePageLayout>} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SIgnupPage />} />
           <Route path="/dashboard">
@@ -177,8 +200,8 @@ const App = () => {
     ? isRtl ? "mr-0 md:mr-16" : "ml-0 md:ml-16"
     : isRtl ? "mr-0 md:mr-64" : "ml-0 md:ml-64";
 
-  // Hide sidebar and topnav on /login, /signup, and landing page
-  const hideLayout = location.pathname === "/login" || location.pathname === "/signup" || location.pathname === "/";
+  // Hide sidebar and topnav on /login, /signup, landing, and new simple pages
+  const hideLayout = ["/login","/signup","/","/services","/projects","/about","/contact","/careers","/blogs"].includes(location.pathname);
 
   return (
     <QueryClientProvider client={queryClient}>

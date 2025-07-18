@@ -31,8 +31,6 @@ export function ImportClientsModal({ open, onOpenChange, onImport }: ImportClien
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  console.log('ImportClientsModal - userProfile:', userProfile);
-
   const validateAndParseClients = (jsonData: string) => {
     try {
       setError(null);
@@ -53,8 +51,6 @@ export function ImportClientsModal({ open, onOpenChange, onImport }: ImportClien
       const ownerName = userProfile?.first_name && userProfile?.last_name 
         ? `${userProfile.first_name} ${userProfile.last_name}`
         : userProfile?.first_name || userProfile?.email || 'Unknown Owner';
-
-      console.log('Using ownerId:', userProfile.id, 'ownerName:', ownerName);
 
       // Validate each client has required fields and transform data
       const requiredFields = ['name']; // Client name is the primary required field

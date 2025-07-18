@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
-import { AnimatedSection } from './AnimatedSection';
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -11,12 +10,7 @@ export const Navbar = () => {
   };
 
   return (
-    <AnimatedSection 
-      variant="slideDown"
-      className="fixed top-0 left-0 right-0 z-50 p-4 sm:p-6"
-      threshold={0}
-      delay={200}
-    >
+    <div className="fixed top-0 left-0 right-0 z-50 p-4 sm:p-6 bg-transparent">
       <nav 
         role="navigation"
         aria-label="Main navigation"
@@ -25,38 +19,22 @@ export const Navbar = () => {
           {/* Logo */}
           <Link 
             to="/" 
-            className="text-white font-bold text-xl sm:text-2xl focus:outline-none focus:ring-2 focus:ring-white/50 rounded-md p-1"
+            className="flex items-center gap-1 text-white font-bold text-xl sm:text-2xl focus:outline-none focus:ring-2 focus:ring-white/50 rounded-md p-1"
             aria-label="AstaraCRM Home"
           >
-            AstaraCRM
+            <img src="/Logos/ICON.svg" alt="AstaraCRM Icon" className="h-5 w-auto object-contain mr-2" />
+            <img src="/Logos/SKULTIX.svg" alt="AstaraCRM Logo" className="h-5 w-auto max-w-xs object-contain" />
           </Link>
 
           {/* Desktop Navigation Links */}
           <div className="hidden md:flex items-center space-x-6 lg:space-x-8">
-            <a 
-              href="#features" 
-              className="text-white/80 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 rounded px-2 py-1"
-            >
-              Features
-            </a>
-            <a 
-              href="#pricing" 
-              className="text-white/80 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 rounded px-2 py-1"
-            >
-              Pricing
-            </a>
-            <a 
-              href="#about" 
-              className="text-white/80 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 rounded px-2 py-1"
-            >
-              About
-            </a>
-            <a 
-              href="#contact" 
-              className="text-white/80 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 rounded px-2 py-1"
-            >
-              Contact
-            </a>
+            <Link to="/" className="text-white/80 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 rounded px-2 py-1">Home</Link>
+            <Link to="/services" className="text-white/80 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 rounded px-2 py-1">Services</Link>
+            <Link to="/projects" className="text-white/80 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 rounded px-2 py-1">Projects</Link>
+            <Link to="/about" className="text-white/80 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 rounded px-2 py-1">About Us</Link>
+            <Link to="/contact" className="text-white/80 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 rounded px-2 py-1">Contact Us</Link>
+            <Link to="/careers" className="text-white/80 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 rounded px-2 py-1">Careers</Link>
+            <Link to="/blogs" className="text-white/80 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 rounded px-2 py-1">Blogs</Link>
           </div>
 
           {/* Auth Buttons - Desktop */}
@@ -158,6 +136,6 @@ export const Navbar = () => {
           </div>
         )}
       </nav>
-    </AnimatedSection>
+    </div>
   );
 };

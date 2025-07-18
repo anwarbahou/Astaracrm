@@ -31,8 +31,6 @@ export function ImportContactsModal({ open, onOpenChange, onImport }: ImportCont
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  console.log('ImportContactsModal - userProfile:', userProfile);
-
   const validateAndParseContacts = (jsonData: string) => {
     try {
       setError(null);
@@ -53,8 +51,6 @@ export function ImportContactsModal({ open, onOpenChange, onImport }: ImportCont
       const ownerName = userProfile?.first_name && userProfile?.last_name 
         ? `${userProfile.first_name} ${userProfile.last_name}`
         : userProfile?.first_name || userProfile?.email || 'Unknown Owner';
-
-      console.log('Using ownerId:', userProfile.id, 'ownerName:', ownerName);
 
       // Validate each contact has required fields and transform data
       const requiredFields = ['firstName', 'lastName', 'email'];

@@ -151,7 +151,6 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({ searchQuery = 
   };
 
   const handleDeleteUser = async (userId: string) => {
-    console.log('[DeleteUser] Attempting to delete user:', userId);
     setDeletingUserId(userId);
     try {
       // Get the current user's access token (if needed for auth)
@@ -367,7 +366,6 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({ searchQuery = 
           table: 'users',
         },
         (payload: any) => {
-          console.log('Users table changed:', payload);
           
           const processUserData = (data: any): UserProfile => ({
             id: data.id,

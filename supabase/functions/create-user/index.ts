@@ -45,8 +45,6 @@ serve(async (req: Request): Promise<Response> => {
       );
     }
 
-    // Debug log the received payload and userMeta
-    console.log('Received payload:', body);
     // Create user in Supabase Auth
     const userMeta: any = {
       first_name: firstName,
@@ -54,7 +52,6 @@ serve(async (req: Request): Promise<Response> => {
       avatar_url: avatarUrl,
     };
     if (lastName) userMeta.last_name = lastName;
-    console.log('Constructed userMeta:', userMeta);
 
     const { data, error } = await supabaseAdmin.auth.admin.createUser({
       email,

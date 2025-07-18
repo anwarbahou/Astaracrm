@@ -8,12 +8,6 @@ export default defineConfig(({ mode }) => {
   // Allow both NEXT_PUBLIC_ and VITE_ prefixes
   const env = loadEnv(mode, process.cwd(), ['VITE_', 'NEXT_PUBLIC_']);
   
-  // Debug: Log what we're loading from .env
-  console.log('=== SUPABASE CLIENT DEBUG ===');
-  console.log('VITE_SUPABASE_URL:', env.NEXT_PUBLIC_SUPABASE_URL);
-  console.log('VITE_SUPABASE_ANON_KEY:', env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'SET' : 'NOT SET');
-  console.log('================================');
-  
   return {
     server: {
       host: "0.0.0.0",

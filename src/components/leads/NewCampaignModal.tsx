@@ -33,12 +33,10 @@ export function NewCampaignModal() {
   });
 
   const handleLaunch = () => {
-    console.log("Launching campaign:", campaign);
     setIsOpen(false);
   };
 
   const handleSaveDraft = () => {
-    console.log("Saving campaign draft:", campaign);
     setIsOpen(false);
   };
 

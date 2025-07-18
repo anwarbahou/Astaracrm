@@ -284,7 +284,7 @@ function AILeads() {
   };
 
   const handleBulkExport = () => {
-    console.log("Exporting selected leads:", selectedLeads);
+    setSelectedLeads(selectedLeads);
   };
 
   return (

@@ -146,7 +146,6 @@ export const EditTaskModal: React.FC<EditTaskModalProps> = ({ isOpen, onClose, t
         related_entity_id: finalRelatedEntityId,
         assigned_to: finalAssignedTo,
       };
-      console.log("EditTaskModal - Payload for updateTask:", JSON.stringify(payload, null, 2));
 
       await updateTask(payload);
 

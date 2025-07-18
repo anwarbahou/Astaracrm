@@ -124,7 +124,6 @@ export const leadsService = {
 
   async deleteLeads(leadIds: string[]): Promise<void> {
     await new Promise(resolve => setTimeout(resolve, 500));
-    console.log(`Mock: Deleted leads ${leadIds.join(', ')}`);
   },
 
   async createCampaign(campaignData: any): Promise<{ id: string; leadCount: number }> {

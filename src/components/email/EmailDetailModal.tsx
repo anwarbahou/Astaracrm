@@ -68,7 +68,6 @@ export function EmailDetailModal({
 
   const handleQuickReply = () => {
     // Handle quick reply
-    console.log('Sending reply:', replyText);
     setReplyText("");
     setShowReply(false);
   };

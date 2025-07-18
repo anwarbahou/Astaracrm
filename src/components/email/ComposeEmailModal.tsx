@@ -104,13 +104,11 @@ export function ComposeEmailModal({ open, onOpenChange }: ComposeEmailModalProps
 
   const handleSend = () => {
     // Handle send logic
-    console.log('Sending email:', { to, cc, bcc, subject, body, attachments });
     onOpenChange(false);
   };
 
   const handleSaveDraft = () => {
     // Handle save draft logic
-    console.log('Saving draft:', { to, cc, bcc, subject, body, attachments });
     onOpenChange(false);
   };
 

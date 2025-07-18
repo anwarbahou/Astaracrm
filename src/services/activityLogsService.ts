@@ -32,7 +32,6 @@ class ActivityLogsService {
     const { userId, userRole } = options;
     
     try {
-      console.log('🔍 Fetching activity logs from notifications table...');
       
       // Query notifications table directly
       let query = supabase
@@ -73,7 +72,6 @@ class ActivityLogsService {
         usersMap.set(user.id, user);
       });
 
-      console.log(`✅ Successfully fetched ${(notificationsData || []).length} notifications for activity logs`);
       
       // Convert notifications to activity logs format
       const activityLogs: ActivityLog[] = (notificationsData || []).map((notification: any) => {
@@ -101,7 +99,7 @@ class ActivityLogsService {
         };
       });
 
-      console.log(`📊 Converted ${activityLogs.length} notifications to activity logs`);
+      
       return activityLogs;
       
     } catch (error) {

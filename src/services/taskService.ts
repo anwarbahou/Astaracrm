@@ -314,8 +314,6 @@ class TaskService {
 
       // Store the deleted task data in case we need to implement undo functionality
       const deletedTask = task;
-      console.log('Task deleted successfully, stored for potential undo:', deletedTask);
-
     } catch (error) {
       if (error instanceof TaskServiceError) throw error;
       throw new TaskServiceError(

@@ -281,6 +281,20 @@ function Deals() {
     }
   };
 
+  const handleDeleteAllDeals = async () => {
+    if (isUsingMockData) {
+      setLocalMockDeals([]);
+    } else {
+      // Delete all deals in the backend
+      await deleteDealsSilent(deals.map(deal => deal.id));
+    }
+    toast({
+      title: t('deals.toasts.bulkDeleted.title'),
+      description: t('deals.toasts.bulkDeleted.description', { count: deals.length }),
+    });
+    setSelectedDeals([]);
+  };
+
   // Get unique owners and tags from deals
   const availableOwners = Array.from(new Set(deals.map(d => d.owner)));
   const allTags = Array.from(new Set(deals.flatMap(deal => deal.tags || [])));

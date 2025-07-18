@@ -46,12 +46,21 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
       try {
         parsedDeals = JSON.parse(jsonData);
       } catch (e) {
-        throw new Error('Invalid JSON format. Please check your input.');
+        // Try to parse as multiple JSON objects separated by newlines
+        try {
+          parsedDeals = jsonData
+            .split('\n')
+            .map(line => line.trim())
+            .filter(line => line)
+            .map(line => JSON.parse(line));
+        } catch {
+          throw new Error('Invalid JSON format. Please check your input.');
+        }
       }
       
       // Validate the JSON structure
       if (!Array.isArray(parsedDeals)) {
-        throw new Error('JSON must be an array of deals');
+        throw new Error('JSON must be an array of deals or multiple JSON objects separated by newlines');
       }
 
       if (parsedDeals.length === 0) {
@@ -70,6 +79,9 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
       return parsedDeals.map((deal: any) => {
         // Parse and validate value
         let dealValue = deal.value;
+        if (dealValue === undefined || dealValue === null) {
+          dealValue = 0; // Default to 0 if missing
+        }
         if (typeof dealValue === 'string') {
           // Remove currency symbols, commas, and spaces
           dealValue = dealValue.replace(/[^0-9.-]/g, '');

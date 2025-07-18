@@ -69,7 +69,17 @@ class ChatService {
           id,
           name,
           is_private,
-          created_by
+          created_by,
+          channel_members:user_id (
+            user_id,
+            users (
+              id,
+              first_name,
+              last_name,
+              avatar_url,
+              email
+            )
+          )
         `)
         .eq('is_private', false);
 
@@ -82,7 +92,17 @@ class ChatService {
           id,
           name,
           is_private,
-          created_by
+          created_by,
+          channel_members:user_id (
+            user_id,
+            users (
+              id,
+              first_name,
+              last_name,
+              avatar_url,
+              email
+            )
+          )
         `)
         .eq('is_private', true)
         .in(
@@ -103,11 +123,14 @@ class ChatService {
         name: channel.name,
         is_private: channel.is_private,
         created_by: channel.created_by,
-        members: [{
-          id: userId,
-          name: 'User', // Will be enhanced with user details
-          avatar: 'U'
-        }]
+        members: (channel.channel_members || []).map((member: any) => {
+          const user = member.users;
+          return {
+            id: user.id,
+            name: `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email.split('@')[0],
+            avatar: user.avatar_url || (user.first_name ? user.first_name[0].toUpperCase() : (user.email ? user.email[0].toUpperCase() : 'U')),
+          };
+        })
       }));
     } catch (error: any) {
       console.error('Error fetching channels:', error);
@@ -144,6 +167,9 @@ class ChatService {
           sender_id,
           users:sender_id (
             id,
+            first_name,
+            last_name,
+            avatar_url,
             email
           )
         `)
@@ -157,16 +183,21 @@ class ChatService {
 
       if (!data) return [];
 
-      return (data as MessageWithUser[]).map(msg => ({
-        id: msg.id,
-        content: msg.content,
-        created_at: msg.created_at,
-        sender: {
-          id: msg.sender_id,
-          name: msg.users[0]?.email.split('@')[0] || 'Unknown',
-          avatar: msg.users[0]?.email[0].toUpperCase() || 'U'
-        }
-      }));
+      return (data as MessageWithUser[]).map(msg => {
+        const user = msg.users[0];
+        return {
+          id: msg.id,
+          content: msg.content,
+          created_at: msg.created_at,
+          sender: {
+            id: msg.sender_id,
+            name: user
+              ? `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.email.split('@')[0]
+              : 'Unknown',
+            avatar: user?.avatar_url || (user?.first_name ? user.first_name[0].toUpperCase() : (user?.email ? user.email[0].toUpperCase() : 'U')),
+          }
+        };
+      });
     } catch (error) {
       console.error('Error fetching messages:', error);
       return [];

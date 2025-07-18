@@ -119,9 +119,15 @@ export function DealCard({
                   }}>
                     Edit Deal
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => onDelete?.(deal)} className="text-red-500">
+                  {/* Remove the Delete Deal menu item */}
+                  {/*
+                  <DropdownMenuItem onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete?.(deal);
+                  }} className="text-red-500">
                     Delete Deal
                   </DropdownMenuItem>
+                  */}
                   <DropdownMenuSeparator />
                 </>
               )}

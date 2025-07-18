@@ -141,14 +141,19 @@ export const TaskCard: React.FC<{ task: Task }> = ({ task }) => {
             {task.task_identifier || `LKP-${task.id.substring(0, 4).toUpperCase()}`}
           </Badge>
 
-          {/* Assignee Avatar */}
+          {/* Assignee Avatar and Name */}
           {task.user && (
-            <Avatar className="h-6 w-6">
-              <AvatarImage src={task.user.avatar_url || undefined} />
-              <AvatarFallback>
-                {task.user.first_name?.[0] || task.user.email[0].toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
+            <div className="flex items-center gap-2">
+              <Avatar className="h-6 w-6">
+                <AvatarImage src={task.user.avatar_url || undefined} />
+                <AvatarFallback>
+                  {task.user.first_name?.[0] || task.user.email[0].toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <span className="text-xs font-medium">
+                {task.user.first_name} {task.user.last_name}
+              </span>
+            </div>
           )}
         </div>
       </div>

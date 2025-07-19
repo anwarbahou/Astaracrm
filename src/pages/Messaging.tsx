@@ -12,6 +12,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/components/ui/use-toast";
 import { Database } from "@/types/supabase";
+import { chatService } from "@/services/chatService";
+import { UnreadIndicator } from "@/components/ui/unread-indicator";
 
 type MessageWithUser = {
   id: string;
@@ -60,6 +62,7 @@ type Channel = {
     name: string;
     avatar: string;
   }>;
+  unreadCount?: number;
 };
 
 // Helper to get display name from user object
@@ -73,6 +76,12 @@ function getUserDisplayName(user) {
   } else {
     return 'User';
   }
+}
+
+// Helper to generate consistent DM channel names
+function generateDMChannelName(userId1: string, userId2: string): string {
+  const ids = [userId1, userId2].sort();
+  return `dm-${ids[0]}-${ids[1]}`;
 }
 
 function getUserInitials(user) {
@@ -111,6 +120,7 @@ export default function Messaging() {
   const [addUserId, setAddUserId] = useState<string | undefined>(undefined);
   const [addUserLoading, setAddUserLoading] = useState(false);
   const [channelDialogOpen, setChannelDialogOpen] = useState(false);
+  const [totalUnreadCount, setTotalUnreadCount] = useState(0);
 
   // Helper to set the ref to the Viewport
   const setScrollViewportRef = useCallback((node: HTMLDivElement | null) => {
@@ -134,14 +144,9 @@ export default function Messaging() {
   useEffect(() => {
     const fetchChannels = async () => {
       try {
-        // First check if tables exist by trying a simple query
-        const { data: tableCheck, error: tableError } = await supabase
-          .from('channels')
-          .select('id')
-          .limit(1);
-
-        if (tableError && tableError.code === 'PGRST200') {
-          // Tables don't exist yet, show setup message
+        // Check if tables exist
+        const tablesExist = await chatService.checkTablesExist();
+        if (!tablesExist) {
           console.log('Chat tables not found. Please run the migration first.');
           toast({
             title: "Setup Required",
@@ -152,85 +157,21 @@ export default function Messaging() {
           return;
         }
 
-        // First fetch public channels (simplified query to avoid RLS recursion)
-        const { data: publicChannels, error: publicError } = await supabase
-          .from('channels')
-          .select(`
-            id,
-            name,
-            is_private,
-            created_by
-          `)
-          .eq('is_private', false);
-
-        if (publicError) throw publicError;
-
-        // Then fetch private channels the user is a member of
-        const { data: privateChannels, error: privateError } = await supabase
-          .from('channels')
-          .select(`
-            id,
-            name,
-            is_private,
-            created_by
-          `)
-          .eq('is_private', true)
-          .in(
-            'id',
-            await supabase
-              .from('channel_members')
-              .select('channel_id')
-              .eq('user_id', user?.id)
-              .then(result => result.data?.map(row => row.channel_id) || [])
-          );
-
-        if (privateError) throw privateError;
-
-        // For now, we'll use placeholder user details since we can't access admin API
-        // In a real implementation, you'd need to create a separate users table or use RPC
-        const userDetailsMap = new Map<string, { id: string; email: string }>();
-        
-        // Add current user to the map
-        if (user) {
-          userDetailsMap.set(user.id, {
-            id: user.id,
-            email: user.email || 'unknown@example.com'
-          });
-        }
-
-        const allChannels = [...(publicChannels || []), ...(privateChannels || [])];
-        
-        const formattedChannels: Channel[] = allChannels.map(channel => ({
-          id: channel.id,
-          name: channel.name,
-          is_private: channel.is_private,
-          created_by: channel.created_by,
-          members: [{
-            id: user?.id || 'unknown',
-            name: user?.email?.split('@')[0] || 'User',
-            avatar: user?.email?.[0].toUpperCase() || 'U'
-          }]
-        }));
-
-        setChannels(formattedChannels);
+        // Fetch channels with unread counts using chatService
+        const channelsWithUnread = await chatService.fetchChannels(user?.id || '');
+        setChannels(channelsWithUnread);
         setTablesExist(true);
-      } catch (error: any) {
+
+        // Calculate total unread count
+        const totalUnread = channelsWithUnread.reduce((sum, channel) => sum + (channel.unreadCount || 0), 0);
+        setTotalUnreadCount(totalUnread);
+      } catch (error) {
         console.error('Error fetching channels:', error);
-        
-        // Check for infinite recursion error
-        if (error?.message?.includes('infinite recursion detected in policy')) {
-          toast({
-            title: "Database Policy Error",
-            description: "Chat system needs database policy fix. Please contact administrator.",
-            variant: "destructive"
-          });
-        } else {
-          toast({
-            title: "Error",
-            description: "Failed to fetch channels",
-            variant: "destructive"
-          });
-        }
+        toast({
+          title: "Error",
+          description: "Failed to fetch channels",
+          variant: "destructive"
+        });
       }
     };
 
@@ -238,6 +179,44 @@ export default function Messaging() {
       fetchChannels();
     }
   }, [user]);
+
+  // Subscribe to unread message changes and update channel unread counts
+  useEffect(() => {
+    if (!user) return;
+
+    const subscription = chatService.subscribeToUnreadChanges(user.id, async (totalUnread) => {
+      setTotalUnreadCount(totalUnread);
+      
+      // Update individual channel unread counts
+      const updatedUnreadCounts = await chatService.fetchUnreadCounts(user.id, channels.map(c => c.id));
+      setChannels(prev => prev.map(channel => ({
+        ...channel,
+        unreadCount: updatedUnreadCounts.find(uc => uc.channel_id === channel.id)?.count || 0
+      })));
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [user, channels]);
+
+  // Mark selected channel as read when it changes
+  useEffect(() => {
+    if (!selectedChannel || !user) return;
+    
+    const markAsRead = async () => {
+      if (selectedChannel.unreadCount && selectedChannel.unreadCount > 0) {
+        await chatService.markChannelAsRead(user.id, selectedChannel.id);
+        // Update local state immediately
+        setChannels(prev => prev.map(ch => 
+          ch.id === selectedChannel.id ? { ...ch, unreadCount: 0 } : ch
+        ));
+        setTotalUnreadCount(prev => prev - (selectedChannel.unreadCount || 0));
+      }
+    };
+
+    markAsRead();
+  }, [selectedChannel, user]);
 
   // Fetch messages with pagination
   const fetchMessages = async (channelId: string, before?: string) => {
@@ -265,6 +244,20 @@ export default function Messaging() {
     if (!selectedChannel) return;
     setMessages([]);
     setHasMoreMessages(true);
+    
+    // Mark channel as read when selected
+    if (user && selectedChannel.unreadCount && selectedChannel.unreadCount > 0) {
+      chatService.markChannelAsRead(user.id, selectedChannel.id);
+      // Update local state to remove unread count
+      setChannels(prev => prev.map(ch => 
+        ch.id === selectedChannel.id 
+          ? { ...ch, unreadCount: 0 }
+          : ch
+      ));
+      // Update total unread count
+      setTotalUnreadCount(prev => prev - (selectedChannel.unreadCount || 0));
+    }
+    
     (async () => {
       const data = await fetchMessages(selectedChannel.id);
       if (data.length < PAGE_SIZE) setHasMoreMessages(false);
@@ -285,7 +278,7 @@ export default function Messaging() {
       });
       setMessages(mapped);
     })();
-  }, [selectedChannel, users]);
+  }, [selectedChannel, users, user]);
 
   // Load more messages on scroll top
   const handleScroll = async (e: React.UIEvent<HTMLDivElement>) => {
@@ -316,11 +309,28 @@ export default function Messaging() {
   const createChannel = async () => {
     if (!newChannelName.trim() || !user) return;
 
+    const channelName = newChannelName.toLowerCase().replace(/\s+/g, '-');
+    
+    // Check if channel already exists
+    const { data: existingChannels } = await supabase
+      .from('channels')
+      .select('id, name')
+      .eq('name', channelName);
+
+    if (existingChannels && existingChannels.length > 0) {
+      toast({ 
+        title: "Error", 
+        description: "A channel with this name already exists", 
+        variant: "destructive" 
+      });
+      return;
+    }
+
     // Optimistically add to UI
     const optimisticId = `optimistic-${Date.now()}`;
     const optimisticChannel = {
       id: optimisticId,
-      name: newChannelName.toLowerCase().replace(/\s+/g, '-'),
+      name: channelName,
       is_private: false,
       created_by: user.id,
       members: [{
@@ -339,14 +349,25 @@ export default function Messaging() {
       const { data: channelData, error: channelError } = await supabase
         .from('channels')
         .insert({
-          name: optimisticChannel.name,
+          name: channelName,
           created_by: user.id,
           is_private: false
         })
         .select()
         .single();
 
-      if (channelError) throw channelError;
+      if (channelError) {
+        if (channelError.code === '23505') {
+          toast({ 
+            title: "Error", 
+            description: "A channel with this name already exists", 
+            variant: "destructive" 
+          });
+        } else {
+          throw channelError;
+        }
+        return;
+      }
 
       // Insert member
       const { error: memberError } = await supabase
@@ -367,6 +388,7 @@ export default function Messaging() {
       );
       toast({ title: "Success", description: "Channel created successfully" });
     } catch (error) {
+      console.error('Error creating channel:', error);
       // Remove optimistic channel
       setChannels(prev => prev.filter(ch => ch.id !== optimisticId));
       toast({ title: "Error", description: "Failed to create channel", variant: "destructive" });
@@ -417,29 +439,81 @@ export default function Messaging() {
     if (!selectedChannel && pendingDMUser) {
       setLoading(true);
       try {
-        // Normalize channel name for this DM
-        const ids = [user.id, pendingDMUser.id].sort();
-        const channelName = `dm-${ids[0]}-${ids[1]}`;
-        // Create the channel
-        const { data: newChannelData, error: channelError } = await supabase
+        // Generate consistent channel name for this DM
+        const channelName = generateDMChannelName(user.id, pendingDMUser.id);
+        
+        // First, try to find an existing channel with this name
+        const { data: existingChannels, error: findError } = await supabase
           .from('channels')
-          .insert({
-            name: channelName,
-            is_private: true,
-            created_by: user.id
-          })
-          .select()
-          .single();
-        if (channelError) throw channelError;
-        // Add both users as members
-        await supabase.from('channel_members').insert([
-          { channel_id: newChannelData.id, user_id: user.id },
-          { channel_id: newChannelData.id, user_id: pendingDMUser.id }
-        ]);
-        // Add to local state
+          .select('id, name, is_private, created_by')
+          .eq('is_private', true)
+          .eq('name', channelName);
+
+        let channelId: string;
+        
+        if (!findError && existingChannels && existingChannels.length > 0) {
+          // Use existing channel
+          channelId = existingChannels[0].id;
+        } else {
+          // Create new channel
+          const { data: newChannelData, error: channelError } = await supabase
+            .from('channels')
+            .insert({
+              name: channelName,
+              is_private: true,
+              created_by: user.id
+            })
+            .select()
+            .single();
+          
+          if (channelError) {
+            // If insert failed due to duplicate, try to find the channel again
+            if (channelError.code === '23505') {
+              const { data: retryChannels } = await supabase
+                .from('channels')
+                .select('id, name, is_private, created_by')
+                .eq('is_private', true)
+                .eq('name', channelName);
+              
+              if (retryChannels && retryChannels.length > 0) {
+                channelId = retryChannels[0].id;
+              } else {
+                throw channelError;
+              }
+            } else {
+              throw channelError;
+            }
+          } else {
+            channelId = newChannelData.id;
+          }
+        }
+
+        // Ensure both users are members
+        const { data: existingMembers } = await supabase
+          .from('channel_members')
+          .select('user_id')
+          .eq('channel_id', channelId);
+
+        const existingUserIds = existingMembers?.map(m => m.user_id) || [];
+        
+        if (!existingUserIds.includes(user.id)) {
+          await supabase.from('channel_members').insert({
+            channel_id: channelId,
+            user_id: user.id
+          });
+        }
+        
+        if (!existingUserIds.includes(pendingDMUser.id)) {
+          await supabase.from('channel_members').insert({
+            channel_id: channelId,
+            user_id: pendingDMUser.id
+          });
+        }
+
+        // Create channel object for local state
         const newChannel = {
-          id: newChannelData.id,
-          name: newChannelData.name,
+          id: channelId,
+          name: channelName,
           is_private: true,
           created_by: user.id,
           members: [
@@ -455,10 +529,12 @@ export default function Messaging() {
             }
           ]
         };
+        
         setChannels((prev) => [...prev, newChannel]);
         setSelectedChannel(newChannel);
         setSelectedUser(pendingDMUser);
         setPendingDMUser(null);
+        
         // Now send the message to the new channel
         setTimeout(() => {
           setMessageInput(messageInput); // restore input
@@ -467,6 +543,7 @@ export default function Messaging() {
         setLoading(false);
         return;
       } catch (err) {
+        console.error('Error creating DM channel:', err);
         toast({ title: 'Error', description: 'Failed to start conversation', variant: 'destructive' });
         setLoading(false);
         return;
@@ -544,9 +621,8 @@ export default function Messaging() {
     if (!user || !targetUser) return;
     setLoading(true);
     try {
-      // Normalize channel name for this DM
-      const ids = [user.id, targetUser.id].sort();
-      const channelName = `dm-${ids[0]}-${ids[1]}`;
+      // Generate consistent channel name for this DM
+      const channelName = generateDMChannelName(user.id, targetUser.id);
 
       // Try to find an existing private channel with this name
       const { data: existingChannels, error: findError } = await supabase
@@ -595,6 +671,7 @@ export default function Messaging() {
         setPendingDMUser(targetUser);
       }
     } catch (err) {
+      console.error('Error opening direct message:', err);
       toast({ title: 'Error', description: 'Failed to open direct message', variant: 'destructive' });
     } finally {
       setLoading(false);
@@ -611,7 +688,7 @@ export default function Messaging() {
       const id2 = idsPart.slice(37); // skip the dash
       const otherUserId = id1 === user.id ? id2 : id1;
       const otherUser = users.find(u => u.id === otherUserId);
-      return otherUser ? getUserDisplayName(otherUser) : 'Direct Message';
+      return otherUser ? getUserDisplayName(otherUser) : `User-${otherUserId.slice(0, 4)}`;
     }
     return channel.name;
   }
@@ -631,15 +708,6 @@ export default function Messaging() {
         const sender = users.find((u: any) => u.id === newMessage.sender_id);
         setMessages(prev => {
           if (prev.some(msg => msg.id === newMessage.id)) return prev;
-          // Play sound if message is from another user and permission is granted
-          if (
-            newMessage.sender_id !== user?.id &&
-            audioRef.current &&
-            (!('Notification' in window) || Notification.permission === 'granted')
-          ) {
-            audioRef.current.currentTime = 0;
-            audioRef.current.play().catch(() => {});
-          }
           return [
             ...prev,
             {
@@ -663,6 +731,68 @@ export default function Messaging() {
       subscription.unsubscribe();
     };
   }, [selectedChannel, users]);
+
+  // Global message subscription for all channels (for notifications and unread updates)
+  useEffect(() => {
+    if (!user || channels.length === 0) return;
+
+    const channelIds = channels.map(c => c.id);
+    
+    // Create separate subscriptions for each channel to avoid filter issues
+    const subscriptions = channelIds.map(channelId => 
+      supabase
+        .channel(`global-messages-${channelId}`)
+        .on('postgres_changes', {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+          filter: `channel_id=eq.${channelId}`
+        }, async payload => {
+          const newMessage = payload.new as any;
+          
+          // Only handle messages from other users
+          if (newMessage.sender_id === user.id) return;
+          
+          // Play sound notification if user is not in the channel where message was sent
+          if (selectedChannel?.id !== newMessage.channel_id) {
+            if (audioRef.current && (!('Notification' in window) || Notification.permission === 'granted')) {
+              audioRef.current.currentTime = 0;
+              audioRef.current.play().catch(() => {});
+            }
+            
+            // Show browser notification if permission granted
+            if ('Notification' in window && Notification.permission === 'granted') {
+              const sender = users.find((u: any) => u.id === newMessage.sender_id);
+              const channel = channels.find(c => c.id === newMessage.channel_id);
+              const channelName = channel?.is_private && channel?.name.startsWith('dm-') 
+                ? getUserDisplayName(sender) 
+                : channel?.name || 'Unknown Channel';
+              
+              new Notification(`New message in ${channelName}`, {
+                body: newMessage.content,
+                icon: '/favicon.ico'
+              });
+            }
+          }
+          
+          // Update unread counts immediately
+          const updatedUnreadCounts = await chatService.fetchUnreadCounts(user.id, channelIds);
+          setChannels(prev => prev.map(channel => ({
+            ...channel,
+            unreadCount: updatedUnreadCounts.find(uc => uc.channel_id === channel.id)?.count || 0
+          })));
+          
+          // Update total unread count
+          const totalUnread = updatedUnreadCounts.reduce((sum, uc) => sum + uc.count, 0);
+          setTotalUnreadCount(totalUnread);
+        })
+        .subscribe()
+    );
+
+    return () => {
+      subscriptions.forEach(subscription => subscription.unsubscribe());
+    };
+  }, [user, channels, selectedChannel, users]);
 
   useLayoutEffect(() => {
     setTimeout(() => {
@@ -737,7 +867,16 @@ export default function Messaging() {
             {/* Conversations section */}
             <div className="p-3 sm:p-6 border-b">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="font-semibold text-sm sm:text-base">Conversations</h2>
+                <div className="flex items-center gap-2">
+                  <h2 className="font-semibold text-sm sm:text-base">Conversations</h2>
+                  {totalUnreadCount > 0 && (
+                    <UnreadIndicator 
+                      count={totalUnreadCount} 
+                      size="sm"
+                      variant="destructive"
+                    />
+                  )}
+                </div>
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button variant="outline" size="icon" disabled={loading} className="h-8 w-8">
@@ -778,12 +917,33 @@ export default function Messaging() {
                     <div
                       key={channel.id}
                       className={`flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 cursor-pointer group ${selectedChannel?.id === channel.id ? 'bg-muted' : ''}`}
-                      onClick={() => {
+                      onClick={async () => {
                         setSelectedChannel(channel);
                         setSelectedUser(dmUser);
+                        
+                        // Mark channel as read when selected
+                        if (channel.unreadCount && channel.unreadCount > 0 && user) {
+                          await chatService.markChannelAsRead(user.id, channel.id);
+                          // Update local state immediately
+                          setChannels(prev => prev.map(ch => 
+                            ch.id === channel.id ? { ...ch, unreadCount: 0 } : ch
+                          ));
+                          setTotalUnreadCount(prev => prev - (channel.unreadCount || 0));
+                        }
                       }}
                     >
-                      <span>{getUserDisplayName(dmUser)}</span>
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={dmUser?.avatar_url} alt={getUserDisplayName(dmUser)} />
+                          <AvatarFallback>{getUserInitials(dmUser)}</AvatarFallback>
+                        </Avatar>
+                        <span>{dmUser ? getUserDisplayName(dmUser) : `User-${otherUserId.slice(0, 4)}`}</span>
+                      </div>
+                      <UnreadIndicator 
+                        count={channel.unreadCount || 0} 
+                        size="lg"
+                        variant="default"
+                      />
                     </div>
                   );
                 })}
@@ -793,29 +953,31 @@ export default function Messaging() {
             <div className="p-6 border-b">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="font-semibold">Channels</h2>
-                <Dialog open={channelDialogOpen} onOpenChange={setChannelDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" size="icon" disabled={loading}>
-                      <Plus className="h-4 w-4" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Create New Channel</DialogTitle>
-                    </DialogHeader>
-                    <div className="flex gap-2 mt-4">
-                      <Input
-                        placeholder="Channel name..."
-                        value={newChannelName}
-                        onChange={(e) => setNewChannelName(e.target.value)}
-                        disabled={loading}
-                      />
-                      <Button onClick={createChannel} disabled={loading || !newChannelName.trim()}>
-                        Create
+                {user?.user_metadata?.role === 'admin' && (
+                  <Dialog open={channelDialogOpen} onOpenChange={setChannelDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="icon" disabled={loading}>
+                        <Plus className="h-4 w-4" />
                       </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Create New Channel</DialogTitle>
+                      </DialogHeader>
+                      <div className="flex gap-2 mt-4">
+                        <Input
+                          placeholder="Channel name..."
+                          value={newChannelName}
+                          onChange={(e) => setNewChannelName(e.target.value)}
+                          disabled={loading}
+                        />
+                        <Button onClick={createChannel} disabled={loading || !newChannelName.trim()}>
+                          Create
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                )}
               </div>
               <div className="relative">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -824,9 +986,12 @@ export default function Messaging() {
             </div>
             <ScrollArea className="flex-1">
               <div className="p-6 space-y-2">
-                {channels
-                  .filter(channel => !(channel.is_private && channel.name.startsWith('dm-')))
-                  .map((channel) => {
+                {loading && channels.length === 0 ? (
+                  <div className="text-center text-xs text-muted-foreground py-4">Loading channels...</div>
+                ) : (
+                  channels
+                    .filter(channel => !(channel.is_private && channel.name.startsWith('dm-')))
+                    .map((channel) => {
                     const isDM = channel.is_private && channel.name.startsWith('dm-');
                     let dmUser = null;
                     if (isDM) {
@@ -842,9 +1007,19 @@ export default function Messaging() {
                         className={`flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 cursor-pointer group ${
                           selectedChannel?.id === channel.id ? 'bg-muted' : ''
                         }`}
-                        onClick={() => {
+                        onClick={async () => {
                           setSelectedChannel(channel);
                           setSelectedUser(null);
+                          
+                          // Mark channel as read when selected
+                          if (channel.unreadCount && channel.unreadCount > 0 && user) {
+                            await chatService.markChannelAsRead(user.id, channel.id);
+                            // Update local state immediately
+                            setChannels(prev => prev.map(ch => 
+                              ch.id === channel.id ? { ...ch, unreadCount: 0 } : ch
+                            ));
+                            setTotalUnreadCount(prev => prev - (channel.unreadCount || 0));
+                          }
                         }}
                       >
                         <div className="flex items-center gap-2">
@@ -856,6 +1031,13 @@ export default function Messaging() {
                           <span>{getChannelDisplayName(channel, user, users)}</span>
                         </div>
                         <div className="flex items-center gap-2">
+                          {/* Unread indicator */}
+                          <UnreadIndicator 
+                            count={channel.unreadCount || 0} 
+                            size="lg"
+                            variant="default"
+                            className="ml-auto"
+                          />
                           {/* Only show trash icon, and only on hover (group-hover:opacity-100) */}
                           {channel.created_by === user?.id && (
                             <Button
@@ -884,7 +1066,8 @@ export default function Messaging() {
                         </div>
                       </div>
                     );
-                  })}
+                  })
+                )}
                 <Separator className="my-4" />
                 <h2 className="font-semibold text-sm mb-2">Users</h2>
                 {users.filter(u => u.id !== user?.id).map((u) => (
@@ -985,8 +1168,8 @@ export default function Messaging() {
               {/* Messages area */}
               <ScrollArea className="flex-1 p-4" onScroll={handleScroll} ref={setScrollViewportRef}>
                 <div className="space-y-4">
-                  {paginationLoading && (
-                    <div className="text-center text-xs text-muted-foreground">Loading...</div>
+                  {paginationLoading && selectedChannel && (
+                    <div className="text-center text-xs text-muted-foreground">Loading more messages...</div>
                   )}
                   {messages
                     .filter((message) => selectedChannel && message.channel_id === selectedChannel.id)
@@ -1096,63 +1279,65 @@ export default function Messaging() {
                     })}
                   </div>
                 </div>
-                {/* Add user dropdown and button */}
-                <div className="flex gap-2 items-end mt-4">
-                  <div className="flex-1">
-                    <Select
-                      value={addUserId}
-                      onValueChange={setAddUserId}
-                      disabled={addUserLoading || users.length === 0}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select user..." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {users
-                          .filter(u => !selectedChannel.members.some(m => m.id === u.id))
-                          .map(u => (
-                            <SelectItem key={u.id} value={u.id}>{getUserDisplayName(u)}</SelectItem>
-                          ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Button
-                    size="sm"
-                    className="h-9"
-                    disabled={!addUserId || addUserLoading}
-                    onClick={async () => {
-                      if (!addUserId) return;
-                      setAddUserLoading(true);
-                      try {
-                        const { error } = await supabase
-                          .from('channel_members')
-                          .insert({ channel_id: selectedChannel.id, user_id: addUserId });
-                        if (error) {
-                          console.error('Supabase insert error:', error);
-                          if (error.code === '23505') {
-                            toast({ title: "Already a member", description: "This user is already in the channel.", variant: "destructive" });
-                          } else {
-                            toast({ title: "Error", description: "Failed to add user.", variant: "destructive" });
+                {/* Add user dropdown and button - Admin only */}
+                {user?.user_metadata?.role === 'admin' && (
+                  <div className="flex gap-2 items-end mt-4">
+                    <div className="flex-1">
+                      <Select
+                        value={addUserId}
+                        onValueChange={setAddUserId}
+                        disabled={addUserLoading || users.length === 0}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select user..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {users
+                            .filter(u => !selectedChannel.members.some(m => m.id === u.id))
+                            .map(u => (
+                              <SelectItem key={u.id} value={u.id}>{getUserDisplayName(u)}</SelectItem>
+                            ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <Button
+                      size="sm"
+                      className="h-9"
+                      disabled={!addUserId || addUserLoading}
+                      onClick={async () => {
+                        if (!addUserId) return;
+                        setAddUserLoading(true);
+                        try {
+                          const { error } = await supabase
+                            .from('channel_members')
+                            .insert({ channel_id: selectedChannel.id, user_id: addUserId });
+                          if (error) {
+                            console.error('Supabase insert error:', error);
+                            if (error.code === '23505') {
+                              toast({ title: "Already a member", description: "This user is already in the channel.", variant: "destructive" });
+                            } else {
+                              toast({ title: "Error", description: "Failed to add user.", variant: "destructive" });
+                            }
+                            setAddUserLoading(false);
+                            // Always refresh members in case of race condition
+                            await refreshChannelMembers(selectedChannel.id);
+                            return;
                           }
-                          setAddUserLoading(false);
-                          // Always refresh members in case of race condition
+                          // Always refresh members after add
                           await refreshChannelMembers(selectedChannel.id);
-                          return;
+                          setAddUserId(undefined);
+                          toast({ title: "User added", description: "User was added to the channel." });
+                        } catch (err) {
+                          toast({ title: "Error", description: "Failed to add user.", variant: "destructive" });
+                        } finally {
+                          setAddUserLoading(false);
                         }
-                        // Always refresh members after add
-                        await refreshChannelMembers(selectedChannel.id);
-                        setAddUserId(undefined);
-                        toast({ title: "User added", description: "User was added to the channel." });
-                      } catch (err) {
-                        toast({ title: "Error", description: "Failed to add user.", variant: "destructive" });
-                      } finally {
-                        setAddUserLoading(false);
-                      }
-                    }}
-                  >
-                    Add
-                  </Button>
-                </div>
+                      }}
+                    >
+                      Add
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
           </div>

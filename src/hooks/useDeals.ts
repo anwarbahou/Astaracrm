@@ -19,9 +19,9 @@ const transformDealFromDB = (dbDeal: any): Deal => ({
   probability: dbDeal.probability || 0,
   expectedCloseDate: dbDeal.expected_close_date || '',
   source: dbDeal.source || '',
-  owner: dbDeal.owner ? `${dbDeal.owner.first_name || ''} ${dbDeal.owner.last_name || ''}`.trim() || dbDeal.owner.email : 'Unknown Owner',
+  owner: dbDeal.users ? `${dbDeal.users.first_name || ''} ${dbDeal.users.last_name || ''}`.trim() || dbDeal.users.email : 'Unknown Owner',
   ownerId: dbDeal.owner_id,
-  ownerAvatar: dbDeal.owner?.avatar_url,
+  ownerAvatar: dbDeal.users?.avatar_url,
   tags: (dbDeal.tags || []).filter((tag: string) => tag !== '__lead_stage__'),
   priority: capitalizeFirst(dbDeal.priority) as 'Low' | 'Medium' | 'High',
   created_at: dbDeal.created_at?.split('T')[0] || '',
@@ -125,12 +125,16 @@ export function useDeals() {
   } = useQuery({
     queryKey: ['deals'],
     queryFn: async () => {
-      console.log('Fetching deals with owner information...');
+      console.log('🔍 Fetching deals with owner information...');
+      console.log('👤 Current user:', user?.id);
+      console.log('🔑 User profile:', userProfile);
+      
+      // Use proper SQL join instead of Supabase's foreign key syntax
       const { data, error } = await supabase
         .from('deals')
         .select(`
           *,
-          owner:owner_id (
+          users!deals_owner_id_fkey (
             id,
             first_name,
             last_name,
@@ -141,13 +145,19 @@ export function useDeals() {
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.error('Error fetching deals:', error);
+        console.error('❌ Error fetching deals:', error);
+        console.error('Error code:', error.code);
+        console.error('Error message:', error.message);
         throw error;
       }
 
-      console.log('Deals fetched successfully:', data);
-      return data?.map((deal) => transformDealFromDB(deal)) || [];
+      console.log('✅ Raw deals data:', data);
+      const transformed = data?.map((deal) => transformDealFromDB(deal)) || [];
+      console.log('🔄 Transformed deals:', transformed);
+      return transformed;
     },
+    retry: 1, // Reduce retries to see errors faster
+    retryDelay: 1000,
   });
 
   // Create deal mutation with optional silent mode
@@ -463,6 +473,28 @@ export function useDeals() {
     }
     setSelectedDeals([]);
   };
+
+  // Test database connection and query
+  const testConnection = async () => {
+    try {
+      console.log('🔗 Testing database connection...');
+      const { data, error } = await supabase
+        .from('deals')
+        .select('count')
+        .limit(1);
+      
+      console.log('🔗 Database connection test:', { data, error });
+      return !error;
+    } catch (err) {
+      console.error('❌ Database connection failed:', err);
+      return false;
+    }
+  };
+
+  // Call test on mount
+  useEffect(() => {
+    testConnection();
+  }, []);
 
   return {
     deals,

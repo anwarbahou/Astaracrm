@@ -38,7 +38,9 @@ import {
   BarChart,
   Link,
   AlertCircle,
-  X
+  X,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useUsersForSelection } from '@/hooks/useUsers';
@@ -57,6 +59,7 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
   // 1. All useState hooks
   const [editedDeal, setEditedDeal] = useState<Deal>(deal);
   const [isEditing, setIsEditing] = useState(false);
+  const [activeTab, setActiveTab] = useState('general');
   
   // 2. All context hooks
   const { t } = useTranslation();
@@ -130,204 +133,278 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
-      <SheetContent side="right" className="max-w-2xl w-full overflow-hidden flex flex-col bg-background rounded-none border-l shadow-xl">
-        <SheetClose asChild>
-          <button
-            className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
-            onClick={() => handleOpenChange(false)}
-          >
-            <X className="h-4 w-4" />
-            <span className="sr-only">Close</span>
-          </button>
-        </SheetClose>
-        <SheetHeader>
-          <div className="flex items-start justify-between">
-            <div className="space-y-1">
-              <SheetTitle className="text-2xl font-semibold flex items-center gap-2">
+      <SheetContent 
+        side="bottom" 
+        className="h-[95vh] w-full max-w-none rounded-t-2xl border-t shadow-2xl bg-background/95 backdrop-blur-sm"
+      >
+        {/* Header with drag handle */}
+        <div className="flex flex-col w-full">
+          {/* Drag handle */}
+          <div className="flex justify-center py-2">
+            <div className="w-12 h-1 bg-muted-foreground/20 rounded-full" />
+          </div>
+          
+          {/* Header content */}
+          <SheetHeader className="px-6 pb-4">
+            <div className="flex items-start justify-between w-full">
+              <div className="space-y-2 flex-1 min-w-0">
+                <SheetTitle className="text-xl sm:text-2xl font-semibold flex items-center gap-2">
+                  {isEditing ? (
+                    <Input
+                      value={editedDeal.name}
+                      onChange={(e) => updateField('name', e.target.value)}
+                      className="text-xl sm:text-2xl font-semibold h-9 bg-transparent border-none p-0 focus-visible:ring-0"
+                      placeholder="Deal name..."
+                    />
+                  ) : (
+                    <span className="truncate">{editedDeal.name}</span>
+                  )}
+                </SheetTitle>
+                <SheetDescription className="flex flex-wrap items-center gap-2">
+                  <Badge variant="secondary" className={`${getStageColor(editedDeal.stage)} text-white text-xs`}>
+                    {editedDeal.stage}
+                  </Badge>
+                  <Badge variant="outline" className={`${getPriorityColor(editedDeal.priority)} text-white text-xs`}>
+                    {editedDeal.priority} Priority
+                  </Badge>
+                  <span className="text-muted-foreground text-xs">
+                    Created {new Date(editedDeal.created_at).toLocaleDateString()}
+                  </span>
+                </SheetDescription>
+              </div>
+              
+              {/* Action buttons */}
+              <div className="flex items-center gap-2 ml-4">
+                <SheetClose asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <X className="h-4 w-4" />
+                  </Button>
+                </SheetClose>
                 {isEditing ? (
-                  <Input
-                    value={editedDeal.name}
-                    onChange={(e) => updateField('name', e.target.value)}
-                    className="text-2xl font-semibold h-9"
-                  />
+                  <>
+                    <Button variant="outline" size="sm" onClick={() => setIsEditing(false)}>
+                      Cancel
+                    </Button>
+                    <Button size="sm" onClick={handleSave}>
+                      <Save className="w-4 h-4 mr-2" />
+                      Save
+                    </Button>
+                  </>
                 ) : (
-                  editedDeal.name
-                )}
-              </SheetTitle>
-              <SheetDescription className="flex items-center gap-3">
-                <Badge variant="secondary" className={`${getStageColor(editedDeal.stage)} text-white`}>
-                  {editedDeal.stage}
-                </Badge>
-                <Badge variant="outline" className={`${getPriorityColor(editedDeal.priority)} text-white`}>
-                  {editedDeal.priority} Priority
-                </Badge>
-                <span className="text-muted-foreground">
-                  Created {new Date(editedDeal.created_at).toLocaleDateString()}
-                </span>
-              </SheetDescription>
-            </div>
-            <div className="flex items-center gap-2">
-              {isEditing ? (
-                <>
-                  <Button variant="outline" onClick={() => setIsEditing(false)}>
-                    Cancel
-                  </Button>
-                  <Button onClick={handleSave}>
-                    <Save className="w-4 h-4 mr-2" />
-                    Save Changes
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button variant="destructive" onClick={handleDelete}>
+                  <Button variant="destructive" size="sm" onClick={handleDelete}>
                     <Trash2 className="w-4 h-4 mr-2" />
                     Delete
                   </Button>
-                </>
-              )}
+                )}
+              </div>
             </div>
-          </div>
-        </SheetHeader>
+          </SheetHeader>
 
-        <Separator className="my-4" />
+          <Separator className="mx-6" />
 
-        <ScrollArea className="flex-1 px-1">
-          <div className="space-y-8">
-            {/* General Info Section */}
-            <div className="space-y-4">
-              <h3 className="font-semibold text-lg">General Info</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="deal-name">Deal Name</Label>
-                  <Input id="deal-name" value={editedDeal.name} onChange={e => updateField('name', e.target.value)} disabled={!isEditing} />
-                </div>
-                <div>
-                  <Label htmlFor="client">Client</Label>
-                  <Select
-                    value={editedDeal.clientId || ''}
-                    onValueChange={v => {
-                      const selectedClient = allClients.find(c => c.id === v);
-                      updateField('clientId', v);
-                      updateField('client', selectedClient?.name || '');
-                    }}
-                    disabled={!isEditing || clientsLoading}
-                  >
-                    <SelectTrigger><SelectValue placeholder="Select client" /></SelectTrigger>
-                    <SelectContent>
-                      {clientsLoading ? (
-                        <SelectItem value="loading" disabled>Loading clients...</SelectItem>
-                      ) : allClients.length === 0 ? (
-                        <SelectItem value="none" disabled>No clients available</SelectItem>
-                  ) : (
-                        allClients.map((client) => (
-                          <SelectItem key={client.id} value={client.id}>{client.name}</SelectItem>
-                        ))
-                      )}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="owner">Owner</Label>
-                  {userRole === 'admin' ? (
+          {/* Tabs for better organization */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
+            <TabsList className="grid w-full grid-cols-3 mx-6 mt-4">
+              <TabsTrigger value="general" className="text-xs">General</TabsTrigger>
+              <TabsTrigger value="financial" className="text-xs">Financial</TabsTrigger>
+              <TabsTrigger value="details" className="text-xs">Details</TabsTrigger>
+            </TabsList>
+
+            <ScrollArea className="flex-1 px-6 py-4">
+              <TabsContent value="general" className="space-y-6 mt-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="deal-name" className="text-sm font-medium">Deal Name</Label>
+                    <Input 
+                      id="deal-name" 
+                      value={editedDeal.name} 
+                      onChange={e => updateField('name', e.target.value)} 
+                      disabled={!isEditing}
+                      className="h-10"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="client" className="text-sm font-medium">Client</Label>
                     <Select
-                      value={editedDeal.ownerId || ''}
+                      value={editedDeal.clientId || ''}
                       onValueChange={v => {
-                        const selectedUser = allUsers.find(u => u.id === v);
-                        updateField('ownerId', v);
-                        updateField('owner', selectedUser?.name || '');
+                        const selectedClient = allClients.find(c => c.id === v);
+                        updateField('clientId', v);
+                        updateField('client', selectedClient?.name || '');
                       }}
-                      disabled={!isEditing || usersLoading}
+                      disabled={!isEditing || clientsLoading}
                     >
-                      <SelectTrigger><SelectValue placeholder="Select owner" /></SelectTrigger>
+                      <SelectTrigger className="h-10">
+                        <SelectValue placeholder="Select client" />
+                      </SelectTrigger>
                       <SelectContent>
-                        {usersLoading ? (
-                          <SelectItem value="loading" disabled>Loading users...</SelectItem>
-                        ) : allUsers.length === 0 ? (
-                          <SelectItem value="none" disabled>No users available</SelectItem>
+                        {clientsLoading ? (
+                          <SelectItem value="loading" disabled>Loading clients...</SelectItem>
+                        ) : allClients.length === 0 ? (
+                          <SelectItem value="none" disabled>No clients available</SelectItem>
                         ) : (
-                          allUsers.map((user) => (
-                            <SelectItem key={user.id} value={user.id}>{user.name}</SelectItem>
+                          allClients.map((client) => (
+                            <SelectItem key={client.id} value={client.id}>{client.name}</SelectItem>
                           ))
                         )}
                       </SelectContent>
                     </Select>
-                  ) : (
-                    <Input
-                      id="owner"
-                      value={editedDeal.owner}
-                      disabled
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="owner" className="text-sm font-medium">Owner</Label>
+                    {userRole === 'admin' ? (
+                      <Select
+                        value={editedDeal.ownerId || ''}
+                        onValueChange={v => {
+                          const selectedUser = allUsers.find(u => u.id === v);
+                          updateField('ownerId', v);
+                          updateField('owner', selectedUser?.name || '');
+                        }}
+                        disabled={!isEditing || usersLoading}
+                      >
+                        <SelectTrigger className="h-10">
+                          <SelectValue placeholder="Select owner" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {usersLoading ? (
+                            <SelectItem value="loading" disabled>Loading users...</SelectItem>
+                          ) : allUsers.length === 0 ? (
+                            <SelectItem value="none" disabled>No users available</SelectItem>
+                          ) : (
+                            allUsers.map((user) => (
+                              <SelectItem key={user.id} value={user.id}>{user.name}</SelectItem>
+                            ))
+                          )}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <Input
+                        id="owner"
+                        value={editedDeal.owner}
+                        disabled
+                        className="h-10"
+                      />
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="stage" className="text-sm font-medium">Stage</Label>
+                    <Select value={editedDeal.stage} onValueChange={v => updateField('stage', v as DealStage)} disabled={!isEditing}>
+                      <SelectTrigger className="h-10">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Prospect">Prospect</SelectItem>
+                        <SelectItem value="Lead">Lead</SelectItem>
+                        <SelectItem value="Qualified">Qualified</SelectItem>
+                        <SelectItem value="Proposal">Proposal</SelectItem>
+                        <SelectItem value="Negotiation">Negotiation</SelectItem>
+                        <SelectItem value="Won/Lost">Won/Lost</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="priority" className="text-sm font-medium">Priority</Label>
+                    <Select value={editedDeal.priority} onValueChange={v => updateField('priority', v as Deal['priority'])} disabled={!isEditing}>
+                      <SelectTrigger className="h-10">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="High">High</SelectItem>
+                        <SelectItem value="Medium">Medium</SelectItem>
+                        <SelectItem value="Low">Low</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="tags" className="text-sm font-medium">Tags</Label>
+                    <Input 
+                      id="tags" 
+                      value={editedDeal.tags.join(', ')} 
+                      onChange={e => updateField('tags', e.target.value.split(',').map(t => t.trim()))} 
+                      disabled={!isEditing}
+                      placeholder="Enter tags separated by commas"
+                      className="h-10"
                     />
-                  )}
-                </div>
-                <div>
-                  <Label htmlFor="stage">Stage</Label>
-                  <Select value={editedDeal.stage} onValueChange={v => updateField('stage', v as DealStage)} disabled={!isEditing}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Prospect">Prospect</SelectItem>
-                      <SelectItem value="Lead">Lead</SelectItem>
-                      <SelectItem value="Qualified">Qualified</SelectItem>
-                      <SelectItem value="Proposal">Proposal</SelectItem>
-                      <SelectItem value="Negotiation">Negotiation</SelectItem>
-                      <SelectItem value="Won/Lost">Won/Lost</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="priority">Priority</Label>
-                  <Select value={editedDeal.priority} onValueChange={v => updateField('priority', v as Deal['priority'])} disabled={!isEditing}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="High">High</SelectItem>
-                      <SelectItem value="Medium">Medium</SelectItem>
-                      <SelectItem value="Low">Low</SelectItem>
-                    </SelectContent>
-                  </Select>
                   </div>
-                <div>
-                  <Label htmlFor="tags">Tags (comma separated)</Label>
-                  <Input id="tags" value={editedDeal.tags.join(', ')} onChange={e => updateField('tags', e.target.value.split(',').map(t => t.trim()))} disabled={!isEditing} />
                 </div>
-              </div>
-            </div>
-            {/* Financial Section */}
-            <div className="space-y-4">
-              <h3 className="font-semibold text-lg">Financial</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="value">Value</Label>
-                  <Input id="value" type="number" value={editedDeal.value} onChange={e => updateField('value', Number(e.target.value))} disabled={!isEditing} />
-                </div>
-                <div>
-                  <Label htmlFor="currency">Currency</Label>
-                  <Input id="currency" value={editedDeal.currency} onChange={e => updateField('currency', e.target.value)} disabled={!isEditing} />
-                </div>
-                <div>
-                  <Label htmlFor="probability">Probability (%)</Label>
-                  <Input id="probability" type="number" value={editedDeal.probability} onChange={e => updateField('probability', Number(e.target.value))} disabled={!isEditing} />
-                </div>
-                <div>
-                  <Label htmlFor="expectedCloseDate">Expected Close Date</Label>
-                  <Input id="expectedCloseDate" type="date" value={editedDeal.expectedCloseDate} onChange={e => updateField('expectedCloseDate', e.target.value)} disabled={!isEditing} />
-                          </div>
-                        </div>
-                      </div>
-            {/* Details Section */}
-            <div className="space-y-4">
-              <h3 className="font-semibold text-lg">Details</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="source">Source</Label>
-                  <Input id="source" value={editedDeal.source} onChange={e => updateField('source', e.target.value)} disabled={!isEditing} />
-                </div>
-                <div>
-                  <Label htmlFor="notes">Notes</Label>
-                  <Textarea id="notes" value={editedDeal.notes || ''} onChange={e => updateField('notes', e.target.value)} disabled={!isEditing} />
-                </div>
-              </div>
+              </TabsContent>
+
+              <TabsContent value="financial" className="space-y-6 mt-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="value" className="text-sm font-medium">Value</Label>
+                    <Input 
+                      id="value" 
+                      type="number" 
+                      value={editedDeal.value} 
+                      onChange={e => updateField('value', Number(e.target.value))} 
+                      disabled={!isEditing}
+                      className="h-10"
+                    />
                   </div>
-          </div>
-        </ScrollArea>
+                  <div className="space-y-2">
+                    <Label htmlFor="currency" className="text-sm font-medium">Currency</Label>
+                    <Input 
+                      id="currency" 
+                      value={editedDeal.currency} 
+                      onChange={e => updateField('currency', e.target.value)} 
+                      disabled={!isEditing}
+                      className="h-10"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="probability" className="text-sm font-medium">Probability (%)</Label>
+                    <Input 
+                      id="probability" 
+                      type="number" 
+                      value={editedDeal.probability} 
+                      onChange={e => updateField('probability', Number(e.target.value))} 
+                      disabled={!isEditing}
+                      className="h-10"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="expectedCloseDate" className="text-sm font-medium">Expected Close Date</Label>
+                    <Input 
+                      id="expectedCloseDate" 
+                      type="date" 
+                      value={editedDeal.expectedCloseDate} 
+                      onChange={e => updateField('expectedCloseDate', e.target.value)} 
+                      disabled={!isEditing}
+                      className="h-10"
+                    />
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="details" className="space-y-6 mt-4">
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="source" className="text-sm font-medium">Source</Label>
+                    <Input 
+                      id="source" 
+                      value={editedDeal.source} 
+                      onChange={e => updateField('source', e.target.value)} 
+                      disabled={!isEditing}
+                      className="h-10"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="notes" className="text-sm font-medium">Notes</Label>
+                    <Textarea 
+                      id="notes" 
+                      value={editedDeal.notes || ''} 
+                      onChange={e => updateField('notes', e.target.value)} 
+                      disabled={!isEditing}
+                      placeholder="Add notes about this deal..."
+                      className="min-h-[120px] resize-none"
+                    />
+                  </div>
+                </div>
+              </TabsContent>
+            </ScrollArea>
+          </Tabs>
+        </div>
       </SheetContent>
     </Sheet>
   );

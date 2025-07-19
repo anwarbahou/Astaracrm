@@ -2,49 +2,81 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-// Debug: Log environment variables
-console.log('=== SUPABASE CLIENT DEBUG ===');
-console.log('VITE_SUPABASE_URL:', import.meta.env.VITE_SUPABASE_URL);
-console.log('VITE_SUPABASE_ANON_KEY:', import.meta.env.VITE_SUPABASE_ANON_KEY ? 'SET' : 'NOT SET');
-console.log('NEXT_PUBLIC_SUPABASE_URL:', import.meta.env.NEXT_PUBLIC_SUPABASE_URL);
-console.log('NEXT_PUBLIC_SUPABASE_ANON_KEY:', import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'SET' : 'NOT SET');
-console.log('================================');
+// Debug: Log environment variables (only in development)
+if (import.meta.env.DEV) {
+  console.log('=== SUPABASE CLIENT DEBUG ===');
+  console.log('VITE_SUPABASE_URL:', import.meta.env.VITE_SUPABASE_URL);
+  console.log('VITE_SUPABASE_ANON_KEY:', import.meta.env.VITE_SUPABASE_ANON_KEY ? 'SET' : 'NOT SET');
+  console.log('NEXT_PUBLIC_SUPABASE_URL:', import.meta.env.NEXT_PUBLIC_SUPABASE_URL);
+  console.log('NEXT_PUBLIC_SUPABASE_ANON_KEY:', import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'SET' : 'NOT SET');
+  console.log('================================');
+}
 
 // Try both VITE_ and NEXT_PUBLIC_ prefixes
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-console.log('Final SUPABASE_URL:', SUPABASE_URL);
-console.log('Final SUPABASE_ANON_KEY:', SUPABASE_ANON_KEY ? 'SET' : 'NOT SET');
-
+// Enhanced error handling for missing environment variables
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-  console.error('❌ Missing Supabase environment variables!');
-  console.error('Please ensure you have the following in your .env file:');
-  console.error('VITE_SUPABASE_URL=your_project_url');
-  console.error('VITE_SUPABASE_ANON_KEY=your_anon_key');
-  console.error('Or with NEXT_PUBLIC_ prefix:');
-  console.error('NEXT_PUBLIC_SUPABASE_URL=your_project_url');
-  console.error('NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key');
+  const errorMessage = 'Missing Supabase environment variables!';
   
-  // In development, show a more helpful error
+  // In development, show detailed error
   if (import.meta.env.DEV) {
+    console.error('❌', errorMessage);
+    console.error('Please ensure you have the following in your .env file:');
+    console.error('VITE_SUPABASE_URL=your_project_url');
+    console.error('VITE_SUPABASE_ANON_KEY=your_anon_key');
+    console.error('Or with NEXT_PUBLIC_ prefix:');
+    console.error('NEXT_PUBLIC_SUPABASE_URL=your_project_url');
+    console.error('NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key');
+    console.error('');
     console.error('📝 To fix this:');
     console.error('1. Create a .env file in your project root');
     console.error('2. Add your Supabase credentials');
     console.error('3. Restart your development server');
+    
+    // Show a user-friendly error in the browser
+    const errorDiv = document.createElement('div');
+    errorDiv.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #1a1a1a;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 2rem;
+    `;
+    errorDiv.innerHTML = `
+      <div style="text-align: center; max-width: 600px;">
+        <h1 style="color: #ef4444; margin-bottom: 1rem;">🚨 Configuration Error</h1>
+        <p style="margin-bottom: 1rem;">Missing Supabase environment variables. Please check your .env file.</p>
+        <div style="background: #2a2a2a; padding: 1rem; border-radius: 8px; margin: 1rem 0; text-align: left; font-family: monospace; font-size: 0.9rem;">
+          <p>VITE_SUPABASE_URL=your_project_url</p>
+          <p>VITE_SUPABASE_ANON_KEY=your_anon_key</p>
+        </div>
+        <p style="font-size: 0.9rem; color: #a1a1aa;">Create a .env file in your project root and restart the development server.</p>
+      </div>
+    `;
+    document.body.appendChild(errorDiv);
   }
   
-  throw new Error('Missing Supabase environment variables. Please check your .env file.');
+  throw new Error(errorMessage);
 }
 
-// Custom storage implementation to conditionally persist session
+// Custom storage implementation with better error handling
 const customStorage = {
   getItem: (key: string): string | null => {
     try {
       // Prefer localStorage for persistent sessions, fallback to sessionStorage
       return localStorage.getItem(key) || sessionStorage.getItem(key);
     } catch (error) {
-      console.error('Storage access error:', error);
+      console.warn('Storage access error:', error);
       return null;
     }
   },
@@ -56,7 +88,7 @@ const customStorage = {
       }
       sessionStorage.setItem(key, value);
     } catch (error) {
-      console.error('Storage write error:', error);
+      console.warn('Storage write error:', error);
     }
   },
   removeItem: (key: string): void => {
@@ -64,14 +96,12 @@ const customStorage = {
       localStorage.removeItem(key);
       sessionStorage.removeItem(key);
     } catch (error) {
-      console.error('Storage remove error:', error);
+      console.warn('Storage remove error:', error);
     }
   },
 };
 
-// Import the supabase client like this:
-// import { supabase } from "@/integrations/supabase/client";
-
+// Create Supabase client with enhanced configuration
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
     autoRefreshToken: true,
@@ -80,24 +110,31 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, 
     flowType: 'pkce',
     storage: customStorage,
     storageKey: 'supabase.auth.token',
-    debug: true
+    debug: import.meta.env.DEV
   },
   realtime: {
     params: {
       eventsPerSecond: 10
     }
+  },
+  global: {
+    headers: {
+      'X-Client-Info': 'astaracrm-web'
+    }
   }
 });
 
-// Debug any auth state changes
-supabase.auth.onAuthStateChange((event, session) => {
-  console.log('🔐 Auth State Change:', {
-    event,
-    sessionExists: !!session,
-    userId: session?.user?.id,
-    timestamp: new Date().toISOString()
+// Enhanced auth state change logging (only in development)
+if (import.meta.env.DEV) {
+  supabase.auth.onAuthStateChange((event, session) => {
+    console.log('🔐 Auth State Change:', {
+      event,
+      sessionExists: !!session,
+      userId: session?.user?.id,
+      timestamp: new Date().toISOString()
+    });
   });
-});
+}
 
 export const SUPABASE_URL_EXPORT = SUPABASE_URL;
 export const SUPABASE_ANON_KEY_EXPORT = SUPABASE_ANON_KEY;

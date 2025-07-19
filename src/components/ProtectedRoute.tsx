@@ -7,7 +7,7 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { user, loading, error, retry } = useAuth();
+  const { user, loading, error, forceRefresh } = useAuth();
   const location = useLocation();
 
   // If user is authenticated, render children
@@ -31,14 +31,24 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   if (error) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background">
-        <div className="text-center">
-          <p className="text-destructive mb-4">{error}</p>
-          <button
-            onClick={retry}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-          >
-            Retry
-          </button>
+        <div className="text-center max-w-md px-4">
+          <div className="text-destructive text-5xl mb-4">⚠️</div>
+          <h2 className="text-xl font-semibold mb-2">Authentication Error</h2>
+          <p className="text-muted-foreground mb-4">{error}</p>
+          <div className="space-y-2">
+            <button
+              onClick={() => forceRefresh()}
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 w-full"
+            >
+              Retry Connection
+            </button>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 w-full"
+            >
+              Reload Page
+            </button>
+          </div>
         </div>
       </div>
     );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetClose } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { Task } from '@/hooks/useTasks';
 import ReactQuill from 'react-quill';
@@ -9,6 +9,8 @@ import { CalendarIcon, Clock, CheckCircle, AlertTriangle, User, Briefcase, Hands
 import { format, isPast } from "date-fns";
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 
 interface PreviewTaskModalProps {
   isOpen: boolean;
@@ -59,40 +61,50 @@ export const PreviewTaskModal: React.FC<PreviewTaskModalProps> = ({
   const { t } = useTranslation();
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[800px] flex flex-col max-h-[90vh] overflow-hidden p-0">
-        <DialogClose className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
-          <X className="h-4 w-4" />
-          <span className="sr-only">Close</span>
-        </DialogClose>
-        <DialogHeader className="p-6 pb-4 border-b border-border">
-          <DialogTitle className="text-2xl font-bold flex items-center">
+    <Sheet open={isOpen} onOpenChange={onClose}>
+      <SheetContent 
+        side="bottom" 
+        className="h-[95vh] w-full max-w-none rounded-t-2xl border-t shadow-2xl bg-background/95 backdrop-blur-sm p-0"
+      >
+        {/* Drag Handle */}
+        <div className="flex justify-center pt-3 pb-2">
+          <div className="w-12 h-1 bg-muted-foreground/30 rounded-full" />
+        </div>
+
+        <SheetHeader className="px-6 pb-4 border-b border-border">
+          <SheetTitle className="text-xl sm:text-2xl font-bold flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
             <Badge
               variant="outline"
               className={cn(
-                "mr-2 px-2 py-0.5 rounded-full text-xs font-semibold",
+                "px-3 py-1 rounded-full text-xs sm:text-sm font-semibold w-fit",
                 getTaskStatusColor(task.status || 'todo')
               )}
             >
               {task.task_identifier || `LKP-${task.id.substring(0, 4).toUpperCase()}`}
             </Badge>
-            {task.title}
-          </DialogTitle>
-        </DialogHeader>
-        <div className="flex-1 flex overflow-hidden">
-          <div className="flex-1 overflow-y-auto p-6">
-            <div className="mb-6">
-              <h2 className="text-lg font-semibold mb-2">{t('tasks.previewTaskModal.priority')}</h2>
+            <span className="text-lg sm:text-xl font-bold leading-tight">{task.title}</span>
+          </SheetTitle>
+        </SheetHeader>
+
+        <ScrollArea className="flex-1 px-6 py-4">
+          <div className="space-y-6">
+            {/* Priority Section */}
+            <div className="space-y-3">
+              <h2 className="text-base sm:text-lg font-semibold text-foreground">{t('tasks.previewTaskModal.priority')}</h2>
               {task.priority && (
-                <Badge variant="outline" className={cn("flex items-center gap-1 w-fit", priorityColors[task.priority])}>
-                  {priorityIcons[task.priority]} {t(`tasks.priority.${task.priority}`)}
+                <Badge variant="outline" className={cn("flex items-center gap-2 px-3 py-2 text-sm sm:text-base", priorityColors[task.priority])}>
+                  <span className="text-lg">{priorityIcons[task.priority]}</span>
+                  <span>{t(`tasks.priority.${task.priority}`)}</span>
                 </Badge>
               )}
             </div>
 
-            <div className="mb-6">
-              <h2 className="text-lg font-semibold mb-2">{t('tasks.previewTaskModal.description')}</h2>
-              <div className="prose dark:prose-invert max-w-none">
+            <Separator />
+
+            {/* Description Section */}
+            <div className="space-y-3">
+              <h2 className="text-base sm:text-lg font-semibold text-foreground">{t('tasks.previewTaskModal.description')}</h2>
+              <div className="prose dark:prose-invert max-w-none text-sm sm:text-base">
                 <ReactQuill
                   value={task.description || ''}
                   readOnly={true}
@@ -101,72 +113,94 @@ export const PreviewTaskModal: React.FC<PreviewTaskModalProps> = ({
                 />
               </div>
             </div>
-          </div>
 
-          {/* Right Sidebar for Details */}
-          <div className="w-80 border-l border-border p-6 flex flex-col">
-            <h2 className="text-lg font-semibold mb-4">{t('tasks.previewTaskModal.details')}</h2>
+            <Separator />
+
+            {/* Details Grid */}
             <div className="space-y-4">
-              {/* Assignee */}
-              {task.user && (
-                <div>
-                  <p className="text-sm text-muted-foreground">{t('tasks.previewTaskModal.assignee')}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={task.user.avatar_url || undefined} />
-                      <AvatarFallback>{task.user.first_name?.charAt(0)}{task.user.last_name?.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <span className="font-medium">{task.user.first_name} {task.user.last_name}</span>
+              <h2 className="text-base sm:text-lg font-semibold text-foreground">{t('tasks.previewTaskModal.details')}</h2>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Assignee */}
+                {task.user && (
+                  <div className="space-y-2 p-4 bg-muted/30 rounded-lg">
+                    <p className="text-sm text-muted-foreground font-medium">{t('tasks.previewTaskModal.assignee')}</p>
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={task.user.avatar_url || undefined} />
+                        <AvatarFallback className="text-sm">
+                          {task.user.first_name?.charAt(0)}{task.user.last_name?.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col">
+                        <span className="font-medium text-sm sm:text-base">
+                          {task.user.first_name} {task.user.last_name}
+                        </span>
+                        <span className="text-xs text-muted-foreground">{task.user.email}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Due Date */}
+                <div className="space-y-2 p-4 bg-muted/30 rounded-lg">
+                  <p className="text-sm text-muted-foreground font-medium">{t('tasks.previewTaskModal.dueDate')}</p>
+                  <div className={cn(
+                    "flex items-center gap-2",
+                    isOverdue ? "text-red-500 font-medium" : "text-foreground"
+                  )}>
+                    <CalendarIcon className="h-5 w-5" />
+                    <span className="text-sm sm:text-base">{formattedDueDate}</span>
+                    {isOverdue && (
+                      <Badge variant="destructive" className="text-xs">
+                        {t('tasks.previewTaskModal.overdue')}
+                      </Badge>
+                    )}
                   </div>
                 </div>
-              )}
 
-              {/* Due Date */}
-              <div>
-                <p className="text-sm text-muted-foreground">{t('tasks.previewTaskModal.dueDate')}</p>
-                <div className={cn(
-                  "flex items-center gap-2 mt-1",
-                  isOverdue ? "text-red-500 font-medium" : "text-foreground"
-                )}>
-                  <CalendarIcon className="h-4 w-4" />
-                  <span>{formattedDueDate}</span>
-                  {isOverdue && <span className="text-xs">({t('tasks.previewTaskModal.overdue')})</span>}
+                {/* Status */}
+                <div className="space-y-2 p-4 bg-muted/30 rounded-lg">
+                  <p className="text-sm text-muted-foreground font-medium">{t('tasks.previewTaskModal.status')}</p>
+                  <Badge variant="outline" className={cn("flex items-center gap-2 w-fit px-3 py-2", getTaskStatusColor(task.status || 'todo'))}>
+                    {statusIcons[task.status || 'todo']} 
+                    <span className="text-sm sm:text-base">{t(`tasks.status.${task.status || 'todo'}`)}</span>
+                  </Badge>
+                </div>
+
+                {/* Time Tracking */}
+                <div className="space-y-2 p-4 bg-muted/30 rounded-lg">
+                  <p className="text-sm text-muted-foreground font-medium">{t('tasks.previewTaskModal.timeTracking')}</p>
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-5 w-5 text-muted-foreground" />
+                    <span className="text-sm sm:text-base">
+                      {task.time_spent || t('tasks.previewTaskModal.noTimeLogged')}
+                    </span>
+                  </div>
                 </div>
               </div>
 
-              {/* Status */}
-              <div>
-                <p className="text-sm text-muted-foreground">{t('tasks.previewTaskModal.status')}</p>
-                <Badge variant="outline" className={cn("flex items-center gap-1 w-fit mt-1", getTaskStatusColor(task.status || 'todo'))}>
-                  {statusIcons[task.status || 'todo']} {t(`tasks.status.${task.status || 'todo'}`)}
-                </Badge>
-              </div>
-
-              {/* Related To */}
+              {/* Related To - Full Width */}
               {task.related_entity && task.related_entity_name && (
-                <div>
-                  <p className="text-sm text-muted-foreground">{t('tasks.previewTaskModal.relatedTo')}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    {task.related_entity === 'client' && <Briefcase className="h-4 w-4 text-blue-500" />}
-                    {task.related_entity === 'contact' && <User className="h-4 w-4 text-green-500" />}
-                    {task.related_entity === 'deal' && <Handshake className="h-4 w-4 text-orange-500" />}
-                    <span className="font-medium">{task.related_entity_name} ({t(`tasks.addTaskModal.form.${task.related_entity}`)})</span>
+                <div className="space-y-2 p-4 bg-muted/30 rounded-lg">
+                  <p className="text-sm text-muted-foreground font-medium">{t('tasks.previewTaskModal.relatedTo')}</p>
+                  <div className="flex items-center gap-3">
+                    {task.related_entity === 'client' && <Briefcase className="h-5 w-5 text-blue-500" />}
+                    {task.related_entity === 'contact' && <User className="h-5 w-5 text-green-500" />}
+                    {task.related_entity === 'deal' && <Handshake className="h-5 w-5 text-orange-500" />}
+                    <div className="flex flex-col">
+                      <span className="font-medium text-sm sm:text-base">{task.related_entity_name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {t(`tasks.addTaskModal.form.${task.related_entity}`)}
+                      </span>
+                    </div>
                   </div>
                 </div>
               )}
-
-              {/* Time Tracking */}
-              <div>
-                <p className="text-sm text-muted-foreground">{t('tasks.previewTaskModal.timeTracking')}</p>
-                <div className="flex items-center gap-2 mt-1">
-                  <Clock className="h-4 w-4 text-muted-foreground" />
-                  <span>{task.time_spent || t('tasks.previewTaskModal.noTimeLogged')}</span>
-                </div>
-              </div>
             </div>
           </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </ScrollArea>
+      </SheetContent>
+    </Sheet>
   );
 }; 

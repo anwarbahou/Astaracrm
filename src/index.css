@@ -74,6 +74,11 @@
     font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
   }
 
+  /* Safe area padding for devices with home indicators */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
   /* Smooth transitions for reduced motion */
   @media (prefers-reduced-motion: reduce) {
     *,

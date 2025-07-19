@@ -50,6 +50,7 @@ import LandingPage from "./pages/LandingPage";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { AdminOnlyRoute, AdminManagerRoute } from "@/components/RoleBasedRoute";
 import { Navbar } from "@/components/Landing/Navbar";
+import { BottomNavbar } from "@/components/layout/BottomNavbar";
 
 // Enhanced loading component
 const PageLoader = () => (
@@ -237,7 +238,7 @@ const App = () => {
                   
                   <motion.main 
                     key={i18n.language}
-                    className="flex-1 h-full min-h-screen overflow-hidden bg-background transition-theme duration-theme ease-theme min-w-0 p-2 sm:p-4 md:p-6"
+                    className="flex-1 h-full min-h-screen overflow-hidden bg-background transition-theme duration-theme ease-theme min-w-0 p-2 sm:p-4 md:p-6 pb-20 lg:pb-6"
                     layout
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -246,14 +247,17 @@ const App = () => {
                   >
                     <AnimatedRoutes />
                   </motion.main>
+                  
+                  {/* Bottom Navigation - Mobile Only */}
+                  <BottomNavbar />
                 </motion.div>
               </motion.div>
             )}
           </TooltipProvider>
         </ThemeProvider>
-        </NotificationProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+      </NotificationProvider>
+    </AuthProvider>
+  </QueryClientProvider>
   );
 }
 

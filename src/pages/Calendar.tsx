@@ -43,7 +43,7 @@ function Calendar() {
       />
 
       {/* Main Content */}
-      <div className="p-6">
+      <div className="p-2 sm:p-4 md:p-6">
         {calendarView === "calendar" ? (
           <CalendarGrid
             currentDate={currentDate}

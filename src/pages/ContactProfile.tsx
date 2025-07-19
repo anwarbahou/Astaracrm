@@ -68,62 +68,71 @@ export default function ContactProfile() {
   };
 
   return (
-    <div className="space-y-6 animate-in">
+    <div className="space-y-4 sm:space-y-6 animate-in">
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" onClick={() => navigate("/dashboard/contacts")} className="gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="gap-2 w-full sm:w-auto"
+          onClick={() => navigate(-1)}
+        >
           <ArrowLeft size={16} />
-          Back to Contacts
+          Back
         </Button>
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold">Contact Profile</h1>
-          <p className="text-muted-foreground mt-1">
-            Detailed information and interaction history
-          </p>
+        <div className="flex-1 min-w-0">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold truncate">{contact.name}</h1>
+          <p className="text-muted-foreground text-sm sm:text-base">Contact Profile & Details</p>
         </div>
-        <Button className="gap-2">
-          <Edit size={16} />
-          Edit Contact
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <Button variant="outline" className="gap-2 w-full sm:w-auto text-sm">
+            <Edit size={16} />
+            Edit Contact
+          </Button>
+          <Button className="gap-2 w-full sm:w-auto text-sm">
+            <MessageSquare size={16} />
+            Send Message
+          </Button>
+        </div>
       </div>
 
       {/* Contact Overview */}
       <Card>
-        <CardContent className="p-6">
-          <div className="flex items-start gap-6">
-            <Avatar className="h-20 w-20">
-              <AvatarFallback className="bg-primary/10 text-primary font-medium text-xl">
+        <CardContent className="p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
+            <Avatar className="h-16 w-16 sm:h-20 sm:w-20 flex-shrink-0">
+              <AvatarFallback className="bg-primary/10 text-primary font-medium text-lg sm:text-xl">
                 {contact.avatar}
               </AvatarFallback>
             </Avatar>
             
             <div className="flex-1">
-              <div className="flex items-start justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 <div>
-                  <h2 className="text-2xl font-bold">{contact.name}</h2>
-                  <p className="text-lg text-muted-foreground">{contact.position}</p>
-                  <p className="text-muted-foreground">{contact.company}</p>
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-bold">{contact.name}</h2>
+                  <p className="text-base sm:text-lg text-muted-foreground">{contact.position}</p>
+                  <p className="text-muted-foreground text-sm sm:text-base">{contact.company}</p>
                 </div>
-                <Badge className={`${getStatusColor(contact.status)} text-white`}>
+                <Badge className={`${getStatusColor(contact.status)} text-white w-fit`}>
                   {contact.status}
                 </Badge>
               </div>
               
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center gap-2 text-sm">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                  <span>{contact.email}</span>
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div className="flex items-center gap-2 text-xs sm:text-sm">
+                  <Mail className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                  <span className="truncate">{contact.email}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span>{contact.phone}</span>
+                <div className="flex items-center gap-2 text-xs sm:text-sm">
+                  <Phone className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                  <span className="truncate">{contact.phone}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <MapPin className="h-4 w-4 text-muted-foreground" />
-                  <span>{contact.address}</span>
+                <div className="flex items-center gap-2 text-xs sm:text-sm">
+                  <MapPin className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                  <span className="truncate">{contact.address}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                <div className="flex items-center gap-2 text-xs sm:text-sm">
+                  <Calendar className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
                   <span>Joined: {contact.joinDate}</span>
                 </div>
               </div>

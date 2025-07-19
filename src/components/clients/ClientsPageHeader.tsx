@@ -13,12 +13,12 @@ export function ClientsPageHeader({ onAddClient, onImportClients }: ClientsPageH
     return (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="min-w-0 flex-1">
-                <h1 className="text-2xl sm:text-3xl font-bold truncate">{t('app.topNav.pageTitle.clients')}</h1>
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold truncate">{t('app.topNav.pageTitle.clients')}</h1>
                 <p className="text-muted-foreground mt-1 text-sm sm:text-base">
                     {t('app.topNav.pageDescription.clients')}
                 </p>
             </div>
-            <div className="flex gap-2 w-full sm:w-auto">
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <Button 
                   className="gap-2 w-full sm:w-auto text-sm" 
                   onClick={onAddClient}

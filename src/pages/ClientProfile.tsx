@@ -71,25 +71,25 @@ export default function ClientProfile() {
   };
 
   return (
-    <div className="space-y-6 animate-in">
+    <div className="space-y-4 sm:space-y-6 animate-in">
       {/* Header */}
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
         <Link to="/dashboard/clients">
-          <Button variant="ghost" size="sm" className="gap-2">
+          <Button variant="ghost" size="sm" className="gap-2 w-full sm:w-auto">
             <ArrowLeft size={16} />
             Back to Clients
           </Button>
         </Link>
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold">{client.name}</h1>
-          <p className="text-muted-foreground">Client Profile & Details</p>
+        <div className="flex-1 min-w-0">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold truncate">{client.name}</h1>
+          <p className="text-muted-foreground text-sm sm:text-base">Client Profile & Details</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" className="gap-2">
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <Button variant="outline" className="gap-2 w-full sm:w-auto text-sm">
             <Edit size={16} />
             Edit Client
           </Button>
-          <Button className="gap-2">
+          <Button className="gap-2 w-full sm:w-auto text-sm">
             <Plus size={16} />
             Add Deal
           </Button>
@@ -98,32 +98,32 @@ export default function ClientProfile() {
 
       {/* Client Overview */}
       <Card>
-        <CardContent className="p-6">
-          <div className="flex items-start gap-6">
-            <Avatar className="h-20 w-20">
-              <AvatarFallback className="bg-primary/10 text-primary font-bold text-xl">
+        <CardContent className="p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
+            <Avatar className="h-16 w-16 sm:h-20 sm:w-20 flex-shrink-0">
+              <AvatarFallback className="bg-primary/10 text-primary font-bold text-lg sm:text-xl">
                 {client.avatar}
               </AvatarFallback>
             </Avatar>
             
-            <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="space-y-3">
+            <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+              <div className="space-y-2 sm:space-y-3">
                 <div>
-                  <h3 className="font-semibold text-lg">{client.contact}</h3>
-                  <p className="text-muted-foreground">Primary Contact</p>
+                  <h3 className="font-semibold text-base sm:text-lg">{client.contact}</h3>
+                  <p className="text-muted-foreground text-sm">Primary Contact</p>
                 </div>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm">
-                    <Mail className="h-4 w-4 text-muted-foreground" />
-                    <span>{client.email}</span>
+                <div className="space-y-1 sm:space-y-2">
+                  <div className="flex items-center gap-2 text-xs sm:text-sm">
+                    <Mail className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                    <span className="truncate">{client.email}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Phone className="h-4 w-4 text-muted-foreground" />
-                    <span>{client.phone}</span>
+                  <div className="flex items-center gap-2 text-xs sm:text-sm">
+                    <Phone className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                    <span className="truncate">{client.phone}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Globe className="h-4 w-4 text-muted-foreground" />
-                    <span>{client.website}</span>
+                  <div className="flex items-center gap-2 text-xs sm:text-sm">
+                    <Globe className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                    <span className="truncate">{client.website}</span>
                   </div>
                 </div>
               </div>

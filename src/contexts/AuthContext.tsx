@@ -116,6 +116,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(false);
   const [initializing, setInitializing] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [wasAuthenticated, setWasAuthenticated] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -141,6 +142,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setSession(null);
     setLoading(false);
     setError(null);
+    setWasAuthenticated(false);
     
     // Clear storage
     try {
@@ -185,16 +187,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setSession(session);
     setUser(session?.user ?? null);
 
-    // --- SESSION EXPIRY & INVALID TOKEN HANDLING ---
-    if (event === 'SIGNED_OUT' || event === 'USER_DELETED' || !session) {
-      // If the user was previously logged in, force logout and show message
+    // --- FIXED SESSION EXPIRY & INVALID TOKEN HANDLING ---
+    if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+      // User explicitly signed out or was deleted
       forceLogout('Your session has expired or is invalid. Please log in again.');
       setInitializing(false);
       return;
     }
-    // --- END SESSION HANDLING ---
 
     if (session?.user) {
+      // User is authenticated
+      setWasAuthenticated(true);
       if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
         const profile = await fetchUserProfile(session.user.id);
         setUserProfile(profile);
@@ -205,10 +208,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
     } else {
+      // No session - only force logout if user was previously authenticated
+      if (wasAuthenticated) {
+        forceLogout('Your session has expired or is invalid. Please log in again.');
+        setInitializing(false);
+        return;
+      }
+      // New visitor - just clear profile and continue
       setUserProfile(null);
+      setWasAuthenticated(false);
     }
     setInitializing(false);
-  }, [forceLogout]);
+  }, [forceLogout, wasAuthenticated]);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthStateChange);

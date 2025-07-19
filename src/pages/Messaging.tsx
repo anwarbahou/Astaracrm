@@ -706,46 +706,20 @@ export default function Messaging() {
   }, [showChannelInfo, selectedChannel]);
 
   return (
-    <div className="h-[calc(100vh-4rem)] flex">
+    <div className="h-[calc(100vh-4rem)] sm:h-[calc(100vh-4rem)] flex flex-col sm:flex-row bg-background">
       <audio ref={audioRef} src="/notificationsound.mp3" preload="auto" />
       {tablesExist === false ? (
-        <div className="flex-1 flex items-center justify-center">
-          <Card className="w-96 p-6">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold mb-4">Chat Setup Required</h2>
-              <p className="text-muted-foreground mb-6">
-                The chat system requires database tables to be created. Please run the following SQL migration in your Supabase dashboard:
-              </p>
-              <div className="bg-muted p-4 rounded-lg mb-6 text-left text-sm font-mono overflow-x-auto">
-                <pre className="whitespace-pre-wrap">
-{`-- Create channels table
-CREATE TABLE IF NOT EXISTS public.channels (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name TEXT NOT NULL,
-    created_by UUID NOT NULL REFERENCES auth.users(id),
-    is_private BOOLEAN DEFAULT false,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
-);
-
--- Create channel_members table
-CREATE TABLE IF NOT EXISTS public.channel_members (
-    channel_id UUID REFERENCES public.channels(id) ON DELETE CASCADE,
-    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-    joined_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
-    PRIMARY KEY (channel_id, user_id)
-);
-
--- Create messages table
-CREATE TABLE IF NOT EXISTS public.messages (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    channel_id UUID NOT NULL REFERENCES public.channels(id) ON DELETE CASCADE,
-    sender_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-    content TEXT NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
-);`}
-                </pre>
+        <div className="flex-1 flex items-center justify-center p-4 sm:p-6">
+          <Card className="w-full max-w-md p-6">
+            <div className="text-center space-y-4">
+              <div className="mx-auto w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                <Info className="h-6 w-6 text-yellow-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold">Chat Setup Required</h3>
+                <p className="text-sm text-muted-foreground mt-2">
+                  The chat system needs to be initialized. Please run the database migration to create the required tables.
+                </p>
               </div>
               <Button 
                 onClick={() => window.location.reload()} 
@@ -759,14 +733,14 @@ CREATE TABLE IF NOT EXISTS public.messages (
       ) : (
         <>
           {/* Sidebar with channels and users */}
-          <Card className="w-80 h-full border-r flex flex-col">
+          <Card className="w-full sm:w-80 h-full border-r flex flex-col">
             {/* Conversations section */}
-            <div className="p-6 border-b">
+            <div className="p-3 sm:p-6 border-b">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="font-semibold">Conversations</h2>
+                <h2 className="font-semibold text-sm sm:text-base">Conversations</h2>
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button variant="outline" size="icon" disabled={loading}>
+                    <Button variant="outline" size="icon" disabled={loading} className="h-8 w-8">
                       <Plus className="h-4 w-4" />
                     </Button>
                   </DialogTrigger>

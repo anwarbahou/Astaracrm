@@ -162,7 +162,7 @@ function Dashboard() {
 
   return (
     <>
-      <div className="space-y-4 sm:space-y-6 animate-in px-16 sm:px-0 24px">
+      <div className="space-y-4 sm:space-y-6 animate-in">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="min-w-0 flex-1">
@@ -171,7 +171,7 @@ function Dashboard() {
               {t("dashboard.welcomeMessage")}
             </p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-2 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
             <Button 
               variant="outline" 
               onClick={() => setAddContactOpen(true)}
@@ -196,11 +196,11 @@ function Dashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {stats.map((stat, index) => (
             <Card key={index} className="hover:shadow-md transition-shadow duration-200">
-              <CardContent className="p-4 sm:p-6">
+              <CardContent className="p-3 sm:p-4 md:p-6">
                 <div className="flex items-center justify-between">
                   <div className="min-w-0 flex-1">
                     <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">{stat.title}</p>
-                    <p className="text-xl sm:text-2xl font-bold mt-1">{stat.value}</p>
+                    <p className="text-lg sm:text-xl md:text-2xl font-bold mt-1">{stat.value}</p>
                   </div>
                   <div className={`p-2 rounded-full flex-shrink-0 ${stat.trend === 'up' ? 'bg-green-100' : 'bg-red-100'}`}>
                     {stat.trend === 'up' ? 
@@ -209,7 +209,7 @@ function Dashboard() {
                     }
                   </div>
                 </div>
-                <div className="mt-3 sm:mt-4 flex items-center gap-2">
+                <div className="mt-2 sm:mt-3 md:mt-4 flex items-center gap-2">
                   <span className={`text-xs font-medium ${stat.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
                     {stat.change}
                   </span>
@@ -224,8 +224,8 @@ function Dashboard() {
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
           {/* Recent Deals */}
           <Card className="w-full">
-            <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0 pb-4">
-              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0 pb-3 sm:pb-4">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg md:text-xl">
                 <DollarSign className="h-4 w-4 sm:h-5 sm:w-5" />
                 {t("dashboard.recentDeals")}
               </CardTitle>
@@ -234,9 +234,9 @@ function Dashboard() {
                 {t("dashboard.viewAll")}
               </Button>
             </CardHeader>
-            <CardContent className="space-y-3 sm:space-y-4">
+            <CardContent className="space-y-2 sm:space-y-3 md:space-y-4">
               {recentDeals.map((deal) => (
-                <div key={deal.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-lg border border-border gap-3 sm:gap-2">
+                <div key={deal.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-2 sm:p-3 rounded-lg border border-border gap-2 sm:gap-3">
                   <div className="flex-1 min-w-0">
                     <p className="font-medium truncate text-sm sm:text-base">{deal.client}</p>
                     <p className="text-xs sm:text-sm text-muted-foreground">{deal.value}</p>
@@ -254,8 +254,8 @@ function Dashboard() {
 
           {/* Upcoming Tasks */}
           <Card className="w-full">
-            <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0 pb-4">
-              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between space-y-2 sm:space-y-0 pb-3 sm:pb-4">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg md:text-xl">
                 <Calendar className="h-4 w-4 sm:h-5 sm:w-5" />
                 {t("dashboard.upcomingTasks")}
               </CardTitle>
@@ -264,9 +264,9 @@ function Dashboard() {
                 {t("dashboard.viewAll")}
               </Button>
             </CardHeader>
-            <CardContent className="space-y-3 sm:space-y-4">
+            <CardContent className="space-y-2 sm:space-y-3 md:space-y-4">
               {upcomingTasks.map((task) => (
-                <div key={task.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-lg border border-border gap-3 sm:gap-2">
+                <div key={task.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-2 sm:p-3 rounded-lg border border-border gap-2 sm:gap-3">
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-sm sm:text-base leading-tight">{task.title}</p>
                     <p className="text-xs sm:text-sm text-muted-foreground mt-1">{formatDueDate(task.due)}</p>
@@ -282,15 +282,15 @@ function Dashboard() {
 
         {/* Recent Activities - Full Width */}
         <Card className="w-full">
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+          <CardHeader className="pb-3 sm:pb-4">
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg md:text-xl">
               <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
               {t("dashboard.recentActivities")}
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3 sm:space-y-4">
+          <CardContent className="space-y-2 sm:space-y-3 md:space-y-4">
             {recentActivities.map((activity) => (
-              <div key={activity.id} className="flex items-start gap-3 sm:gap-4 p-3 rounded-lg border border-border">
+              <div key={activity.id} className="flex items-start gap-2 sm:gap-3 md:gap-4 p-2 sm:p-3 rounded-lg border border-border">
                 <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0 mt-2"></div>
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-sm sm:text-base leading-tight">{activity.action}</p>

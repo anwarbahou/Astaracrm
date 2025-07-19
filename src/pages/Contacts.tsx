@@ -120,12 +120,12 @@ export default withPageTitle(function Contacts() {
 
   return (
     <>
-      <div className="space-y-6 animate-in">
+      <div className="space-y-4 sm:space-y-6 animate-in">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">{t('contacts.title')}</h1>
-            <p className="text-muted-foreground mt-1">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">{t('contacts.title')}</h1>
+            <p className="text-muted-foreground mt-1 text-sm sm:text-base">
               {t('contacts.description')}
               {userProfile?.role === 'admin' && (
                 <span className="block text-sm text-primary font-medium mt-1">
@@ -134,12 +134,12 @@ export default withPageTitle(function Contacts() {
               )}
             </p>
           </div>
-          <div className="flex gap-2">
-            <Button className="gap-2" onClick={() => setAddContactOpen(true)}>
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <Button className="gap-2 w-full sm:w-auto text-sm" onClick={() => setAddContactOpen(true)}>
               <Plus size={16} />
               {t('contacts.addContact')}
             </Button>
-            <Button variant="outline" className="gap-2" onClick={() => setIsImportModalOpen(true)}>
+            <Button variant="outline" className="gap-2 w-full sm:w-auto text-sm" onClick={() => setIsImportModalOpen(true)}>
               <Upload size={16} />
               {t('contacts.importContacts')}
             </Button>
@@ -147,36 +147,36 @@ export default withPageTitle(function Contacts() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid gap-3 sm:gap-4 grid-cols-2 md:grid-cols-4">
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-3 sm:p-4 md:p-6">
               <div className="text-center">
-                <p className="text-2xl font-bold">{contacts.length}</p>
-                <p className="text-sm text-muted-foreground">{t('contacts.stats.total')}</p>
+                <p className="text-lg sm:text-xl md:text-2xl font-bold">{contacts.length}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">{t('contacts.stats.total')}</p>
               </div>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-3 sm:p-4 md:p-6">
               <div className="text-center">
-                <p className="text-2xl font-bold">{contacts.filter(c => c.status === "Active").length}</p>
-                <p className="text-sm text-muted-foreground">{t('contacts.stats.active')}</p>
+                <p className="text-lg sm:text-xl md:text-2xl font-bold">{contacts.filter(c => c.status === "Active").length}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">{t('contacts.stats.active')}</p>
               </div>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-3 sm:p-4 md:p-6">
               <div className="text-center">
-                <p className="text-2xl font-bold">{contacts.filter(c => c.tags.includes("Decision Maker")).length}</p>
-                <p className="text-sm text-muted-foreground">{t('contacts.stats.decisionMakers')}</p>
+                <p className="text-lg sm:text-xl md:text-2xl font-bold">{contacts.filter(c => c.tags.includes("Decision Maker")).length}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">{t('contacts.stats.decisionMakers')}</p>
               </div>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-3 sm:p-4 md:p-6">
               <div className="text-center">
-                <p className="text-2xl font-bold">{new Set(contacts.map(c => c.company)).size}</p>
-                <p className="text-sm text-muted-foreground">{t('contacts.stats.companies')}</p>
+                <p className="text-lg sm:text-xl md:text-2xl font-bold">{new Set(contacts.map(c => c.company)).size}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground">{t('contacts.stats.companies')}</p>
               </div>
             </CardContent>
           </Card>

@@ -162,16 +162,16 @@ function Notes() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <h1 className="text-2xl font-semibold text-foreground">Notes</h1>
-              <p className="text-sm text-muted-foreground">
+        <div className="container mx-auto px-2 sm:px-4 md:px-6 py-3 sm:py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-xl sm:text-2xl font-semibold text-foreground">Notes</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Capture ideas, meeting notes, and important information
               </p>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
               {/* Search */}
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -179,7 +179,7 @@ function Notes() {
                   placeholder="Search notes..."
                   value={filters.search}
                   onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                  className="pl-10 w-64"
+                  className="pl-10 w-full sm:w-64"
                 />
               </div>
               
@@ -189,7 +189,7 @@ function Notes() {
               {/* Create Note Button */}
               <Button 
                 onClick={() => setNoteModalOpen(true)}
-                className="gap-2 bg-primary hover:bg-primary/90"
+                className="gap-2 bg-primary hover:bg-primary/90 w-full sm:w-auto text-sm"
               >
                 <Plus size={16} />
                 New Note

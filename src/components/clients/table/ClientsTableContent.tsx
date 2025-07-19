@@ -87,12 +87,12 @@ export function ClientsTableContent({
       className="cursor-pointer hover:shadow-md transition-shadow duration-200 mb-3"
       onClick={() => onClientClick(client)}
     >
-      <CardContent className="p-4">
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex items-center gap-3 min-w-0 flex-1">
+      <CardContent className="p-3 sm:p-4">
+        <div className="flex items-start justify-between mb-2 sm:mb-3">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
             <div className="min-w-0 flex-1">
-              <h3 className="font-semibold text-base truncate">{client.name}</h3>
-              <p className="text-sm text-muted-foreground truncate">{client.industry}</p>
+              <h3 className="font-semibold text-sm sm:text-base truncate">{client.name}</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground truncate">{client.industry}</p>
             </div>
           </div>
           <Badge className={`${getStageColor(client.stage)} text-white text-xs flex-shrink-0`}>
@@ -100,35 +100,35 @@ export function ClientsTableContent({
           </Badge>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 text-sm">
-          <div className="flex items-center gap-2">
+        <div className="grid grid-cols-2 gap-1 sm:gap-2 text-xs sm:text-sm">
+          <div className="flex items-center gap-1 sm:gap-2">
             <MapPin className="h-3 w-3 text-muted-foreground flex-shrink-0" />
             <span className="text-muted-foreground truncate">{client.country}</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             <Users className="h-3 w-3 text-muted-foreground flex-shrink-0" />
             <span className="text-muted-foreground">{client.contactsCount}</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             <DollarSign className="h-3 w-3 text-muted-foreground flex-shrink-0" />
             <span className="font-medium truncate">{formatCurrency(client.totalDealValue)}</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             <Calendar className="h-3 w-3 text-muted-foreground flex-shrink-0" />
             <span className="text-muted-foreground truncate">{formatLastInteraction(client.lastInteraction)}</span>
           </div>
         </div>
 
         {client.tags.length > 0 && (
-          <div className="flex gap-1 flex-wrap mt-3">
-            {client.tags.slice(0, 3).map((tag, index) => (
+          <div className="flex gap-1 flex-wrap mt-2 sm:mt-3">
+            {client.tags.slice(0, 2).map((tag, index) => (
               <Badge key={index} variant="secondary" className="text-xs">
                 {tag}
               </Badge>
             ))}
-            {client.tags.length > 3 && (
+            {client.tags.length > 2 && (
               <Badge variant="outline" className="text-xs">
-                +{client.tags.length - 3}
+                +{client.tags.length - 2}
               </Badge>
             )}
           </div>
@@ -140,7 +140,7 @@ export function ClientsTableContent({
   return (
     <>
       {/* Mobile View - Card Layout */}
-      <div className="lg:hidden">
+      <div className="md:hidden">
         {clients.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-muted-foreground">{t('clients.table.noClients')}</p>
@@ -155,7 +155,7 @@ export function ClientsTableContent({
       </div>
 
       {/* Desktop View - Table Layout */}
-      <div className="hidden lg:block overflow-x-auto">
+      <div className="hidden md:block overflow-x-auto">
         <Table>
           <TableHeader className="sticky top-0 bg-background z-10">
             <TableRow>

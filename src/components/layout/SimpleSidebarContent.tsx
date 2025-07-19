@@ -3,20 +3,31 @@ import { cn } from "@/lib/utils";
 import { navigationItems } from "@/data/navigationData";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
-import IconLogo from '/public/Logos/ICON.svg?react';
-import SkultixLogo from '/public/Logos/SKULTIX.svg?react';
 import { useSidebar } from '@/components/ui/sidebar/SidebarContext';
 
 export function SimpleSidebarContent() {
   const { t } = useTranslation();
   const location = useLocation();
   const { userProfile } = useAuth();
-  const { open: isSidebarOpen } = useSidebar();
+  
+  // Try to use sidebar context, but provide fallback if not available
+  let sidebarContext;
+  try {
+    sidebarContext = useSidebar();
+  } catch (error) {
+    // If sidebar context is not available, use fallback values
+    sidebarContext = {
+      open: true, // Default to open for mobile sidebar
+      state: "expanded"
+    };
+  }
+
+  const { open: isSidebarOpen } = sidebarContext;
 
   // Filter navigation items based on user role
   const filteredNavigationItems = navigationItems.filter(item => {
     if (!item.roles) return true;
-    return userProfile?.role && item.roles.includes(userProfile.role);
+    return userProfile?.role && item.roles.includes(userProfile.role as any);
   });
 
   return (
@@ -25,9 +36,9 @@ export function SimpleSidebarContent() {
       <div className="p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-3">
           {isSidebarOpen ? (
-            <SkultixLogo className="h-8" />
+            <img src="/Logos/SKULTIX.svg" alt="Logo" className="h-8" />
           ) : (
-            <IconLogo className="h-8" />
+            <img src="/Logos/ICON.svg" alt="Logo" className="h-8" />
           )}
         </div>
       </div>

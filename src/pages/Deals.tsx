@@ -300,7 +300,7 @@ function Deals() {
   const allTags = Array.from(new Set(deals.flatMap(deal => deal.tags || [])));
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-4 sm:space-y-6 p-2 sm:p-4 md:p-6">
       {/* Error Alert */}
       {dealsError && (
         <Alert variant="destructive">
@@ -313,19 +313,19 @@ function Deals() {
       )}
 
       {/* Header Section */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <h1 className="text-2xl font-bold">{t('deals.title')}</h1>
-          <Badge variant="secondary" className="text-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+          <h1 className="text-xl sm:text-2xl font-bold">{t('deals.title')}</h1>
+          <Badge variant="secondary" className="text-xs sm:text-sm w-fit">
             {filteredDeals.length} {t('deals.total')}
           </Badge>
         </div>
-        <div className="flex items-center gap-2">
-          <Button onClick={() => setImportModalOpen(true)} variant="outline" className="gap-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+          <Button onClick={() => setImportModalOpen(true)} variant="outline" className="gap-2 w-full sm:w-auto text-sm">
             <Upload className="h-4 w-4" />
             {t('deals.actions.import')}
           </Button>
-          <Button onClick={() => handleOpenAddDeal('Prospect')} className="gap-2">
+          <Button onClick={() => handleOpenAddDeal('Prospect')} className="gap-2 w-full sm:w-auto text-sm">
             <Plus className="h-4 w-4" />
             {t('deals.actions.add')}
           </Button>
@@ -423,35 +423,35 @@ function Deals() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-xs sm:text-sm font-medium">
               {t('deals.stats.totalValue')}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalValue.toLocaleString()} MAD</div>
+            <div className="text-lg sm:text-xl md:text-2xl font-bold">{totalValue.toLocaleString()} MAD</div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-xs sm:text-sm font-medium">
               {t('deals.stats.wonDeals')}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{wonDeals.length}</div>
+            <div className="text-lg sm:text-xl md:text-2xl font-bold">{wonDeals.length}</div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-xs sm:text-sm font-medium">
               {t('deals.stats.avgDealSize')}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-lg sm:text-xl md:text-2xl font-bold">
               {filteredDeals.length > 0 
                 ? Math.round(totalValue / filteredDeals.length).toLocaleString()
                 : 0} MAD

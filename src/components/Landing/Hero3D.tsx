@@ -44,7 +44,7 @@ const Icon3D = () => {
       ref={meshRef}
       geometry={geometry}
       position={[0, 0, 0]}
-      rotation={[0, 0, 0]} // Stand upright
+      rotation={[-Math.PI / 2, 0, 0]}
       castShadow
       receiveShadow
     >
@@ -91,8 +91,6 @@ export const Hero3D = () => {
               autoRotateSpeed={2}
               enableDamping
               dampingFactor={0.05}
-              minPolarAngle={Math.PI / 2}
-              maxPolarAngle={Math.PI / 2}
             />
           </Suspense>
         </ErrorBoundary>

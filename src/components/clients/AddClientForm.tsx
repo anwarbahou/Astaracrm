@@ -4,7 +4,6 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { notificationService } from '@/services/notificationService';
-import type { Database } from '@/integrations/supabase/types';
 
 import {
   BasicInfoSection,
@@ -15,7 +14,20 @@ import {
 
 import { Button } from '@/components/ui/button';
 
-type ClientInsert = Database['public']['Tables']['clients']['Insert'];
+interface ClientInsert {
+  name: string;
+  email?: string | null;
+  phone?: string | null;
+  industry?: string | null;
+  stage?: string | null;
+  country?: string | null;
+  notes?: string | null;
+  tags?: string[] | null;
+  owner_id: string;
+  contacts_count?: number;
+  total_deal_value?: number;
+  status?: string;
+}
 
 export interface ClientFormData {
   name: string;
@@ -56,7 +68,7 @@ export function AddClientForm({ onOpenChange, onClientAdded }: AddClientFormProp
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.email) {
+    if (!formData.name) {
       toast({
         title: t('clients.toasts.addClient.error.title'),
         description: t('clients.toasts.addClient.error.missingFields'),
@@ -82,14 +94,14 @@ export function AddClientForm({ onOpenChange, onClientAdded }: AddClientFormProp
         email: formData.email,
         phone: formData.phone || null,
         industry: formData.industry || null,
-        stage: (formData.stage || 'lead') as Database['public']['Enums']['client_stage'],
+        stage: formData.stage || 'lead',
         country: formData.country || null,
         notes: formData.notes || null,
         tags: formData.tags.length > 0 ? formData.tags : null,
         owner_id: user.id,
         contacts_count: 0,
         total_deal_value: 0,
-        status: 'active' as Database['public']['Enums']['user_status'],
+        status: 'active',
       };
 
       const { data, error } = await supabase
@@ -115,7 +127,7 @@ export function AddClientForm({ onOpenChange, onClientAdded }: AddClientFormProp
           data.id,
           {
             userId: user.id,
-            userRole: userProfile.role
+            userRole: userProfile.role as 'admin' | 'manager' | 'user'
           }
         );
       }

@@ -39,7 +39,6 @@ export const BasicInfoSection = ({ formData, setFormData }: BasicInfoSectionProp
           value={formData.email}
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           placeholder={t('addClientModal.emailPlaceholder')}
-          required
         />
       </div>
       <div>

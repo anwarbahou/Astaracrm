@@ -4,12 +4,12 @@ import type { Database } from './types';
 
 // Debug: Log environment variables (only in development)
 if (import.meta.env.DEV) {
-  console.log('=== SUPABASE CLIENT DEBUG ===');
-  console.log('VITE_SUPABASE_URL:', import.meta.env.VITE_SUPABASE_URL);
-  console.log('VITE_SUPABASE_ANON_KEY:', import.meta.env.VITE_SUPABASE_ANON_KEY ? 'SET' : 'NOT SET');
-  console.log('NEXT_PUBLIC_SUPABASE_URL:', import.meta.env.NEXT_PUBLIC_SUPABASE_URL);
-  console.log('NEXT_PUBLIC_SUPABASE_ANON_KEY:', import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'SET' : 'NOT SET');
-  console.log('================================');
+console.log('=== SUPABASE CLIENT DEBUG ===');
+console.log('VITE_SUPABASE_URL:', import.meta.env.VITE_SUPABASE_URL);
+console.log('VITE_SUPABASE_ANON_KEY:', import.meta.env.VITE_SUPABASE_ANON_KEY ? 'SET' : 'NOT SET');
+console.log('NEXT_PUBLIC_SUPABASE_URL:', import.meta.env.NEXT_PUBLIC_SUPABASE_URL);
+console.log('NEXT_PUBLIC_SUPABASE_ANON_KEY:', import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'SET' : 'NOT SET');
+console.log('================================');
 }
 
 // Try both VITE_ and NEXT_PUBLIC_ prefixes
@@ -23,12 +23,12 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   // In development, show detailed error
   if (import.meta.env.DEV) {
     console.error('❌', errorMessage);
-    console.error('Please ensure you have the following in your .env file:');
-    console.error('VITE_SUPABASE_URL=your_project_url');
-    console.error('VITE_SUPABASE_ANON_KEY=your_anon_key');
-    console.error('Or with NEXT_PUBLIC_ prefix:');
-    console.error('NEXT_PUBLIC_SUPABASE_URL=your_project_url');
-    console.error('NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key');
+  console.error('Please ensure you have the following in your .env file:');
+  console.error('VITE_SUPABASE_URL=your_project_url');
+  console.error('VITE_SUPABASE_ANON_KEY=your_anon_key');
+  console.error('Or with NEXT_PUBLIC_ prefix:');
+  console.error('NEXT_PUBLIC_SUPABASE_URL=your_project_url');
+  console.error('NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key');
     console.error('');
     console.error('📝 To fix this:');
     console.error('1. Create a .env file in your project root');
@@ -126,14 +126,14 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, 
 
 // Enhanced auth state change logging (only in development)
 if (import.meta.env.DEV) {
-  supabase.auth.onAuthStateChange((event, session) => {
-    console.log('🔐 Auth State Change:', {
-      event,
-      sessionExists: !!session,
-      userId: session?.user?.id,
-      timestamp: new Date().toISOString()
-    });
+supabase.auth.onAuthStateChange((event, session) => {
+  console.log('🔐 Auth State Change:', {
+    event,
+    sessionExists: !!session,
+    userId: session?.user?.id,
+    timestamp: new Date().toISOString()
   });
+});
 }
 
 export const SUPABASE_URL_EXPORT = SUPABASE_URL;

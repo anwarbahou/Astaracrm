@@ -149,29 +149,29 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
             <div className="flex items-start justify-between w-full">
               <div className="space-y-2 flex-1 min-w-0">
                 <SheetTitle className="text-xl sm:text-2xl font-semibold flex items-center gap-2">
-                  {isEditing ? (
-                    <Input
-                      value={editedDeal.name}
-                      onChange={(e) => updateField('name', e.target.value)}
+                {isEditing ? (
+                  <Input
+                    value={editedDeal.name}
+                    onChange={(e) => updateField('name', e.target.value)}
                       className="text-xl sm:text-2xl font-semibold h-9 bg-transparent border-none p-0 focus-visible:ring-0"
                       placeholder="Deal name..."
-                    />
-                  ) : (
+                  />
+                ) : (
                     <span className="truncate">{editedDeal.name}</span>
-                  )}
-                </SheetTitle>
+                )}
+              </SheetTitle>
                 <SheetDescription className="flex flex-wrap items-center gap-2">
                   <Badge variant="secondary" className={`${getStageColor(editedDeal.stage)} text-white text-xs`}>
-                    {editedDeal.stage}
-                  </Badge>
+                  {editedDeal.stage}
+                </Badge>
                   <Badge variant="outline" className={`${getPriorityColor(editedDeal.priority)} text-white text-xs`}>
-                    {editedDeal.priority} Priority
-                  </Badge>
+                  {editedDeal.priority} Priority
+                </Badge>
                   <span className="text-muted-foreground text-xs">
-                    Created {new Date(editedDeal.created_at).toLocaleDateString()}
-                  </span>
-                </SheetDescription>
-              </div>
+                  Created {new Date(editedDeal.created_at).toLocaleDateString()}
+                </span>
+              </SheetDescription>
+            </div>
               
               {/* Action buttons */}
               <div className="flex items-center gap-2 ml-4">
@@ -180,25 +180,25 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
                     <X className="h-4 w-4" />
                   </Button>
                 </SheetClose>
-                {isEditing ? (
-                  <>
+              {isEditing ? (
+                <>
                     <Button variant="outline" size="sm" onClick={() => setIsEditing(false)}>
-                      Cancel
-                    </Button>
+                    Cancel
+                  </Button>
                     <Button size="sm" onClick={handleSave}>
-                      <Save className="w-4 h-4 mr-2" />
+                    <Save className="w-4 h-4 mr-2" />
                       Save
-                    </Button>
-                  </>
-                ) : (
+                  </Button>
+                </>
+              ) : (
                   <Button variant="destructive" size="sm" onClick={handleDelete}>
                     <Trash2 className="w-4 h-4 mr-2" />
                     Delete
                   </Button>
-                )}
-              </div>
+              )}
             </div>
-          </SheetHeader>
+          </div>
+        </SheetHeader>
 
           <Separator className="mx-6" />
 
@@ -222,98 +222,98 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
                       disabled={!isEditing}
                       className="h-10"
                     />
-                  </div>
+                </div>
                   <div className="space-y-2">
                     <Label htmlFor="client" className="text-sm font-medium">Client</Label>
-                    <Select
-                      value={editedDeal.clientId || ''}
-                      onValueChange={v => {
-                        const selectedClient = allClients.find(c => c.id === v);
-                        updateField('clientId', v);
-                        updateField('client', selectedClient?.name || '');
-                      }}
-                      disabled={!isEditing || clientsLoading}
-                    >
+                  <Select
+                    value={editedDeal.clientId || ''}
+                    onValueChange={v => {
+                      const selectedClient = allClients.find(c => c.id === v);
+                      updateField('clientId', v);
+                      updateField('client', selectedClient?.name || '');
+                    }}
+                    disabled={!isEditing || clientsLoading}
+                  >
                       <SelectTrigger className="h-10">
                         <SelectValue placeholder="Select client" />
                       </SelectTrigger>
+                    <SelectContent>
+                      {clientsLoading ? (
+                        <SelectItem value="loading" disabled>Loading clients...</SelectItem>
+                      ) : allClients.length === 0 ? (
+                        <SelectItem value="none" disabled>No clients available</SelectItem>
+                  ) : (
+                        allClients.map((client) => (
+                          <SelectItem key={client.id} value={client.id}>{client.name}</SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="owner" className="text-sm font-medium">Owner</Label>
+                  {userRole === 'admin' ? (
+                    <Select
+                      value={editedDeal.ownerId || ''}
+                      onValueChange={v => {
+                        const selectedUser = allUsers.find(u => u.id === v);
+                        updateField('ownerId', v);
+                        updateField('owner', selectedUser?.name || '');
+                      }}
+                      disabled={!isEditing || usersLoading}
+                    >
+                        <SelectTrigger className="h-10">
+                          <SelectValue placeholder="Select owner" />
+                        </SelectTrigger>
                       <SelectContent>
-                        {clientsLoading ? (
-                          <SelectItem value="loading" disabled>Loading clients...</SelectItem>
-                        ) : allClients.length === 0 ? (
-                          <SelectItem value="none" disabled>No clients available</SelectItem>
+                        {usersLoading ? (
+                          <SelectItem value="loading" disabled>Loading users...</SelectItem>
+                        ) : allUsers.length === 0 ? (
+                          <SelectItem value="none" disabled>No users available</SelectItem>
                         ) : (
-                          allClients.map((client) => (
-                            <SelectItem key={client.id} value={client.id}>{client.name}</SelectItem>
+                          allUsers.map((user) => (
+                            <SelectItem key={user.id} value={user.id}>{user.name}</SelectItem>
                           ))
                         )}
                       </SelectContent>
                     </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="owner" className="text-sm font-medium">Owner</Label>
-                    {userRole === 'admin' ? (
-                      <Select
-                        value={editedDeal.ownerId || ''}
-                        onValueChange={v => {
-                          const selectedUser = allUsers.find(u => u.id === v);
-                          updateField('ownerId', v);
-                          updateField('owner', selectedUser?.name || '');
-                        }}
-                        disabled={!isEditing || usersLoading}
-                      >
-                        <SelectTrigger className="h-10">
-                          <SelectValue placeholder="Select owner" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {usersLoading ? (
-                            <SelectItem value="loading" disabled>Loading users...</SelectItem>
-                          ) : allUsers.length === 0 ? (
-                            <SelectItem value="none" disabled>No users available</SelectItem>
-                          ) : (
-                            allUsers.map((user) => (
-                              <SelectItem key={user.id} value={user.id}>{user.name}</SelectItem>
-                            ))
-                          )}
-                        </SelectContent>
-                      </Select>
-                    ) : (
-                      <Input
-                        id="owner"
-                        value={editedDeal.owner}
-                        disabled
+                  ) : (
+                    <Input
+                      id="owner"
+                      value={editedDeal.owner}
+                      disabled
                         className="h-10"
-                      />
-                    )}
-                  </div>
+                    />
+                  )}
+                </div>
                   <div className="space-y-2">
                     <Label htmlFor="stage" className="text-sm font-medium">Stage</Label>
-                    <Select value={editedDeal.stage} onValueChange={v => updateField('stage', v as DealStage)} disabled={!isEditing}>
+                  <Select value={editedDeal.stage} onValueChange={v => updateField('stage', v as DealStage)} disabled={!isEditing}>
                       <SelectTrigger className="h-10">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Prospect">Prospect</SelectItem>
-                        <SelectItem value="Lead">Lead</SelectItem>
-                        <SelectItem value="Qualified">Qualified</SelectItem>
-                        <SelectItem value="Proposal">Proposal</SelectItem>
-                        <SelectItem value="Negotiation">Negotiation</SelectItem>
-                        <SelectItem value="Won/Lost">Won/Lost</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                    <SelectContent>
+                      <SelectItem value="Prospect">Prospect</SelectItem>
+                      <SelectItem value="Lead">Lead</SelectItem>
+                      <SelectItem value="Qualified">Qualified</SelectItem>
+                      <SelectItem value="Proposal">Proposal</SelectItem>
+                      <SelectItem value="Negotiation">Negotiation</SelectItem>
+                      <SelectItem value="Won/Lost">Won/Lost</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                   <div className="space-y-2">
                     <Label htmlFor="priority" className="text-sm font-medium">Priority</Label>
-                    <Select value={editedDeal.priority} onValueChange={v => updateField('priority', v as Deal['priority'])} disabled={!isEditing}>
+                  <Select value={editedDeal.priority} onValueChange={v => updateField('priority', v as Deal['priority'])} disabled={!isEditing}>
                       <SelectTrigger className="h-10">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="High">High</SelectItem>
-                        <SelectItem value="Medium">Medium</SelectItem>
-                        <SelectItem value="Low">Low</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <SelectContent>
+                      <SelectItem value="High">High</SelectItem>
+                      <SelectItem value="Medium">Medium</SelectItem>
+                      <SelectItem value="Low">Low</SelectItem>
+                    </SelectContent>
+                  </Select>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="tags" className="text-sm font-medium">Tags</Label>
@@ -325,7 +325,7 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
                       placeholder="Enter tags separated by commas"
                       className="h-10"
                     />
-                  </div>
+            </div>
                 </div>
               </TabsContent>
 
@@ -341,7 +341,7 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
                       disabled={!isEditing}
                       className="h-10"
                     />
-                  </div>
+                </div>
                   <div className="space-y-2">
                     <Label htmlFor="currency" className="text-sm font-medium">Currency</Label>
                     <Input 
@@ -351,7 +351,7 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
                       disabled={!isEditing}
                       className="h-10"
                     />
-                  </div>
+                </div>
                   <div className="space-y-2">
                     <Label htmlFor="probability" className="text-sm font-medium">Probability (%)</Label>
                     <Input 
@@ -362,7 +362,7 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
                       disabled={!isEditing}
                       className="h-10"
                     />
-                  </div>
+                          </div>
                   <div className="space-y-2">
                     <Label htmlFor="expectedCloseDate" className="text-sm font-medium">Expected Close Date</Label>
                     <Input 
@@ -373,7 +373,7 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
                       disabled={!isEditing}
                       className="h-10"
                     />
-                  </div>
+                      </div>
                 </div>
               </TabsContent>
 
@@ -388,7 +388,7 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
                       disabled={!isEditing}
                       className="h-10"
                     />
-                  </div>
+                </div>
                   <div className="space-y-2">
                     <Label htmlFor="notes" className="text-sm font-medium">Notes</Label>
                     <Textarea 
@@ -400,9 +400,9 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
                       className="min-h-[120px] resize-none"
                     />
                   </div>
-                </div>
+          </div>
               </TabsContent>
-            </ScrollArea>
+        </ScrollArea>
           </Tabs>
         </div>
       </SheetContent>

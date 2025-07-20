@@ -757,7 +757,7 @@
     "uploadHint": "Optionnel : Téléchargez le logo ou la photo du client",
     "nameLabel": "Nom de l'entreprise/client *",
     "namePlaceholder": "Entrez le nom de l'entreprise",
-    "emailLabel": "Adresse e-mail *",
+    "emailLabel": "Adresse e-mail",
     "emailPlaceholder": "contact@entreprise.com",
     "phoneLabel": "Numéro de téléphone",
     "phonePlaceholder": "+212 6XX XXX XXX",

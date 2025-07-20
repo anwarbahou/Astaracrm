@@ -825,7 +825,7 @@
     "uploadHint": "Optional: Upload client logo or photo",
     "nameLabel": "Company/Client Name *",
     "namePlaceholder": "Enter company name",
-    "emailLabel": "Email Address *",
+    "emailLabel": "Email Address",
     "emailPlaceholder": "contact@company.com",
     "phoneLabel": "Phone Number",
     "phonePlaceholder": "+1 555 XXX XXXX",

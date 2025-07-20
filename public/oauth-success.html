@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OAuth Success</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            text-align: center;
+            padding: 3rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 90%;
+        }
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: #4CAF50;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            font-size: 40px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        h1 {
+            margin: 0 0 1rem 0;
+            font-size: 2.5rem;
+            font-weight: 300;
+        }
+        p {
+            margin: 0 0 2rem 0;
+            font-size: 1.1rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        .close-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .close-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        .loading {
+            display: none;
+        }
+        .error {
+            display: none;
+            color: #ff6b6b;
+        }
+        .error-icon {
+            background: #ff6b6b !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-icon" id="icon">✓</div>
+        <h1 id="title">Authentication Successful!</h1>
+        <p id="message">Your Google Calendar has been successfully connected. You can now close this window and return to your calendar.</p>
+        <button class="close-button" onclick="closeWindow()">Close Window</button>
+    </div>
+
+    <script>
+        // Parse the access token from the URL
+        const hash = window.location.hash.substring(1);
+        const params = new URLSearchParams(hash);
+        const accessToken = params.get('access_token');
+        const error = params.get('error');
+        
+        const icon = document.getElementById('icon');
+        const title = document.getElementById('title');
+        const message = document.getElementById('message');
+        
+        if (accessToken) {
+            // Success - send token to parent window
+            if (window.opener) {
+                window.opener.postMessage({
+                    type: 'GOOGLE_AUTH_SUCCESS',
+                    accessToken: accessToken
+                }, window.location.origin);
+            }
+            
+            // Update UI to show success
+            icon.innerHTML = '✓';
+            icon.className = 'success-icon';
+            title.textContent = 'Authentication Successful!';
+            message.textContent = 'Your Google Calendar has been successfully connected. You can now close this window and return to your calendar.';
+            
+            // Auto-close after 3 seconds
+            setTimeout(() => {
+                closeWindow();
+            }, 3000);
+            
+        } else if (error) {
+            // Error - send error to parent window
+            if (window.opener) {
+                window.opener.postMessage({
+                    type: 'GOOGLE_AUTH_ERROR',
+                    error: error
+                }, window.location.origin);
+            }
+            
+            // Update UI to show error
+            icon.innerHTML = '✕';
+            icon.className = 'success-icon error-icon';
+            title.textContent = 'Authentication Failed';
+            message.textContent = `Error: ${error}. Please try again or contact support if the problem persists.`;
+            
+        } else {
+            // No token or error - send error to parent window
+            if (window.opener) {
+                window.opener.postMessage({
+                    type: 'GOOGLE_AUTH_ERROR',
+                    error: 'No access token received'
+                }, window.location.origin);
+            }
+            
+            // Update UI to show error
+            icon.innerHTML = '✕';
+            icon.className = 'success-icon error-icon';
+            title.textContent = 'Authentication Failed';
+            message.textContent = 'No access token received from Google. Please try again.';
+        }
+        
+        function closeWindow() {
+            if (window.opener) {
+                window.close();
+            } else {
+                // If no opener, redirect to calendar page
+                window.location.href = '/dashboard/calendar';
+            }
+        }
+        
+        // Handle keyboard events
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' || e.key === 'Enter') {
+                closeWindow();
+            }
+        });
+    </script>
+</body>
+</html> 

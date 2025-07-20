@@ -38,7 +38,7 @@ export function SimpleSidebarContent() {
       {/* Header with Close Button for Mobile */}
       <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
         <div className="flex items-center gap-3">
-          <img src="/Logos/SKULTIX.svg" alt="Logo" className="h-8" />
+            <img src="/Logos/SKULTIX.svg" alt="Logo" className="h-8" />
         </div>
         <Button
           variant="ghost"

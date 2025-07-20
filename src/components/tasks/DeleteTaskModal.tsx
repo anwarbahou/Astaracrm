@@ -39,23 +39,10 @@ export const DeleteTaskModal: React.FC<DeleteTaskModalProps> = ({
       onDeleted?.();
       onClose();
       
-      // Show success toast with undo button
+      // Show success toast
       toast({
         title: t('tasks.deleteTaskModal.toast.successTitle'),
         description: t('tasks.deleteTaskModal.toast.successDescription'),
-        action: (
-          <AlertDialogAction
-            onClick={() => {
-              // TODO: Implement undo functionality
-              toast({
-                title: "Coming Soon",
-                description: "Undo functionality will be available soon!",
-              });
-            }}
-          >
-            Undo
-          </AlertDialogAction>
-        ),
       });
     } catch (error) {
       toast({

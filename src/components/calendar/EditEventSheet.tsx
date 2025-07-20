@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -29,21 +28,21 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { X, Calendar as CalendarIcon, Clock, MapPin, User, Building, Phone, Tag } from "lucide-react";
-import { type CreateCalendarEventInput } from "@/services/calendarService";
+import { type CalendarEvent, type CreateCalendarEventInput } from "@/services/calendarService";
 import { useUsersForSelection } from "@/hooks/useUsers";
 import { useClientsForSelection } from "@/hooks/useClients";
 import { useDeals } from "@/hooks/useDeals";
 import { contactsService } from "@/services/contactsService";
 import { useAuth } from "@/contexts/AuthContext";
-import { useEffect } from "react";
 
-interface NewEventSheetProps {
+interface EditEventSheetProps {
+  event: CalendarEvent | null;
   isOpen: boolean;
   onClose: () => void;
-  onSave: (eventData: CreateCalendarEventInput) => void;
+  onSave: (eventId: string, eventData: CreateCalendarEventInput) => void;
 }
 
-export function NewEventSheet({ isOpen, onClose, onSave }: NewEventSheetProps) {
+export function EditEventSheet({ event, isOpen, onClose, onSave }: EditEventSheetProps) {
   const { user, userProfile } = useAuth();
   const { users: allUsers, isLoading: usersLoading } = useUsersForSelection();
   const { clients: allClients, isLoading: clientsLoading } = useClientsForSelection();
@@ -51,6 +50,7 @@ export function NewEventSheet({ isOpen, onClose, onSave }: NewEventSheetProps) {
   const [contacts, setContacts] = useState<any[]>([]);
   const [contactsLoading, setContactsLoading] = useState(false);
 
+  // Form state
   const [title, setTitle] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [currentTag, setCurrentTag] = useState("");
@@ -89,6 +89,38 @@ export function NewEventSheet({ isOpen, onClose, onSave }: NewEventSheetProps) {
     }
   }, [userProfile]);
 
+  // Initialize form with event data when event changes
+  useEffect(() => {
+    if (event) {
+      setTitle(event.title || "");
+      setTags(event.tags || []);
+      setDescription(event.description || "");
+      setLocation(event.location || "");
+      setAttendees(event.attendees || []);
+      setClientId(event.client_id || undefined);
+      setContactId(event.contact_id || undefined);
+      setDealId(event.deal_id || undefined);
+      setReminderMinutes(event.reminder_minutes || 15);
+      setIsRecurring(event.is_recurring || false);
+      setRecurrenceRule(event.recurrence_rule || undefined);
+      setStatus(event.status || "scheduled");
+      setVisibility(event.visibility || "private");
+
+      // Parse dates
+      if (event.start_time) {
+        const startDate = new Date(event.start_time);
+        setStartDate(startDate);
+        setStartTime(startDate.toTimeString().slice(0, 5));
+      }
+      if (event.end_time) {
+        const endDate = new Date(event.end_time);
+        setEndDate(endDate);
+        setEndTime(endDate.toTimeString().slice(0, 5));
+      }
+      setAllDay(event.all_day || false);
+    }
+  }, [event]);
+
   const handleAddTag = () => {
     if (currentTag.trim() && !tags.includes(currentTag.trim())) {
       setTags([...tags, currentTag.trim()]);
@@ -100,13 +132,13 @@ export function NewEventSheet({ isOpen, onClose, onSave }: NewEventSheetProps) {
     setTags(tags.filter(tag => tag !== tagToRemove));
   };
 
-
-
   const handleRemoveAttendee = (attendeeToRemove: string) => {
     setAttendees(attendees.filter(attendee => attendee !== attendeeToRemove));
   };
 
   const handleSave = () => {
+    if (!event) return;
+
     // Set default dates if not provided
     const defaultStartDate = startDate || new Date();
     const defaultEndDate = endDate || new Date(defaultStartDate.getTime() + 60 * 60 * 1000); // 1 hour later
@@ -149,7 +181,7 @@ export function NewEventSheet({ isOpen, onClose, onSave }: NewEventSheetProps) {
       visibility,
     };
 
-    onSave(eventData);
+    onSave(event.id, eventData);
     handleClose();
   };
 
@@ -179,16 +211,18 @@ export function NewEventSheet({ isOpen, onClose, onSave }: NewEventSheetProps) {
 
   const isFormValid = title.trim() && attendees.length > 0;
 
+  if (!event) return null;
+
   return (
     <Sheet open={isOpen} onOpenChange={handleClose}>
       <SheetContent side="right" className="w-[400px] sm:w-[540px] overflow-y-auto">
         <SheetHeader className="space-y-4 pb-6 border-b">
           <SheetTitle className="text-xl font-semibold flex items-center gap-2">
             <CalendarIcon className="h-5 w-5" />
-            Create New Event
+            Edit Event
           </SheetTitle>
           <SheetDescription>
-            Fill in the details below to create a new calendar event.
+            Modify the event details below.
           </SheetDescription>
         </SheetHeader>
 
@@ -281,7 +315,7 @@ export function NewEventSheet({ isOpen, onClose, onSave }: NewEventSheetProps) {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm font-medium">Start Date (optional)</Label>
+                <Label className="text-sm font-medium">Start Date</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full justify-start">
@@ -301,7 +335,7 @@ export function NewEventSheet({ isOpen, onClose, onSave }: NewEventSheetProps) {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm font-medium">End Date (optional)</Label>
+                <Label className="text-sm font-medium">End Date</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button variant="outline" className="w-full justify-start">
@@ -568,11 +602,11 @@ export function NewEventSheet({ isOpen, onClose, onSave }: NewEventSheetProps) {
               disabled={!isFormValid}
               className="flex-1"
             >
-              {isFormValid ? "Create Event" : "Fill required fields"}
+              {isFormValid ? "Update Event" : "Fill required fields"}
             </Button>
           </div>
         </SheetFooter>
       </SheetContent>
     </Sheet>
   );
-}
+} 

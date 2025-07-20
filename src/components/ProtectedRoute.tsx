@@ -42,12 +42,12 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
             >
               Retry Connection
             </button>
-            <button
+          <button
               onClick={() => window.location.reload()}
               className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/90 w-full"
-            >
+          >
               Reload Page
-            </button>
+          </button>
           </div>
         </div>
       </div>

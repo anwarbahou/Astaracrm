@@ -73,28 +73,12 @@ export const PreviewTaskModal: React.FC<PreviewTaskModalProps> = ({
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent 
-        side="bottom" 
-        className="h-[95vh] w-full max-w-none rounded-t-2xl border-t shadow-2xl bg-background/95 backdrop-blur-sm p-0 flex flex-col"
+        side="right" 
+        className="h-full w-full sm:w-[600px] lg:w-[700px] xl:w-[800px] border-l shadow-2xl bg-background/95 backdrop-blur-sm p-0 flex flex-col"
       >
-        {/* Drag Handle and Close Button */}
-        <div className="flex justify-between items-center pt-3 pb-2 px-4 flex-shrink-0">
-          <div className="flex-1 flex justify-center">
-            <div className="w-12 h-1 bg-muted-foreground/30 rounded-full" />
-          </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="h-8 w-8 rounded-full hover:bg-muted/50 transition-colors"
-            aria-label="Close task details"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-
         {/* Header - Fixed */}
-        <SheetHeader className="px-6 pb-4 border-b border-border flex-shrink-0">
-          <SheetTitle className="text-xl sm:text-2xl font-bold flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+        <SheetHeader className="px-6 py-4 border-b border-border flex-shrink-0">
+          <SheetTitle className="text-xl sm:text-2xl font-bold flex flex-col gap-2">
             <Badge
               variant="outline"
               className={cn(
@@ -115,13 +99,13 @@ export const PreviewTaskModal: React.FC<PreviewTaskModalProps> = ({
               {/* Priority Section */}
               <div className="space-y-3">
                 <h2 className="text-base sm:text-lg font-semibold text-foreground">{t('tasks.previewTaskModal.priority')}</h2>
-                {task.priority && (
+              {task.priority && (
                   <Badge variant="outline" className={cn("flex items-center gap-2 px-3 py-2 text-sm sm:text-base", priorityColors[task.priority])}>
                     <span className="text-lg">{priorityIcons[task.priority]}</span>
                     <span>{t(`tasks.priority.${task.priority}`)}</span>
-                  </Badge>
-                )}
-              </div>
+                </Badge>
+              )}
+            </div>
 
               <Separator />
 
@@ -129,50 +113,50 @@ export const PreviewTaskModal: React.FC<PreviewTaskModalProps> = ({
               <div className="space-y-3">
                 <h2 className="text-base sm:text-lg font-semibold text-foreground">{t('tasks.previewTaskModal.description')}</h2>
                 <div className="prose dark:prose-invert max-w-none text-sm sm:text-base">
-                  <ReactQuill
-                    value={task.description || ''}
-                    readOnly={true}
-                    theme="bubble"
-                    modules={{ toolbar: false }}
-                  />
-                </div>
+                <ReactQuill
+                  value={task.description || ''}
+                  readOnly={true}
+                  theme="bubble"
+                  modules={{ toolbar: false }}
+                />
               </div>
+            </div>
 
               <Separator />
 
               {/* Details Grid */}
-              <div className="space-y-4">
+            <div className="space-y-4">
                 <h2 className="text-base sm:text-lg font-semibold text-foreground">{t('tasks.previewTaskModal.details')}</h2>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {/* Assignee */}
-                  {task.user && (
+              {/* Assignee */}
+              {task.user && (
                     <div className="space-y-2 p-4 bg-muted/30 rounded-lg">
                       <p className="text-sm text-muted-foreground font-medium">{t('tasks.previewTaskModal.assignee')}</p>
                       <div className="flex items-center gap-3">
                         <Avatar className="h-10 w-10">
-                          <AvatarImage src={task.user.avatar_url || undefined} />
+                      <AvatarImage src={task.user.avatar_url || undefined} />
                           <AvatarFallback className="text-sm">
                             {task.user.first_name?.charAt(0)}{task.user.last_name?.charAt(0)}
                           </AvatarFallback>
-                        </Avatar>
+                    </Avatar>
                         <div className="flex flex-col">
                           <span className="font-medium text-sm sm:text-base">
                             {task.user.first_name} {task.user.last_name}
                           </span>
                           <span className="text-xs text-muted-foreground">{task.user.email}</span>
                         </div>
-                      </div>
-                    </div>
-                  )}
+                  </div>
+                </div>
+              )}
 
-                  {/* Due Date */}
+              {/* Due Date */}
                   <div className="space-y-2 p-4 bg-muted/30 rounded-lg">
                     <p className="text-sm text-muted-foreground font-medium">{t('tasks.previewTaskModal.dueDate')}</p>
-                    <div className={cn(
+                <div className={cn(
                       "flex items-center gap-2",
-                      isOverdue ? "text-red-500 font-medium" : "text-foreground"
-                    )}>
+                  isOverdue ? "text-red-500 font-medium" : "text-foreground"
+                )}>
                       <CalendarIcon className="h-5 w-5" />
                       <span className="text-sm sm:text-base">{formattedDueDate}</span>
                       {isOverdue && (
@@ -180,17 +164,17 @@ export const PreviewTaskModal: React.FC<PreviewTaskModalProps> = ({
                           {t('tasks.previewTaskModal.overdue')}
                         </Badge>
                       )}
-                    </div>
-                  </div>
+                </div>
+              </div>
 
-                  {/* Status */}
+              {/* Status */}
                   <div className="space-y-2 p-4 bg-muted/30 rounded-lg">
                     <p className="text-sm text-muted-foreground font-medium">{t('tasks.previewTaskModal.status')}</p>
                     <Badge variant="outline" className={cn("flex items-center gap-2 w-fit px-3 py-2", getTaskStatusColor(task.status || 'todo'))}>
                       {statusIcons[task.status || 'todo']} 
                       <span className="text-sm sm:text-base">{t(`tasks.status.${task.status || 'todo'}`)}</span>
-                    </Badge>
-                  </div>
+                </Badge>
+              </div>
 
                   {/* Time Tracking */}
                   <div className="space-y-2 p-4 bg-muted/30 rounded-lg">
@@ -219,7 +203,7 @@ export const PreviewTaskModal: React.FC<PreviewTaskModalProps> = ({
                         </span>
                       </div>
                     </div>
-                  </div>
+                </div>
                 )}
               </div>
             </div>

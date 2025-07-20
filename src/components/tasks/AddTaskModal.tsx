@@ -23,6 +23,7 @@ import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 interface AddTaskModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  initialStatus?: string;
 }
 
 interface FormErrors {
@@ -33,7 +34,7 @@ interface FormErrors {
   related_entity?: string;
 }
 
-export function AddTaskModal({ open, onOpenChange }: AddTaskModalProps) {
+export function AddTaskModal({ open, onOpenChange, initialStatus = "todo" }: AddTaskModalProps) {
   const { userProfile, user } = useAuth();
   const { addTask, isAdding } = useTasks();
   const { users: allUsers, isLoading: usersLoading } = useUsersForSelection();
@@ -43,7 +44,7 @@ export function AddTaskModal({ open, onOpenChange }: AddTaskModalProps) {
     title: "",
     description: "",
     priority: "medium" as const,
-    status: "pending" as const,
+    status: initialStatus as "todo" | "pending" | "in_progress" | "blocked" | "completed" | "cancelled",
     due_date: "",
     related_entity: "" as "" | "client" | "contact" | "deal",
     related_entity_id: "",
@@ -51,6 +52,13 @@ export function AddTaskModal({ open, onOpenChange }: AddTaskModalProps) {
     time_spent: "",
     assigned_to: ""
   });
+
+  // Update form status when initialStatus changes
+  useEffect(() => {
+    if (initialStatus) {
+      setForm(prev => ({ ...prev, status: initialStatus as "todo" | "pending" | "in_progress" | "blocked" | "completed" | "cancelled" }));
+    }
+  }, [initialStatus]);
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
@@ -158,7 +166,7 @@ export function AddTaskModal({ open, onOpenChange }: AddTaskModalProps) {
         title: "",
         description: "",
         priority: "medium",
-        status: "pending",
+        status: initialStatus as "todo" | "pending" | "in_progress" | "blocked" | "completed" | "cancelled",
         due_date: "",
         related_entity: "",
         related_entity_id: "",

@@ -167,11 +167,11 @@ export default function Messaging() {
         setTotalUnreadCount(totalUnread);
       } catch (error) {
         console.error('Error fetching channels:', error);
-        toast({
-          title: "Error",
-          description: "Failed to fetch channels",
-          variant: "destructive"
-        });
+          toast({
+            title: "Error",
+            description: "Failed to fetch channels",
+            variant: "destructive"
+          });
       }
     };
 
@@ -456,15 +456,15 @@ export default function Messaging() {
           channelId = existingChannels[0].id;
         } else {
           // Create new channel
-          const { data: newChannelData, error: channelError } = await supabase
-            .from('channels')
-            .insert({
-              name: channelName,
-              is_private: true,
-              created_by: user.id
-            })
-            .select()
-            .single();
+        const { data: newChannelData, error: channelError } = await supabase
+          .from('channels')
+          .insert({
+            name: channelName,
+            is_private: true,
+            created_by: user.id
+          })
+          .select()
+          .single();
           
           if (channelError) {
             // If insert failed due to duplicate, try to find the channel again
@@ -868,7 +868,7 @@ export default function Messaging() {
             <div className="p-3 sm:p-6 border-b">
               <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center gap-2">
-                  <h2 className="font-semibold text-sm sm:text-base">Conversations</h2>
+                <h2 className="font-semibold text-sm sm:text-base">Conversations</h2>
                   {totalUnreadCount > 0 && (
                     <UnreadIndicator 
                       count={totalUnreadCount} 
@@ -954,29 +954,29 @@ export default function Messaging() {
               <div className="flex justify-between items-center mb-4">
                 <h2 className="font-semibold">Channels</h2>
                 {user?.user_metadata?.role === 'admin' && (
-                  <Dialog open={channelDialogOpen} onOpenChange={setChannelDialogOpen}>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" size="icon" disabled={loading}>
-                        <Plus className="h-4 w-4" />
+                <Dialog open={channelDialogOpen} onOpenChange={setChannelDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="icon" disabled={loading}>
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Create New Channel</DialogTitle>
+                    </DialogHeader>
+                    <div className="flex gap-2 mt-4">
+                      <Input
+                        placeholder="Channel name..."
+                        value={newChannelName}
+                        onChange={(e) => setNewChannelName(e.target.value)}
+                        disabled={loading}
+                      />
+                      <Button onClick={createChannel} disabled={loading || !newChannelName.trim()}>
+                        Create
                       </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Create New Channel</DialogTitle>
-                      </DialogHeader>
-                      <div className="flex gap-2 mt-4">
-                        <Input
-                          placeholder="Channel name..."
-                          value={newChannelName}
-                          onChange={(e) => setNewChannelName(e.target.value)}
-                          disabled={loading}
-                        />
-                        <Button onClick={createChannel} disabled={loading || !newChannelName.trim()}>
-                          Create
-                        </Button>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
+                    </div>
+                  </DialogContent>
+                </Dialog>
                 )}
               </div>
               <div className="relative">
@@ -990,8 +990,8 @@ export default function Messaging() {
                   <div className="text-center text-xs text-muted-foreground py-4">Loading channels...</div>
                 ) : (
                   channels
-                    .filter(channel => !(channel.is_private && channel.name.startsWith('dm-')))
-                    .map((channel) => {
+                  .filter(channel => !(channel.is_private && channel.name.startsWith('dm-')))
+                  .map((channel) => {
                     const isDM = channel.is_private && channel.name.startsWith('dm-');
                     let dmUser = null;
                     if (isDM) {
@@ -1281,62 +1281,62 @@ export default function Messaging() {
                 </div>
                 {/* Add user dropdown and button - Admin only */}
                 {user?.user_metadata?.role === 'admin' && (
-                  <div className="flex gap-2 items-end mt-4">
-                    <div className="flex-1">
-                      <Select
-                        value={addUserId}
-                        onValueChange={setAddUserId}
-                        disabled={addUserLoading || users.length === 0}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select user..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {users
-                            .filter(u => !selectedChannel.members.some(m => m.id === u.id))
-                            .map(u => (
-                              <SelectItem key={u.id} value={u.id}>{getUserDisplayName(u)}</SelectItem>
-                            ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <Button
-                      size="sm"
-                      className="h-9"
-                      disabled={!addUserId || addUserLoading}
-                      onClick={async () => {
-                        if (!addUserId) return;
-                        setAddUserLoading(true);
-                        try {
-                          const { error } = await supabase
-                            .from('channel_members')
-                            .insert({ channel_id: selectedChannel.id, user_id: addUserId });
-                          if (error) {
-                            console.error('Supabase insert error:', error);
-                            if (error.code === '23505') {
-                              toast({ title: "Already a member", description: "This user is already in the channel.", variant: "destructive" });
-                            } else {
-                              toast({ title: "Error", description: "Failed to add user.", variant: "destructive" });
-                            }
-                            setAddUserLoading(false);
-                            // Always refresh members in case of race condition
-                            await refreshChannelMembers(selectedChannel.id);
-                            return;
-                          }
-                          // Always refresh members after add
-                          await refreshChannelMembers(selectedChannel.id);
-                          setAddUserId(undefined);
-                          toast({ title: "User added", description: "User was added to the channel." });
-                        } catch (err) {
-                          toast({ title: "Error", description: "Failed to add user.", variant: "destructive" });
-                        } finally {
-                          setAddUserLoading(false);
-                        }
-                      }}
+                <div className="flex gap-2 items-end mt-4">
+                  <div className="flex-1">
+                    <Select
+                      value={addUserId}
+                      onValueChange={setAddUserId}
+                      disabled={addUserLoading || users.length === 0}
                     >
-                      Add
-                    </Button>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select user..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {users
+                          .filter(u => !selectedChannel.members.some(m => m.id === u.id))
+                          .map(u => (
+                            <SelectItem key={u.id} value={u.id}>{getUserDisplayName(u)}</SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
                   </div>
+                  <Button
+                    size="sm"
+                    className="h-9"
+                    disabled={!addUserId || addUserLoading}
+                    onClick={async () => {
+                      if (!addUserId) return;
+                      setAddUserLoading(true);
+                      try {
+                        const { error } = await supabase
+                          .from('channel_members')
+                          .insert({ channel_id: selectedChannel.id, user_id: addUserId });
+                        if (error) {
+                          console.error('Supabase insert error:', error);
+                          if (error.code === '23505') {
+                            toast({ title: "Already a member", description: "This user is already in the channel.", variant: "destructive" });
+                          } else {
+                            toast({ title: "Error", description: "Failed to add user.", variant: "destructive" });
+                          }
+                          setAddUserLoading(false);
+                          // Always refresh members in case of race condition
+                          await refreshChannelMembers(selectedChannel.id);
+                          return;
+                        }
+                        // Always refresh members after add
+                        await refreshChannelMembers(selectedChannel.id);
+                        setAddUserId(undefined);
+                        toast({ title: "User added", description: "User was added to the channel." });
+                      } catch (err) {
+                        toast({ title: "Error", description: "Failed to add user.", variant: "destructive" });
+                      } finally {
+                        setAddUserLoading(false);
+                      }
+                    }}
+                  >
+                    Add
+                  </Button>
+                </div>
                 )}
               </div>
             )}

@@ -1,8 +1,11 @@
 
 import { useState } from "react";
-import { CalendarEvent, mockCalendarEvents } from "@/data/mockCalendarEvents";
+import { useCalendarEvents } from "@/hooks/useCalendarEvents";
+import { type CalendarEvent, type CreateCalendarEventInput } from "@/services/calendarService";
+import { useTranslation } from "react-i18next";
 
 export function useCalendar() {
+  const { t } = useTranslation();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<"month" | "week" | "day">("month");
   const [calendarView, setCalendarView] = useState<"calendar" | "extended">("calendar");
@@ -11,12 +14,35 @@ export function useCalendar() {
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [isEventDetailOpen, setIsEventDetailOpen] = useState(false);
 
-  const events = mockCalendarEvents;
+  // Calculate date range for current month
+  const getMonthDateRange = () => {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const startDate = new Date(year, month, 1);
+    const endDate = new Date(year, month + 1, 0);
+    return {
+      start_date: startDate.toISOString(),
+      end_date: endDate.toISOString(),
+    };
+  };
 
+  // Get calendar events with date range filter and mutations
+  const { 
+    events, 
+    isLoading, 
+    error, 
+    createEvent,
+    createEventAsync,
+    updateEvent,
+    deleteEvent
+  } = useCalendarEvents(getMonthDateRange());
+
+  // Filter events based on search query
   const filteredEvents = events.filter(event => 
     searchQuery === "" || 
     event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    event.client.toLowerCase().includes(searchQuery.toLowerCase())
+    (event.client_name && event.client_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (event.description && event.description.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   const handleEventClick = (event: CalendarEvent) => {
@@ -24,9 +50,35 @@ export function useCalendar() {
     setIsEventDetailOpen(true);
   };
 
-  const handleCreateEvent = (eventData: any) => {
-    console.log("Creating event:", eventData);
-    // In a real app, this would call an API to create the event
+  const handleCreateEvent = async (eventData: CreateCalendarEventInput) => {
+    try {
+      await createEventAsync(eventData);
+      closeNewEventModal();
+    } catch (error) {
+      console.error("Failed to create event:", error);
+      // Error handling is done in the mutation
+    }
+  };
+
+  const handleUpdateEvent = async (eventId: string, updates: Partial<CreateCalendarEventInput>) => {
+    try {
+      await updateEvent({ id: eventId, ...updates });
+    } catch (error) {
+      console.error("Failed to update event:", error);
+      // Error handling is done in the mutation
+    }
+  };
+
+  const handleDeleteEvent = async (eventId: string) => {
+    try {
+      await deleteEvent(eventId);
+      if (selectedEvent?.id === eventId) {
+        closeEventDetail();
+      }
+    } catch (error) {
+      console.error("Failed to delete event:", error);
+      // Error handling is done in the mutation
+    }
   };
 
   const openNewEventModal = () => setIsNewEventModalOpen(true);
@@ -47,10 +99,14 @@ export function useCalendar() {
     selectedEvent,
     isEventDetailOpen,
     filteredEvents,
+    isLoading,
+    error,
     
     // Actions
     handleEventClick,
     handleCreateEvent,
+    handleUpdateEvent,
+    handleDeleteEvent,
     openNewEventModal,
     closeNewEventModal,
     closeEventDetail,

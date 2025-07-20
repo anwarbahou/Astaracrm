@@ -276,27 +276,8 @@ class TaskService {
         );
       }
 
-      // Check for any dependencies or related data
-      const { data: dependencies, error: dependencyError } = await supabase
-        .from('activity_logs')
-        .select('count')
-        .eq('task_id', id)
-        .single();
-
-      if (dependencyError) {
-        throw new TaskServiceError(
-          'Failed to check task dependencies',
-          'DEPENDENCY_CHECK_ERROR',
-          dependencyError
-        );
-      }
-
-      if (dependencies?.count > 0) {
-        throw new TaskServiceError(
-          'Cannot delete task with existing activity logs',
-          'HAS_DEPENDENCIES_ERROR'
-        );
-      }
+      // Note: activity_logs table doesn't exist, so we skip dependency check
+      // If you need dependency checking, create the activity_logs table first
 
       // Perform the deletion
       const { error: deleteError } = await supabase
@@ -347,28 +328,8 @@ class TaskService {
         );
       }
 
-      // Check for dependencies
-      const { data: dependencies, error: dependencyError } = await supabase
-        .from('activity_logs')
-        .select('task_id')
-        .in('task_id', ids);
-
-      if (dependencyError) {
-        throw new TaskServiceError(
-          'Failed to check task dependencies',
-          'DEPENDENCY_CHECK_ERROR',
-          dependencyError
-        );
-      }
-
-      if (dependencies && dependencies.length > 0) {
-        const tasksWithDependencies = dependencies.map(d => d.task_id);
-        throw new TaskServiceError(
-          'Cannot delete tasks with existing activity logs',
-          'HAS_DEPENDENCIES_ERROR',
-          { tasksWithDependencies }
-        );
-      }
+      // Note: activity_logs table doesn't exist, so we skip dependency check
+      // If you need dependency checking, create the activity_logs table first
 
       // Perform the bulk deletion
       const { error: deleteError } = await supabase

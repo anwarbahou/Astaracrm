@@ -1,4 +1,5 @@
 
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -11,40 +12,29 @@ import {
   Edit,
   Trash2
 } from "lucide-react";
-
-interface Event {
-  id: number;
-  title: string;
-  start: string;
-  end: string;
-  type: string;
-  attendees: string[];
-  location: string;
-  client: string;
-  status: string;
-}
+import { type CalendarEvent } from "@/services/calendarService";
 
 interface ExtendedAgendaViewProps {
-  events: Event[];
-  onEventClick: (event: Event) => void;
+  events: CalendarEvent[];
+  onEventClick: (event: CalendarEvent) => void;
 }
 
 export function ExtendedAgendaView({ events, onEventClick }: ExtendedAgendaViewProps) {
   const getEventTypeColor = (type: string) => {
-    switch (type) {
-      case "Meeting": return "bg-blue-500";
-      case "Call": return "bg-green-500";
-      case "Internal": return "bg-purple-500";
-      case "Onboarding": return "bg-orange-500";
+    switch (type?.toLowerCase()) {
+      case "meeting": return "bg-blue-500";
+      case "call": return "bg-green-500";
+      case "internal": return "bg-purple-500";
+      case "onboarding": return "bg-orange-500";
       default: return "bg-gray-500";
     }
   };
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Confirmed": return "bg-green-100 text-green-800";
-      case "Pending": return "bg-yellow-100 text-yellow-800";
-      case "Cancelled": return "bg-red-100 text-red-800";
+    switch (status?.toLowerCase()) {
+      case "confirmed": return "bg-green-100 text-green-800";
+      case "pending": return "bg-yellow-100 text-yellow-800";
+      case "cancelled": return "bg-red-100 text-red-800";
       default: return "bg-gray-100 text-gray-800";
     }
   };
@@ -66,9 +56,9 @@ export function ExtendedAgendaView({ events, onEventClick }: ExtendedAgendaViewP
 
   // Group events by date
   const groupEventsByDate = () => {
-    const grouped: { [key: string]: Event[] } = {};
+    const grouped: { [key: string]: CalendarEvent[] } = {};
     events.forEach(event => {
-      const date = new Date(event.start).toDateString();
+      const date = new Date(event.start_time).toDateString();
       if (!grouped[date]) {
         grouped[date] = [];
       }
@@ -90,11 +80,11 @@ export function ExtendedAgendaView({ events, onEventClick }: ExtendedAgendaViewP
   if (events.length === 0) {
     return (
       <Card>
-        <CardContent className="p-20">
-          <div className="text-center text-muted-foreground">
-            <CalendarIcon className="h-16 w-16 mx-auto mb-4" />
-            <h3 className="font-medium text-lg mb-2">No events scheduled</h3>
-            <p>Your agenda is clear. Time to schedule some meetings!</p>
+        <CardContent className="p-6">
+          <div className="text-center py-20 text-muted-foreground">
+            <CalendarIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <h3 className="font-medium text-lg mb-2">No Events Found</h3>
+            <p>No events scheduled for this time period.</p>
           </div>
         </CardContent>
       </Card>
@@ -103,99 +93,94 @@ export function ExtendedAgendaView({ events, onEventClick }: ExtendedAgendaViewP
 
   return (
     <div className="space-y-6">
-      {Object.entries(groupedEvents)
-        .sort(([a], [b]) => new Date(a).getTime() - new Date(b).getTime())
-        .map(([date, dayEvents]) => (
-          <Card key={date}>
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg font-medium">
-                {getDateLabel(date)}
-                <span className="text-sm font-normal text-muted-foreground ml-2">
-                  {dayEvents.length} {dayEvents.length === 1 ? 'event' : 'events'}
-                </span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {dayEvents
-                .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime())
-                .map((event) => (
-                  <div
-                    key={event.id}
-                    onClick={() => onEventClick(event)}
-                    className="p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors cursor-pointer"
-                  >
-                    <div className="flex items-start gap-4">
-                      <div className={`w-1 h-16 rounded ${getEventTypeColor(event.type)}`} />
-                      
-                      <div className="flex-1 space-y-2">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <h4 className="font-medium text-base">{event.title}</h4>
-                            <p className="text-sm text-muted-foreground">{event.client}</p>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Badge variant="secondary" className={getStatusColor(event.status)}>
-                              {event.status}
-                            </Badge>
-                            <Badge className={`${getEventTypeColor(event.type)} text-white`}>
-                              {event.type}
-                            </Badge>
-                          </div>
+      {Object.entries(groupedEvents).map(([date, dayEvents]) => (
+        <Card key={date}>
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">
+              {getDateLabel(date)}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {dayEvents.map((event) => (
+                <div
+                  key={event.id}
+                  className="flex items-start gap-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
+                  onClick={() => onEventClick(event)}
+                >
+                  {/* Event Type Badge */}
+                  <Badge className={`${getEventTypeColor(event.tags?.[0] || 'meeting')} text-white`}>
+                    {event.tags?.[0] || 'Meeting'}
+                  </Badge>
+
+                  {/* Event Details */}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-medium text-lg mb-1">{event.title}</h3>
+                    
+                    {event.description && (
+                      <p className="text-muted-foreground text-sm mb-2 line-clamp-2">
+                        {event.description}
+                      </p>
+                    )}
+
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      {/* Time */}
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-4 w-4" />
+                        <span>
+                          {formatTime(event.start_time)} - {formatTime(event.end_time)}
+                        </span>
+                      </div>
+
+                      {/* Location */}
+                      {event.location && (
+                        <div className="flex items-center gap-1">
+                          <MapPin className="h-4 w-4" />
+                          <span>{event.location}</span>
                         </div>
-                        
-                        <div className="flex items-center gap-6 text-sm text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-4 w-4" />
-                            <span>{formatTime(event.start)} - {formatTime(event.end)}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <MapPin className="h-4 w-4" />
-                            <span>{event.location}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <User className="h-4 w-4" />
-                            <span>{event.attendees.length} attendees</span>
-                          </div>
+                      )}
+
+                      {/* Client */}
+                      {event.client_name && (
+                        <div className="flex items-center gap-1">
+                          <User className="h-4 w-4" />
+                          <span>{event.client_name}</span>
                         </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            {event.attendees.slice(0, 3).map((attendee, index) => (
-                              <Avatar key={index} className="h-6 w-6">
-                                <AvatarFallback className="text-xs">
-                                  {attendee.split(' ').map(n => n[0]).join('')}
-                                </AvatarFallback>
-                              </Avatar>
-                            ))}
-                            {event.attendees.length > 3 && (
-                              <span className="text-xs text-muted-foreground">
-                                +{event.attendees.length - 3} more
-                              </span>
-                            )}
-                          </div>
-                          
-                          <div className="flex items-center gap-1">
-                            <Button variant="ghost" size="sm" onClick={(e) => {
-                              e.stopPropagation();
-                              // Handle edit
-                            }}>
-                              <Edit size={14} />
-                            </Button>
-                            <Button variant="ghost" size="sm" onClick={(e) => {
-                              e.stopPropagation();
-                              // Handle delete
-                            }}>
-                              <Trash2 size={14} />
-                            </Button>
-                          </div>
+                      )}
+                    </div>
+
+                    {/* Attendees */}
+                    {event.attendees && event.attendees.length > 0 && (
+                      <div className="flex items-center gap-2 mt-3">
+                        <span className="text-xs text-muted-foreground">Attendees:</span>
+                        <div className="flex -space-x-2">
+                          {event.attendees.slice(0, 3).map((attendee, index) => (
+                            <Avatar key={index} className="h-6 w-6">
+                              <AvatarFallback className="text-xs">
+                                {attendee.charAt(0).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                          ))}
+                          {event.attendees.length > 3 && (
+                            <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center text-xs">
+                              +{event.attendees.length - 3}
+                            </div>
+                          )}
                         </div>
                       </div>
-                    </div>
+                    )}
                   </div>
-                ))}
-            </CardContent>
-          </Card>
-        ))}
+
+                  {/* Status */}
+                  <Badge className={getStatusColor(event.status || 'scheduled')}>
+                    {event.status || 'Scheduled'}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   );
 }

@@ -150,7 +150,7 @@ export function TopNavigation() {
                 side="left" 
                 className="w-80 max-w-[85vw] p-0 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 overflow-hidden"
               >
-                <SimpleSidebarContent />
+                  <SimpleSidebarContent />
               </SheetContent>
             </Sheet>
             

@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { MessageSquare, DollarSign, CheckSquare, FileText } from "lucide-react";
+import { MessageSquare, DollarSign, CheckSquare, FileText, Calendar } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { useMessagingUnread } from "@/hooks/useMessagingUnread";
@@ -18,6 +18,13 @@ export function BottomNavbar() {
       icon: MessageSquare,
       label: t("app.sidebar.messaging"),
       labelKey: "messaging"
+    },
+    {
+      id: "calendar",
+      path: "/dashboard/calendar",
+      icon: Calendar,
+      label: t("app.sidebar.calendar"),
+      labelKey: "calendar"
     },
     {
       id: "deals",

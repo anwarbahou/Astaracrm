@@ -197,15 +197,15 @@ export function CalendarHeader({
   return (
     <div className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
       <div className="p-6">
-        <div className="flex items-center justify-between gap-4 mb-6">
-          <div>
-            <h1 className="text-3xl font-bold">Calendar</h1>
-            <p className="text-muted-foreground mt-1">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold">Calendar</h1>
+            <p className="text-muted-foreground mt-1 text-sm sm:text-base">
               Manage your meetings, calls, and appointments.
             </p>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -213,25 +213,26 @@ export function CalendarHeader({
                 placeholder="Search events..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 w-64"
+                className="pl-10 w-full sm:w-64"
               />
             </div>
             
             {/* New Event Button */}
             <Button onClick={onNewEvent} className="gap-2">
               <Plus size={16} />
-              New Event
+              <span className="hidden sm:inline">New Event</span>
+              <span className="sm:hidden">New</span>
             </Button>
           </div>
         </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           {/* Navigation */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center justify-center lg:justify-start gap-2 sm:gap-4">
             <Button variant="outline" size="sm" onClick={() => navigateMonth("prev")}>
               <ChevronLeft size={16} />
             </Button>
-            <h2 className="text-xl font-semibold min-w-[200px] text-center">
+            <h2 className="text-lg sm:text-xl font-semibold min-w-[150px] sm:min-w-[200px] text-center">
               {currentDate.toLocaleDateString('en-US', { 
                 month: 'long', 
                 year: 'numeric' 
@@ -240,13 +241,13 @@ export function CalendarHeader({
             <Button variant="outline" size="sm" onClick={() => navigateMonth("next")}>
               <ChevronRight size={16} />
             </Button>
-            <Button variant="outline" onClick={goToToday}>
+            <Button variant="outline" size="sm" onClick={goToToday}>
               Today
             </Button>
           </div>
 
           {/* View Controls */}
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
             {/* Sync/Disconnect Google Button */}
             {isConnected ? (
               <div className="flex items-center gap-2">
@@ -293,8 +294,8 @@ export function CalendarHeader({
               </Button>
             )}
             
-            {/* Calendar vs Extended View */}
-            <div className="flex items-center gap-1 border rounded-lg p-1">
+            {/* Calendar vs Extended View - Hidden on mobile */}
+            <div className="hidden md:flex items-center gap-1 border rounded-lg p-1">
               <Button 
                 size="sm" 
                 variant={calendarView === "calendar" ? "default" : "ghost"}
@@ -312,9 +313,9 @@ export function CalendarHeader({
               </Button>
             </div>
 
-            {/* Month/Week/Day View */}
+            {/* Month/Week/Day View - Hidden on mobile */}
             {calendarView === "calendar" && (
-              <div className="flex items-center gap-1 border rounded-lg p-1">
+              <div className="hidden md:flex items-center gap-1 border rounded-lg p-1">
                 <Button 
                   size="sm" 
                   variant={viewMode === "month" ? "default" : "ghost"}

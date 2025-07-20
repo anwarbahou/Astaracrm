@@ -1,9 +1,9 @@
-import { CalendarHeader } from "@/components/calendar/CalendarHeader";
-import { CalendarGrid } from "@/components/calendar/CalendarGrid";
-import { NewEventSheet } from "@/components/calendar/NewEventModal";
-import { EventDetailSheet } from "@/components/calendar/EventDetailDrawer";
-import { EditEventSheet } from "@/components/calendar/EditEventSheet";
-import { ExtendedAgendaView } from "@/components/calendar/ExtendedAgendaView";
+import { CalendarHeader } from "../components/calendar/CalendarHeader";
+import { CalendarGrid } from "../components/calendar/CalendarGrid";
+import { NewEventSheet } from "../components/calendar/NewEventModal";
+import { EventDetailSheet } from "../components/calendar/EventDetailDrawer";
+import { EditEventSheet } from "../components/calendar/EditEventSheet";
+import { ExtendedAgendaView } from "../components/calendar/ExtendedAgendaView";
 import { useCalendar } from "@/hooks/useCalendar";
 import { withPageTitle } from '@/components/withPageTitle';
 import { TableSkeleton } from "@/components/ui/skeleton-loader";
@@ -12,7 +12,7 @@ import { AlertCircle } from "lucide-react";
 import { type CreateCalendarEventInput, type CalendarEvent } from "@/services/calendarService";
 import { useToast } from "@/hooks/use-toast";
 import { calendarService } from "@/services/calendarService";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function Calendar() {
   const { toast } = useToast();
@@ -37,6 +37,22 @@ function Calendar() {
     closeNewEventModal,
     closeEventDetail,
   } = useCalendar();
+
+  // Force extended view (list view) on mobile devices
+  useEffect(() => {
+    const checkMobile = () => {
+      const isMobile = window.innerWidth < 768; // md breakpoint
+      if (isMobile && calendarView === "calendar") {
+        setCalendarView("extended");
+      }
+    };
+
+    // Check on mount and resize
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, [calendarView, setCalendarView]);
 
   // Edit event state
   const [isEditEventOpen, setIsEditEventOpen] = useState(false);

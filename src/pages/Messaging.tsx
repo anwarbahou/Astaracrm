@@ -124,6 +124,8 @@ export default function Messaging() {
   const [channelDialogOpen, setChannelDialogOpen] = useState(false);
   const [totalUnreadCount, setTotalUnreadCount] = useState(0);
   const [hoveredMessageId, setHoveredMessageId] = useState<string | null>(null);
+  const [messageReactions, setMessageReactions] = useState<{[messageId: string]: Array<{emoji: string, count: number, userReacted: boolean}>}>({});
+  const subscriptionRef = useRef<any>(null);
 
   // Helper to set the ref to the Viewport
   const setScrollViewportRef = useCallback((node: HTMLDivElement | null) => {
@@ -287,6 +289,10 @@ export default function Messaging() {
         };
       });
       setMessages(mapped);
+      
+      // Load reactions for all messages in a batch
+      const reactionPromises = mapped.map(msg => loadMessageReactions(msg.id));
+      await Promise.all(reactionPromises);
     })();
   }, [selectedChannel, users, user]);
 
@@ -706,8 +712,14 @@ export default function Messaging() {
   // In the subscription handler, deduplicate by ID and scroll to bottom
   useEffect(() => {
     if (!selectedChannel) return;
-    const subscription = supabase
-      .channel(`channel-${selectedChannel.id}`)
+    
+    // Clean up previous subscription
+    if (subscriptionRef.current) {
+      subscriptionRef.current.unsubscribe();
+    }
+    
+    subscriptionRef.current = supabase
+      .channel(`channel-${selectedChannel.id}-${Date.now()}`)
       .on('postgres_changes', {
         event: 'INSERT',
         schema: 'public',
@@ -718,27 +730,31 @@ export default function Messaging() {
         const sender = users.find((u: any) => u.id === newMessage.sender_id);
         setMessages(prev => {
           if (prev.some(msg => msg.id === newMessage.id)) return prev;
-          return [
-            ...prev,
-            {
-              id: newMessage.id,
-              content: newMessage.content,
-              created_at: newMessage.created_at,
-              channel_id: newMessage.channel_id,
-              sender: {
-                id: newMessage.sender_id,
-                name: sender ? getUserDisplayName(sender) : 'Unknown',
-                avatar: sender ? sender.email[0].toUpperCase() : 'U'
-              }
+          const newMsg = {
+            id: newMessage.id,
+            content: newMessage.content,
+            created_at: newMessage.created_at,
+            channel_id: newMessage.channel_id,
+            sender: {
+              id: newMessage.sender_id,
+              name: sender ? getUserDisplayName(sender) : 'Unknown',
+              avatar: sender ? sender.email[0].toUpperCase() : 'U'
             }
-          ];
+          };
+          
+          // Load reactions for the new message asynchronously
+          setTimeout(() => loadMessageReactions(newMessage.id), 0);
+          
+          return [...prev, newMsg];
         });
-        setTimeout(scrollToBottom, 0);
       })
       .subscribe();
 
     return () => {
-      subscription.unsubscribe();
+      if (subscriptionRef.current) {
+        subscriptionRef.current.unsubscribe();
+        subscriptionRef.current = null;
+      }
     };
   }, [selectedChannel, users]);
 
@@ -805,17 +821,19 @@ export default function Messaging() {
     };
   }, [user, channels, selectedChannel, users]);
 
-  useLayoutEffect(() => {
-    if (selectedChannel && messages.length > 0) {
-      setTimeout(() => {
-        scrollToBottom();
-      }, 100);
-    }
-  }, [messages, selectedChannel]);
-
+  // Single scroll effect to avoid conflicts
   useEffect(() => {
-    if (lastMessageRef.current && selectedChannel) {
-      lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
+    if (selectedChannel && messages.length > 0) {
+      // Use a small delay to ensure DOM is updated
+      const timer = setTimeout(() => {
+        if (lastMessageRef.current) {
+          lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
+        } else {
+          scrollToBottom();
+        }
+      }, 50);
+      
+      return () => clearTimeout(timer);
     }
   }, [messages, selectedChannel]);
 
@@ -847,6 +865,53 @@ export default function Messaging() {
       refreshChannelMembers(selectedChannel.id);
     }
   }, [showChannelInfo, selectedChannel]);
+
+  // Handle emoji reaction
+  const handleReaction = async (messageId: string, emoji: string) => {
+    if (!user) return;
+
+    const currentReactions = messageReactions[messageId] || [];
+    const existingReaction = currentReactions.find(r => r.emoji === emoji);
+    
+    if (existingReaction?.userReacted) {
+      // Remove reaction
+      const success = await chatService.removeReaction(messageId, user.id, emoji);
+      if (success) {
+        setMessageReactions(prev => ({
+          ...prev,
+          [messageId]: currentReactions.map(r => 
+            r.emoji === emoji 
+              ? { ...r, count: r.count - 1, userReacted: false }
+              : r
+          ).filter(r => r.count > 0)
+        }));
+      }
+    } else {
+      // Add reaction
+      const success = await chatService.addReaction(messageId, user.id, emoji);
+      if (success) {
+        setMessageReactions(prev => ({
+          ...prev,
+          [messageId]: currentReactions.map(r => 
+            r.emoji === emoji 
+              ? { ...r, count: r.count + 1, userReacted: true }
+              : r
+          ).concat(
+            !existingReaction ? [{ emoji, count: 1, userReacted: true }] : []
+          )
+        }));
+      }
+    }
+  };
+
+  // Load reactions for messages
+  const loadMessageReactions = async (messageId: string) => {
+    const reactions = await chatService.getMessageReactions(messageId);
+    setMessageReactions(prev => ({
+      ...prev,
+      [messageId]: reactions
+    }));
+  };
 
   return (
     <div className="h-[calc(100vh-4rem)] sm:h-[calc(100vh-4rem)] flex flex-col sm:flex-row bg-background">
@@ -1241,8 +1306,7 @@ export default function Messaging() {
                                               key={emoji}
                                               className="p-2 hover:bg-muted rounded text-lg transition-colors"
                                               onClick={() => {
-                                                // TODO: Implement emoji reaction functionality
-                                                console.log(`Reacted with ${emoji} to message ${message.id}`);
+                                                handleReaction(message.id, emoji);
                                               }}
                                             >
                                               {emoji}
@@ -1251,6 +1315,24 @@ export default function Messaging() {
                                         </div>
                                       </PopoverContent>
                                     </Popover>
+                                  </div>
+                                )}
+                                {/* Display reactions */}
+                                {messageReactions[message.id] && messageReactions[message.id].length > 0 && (
+                                  <div className="flex flex-wrap gap-1 mt-2">
+                                    {messageReactions[message.id].map((reaction) => (
+                                      <button
+                                        key={reaction.emoji}
+                                        className={`px-2 py-1 rounded-full text-xs border transition-colors ${
+                                          reaction.userReacted 
+                                            ? 'bg-primary text-primary-foreground border-primary' 
+                                            : 'bg-muted hover:bg-muted/80 border-border'
+                                        }`}
+                                        onClick={() => handleReaction(message.id, reaction.emoji)}
+                                      >
+                                        {reaction.emoji} {reaction.count}
+                                      </button>
+                                    ))}
                                   </div>
                                 )}
                                 <p className="text-xs text-muted-foreground mt-1">

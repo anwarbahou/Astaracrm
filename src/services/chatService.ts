@@ -10,6 +10,11 @@ export interface Message {
     avatar: string;
   };
   created_at: string;
+  reactions?: Array<{
+    emoji: string;
+    count: number;
+    userReacted: boolean;
+  }>;
 }
 
 export interface Channel {
@@ -72,38 +77,31 @@ class ChatService {
    */
   async fetchChannels(userId: string): Promise<Channel[]> {
     try {
-      // Fetch public channels (simplified query)
-      const { data: publicChannels, error: publicError } = await supabase
-        .from('channels')
-        .select('id, name, is_private, created_by')
-        .eq('is_private', false);
+      // Fetch only channels where the user is a member
+      const { data: userChannels, error } = await supabase
+        .from('channel_members')
+        .select(`
+          channel_id,
+          channels (
+            id,
+            name,
+            is_private,
+            created_by
+          )
+        `)
+        .eq('user_id', userId);
 
-      if (publicError) throw publicError;
+      if (error) throw error;
 
-      // Fetch private channels the user is a member of
-      const { data: privateChannels, error: privateError } = await supabase
-        .from('channels')
-        .select('id, name, is_private, created_by')
-        .eq('is_private', true)
-        .in(
-          'id',
-          await supabase
-            .from('channel_members')
-            .select('channel_id')
-            .eq('user_id', userId)
-            .then(result => result.data?.map(row => row.channel_id) || [])
-        );
+      if (!userChannels) return [];
 
-      if (privateError) throw privateError;
-
-      const allChannels = [...(publicChannels || []), ...(privateChannels || [])];
+      const channels = userChannels.map(item => item.channels).filter(Boolean) as any[];
       
       // Fetch unread counts for all channels
-      const unreadCounts = await this.fetchUnreadCounts(userId, allChannels.map(c => c.id));
+      const unreadCounts = await this.fetchUnreadCounts(userId, channels.map(c => c.id));
       
-      // For now, return channels with basic member info
-      // In a production app, you'd want to fetch member details separately
-      return allChannels.map(channel => ({
+      // Return channels with basic member info
+      return channels.map(channel => ({
         id: channel.id,
         name: channel.name,
         is_private: channel.is_private,
@@ -396,6 +394,105 @@ class ChatService {
             avatar: senderAvatar
           }
         });
+      })
+      .subscribe();
+  }
+
+  /**
+   * Add a reaction to a message
+   */
+  async addReaction(messageId: string, userId: string, emoji: string): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('message_reactions')
+        .insert({
+          message_id: messageId,
+          user_id: userId,
+          emoji: emoji
+        });
+
+      if (error) {
+        // If it's a unique constraint violation, the user already reacted with this emoji
+        if (error.code === '23505') {
+          return true; // Consider this a success since the reaction already exists
+        }
+        throw error;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error adding reaction:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add reaction",
+        variant: "destructive"
+      });
+      return false;
+    }
+  }
+
+  /**
+   * Remove a reaction from a message
+   */
+  async removeReaction(messageId: string, userId: string, emoji: string): Promise<boolean> {
+    try {
+      const { error } = await supabase
+        .from('message_reactions')
+        .delete()
+        .eq('message_id', messageId)
+        .eq('user_id', userId)
+        .eq('emoji', emoji);
+
+      if (error) throw error;
+
+      return true;
+    } catch (error) {
+      console.error('Error removing reaction:', error);
+      toast({
+        title: "Error",
+        description: "Failed to remove reaction",
+        variant: "destructive"
+      });
+      return false;
+    }
+  }
+
+  /**
+   * Get reaction counts for a message
+   */
+  async getMessageReactions(messageId: string): Promise<Array<{emoji: string, count: number, userReacted: boolean}>> {
+    try {
+      const { data, error } = await supabase
+        .rpc('get_message_reaction_counts', { message_uuid: messageId });
+
+      if (error) throw error;
+
+      return data?.map(item => ({
+        emoji: item.emoji,
+        count: item.count,
+        userReacted: item.user_reacted
+      })) || [];
+    } catch (error) {
+      console.error('Error fetching message reactions:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Subscribe to reaction changes for a message
+   */
+  subscribeToReactions(messageId: string, onReactionChange: (reactions: Array<{emoji: string, count: number, userReacted: boolean}>) => void) {
+    return supabase
+      .channel(`reactions-${messageId}`)
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'message_reactions',
+        filter: `message_id=eq.${messageId}`
+      }, async () => {
+        // Fetch updated reaction counts
+        const reactions = await this.getMessageReactions(messageId);
+        onReactionChange(reactions);
       })
       .subscribe();
   }

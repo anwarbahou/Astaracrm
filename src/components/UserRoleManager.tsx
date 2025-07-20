@@ -29,6 +29,7 @@ import { Dialog as EditDialog, DialogContent as EditDialogContent, DialogHeader 
 import { createAvatar } from '@dicebear/core';
 import * as micah from '@dicebear/micah';
 import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
 
 type UserRole = 'admin' | 'manager' | 'user';
 type UserProfile = Database['public']['Tables']['users']['Row'];
@@ -155,12 +156,8 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({ searchQuery = 
     try {
       // Get the current user's access token (if needed for auth)
       let accessToken = undefined;
-      if (supabase.auth.getSession) {
-        const sessionResult = await supabase.auth.getSession();
-        accessToken = sessionResult.data.session?.access_token;
-      } else if (supabase.auth.session) {
-        accessToken = supabase.auth.session()?.access_token;
-      }
+      const sessionResult = await supabase.auth.getSession();
+      accessToken = sessionResult.data.session?.access_token;
       // Call the edge function to delete user from both Auth and users table
       const res = await fetch('https://purgvbzgbdinporjahra.functions.supabase.co/delete-user', {
         method: 'POST',
@@ -273,12 +270,8 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({ searchQuery = 
     setSavingEdit(true);
     try {
       let accessToken = undefined;
-      if (supabase.auth.getSession) {
-        const sessionResult = await supabase.auth.getSession();
-        accessToken = sessionResult.data.session?.access_token;
-      } else if (supabase.auth.session) {
-        accessToken = supabase.auth.session()?.access_token;
-      }
+      const sessionResult = await supabase.auth.getSession();
+      accessToken = sessionResult.data.session?.access_token;
       const payload: any = {
         userId: editingUser.id,
         firstName: editForm.firstName,
@@ -420,7 +413,8 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({ searchQuery = 
 
   return (
     <div className="space-y-6">
-      <div className="rounded-md border bg-card text-card-foreground shadow">
+      {/* Desktop Table View */}
+      <div className="hidden lg:block rounded-md border bg-card text-card-foreground shadow">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
@@ -533,6 +527,99 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({ searchQuery = 
           </TableBody>
         </Table>
       </div>
+
+      {/* Mobile Card View */}
+      <div className="lg:hidden space-y-4">
+        {filteredUsers.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-8 space-y-2 text-muted-foreground">
+            <User className="h-8 w-8" />
+            <p>No users found</p>
+          </div>
+        ) : (
+          filteredUsers.map((user) => (
+            <Card key={user.id} className="p-4 space-y-4">
+              {/* User Header */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <Avatar className="h-12 w-12">
+                    <AvatarImage src={user.avatar_url || undefined} />
+                    <AvatarFallback className="text-sm">
+                      {user.first_name?.[0]}{user.last_name?.[0]}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <div className="font-medium text-base">
+                      {user.first_name} {user.last_name}
+                    </div>
+                    <div className="text-sm text-muted-foreground">{user.email}</div>
+                  </div>
+                </div>
+                <Badge className={`${getRoleColor(user.role)} flex items-center gap-1`}>
+                  {getRoleIcon(user.role)}
+                  {user.role || 'user'}
+                </Badge>
+              </div>
+
+              {/* User Details */}
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                  <Calendar className="h-4 w-4" />
+                  <span>Joined: {user.created_at ? format(new Date(user.created_at), 'MMM d, yyyy') : 'N/A'}</span>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center gap-2 pt-2 border-t">
+                <Select
+                  value={user.role || 'user'}
+                  onValueChange={(value: UserRole) => handleRoleUpdate(user.id, value)}
+                  disabled={updatingUserId === user.id}
+                >
+                  <SelectTrigger className="flex-1">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="user">User</SelectItem>
+                    <SelectItem value="manager">Manager</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                  </SelectContent>
+                </Select>
+                {updatingUserId === user.id && (
+                  <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                )}
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => openEditDialog(user)}
+                  aria-label="Edit user"
+                  className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+                {currentUser?.id !== user.id && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setPendingDeleteUser(user);
+                      setConfirmDialogOpen(true);
+                    }}
+                    disabled={deletingUserId === user.id}
+                    aria-label="Delete user"
+                  >
+                    {deletingUserId === user.id ? (
+                      <Loader2 className="h-4 w-4 animate-spin text-destructive" />
+                    ) : (
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    )}
+                  </Button>
+                )}
+              </div>
+            </Card>
+          ))
+        )}
+      </div>
+
       {/* Confirmation Dialog */}
       <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
         <DialogContent>

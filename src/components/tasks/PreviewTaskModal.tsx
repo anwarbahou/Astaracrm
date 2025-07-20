@@ -1,16 +1,26 @@
 import React from 'react';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetClose } from "@/components/ui/sheet";
-import { Badge } from "@/components/ui/badge";
-import { Task } from '@/hooks/useTasks';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { CalendarIcon, Clock, CheckCircle, AlertTriangle, User, Briefcase, Handshake, X } from 'lucide-react';
-import { format, isPast } from "date-fns";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { 
+  X, 
+  CalendarIcon, 
+  Clock, 
+  CheckCircle, 
+  AlertTriangle,
+  User,
+  Briefcase,
+  Handshake
+} from 'lucide-react';
+import { format, isPast } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { Task } from '@/hooks/useTasks';
 import { useTranslation } from 'react-i18next';
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.bubble.css';
 
 interface PreviewTaskModalProps {
   isOpen: boolean;
@@ -66,9 +76,20 @@ export const PreviewTaskModal: React.FC<PreviewTaskModalProps> = ({
         side="bottom" 
         className="h-[95vh] w-full max-w-none rounded-t-2xl border-t shadow-2xl bg-background/95 backdrop-blur-sm p-0 flex flex-col"
       >
-        {/* Drag Handle */}
-        <div className="flex justify-center pt-3 pb-2 flex-shrink-0">
-          <div className="w-12 h-1 bg-muted-foreground/30 rounded-full" />
+        {/* Drag Handle and Close Button */}
+        <div className="flex justify-between items-center pt-3 pb-2 px-4 flex-shrink-0">
+          <div className="flex-1 flex justify-center">
+            <div className="w-12 h-1 bg-muted-foreground/30 rounded-full" />
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className="h-8 w-8 rounded-full hover:bg-muted/50 transition-colors"
+            aria-label="Close task details"
+          >
+            <X className="h-4 w-4" />
+          </Button>
         </div>
 
         {/* Header - Fixed */}

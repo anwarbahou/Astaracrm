@@ -146,10 +146,11 @@ export function TopNavigation() {
                   <Menu className="h-4 w-4" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-64 p-0 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
-                <div className="h-full flex flex-col">
-                  <SimpleSidebarContent />
-                </div>
+              <SheetContent 
+                side="left" 
+                className="w-80 max-w-[85vw] p-0 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 overflow-hidden"
+              >
+                <SimpleSidebarContent />
               </SheetContent>
             </Sheet>
             

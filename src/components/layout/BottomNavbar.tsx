@@ -3,10 +3,13 @@ import { cn } from "@/lib/utils";
 import { MessageSquare, DollarSign, CheckSquare, FileText } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
+import { useMessagingUnread } from "@/hooks/useMessagingUnread";
+import { Badge } from "@/components/ui/badge";
 
 export function BottomNavbar() {
   const { t } = useTranslation();
   const location = useLocation();
+  const { unreadCount: messagingUnreadCount } = useMessagingUnread();
 
   const navItems = [
     {
@@ -68,20 +71,30 @@ export function BottomNavbar() {
               )}
               
               <motion.div
-                className="flex flex-col items-center"
+                className="flex flex-col items-center relative"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 transition={{ duration: 0.1 }}
               >
-                <Icon 
-                  size={20} 
-                  className={cn(
-                    "mb-1 transition-colors duration-200",
-                    isActive 
-                      ? "text-blue-600 dark:text-blue-400" 
-                      : "text-gray-600 dark:text-gray-400"
-                  )} 
-                />
+                <div className="relative">
+                  <Icon 
+                    size={20} 
+                    className={cn(
+                      "mb-1 transition-colors duration-200",
+                      isActive 
+                        ? "text-blue-600 dark:text-blue-400" 
+                        : "text-gray-600 dark:text-gray-400"
+                    )} 
+                  />
+                  {item.id === 'messaging' && messagingUnreadCount > 0 && (
+                    <Badge 
+                      variant="destructive" 
+                      className="absolute -top-1 -right-1 h-4 w-4 p-0 text-xs flex items-center justify-center"
+                    >
+                      {messagingUnreadCount > 99 ? '99+' : messagingUnreadCount}
+                    </Badge>
+                  )}
+                </div>
                 <span className="text-xs font-medium truncate max-w-full">
                   {item.label}
                 </span>

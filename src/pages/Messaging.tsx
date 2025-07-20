@@ -1,10 +1,11 @@
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Search, Send, Paperclip, MoreVertical, Phone, Video, Plus, Hash, Users, Trash2, Info, X } from "lucide-react";
+import { Search, Send, Paperclip, MoreVertical, Phone, Video, Plus, Hash, Users, Trash2, Info, X, MessageSquare, ChevronLeft, Smile } from "lucide-react";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { useEffect, useLayoutEffect, useState, useRef, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -110,6 +111,7 @@ export default function Messaging() {
   const [pendingDMUser, setPendingDMUser] = useState<any>(null);
   const PAGE_SIZE = 20;
   const [paginationLoading, setPaginationLoading] = useState(false);
+  const isLoadingRef = useRef(false);
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -121,6 +123,7 @@ export default function Messaging() {
   const [addUserLoading, setAddUserLoading] = useState(false);
   const [channelDialogOpen, setChannelDialogOpen] = useState(false);
   const [totalUnreadCount, setTotalUnreadCount] = useState(0);
+  const [hoveredMessageId, setHoveredMessageId] = useState<string | null>(null);
 
   // Helper to set the ref to the Viewport
   const setScrollViewportRef = useCallback((node: HTMLDivElement | null) => {
@@ -218,23 +221,32 @@ export default function Messaging() {
 
   // Fetch messages with pagination
   const fetchMessages = async (channelId: string, before?: string) => {
+    if (isLoadingRef.current) return [];
+    
+    isLoadingRef.current = true;
     setPaginationLoading(true);
-    let query = supabase
-      .from('messages')
-      .select('id, content, created_at, sender_id, channel_id')
-      .eq('channel_id', channelId)
-      .order('created_at', { ascending: false })
-      .limit(PAGE_SIZE);
-    if (before) {
-      query = query.lt('created_at', before);
+    
+    try {
+      let query = supabase
+        .from('messages')
+        .select('id, content, created_at, sender_id, channel_id')
+        .eq('channel_id', channelId)
+        .order('created_at', { ascending: false })
+        .limit(PAGE_SIZE);
+      if (before) {
+        query = query.lt('created_at', before);
+      }
+      const { data, error } = await query;
+      
+      if (error) {
+        console.error('Error fetching messages:', error);
+        return [];
+      }
+      return data || [];
+    } finally {
+      setPaginationLoading(false);
+      isLoadingRef.current = false;
     }
-    const { data, error } = await query;
-    setPaginationLoading(false);
-    if (error) {
-      console.error('Error fetching messages:', error);
-      return [];
-    }
-    return data || [];
   };
 
   // Always fetch latest messages when selectedChannel changes
@@ -280,7 +292,7 @@ export default function Messaging() {
 
   // Load more messages on scroll top
   const handleScroll = async (e: React.UIEvent<HTMLDivElement>) => {
-    if (paginationLoading || !hasMoreMessages) return;
+    if (isLoadingRef.current || paginationLoading || !hasMoreMessages) return;
     if (e.currentTarget.scrollTop === 0 && messages.length > 0 && selectedChannel) {
       const oldest = messages[0];
       const data = await fetchMessages(selectedChannel.id, oldest.created_at);
@@ -739,7 +751,7 @@ export default function Messaging() {
     // Create separate subscriptions for each channel to avoid filter issues
     const subscriptions = channelIds.map(channelId => 
       supabase
-        .channel(`global-messages-${channelId}`)
+        .channel(`global-messages-${channelId}-${Date.now()}`)
         .on('postgres_changes', {
           event: 'INSERT',
           schema: 'public',
@@ -773,16 +785,17 @@ export default function Messaging() {
             }
           }
           
-          // Update unread counts immediately
-          const updatedUnreadCounts = await chatService.fetchUnreadCounts(user.id, channelIds);
-          setChannels(prev => prev.map(channel => ({
-            ...channel,
-            unreadCount: updatedUnreadCounts.find(uc => uc.channel_id === channel.id)?.count || 0
-          })));
-          
-          // Update total unread count
-          const totalUnread = updatedUnreadCounts.reduce((sum, uc) => sum + uc.count, 0);
-          setTotalUnreadCount(totalUnread);
+          // Only update unread counts if not in the current channel
+          if (selectedChannel?.id !== newMessage.channel_id) {
+            const updatedUnreadCounts = await chatService.fetchUnreadCounts(user.id, channelIds);
+            setChannels(prev => prev.map(channel => ({
+              ...channel,
+              unreadCount: updatedUnreadCounts.find(uc => uc.channel_id === channel.id)?.count || 0
+            })));
+            
+            const totalUnread = updatedUnreadCounts.reduce((sum, uc) => sum + uc.count, 0);
+            setTotalUnreadCount(totalUnread);
+          }
         })
         .subscribe()
     );
@@ -793,14 +806,16 @@ export default function Messaging() {
   }, [user, channels, selectedChannel, users]);
 
   useLayoutEffect(() => {
-    setTimeout(() => {
-      scrollToBottom();
-    }, 0);
+    if (selectedChannel && messages.length > 0) {
+      setTimeout(() => {
+        scrollToBottom();
+      }, 100);
+    }
   }, [messages, selectedChannel]);
 
   useEffect(() => {
-    if (lastMessageRef.current) {
-      lastMessageRef.current.scrollIntoView({ behavior: "auto" });
+    if (lastMessageRef.current && selectedChannel) {
+      lastMessageRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages, selectedChannel]);
 
@@ -861,7 +876,7 @@ export default function Messaging() {
       ) : (
         <>
           {/* Sidebar with channels and users */}
-          <Card className="w-full sm:w-80 h-full border-r flex flex-col">
+          <Card className={`${selectedChannel ? 'hidden sm:flex' : 'flex'} w-full sm:w-80 h-full border-r flex-col`}>
             {/* Conversations section */}
             <div className="p-3 sm:p-6 border-b">
               <div className="flex justify-between items-center mb-4">
@@ -1086,7 +1101,7 @@ export default function Messaging() {
           </Card>
 
           {/* Main chat and info sidebar layout */}
-          <div className="flex-1 flex overflow-hidden">
+          <div className={`${selectedChannel ? 'flex' : 'hidden sm:flex'} flex-1 flex overflow-hidden`}>
             {/* Chat area (flex-1) */}
             <div className={`flex-1 flex flex-col ${showChannelInfo ? 'border-r' : ''}`}>
               {/* Chat header */}
@@ -1094,6 +1109,15 @@ export default function Messaging() {
                 <Card className="border-b rounded-none p-4">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-3">
+                      {/* Back button for mobile */}
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="sm:hidden"
+                        onClick={() => setSelectedChannel(null)}
+                      >
+                        <ChevronLeft className="h-5 w-5" />
+                      </Button>
                       {selectedChannel.is_private && selectedChannel.name.startsWith('dm-') ? (() => {
                         const idsPart = selectedChannel.name.slice(3);
                         const id1 = idsPart.slice(0, 36);
@@ -1164,46 +1188,112 @@ export default function Messaging() {
                 </Card>
               )}
               {/* Messages area */}
-              <ScrollArea className="flex-1 p-4" onScroll={handleScroll} ref={setScrollViewportRef}>
-                <div className="space-y-4">
-                  {paginationLoading && selectedChannel && (
-                    <div className="text-center text-xs text-muted-foreground">Loading more messages...</div>
-                  )}
-                  {messages
-                    .filter((message) => selectedChannel && message.channel_id === selectedChannel.id)
-                    .map((message, idx, arr) => {
-                      const senderUser = users.find(u => u.id === message.sender.id);
-                      return (
-                        <div
-                          key={message.id}
-                          ref={idx === arr.length - 1 ? lastMessageRef : null}
-                          className={`flex ${message.sender.id === user?.id ? 'justify-end' : 'justify-start'}`}
-                        >
-                          <div className={`flex gap-2 max-w-[70%] ${message.sender.id === user?.id ? 'flex-row-reverse' : ''}`}>
-                            <Avatar className="h-8 w-8">
-                              <AvatarImage src={senderUser?.avatar_url || undefined} alt={getUserDisplayName(senderUser)} />
-                              <AvatarFallback>{getUserInitials(senderUser)}</AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <div
-                                className={`rounded-lg p-3 ${
-                                  message.sender.id === user?.id
-                                    ? 'bg-primary text-primary-foreground'
-                                    : 'bg-muted'
-                                }`}
-                              >
-                                {message.content}
+              {selectedChannel ? (
+                <ScrollArea className="flex-1 p-4" onScroll={handleScroll} ref={setScrollViewportRef}>
+                  <div className="space-y-4">
+                    {paginationLoading && selectedChannel && (
+                      <div className="text-center text-xs text-muted-foreground">Loading more messages...</div>
+                    )}
+                    {messages
+                      .filter((message) => selectedChannel && message.channel_id === selectedChannel.id)
+                      .map((message, idx, arr) => {
+                        const senderUser = users.find(u => u.id === message.sender.id);
+                        return (
+                          <div
+                            key={message.id}
+                            ref={idx === arr.length - 1 ? lastMessageRef : null}
+                            className={`flex ${message.sender.id === user?.id ? 'justify-end' : 'justify-start'}`}
+                            onMouseEnter={() => setHoveredMessageId(message.id)}
+                            onMouseLeave={() => setHoveredMessageId(null)}
+                          >
+                            <div className={`flex gap-2 max-w-[70%] ${message.sender.id === user?.id ? 'flex-row-reverse' : ''}`}>
+                              <Avatar className="h-8 w-8">
+                                <AvatarImage src={senderUser?.avatar_url || undefined} alt={getUserDisplayName(senderUser)} />
+                                <AvatarFallback>{getUserInitials(senderUser)}</AvatarFallback>
+                              </Avatar>
+                              <div className="relative">
+                                <div
+                                  className={`rounded-lg p-3 ${
+                                    message.sender.id === user?.id
+                                      ? 'bg-primary text-primary-foreground'
+                                      : 'bg-muted'
+                                  }`}
+                                >
+                                  {message.content}
+                                </div>
+                                {/* Emoji reaction button - only show on hover */}
+                                {hoveredMessageId === message.id && (
+                                  <div className={`absolute top-1 ${message.sender.id === user?.id ? 'left-1' : 'right-1'}`}>
+                                    <Popover>
+                                      <PopoverTrigger asChild>
+                                        <Button
+                                          variant="ghost"
+                                          size="icon"
+                                          className="h-6 w-6 bg-background/80 hover:bg-background/90"
+                                        >
+                                          <Smile className="h-3 w-3" />
+                                        </Button>
+                                      </PopoverTrigger>
+                                      <PopoverContent className="w-64 p-2" align="start">
+                                        <div className="grid grid-cols-8 gap-1">
+                                          {['😀', '😂', '😍', '🥰', '😎', '🤔', '👍', '❤️', '🔥', '🎉', '👏', '🙏', '😢', '😡', '🤮', '💩'].map((emoji) => (
+                                            <button
+                                              key={emoji}
+                                              className="p-2 hover:bg-muted rounded text-lg transition-colors"
+                                              onClick={() => {
+                                                // TODO: Implement emoji reaction functionality
+                                                console.log(`Reacted with ${emoji} to message ${message.id}`);
+                                              }}
+                                            >
+                                              {emoji}
+                                            </button>
+                                          ))}
+                                        </div>
+                                      </PopoverContent>
+                                    </Popover>
+                                  </div>
+                                )}
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  {new Date(message.created_at).toLocaleTimeString()}
+                                </p>
                               </div>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                {new Date(message.created_at).toLocaleTimeString()}
-                              </p>
                             </div>
                           </div>
+                        );
+                      })}
+                  </div>
+                </ScrollArea>
+              ) : (
+                <ScrollArea className="flex-1 p-4">
+                  <div className="flex items-center justify-center h-full">
+                    <div className="text-center space-y-6 max-w-md">
+                      <div className="mx-auto w-24 h-24 bg-muted rounded-full flex items-center justify-center">
+                        <MessageSquare className="h-12 w-12 text-muted-foreground" />
+                      </div>
+                      <div className="space-y-2">
+                        <h3 className="text-xl font-semibold">Welcome to Messaging</h3>
+                        <p className="text-muted-foreground text-sm leading-relaxed">
+                          Select a conversation from the sidebar to start chatting. You can join public channels or start direct messages with your team members.
+                        </p>
+                      </div>
+                      <div className="flex flex-col gap-2 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-2">
+                          <Hash className="h-4 w-4" />
+                          <span>Join public channels to collaborate with your team</span>
                         </div>
-                      );
-                    })}
-                </div>
-              </ScrollArea>
+                        <div className="flex items-center gap-2">
+                          <Users className="h-4 w-4" />
+                          <span>Start direct messages for private conversations</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <MessageSquare className="h-4 w-4" />
+                          <span>All your conversations will appear here</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </ScrollArea>
+              )}
               {pendingDMUser && !selectedChannel && (
                 <ScrollArea className="flex-1 p-4">
                   <div className="flex items-center justify-center h-full text-muted-foreground">

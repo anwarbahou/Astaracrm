@@ -31,6 +31,11 @@ interface AuthContextType {
   refreshUserProfile: () => Promise<UserProfile | null>;
   forceRefresh: () => Promise<void>;
   error: string | null;
+  // Session timeout management
+  sessionWarning: boolean;
+  sessionExpiryTime: number | null;
+  extendSession: () => Promise<void>;
+  getSessionTimeRemaining: () => number;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -63,7 +68,7 @@ const fetchUserProfile = async (userId: string): Promise<UserProfile | null> => 
     
     if (data) {
       sessionStorage.setItem(cacheKey, JSON.stringify(data));
-    return data as UserProfile;
+      return data as UserProfile;
     }
     
     return null;
@@ -105,9 +110,34 @@ const ensureUserProfile = async (user: User, retryCount = 0): Promise<void> => {
   }
 };
 
-const MAX_RETRIES = 3;
-const RETRY_DELAY = 1000;
-const SESSION_TIMEOUT = 1000 * 60 * 60 * 24; // 24 hours
+// Session timeout configuration - REDUCED TIMEOUTS FOR BETTER UX
+const SESSION_CONFIG = {
+  // Default session timeout (7 days) - INCREASED from 24 hours
+  DEFAULT_TIMEOUT: 1000 * 60 * 60 * 24 * 7,
+  
+  // Short session timeout (4 hours) - INCREASED from 1 hour
+  SHORT_TIMEOUT: 1000 * 60 * 60 * 4,
+  
+  // Extended session timeout (30 days) - INCREASED from 7 days
+  EXTENDED_TIMEOUT: 1000 * 60 * 60 * 24 * 30,
+  
+  // Session timeout for "Remember Me" (90 days) - INCREASED from 30 days
+  REMEMBER_ME_TIMEOUT: 1000 * 60 * 60 * 24 * 90,
+  
+  // Warning time before session expires (30 minutes) - INCREASED from 5 minutes
+  WARNING_TIME: 1000 * 60 * 30,
+  
+  // Auto-refresh interval (1 hour) - INCREASED from 15 minutes
+  REFRESH_INTERVAL: 1000 * 60 * 60
+};
+
+// Get session timeout based on user preference
+const getSessionTimeout = (rememberMe: boolean = false): number => {
+  if (rememberMe) {
+    return SESSION_CONFIG.REMEMBER_ME_TIMEOUT;
+  }
+  return SESSION_CONFIG.DEFAULT_TIMEOUT;
+};
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -117,6 +147,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [initializing, setInitializing] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [wasAuthenticated, setWasAuthenticated] = useState(false);
+  const [sessionWarning, setSessionWarning] = useState(false);
+  const [sessionExpiryTime, setSessionExpiryTime] = useState<number | null>(null);
+  const [authInitialized, setAuthInitialized] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -127,6 +160,85 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     [userProfile?.role]
   );
 
+  // IMPROVED Session timeout monitoring - less aggressive
+  useEffect(() => {
+    if (!session?.user || !authInitialized) return;
+
+    const rememberMe = sessionStorage.getItem('persist') === 'true';
+    const timeout = getSessionTimeout(rememberMe);
+    // Use session expiry time instead of created_at for more accurate timing
+    const sessionExpiry = session.expires_at ? session.expires_at * 1000 : Date.now() + timeout;
+    const expiryTime = Math.max(sessionExpiry, Date.now() + timeout);
+    
+    setSessionExpiryTime(expiryTime);
+
+    // Check for session expiry - LESS FREQUENT CHECKS
+    const checkSessionExpiry = () => {
+      const now = Date.now();
+      const timeUntilExpiry = expiryTime - now;
+      
+      if (timeUntilExpiry <= 0) {
+        // Only logout if session is actually expired
+        console.log('Session expired, logging out...');
+        forceLogout('Your session has expired. Please log in again.');
+        return;
+      }
+      
+      // Show warning 30 minutes before expiry (increased from 5 minutes)
+      if (timeUntilExpiry <= SESSION_CONFIG.WARNING_TIME && !sessionWarning) {
+        setSessionWarning(true);
+        console.warn(`Session will expire in ${Math.round(timeUntilExpiry / 1000 / 60)} minutes`);
+      }
+    };
+
+    // Set up periodic checks - LESS FREQUENT
+    const intervalId = setInterval(checkSessionExpiry, SESSION_CONFIG.REFRESH_INTERVAL);
+    
+    // Initial check
+    checkSessionExpiry();
+
+    return () => {
+      clearInterval(intervalId);
+      setSessionWarning(false);
+    };
+  }, [session, sessionWarning, authInitialized]);
+
+  // IMPROVED Auto-refresh session before expiry
+  useEffect(() => {
+    if (!session?.user || !sessionExpiryTime || !authInitialized) return;
+
+    const rememberMe = sessionStorage.getItem('persist') === 'true';
+    const timeout = getSessionTimeout(rememberMe);
+    const refreshTime = sessionExpiryTime - timeout + SESSION_CONFIG.REFRESH_INTERVAL;
+
+    const refreshSession = async () => {
+      try {
+        console.log('Attempting to refresh session...');
+        const { data, error } = await supabase.auth.refreshSession();
+        if (error) {
+          console.error('Failed to refresh session:', error);
+          // Don't immediately logout on refresh failure, let Supabase handle it
+          return;
+        } else if (data.session) {
+          console.log('Session refreshed successfully');
+          setSessionWarning(false);
+        }
+      } catch (err) {
+        console.error('Session refresh error:', err);
+        // Don't immediately logout on refresh failure
+      }
+    };
+
+    const timeUntilRefresh = refreshTime - Date.now();
+    if (timeUntilRefresh > 0) {
+      const timeoutId = setTimeout(refreshSession, timeUntilRefresh);
+      return () => clearTimeout(timeoutId);
+    } else {
+      // Refresh immediately if past refresh time
+      refreshSession();
+    }
+  }, [session, sessionExpiryTime, authInitialized]);
+
   // Clear error on navigation to login
   useEffect(() => {
     if (location.pathname === '/login' && error) {
@@ -134,8 +246,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [location.pathname, error]);
 
-  // Optimized logout with cleanup
+  // IMPROVED logout with selective storage clearing
   const forceLogout = useCallback((msg?: string) => {
+    console.log('Force logout called:', msg);
+    
     // Clear all auth state
     setUser(null);
     setUserProfile(null);
@@ -143,11 +257,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(false);
     setError(null);
     setWasAuthenticated(false);
+    setAuthInitialized(false);
     
-    // Clear storage
+    // Selective storage clearing - don't clear everything
     try {
-      sessionStorage.clear();
-    localStorage.clear();
+      // Only clear auth-related items, not all storage
+      const keysToRemove = [
+        'user_profile_',
+        'persist',
+        'supabase.auth.token',
+        'supabase.auth.user'
+      ];
+      
+      // Clear sessionStorage items
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        if (key && keysToRemove.some(prefix => key.startsWith(prefix))) {
+          sessionStorage.removeItem(key);
+        }
+      }
+      
+      // Clear localStorage items
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && keysToRemove.some(prefix => key.startsWith(prefix))) {
+          localStorage.removeItem(key);
+        }
+      }
     } catch (e) {
       console.error('Error clearing storage:', e);
     }
@@ -182,52 +318,79 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [user?.id]);
 
+  // IMPROVED Auth state change handler - less aggressive logout logic
   const handleAuthStateChange = useCallback(async (event: string, session: Session | null) => {
+    console.log('🔐 Auth state change:', event, !!session);
+    
     setInitializing(true);
     setSession(session);
     setUser(session?.user ?? null);
 
-    // --- FIXED SESSION EXPIRY & INVALID TOKEN HANDLING ---
-    if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
-      // User explicitly signed out or was deleted
-      forceLogout('Your session has expired or is invalid. Please log in again.');
-      setInitializing(false);
-      return;
-    }
-
-    if (session?.user) {
-      // User is authenticated
-      setWasAuthenticated(true);
-      if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        const profile = await fetchUserProfile(session.user.id);
-        setUserProfile(profile);
-        if (!profile) {
-          await ensureUserProfile(session.user);
-          const newProfile = await fetchUserProfile(session.user.id);
-          setUserProfile(newProfile);
-        }
-      }
-    } else {
-      // No session - only force logout if user was previously authenticated
-      if (wasAuthenticated) {
-        forceLogout('Your session has expired or is invalid. Please log in again.');
+    try {
+      // Handle explicit sign out events
+      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+        console.log('User explicitly signed out or was deleted');
+        setUserProfile(null);
+        setWasAuthenticated(false);
+        setAuthInitialized(true);
         setInitializing(false);
         return;
       }
-      // New visitor - just clear profile and continue
-      setUserProfile(null);
-      setWasAuthenticated(false);
+
+      if (session?.user) {
+        // User is authenticated
+        setWasAuthenticated(true);
+        console.log('User authenticated:', session.user.email);
+        
+        if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          const profile = await fetchUserProfile(session.user.id);
+          setUserProfile(profile);
+          if (!profile) {
+            console.log('Creating user profile...');
+            await ensureUserProfile(session.user);
+            const newProfile = await fetchUserProfile(session.user.id);
+            setUserProfile(newProfile);
+          }
+        }
+      } else {
+        // No session - only force logout if user was previously authenticated AND we're not on login page
+        if (wasAuthenticated && location.pathname !== '/login') {
+          console.log('No session but user was authenticated, redirecting to login');
+          setUserProfile(null);
+          setWasAuthenticated(false);
+          // Don't force logout immediately, let the user navigate naturally
+        } else {
+          // New visitor or on login page - just clear profile and continue
+          setUserProfile(null);
+          setWasAuthenticated(false);
+        }
+      }
+    } catch (error) {
+      console.error('Error in auth state change handler:', error);
+      setError('Authentication error occurred');
+    } finally {
+      setInitializing(false);
+      setAuthInitialized(true);
     }
-    setInitializing(false);
-  }, [forceLogout, wasAuthenticated]);
+  }, [wasAuthenticated, location.pathname]);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthStateChange);
 
+    // Add timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      if (initializing) {
+        console.warn('Auth initialization timeout - forcing completion');
+        setInitializing(false);
+        setAuthInitialized(true);
+      }
+    }, 10000); // 10 second timeout
+
     return () => {
       subscription.unsubscribe();
+      clearTimeout(timeoutId);
     };
-  }, [handleAuthStateChange]);
+  }, [handleAuthStateChange, initializing]);
   
   // Optimized profile subscription
   useEffect(() => {
@@ -285,6 +448,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async (email: string, password: string, rememberMe: boolean = true) => {
     try {
+      console.log('Signing in with rememberMe:', rememberMe);
+      
       // Set the persistence flag before signing in
       if (rememberMe) {
         sessionStorage.setItem('persist', 'true');
@@ -292,10 +457,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         sessionStorage.removeItem('persist');
       }
       
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
+
+      if (data.session) {
+        console.log('✅ Sign in successful:', data.session.user.email);
+      }
 
       return { error };
     } catch (err) {
@@ -306,11 +475,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     try {
+      console.log('Signing out...');
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error('Error signing out:', error);
         return { error };
       }
+      
       // Perform comprehensive cleanup
       setUser(null);
       setUserProfile(null);
@@ -318,6 +489,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (user?.id) {
         sessionStorage.removeItem(`user_profile_${user.id}`);
       }
+      console.log('✅ Sign out successful');
       return { error: null };
     } catch (err) {
       console.error('Signout error:', err);
@@ -374,7 +546,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     userProfile,
     session,
-    loading: loading || initializing,
+    loading: (loading || initializing) && !authInitialized,
     isAdmin,
     isManager,
     signUp,
@@ -384,12 +556,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     refreshUserProfile,
     forceRefresh,
     error,
+    // Session timeout management
+    sessionWarning,
+    sessionExpiryTime,
+    extendSession: async () => {
+      const rememberMe = sessionStorage.getItem('persist') === 'true';
+      const timeout = getSessionTimeout(rememberMe);
+      const newExpiryTime = Date.now() + timeout;
+      setSessionExpiryTime(newExpiryTime);
+      console.log(`Session extended to: ${new Date(newExpiryTime).toISOString()}`);
+    },
+    getSessionTimeRemaining: () => {
+      if (!sessionExpiryTime) return 0;
+      const now = Date.now();
+      const timeUntilExpiry = sessionExpiryTime - now;
+      return timeUntilExpiry;
+    },
   }), [
     user,
     userProfile,
     session,
     loading,
     initializing,
+    authInitialized,
     isAdmin,
     isManager,
     signUp,
@@ -399,6 +588,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     refreshUserProfile,
     forceRefresh,
     error,
+    sessionWarning,
+    sessionExpiryTime,
   ]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

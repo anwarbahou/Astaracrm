@@ -9,6 +9,8 @@ import { TopNavigation } from "@/components/layout/TopNavigation";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
+import { SessionManager } from "@/components/SessionManager";
+import { AuthDebugger } from "@/components/AuthDebugger";
 import { pageVariants } from "@/lib/animations";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState, lazy, Suspense } from "react";
@@ -87,6 +89,65 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+// Global WebGL Error Handler
+const setupWebGLErrorHandling = () => {
+  const originalError = console.error;
+  const originalWarn = console.warn;
+
+  console.error = (...args) => {
+    const message = args.join(' ');
+    if (
+      message.includes('WebGL') ||
+      message.includes('THREE.WebGLRenderer') ||
+      message.includes('context') ||
+      message.includes('WebGL context could not be created')
+    ) {
+      console.warn('WebGL error intercepted:', ...args);
+      return;
+    }
+    originalError.apply(console, args);
+  };
+
+  console.warn = (...args) => {
+    const message = args.join(' ');
+    if (
+      message.includes('WebGL') ||
+      message.includes('THREE.WebGLRenderer') ||
+      message.includes('context')
+    ) {
+      // Don't log WebGL warnings to avoid spam
+      return;
+    }
+    originalWarn.apply(console, args);
+  };
+
+  // Handle unhandled promise rejections
+  window.addEventListener('unhandledrejection', (event) => {
+    const message = event.reason?.message || String(event.reason);
+    if (
+      message.includes('WebGL') ||
+      message.includes('THREE.WebGLRenderer') ||
+      message.includes('context')
+    ) {
+      console.warn('WebGL promise rejection intercepted:', event.reason);
+      event.preventDefault();
+    }
+  });
+
+  // Handle global errors
+  window.addEventListener('error', (event) => {
+    const message = event.message || String(event.error);
+    if (
+      message.includes('WebGL') ||
+      message.includes('THREE.WebGLRenderer') ||
+      message.includes('context')
+    ) {
+      console.warn('WebGL error intercepted:', event.error);
+      event.preventDefault();
+    }
+  });
+};
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -177,6 +238,9 @@ const App = () => {
   const location = useLocation();
 
   useEffect(() => {
+    // Set up WebGL error handling
+    setupWebGLErrorHandling();
+
     document.documentElement.lang = i18n.language;
     document.documentElement.dir = i18n.dir(i18n.language);
   }, [i18n, i18n.language]);
@@ -204,6 +268,8 @@ const App = () => {
             />
             <Toaster />
             <Sonner />
+            <SessionManager />
+            <AuthDebugger />
             {hideLayout ? (
               <AnimatedRoutes />
             ) : (

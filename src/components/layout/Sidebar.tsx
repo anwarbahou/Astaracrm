@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -34,6 +34,21 @@ export const Sidebar = React.memo(function Sidebar({ isCollapsed, onToggle }: Si
     onToggle(!isCollapsed);
   };
 
+  // Improved loading state with timeout
+  const [loadingTimeout, setLoadingTimeout] = useState(false);
+  
+  useEffect(() => {
+    if (authLoading) {
+      const timeoutId = setTimeout(() => {
+        setLoadingTimeout(true);
+      }, 5000); // Show timeout warning after 5 seconds
+      
+      return () => clearTimeout(timeoutId);
+    } else {
+      setLoadingTimeout(false);
+    }
+  }, [authLoading]);
+
   // Animated sidebar content with framer-motion
   const AnimatedSidebarContent = () => (
     <motion.div 
@@ -68,12 +83,28 @@ export const Sidebar = React.memo(function Sidebar({ isCollapsed, onToggle }: Si
           {authLoading && (
             <div className="flex flex-col items-center gap-2">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-              <span className="text-gray-300 text-sm">Loading user...</span>
+              <span className="text-gray-300 text-sm">
+                {loadingTimeout ? "Loading taking longer than usual..." : "Loading user..."}
+              </span>
+              {loadingTimeout && (
+                <button 
+                  onClick={() => window.location.reload()}
+                  className="text-xs text-blue-400 hover:text-blue-300 underline"
+                >
+                  Refresh page
+                </button>
+              )}
             </div>
           )}
           {authError && (
             <div className="flex flex-col items-center gap-2">
               <span className="text-red-400 text-sm">{authError}</span>
+              <button 
+                onClick={() => window.location.reload()}
+                className="text-xs text-blue-400 hover:text-blue-300 underline"
+              >
+                Retry
+              </button>
             </div>
           )}
         </div>

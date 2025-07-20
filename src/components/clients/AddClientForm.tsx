@@ -21,6 +21,7 @@ interface ClientInsert {
   industry?: string | null;
   stage?: string | null;
   country?: string | null;
+  address?: string | null;
   notes?: string | null;
   tags?: string[] | null;
   owner_id: string;
@@ -37,6 +38,7 @@ export interface ClientFormData {
   stage: string;
   owner: string;
   country: string;
+  address: string;
   notes: string;
   tags: string[];
 }
@@ -54,6 +56,7 @@ const initialFormData: ClientFormData = {
   stage: '',
   owner: '',
   country: '',
+  address: '',
   notes: '',
   tags: [],
 };
@@ -96,6 +99,7 @@ export function AddClientForm({ onOpenChange, onClientAdded }: AddClientFormProp
         industry: formData.industry || null,
         stage: formData.stage || 'lead',
         country: formData.country || null,
+        address: formData.address || null,
         notes: formData.notes || null,
         tags: formData.tags.length > 0 ? formData.tags : null,
         owner_id: user.id,

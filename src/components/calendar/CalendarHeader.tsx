@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -58,6 +58,21 @@ export function CalendarHeader({
 
   const [isConnected, setIsConnected] = useState(googleCalendarService.isAuthenticated());
 
+  // Update connection status when component mounts
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      if (googleCalendarService.isAuthenticated()) {
+        // Validate the token to ensure it's still valid
+        const isValid = await googleCalendarService.validateToken();
+        setIsConnected(isValid);
+      } else {
+        setIsConnected(false);
+      }
+    };
+
+    checkAuthStatus();
+  }, []);
+
   const handleSyncWithGoogle = async () => {
     if (isSyncing) return;
     
@@ -80,7 +95,9 @@ export function CalendarHeader({
       const result = await googleCalendarService.syncEvents();
       
       if (result.success) {
-        setIsConnected(true);
+        // Update connection status after successful sync
+        const isValid = await googleCalendarService.validateToken();
+        setIsConnected(isValid);
         toast({
           title: "Sync Successful",
           description: result.message,

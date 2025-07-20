@@ -354,6 +354,20 @@ export function ClientProfileModal({ clientId, open, onOpenChange, onSave, onDel
                     )}
                   </div>
                   <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-muted-foreground" />
+                    {isEditing ? (
+                      <Textarea
+                        value={editedClient.address || ''}
+                        onChange={(e) => setEditedClient({ ...editedClient, address: e.target.value })}
+                        placeholder={t('clients.profile.fields.addressPlaceholder')}
+                        className="text-sm"
+                        rows={2}
+                      />
+                    ) : (
+                      <span>{client.address || t('clients.profile.fields.noAddress')}</span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
                     <span>{t('clients.profile.memberSince')} {formatDate(client.created_at)}</span>
                   </div>

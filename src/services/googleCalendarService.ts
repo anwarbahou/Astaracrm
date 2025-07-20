@@ -40,6 +40,12 @@ export class GoogleCalendarService {
   private static instance: GoogleCalendarService;
   private accessToken: string | null = null;
 
+  constructor() {
+    // Restore access token from localStorage on initialization
+    this.accessToken = localStorage.getItem('google_calendar_access_token');
+    console.log('GoogleCalendarService initialized, accessToken:', !!this.accessToken);
+  }
+
   static getInstance(): GoogleCalendarService {
     if (!GoogleCalendarService.instance) {
       GoogleCalendarService.instance = new GoogleCalendarService();
@@ -96,6 +102,8 @@ export class GoogleCalendarService {
 
         if (event.data.type === 'GOOGLE_AUTH_SUCCESS') {
           this.accessToken = event.data.accessToken;
+          // Persist the access token
+          localStorage.setItem('google_calendar_access_token', this.accessToken);
           console.log('Google authentication successful');
           
           // Restore Supabase session if it was lost
@@ -417,11 +425,45 @@ export class GoogleCalendarService {
   }
 
   isAuthenticated(): boolean {
-    return !!this.accessToken;
+    const hasToken = !!this.accessToken;
+    console.log('isAuthenticated called, hasToken:', hasToken);
+    return hasToken;
+  }
+
+  async validateToken(): Promise<boolean> {
+    if (!this.accessToken) {
+      return false;
+    }
+
+    try {
+      // Test the token by making a simple API call
+      const response = await fetch(
+        'https://www.googleapis.com/calendar/v3/users/me/calendarList?maxResults=1',
+        {
+          headers: {
+            'Authorization': `Bearer ${this.accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        // Token is invalid, clear it
+        this.clearAuth();
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Token validation error:', error);
+      this.clearAuth();
+      return false;
+    }
   }
 
   clearAuth(): void {
     this.accessToken = null;
+    localStorage.removeItem('google_calendar_access_token');
   }
 }
 

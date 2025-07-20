@@ -43,7 +43,6 @@ import {
 } from 'lucide-react';
 import { useClientProfile } from '@/hooks/useClientProfile';
 import type { ClientProfile } from '@/services/clientService';
-import type { Database } from '@/integrations/supabase/types';
 import { ClientService } from '@/services/clientService';
 import {
   AlertDialog,
@@ -57,7 +56,8 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 
-type ClientStage = Database["public"]["Enums"]["client_stage"];
+// Define client stage type locally since it might not be in Database types
+type ClientStage = 'lead' | 'prospect' | 'active' | 'inactive';
 
 interface ClientProfileModalProps {
   clientId: string | null;
@@ -71,7 +71,7 @@ export function ClientProfileModal({ clientId, open, onOpenChange, onSave, onDel
   const { t } = useTranslation(['clients', 'common', 'profile', 'fields']);
   const { toast } = useToast();
   const { isAdmin, isManager } = useAuth();
-  const { users } = useUsers();
+  const { data: users = [] } = useUsers();
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);

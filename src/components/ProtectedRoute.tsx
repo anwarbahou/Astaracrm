@@ -15,10 +15,10 @@ class WebGLErrorBoundary extends React.Component<
   static getDerivedStateFromError(error: Error) {
     // Check if the error is WebGL-related
     if (
-      error.message.includes('WebGL') ||
-      error.message.includes('context') ||
-      error.message.includes('THREE.WebGLRenderer') ||
-      error.message.includes('WebGL context could not be created')
+      error?.message?.includes('WebGL') ||
+      error?.message?.includes('context') ||
+      error?.message?.includes('THREE.WebGLRenderer') ||
+      error?.message?.includes('WebGL context could not be created')
     ) {
       console.warn('WebGL error caught by boundary:', error);
       return { hasError: true };

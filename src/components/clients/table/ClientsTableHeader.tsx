@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, Filter } from 'lucide-react';
+import { Search, Filter, Grid3X3, List } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { FiltersPopoverContent } from '../ClientsFiltersPopover';
 import { ClientFilters } from '@/types/client';
@@ -14,6 +14,8 @@ interface ClientsTableHeaderProps {
   onSearchChange: (query: string) => void;
   filters: ClientFilters;
   onFiltersChange: (filters: ClientFilters) => void;
+  viewMode: 'card' | 'list';
+  onViewModeChange: (mode: 'card' | 'list') => void;
 }
 
 export function ClientsTableHeader({
@@ -21,6 +23,8 @@ export function ClientsTableHeader({
   onSearchChange,
   filters,
   onFiltersChange,
+  viewMode,
+  onViewModeChange,
 }: ClientsTableHeaderProps) {
   const { t } = useTranslation();
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -38,6 +42,27 @@ export function ClientsTableHeader({
               className="pl-10"
             />
           </div>
+          
+          {/* View Mode Toggle */}
+          <div className="flex items-center border rounded-md">
+            <Button
+              variant={viewMode === 'card' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => onViewModeChange('card')}
+              className="rounded-r-none"
+            >
+              <Grid3X3 size={16} />
+            </Button>
+            <Button
+              variant={viewMode === 'list' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => onViewModeChange('list')}
+              className="rounded-l-none"
+            >
+              <List size={16} />
+            </Button>
+          </div>
+
           <Popover open={filtersOpen} onOpenChange={setFiltersOpen}>
             <PopoverTrigger asChild>
               <Button variant="outline" className="gap-2">

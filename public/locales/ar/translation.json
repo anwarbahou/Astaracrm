@@ -141,7 +141,22 @@
       "lastInteraction": "آخر تفاعل",
       "status": "الحالة",
       "rowsPerPage": "صفوف لكل صفحة:",
-      "of": "{{start}}-{{end}} من {{total}}"
+      "of": "{{start}}-{{end}} من {{total}}",
+      "cardView": "عرض البطاقات",
+      "listView": "عرض القائمة",
+      "noClients": "لم يتم العثور على عملاء",
+      "noClientsDescription": "لا يوجد عملاء يطابقون المرشحات الحالية.",
+      "actions": {
+        "edit": "تعديل العميل",
+        "delete": "حذف العميل"
+      },
+      "deleteDialog": {
+        "title": "حذف العميل",
+        "description": "هل أنت متأكد من أنك تريد حذف {name}؟ لا يمكن التراجع عن هذا الإجراء وسيتم حذف جميع البيانات المرتبطة بشكل دائم.",
+        "cancel": "إلغاء",
+        "confirm": "حذف العميل",
+        "deleting": "جاري الحذف..."
+      }
     },
     "filtersPanel": {
       "title": "فلاتر متقدمة",
@@ -921,6 +936,9 @@
       "linkedTo": "مرتبط بـ:",
       "tags": "العلامات:",
       "content": "المحتوى",
+      "info": "المعلومات",
+      "createdAt": "أُنشئت في",
+      "updatedAt": "عُدلت في",
       "reminder": "تذكير",
       "attachments": "المرفقات ({{count}})",
       "author": "المؤلف",

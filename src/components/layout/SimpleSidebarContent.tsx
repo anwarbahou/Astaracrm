@@ -34,9 +34,9 @@ export function SimpleSidebarContent() {
   });
 
   return (
-    <div className="h-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex flex-col">
+    <div className="h-full bg-[#232323] text-white flex flex-col">
       {/* Header with Close Button for Mobile */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+      <div className="flex items-center justify-between p-4 border-b border-[#000000] flex-shrink-0">
         <div className="flex items-center gap-3">
             <img src="/Logos/SKULTIX.svg" alt="Logo" className="h-8" />
         </div>
@@ -52,7 +52,7 @@ export function SimpleSidebarContent() {
       </div>
 
       {/* Scrollable Navigation */}
-      <nav className="flex-1 overflow-y-auto bg-white dark:bg-gray-900 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent">
+      <nav className="flex-1 overflow-y-auto bg-[#232323] scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent">
         <div className="p-2 space-y-1">
           {filteredNavigationItems.map((item) => {
             const isActive = location.pathname === item.path;
@@ -66,15 +66,15 @@ export function SimpleSidebarContent() {
                   className={cn(
                     "flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 relative group text-sm w-full",
                     isActive 
-                      ? "bg-blue-600 text-white font-medium shadow-sm" 
-                      : "text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      ? "bg-[#000000] text-white font-medium shadow-sm" 
+                      : "text-white hover:text-white hover:bg-[#000000]"
                   )}
                 >
                   {/* Active indicator */}
                   {isActive && (
                     <div
                       className={cn(
-                        "absolute top-1/2 w-1 h-6 bg-blue-600 rounded-full left-0",
+                        "absolute top-1/2 w-1 h-6 bg-white rounded-full left-0",
                         "transform -translate-y-1/2"
                       )}
                     />
@@ -83,7 +83,7 @@ export function SimpleSidebarContent() {
                   {/* Icon */}
                   <div className={cn(
                     "flex-shrink-0 transition-colors duration-200",
-                    isActive ? "text-white" : "text-gray-800 dark:text-gray-200"
+                    isActive ? "text-white" : "text-white"
                   )}>
                     <Icon size={20} />
                   </div>
@@ -92,7 +92,7 @@ export function SimpleSidebarContent() {
                   <span
                     className={cn(
                       "font-medium truncate min-w-0 flex-1",
-                      isActive ? "text-white" : "text-gray-800 dark:text-gray-200"
+                      isActive ? "text-white" : "text-white"
                     )}
                   >
                     {t(`app.sidebar.${item.labelKey}`)}

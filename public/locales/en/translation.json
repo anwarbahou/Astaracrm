@@ -142,8 +142,23 @@
       "status": "Status",
       "rowsPerPage": "Rows per page:",
       "of": "{{start}}-{{end}} of {{total}}",
-      "importClients": "Import Clients"
+          "importClients": "Import Clients",
+    "cardView": "Card View",
+    "listView": "List View",
+    "noClients": "No clients found",
+    "noClientsDescription": "No clients match your current filters.",
+    "actions": {
+      "edit": "Edit Client",
+      "delete": "Delete Client"
     },
+    "deleteDialog": {
+      "title": "Delete Client",
+      "description": "Are you sure you want to delete {name}? This action cannot be undone and will permanently remove all associated data.",
+      "cancel": "Cancel",
+      "confirm": "Delete Client",
+      "deleting": "Deleting..."
+    }
+  },
     "filtersPanel": {
       "title": "Advanced Filters",
       "owner": "Owner",
@@ -757,6 +772,9 @@
       "linkedTo": "Linked to:",
       "tags": "Tags:",
       "content": "Content",
+      "info": "Information",
+      "createdAt": "Created at",
+      "updatedAt": "Updated at",
       "reminder": "Reminder",
       "attachments": "Attachments ({{count}})",
       "author": "Author",

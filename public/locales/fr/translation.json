@@ -140,7 +140,22 @@
       "lastInteraction": "Dernière Interaction",
       "status": "Statut",
       "rowsPerPage": "Lignes par page :",
-      "of": "{{start}}-{{end}} sur {{total}}"
+      "of": "{{start}}-{{end}} sur {{total}}",
+      "cardView": "Vue en cartes",
+      "listView": "Vue en liste",
+      "noClients": "Aucun client trouvé",
+      "noClientsDescription": "Aucun client ne correspond à vos filtres actuels.",
+      "actions": {
+        "edit": "Modifier le client",
+        "delete": "Supprimer le client"
+      },
+      "deleteDialog": {
+        "title": "Supprimer le client",
+        "description": "Êtes-vous sûr de vouloir supprimer {name} ? Cette action ne peut pas être annulée et supprimera définitivement toutes les données associées.",
+        "cancel": "Annuler",
+        "confirm": "Supprimer le client",
+        "deleting": "Suppression..."
+      }
     },
     "filtersPanel": {
       "title": "Filtres avancés",
@@ -691,6 +706,9 @@
       "linkedTo": "Lié à :",
       "tags": "Étiquettes :",
       "content": "Contenu",
+      "info": "Informations",
+      "createdAt": "Créé le",
+      "updatedAt": "Modifié le",
       "reminder": "Rappel",
       "attachments": "Pièces jointes ({{count}})",
       "author": "Auteur",

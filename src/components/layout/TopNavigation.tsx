@@ -148,7 +148,7 @@ export function TopNavigation() {
               </SheetTrigger>
               <SheetContent 
                 side="left" 
-                className="w-80 max-w-[85vw] p-0 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 overflow-hidden"
+                className="w-80 max-w-[85vw] p-0 bg-[#232323] border-[#000000] overflow-hidden"
               >
                   <SimpleSidebarContent />
               </SheetContent>

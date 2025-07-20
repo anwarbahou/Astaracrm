@@ -269,7 +269,6 @@ const App = () => {
             <Toaster />
             <Sonner />
             <SessionManager />
-            <AuthDebugger />
             {hideLayout ? (
               <AnimatedRoutes />
             ) : (

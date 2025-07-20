@@ -180,24 +180,22 @@ export default function Messaging() {
     }
   }, [user]);
 
-  // Subscribe to unread message changes and update channel unread counts
+  // Update total unread count when channels change
   useEffect(() => {
-    if (!user) return;
-
-    const subscription = chatService.subscribeToUnreadChanges(user.id, async (totalUnread) => {
-      setTotalUnreadCount(totalUnread);
-      
-      // Update individual channel unread counts
+    if (!user || channels.length === 0) return;
+    
+    const updateUnreadCounts = async () => {
       const updatedUnreadCounts = await chatService.fetchUnreadCounts(user.id, channels.map(c => c.id));
       setChannels(prev => prev.map(channel => ({
         ...channel,
         unreadCount: updatedUnreadCounts.find(uc => uc.channel_id === channel.id)?.count || 0
       })));
-    });
-
-    return () => {
-      subscription.unsubscribe();
+      
+      const totalUnread = updatedUnreadCounts.reduce((sum, uc) => sum + uc.count, 0);
+      setTotalUnreadCount(totalUnread);
     };
+
+    updateUnreadCounts();
   }, [user, channels]);
 
   // Mark selected channel as read when it changes

@@ -126,7 +126,7 @@ export function EmailList({
     paginatedEmails.every(email => selectedEmails.includes(email.id));
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full w-full flex-1">
       {/* Email List Header */}
       <div className="border-b border-border bg-background/95 p-4">
         <div className="flex items-center justify-between">

@@ -210,8 +210,9 @@ class ChatService {
    * Subscribe to unread message changes
    */
   subscribeToUnreadChanges(userId: string, onUnreadChange: (unreadCount: number) => void) {
+    const channelName = `unread-${userId}-${Date.now()}`;
     return supabase
-      .channel(`unread-${userId}`)
+      .channel(channelName)
       .on('postgres_changes', {
         event: '*',
         schema: 'public',

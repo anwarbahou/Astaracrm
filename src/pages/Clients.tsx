@@ -1,5 +1,6 @@
 import { AddClientModal } from "@/components/modals/AddClientModal";
 import { ClientsTable } from "@/components/clients/ClientsTable";
+import { ClientsCardView } from "@/components/clients/ClientsCardView";
 import { ClientProfileModal } from "@/components/clients/ClientProfileModal";
 import { useClients } from "@/hooks/useClients";
 import { withPageTitle } from '@/components/withPageTitle';
@@ -14,8 +15,21 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useState, useEffect } from "react";
 import { TableSkeleton } from "@/components/ui/skeleton-loader";
 import { useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Loader2 } from "lucide-react";
 
 function Clients() {
+  const { t } = useTranslation();
   const {
     clients,
     loading,
@@ -35,6 +49,10 @@ function Clients() {
   } = useClients();
 
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'card' | 'list'>('card');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [clientToDelete, setClientToDelete] = useState<Client | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const { user, userProfile } = useAuth();
   const { toast } = useToast();
   const location = useLocation();
@@ -71,6 +89,44 @@ function Clients() {
         description: error.message || "Failed to import clients.",
         variant: "destructive",
       });
+    }
+  };
+
+  const handleDeleteClient = async (client: Client) => {
+    setClientToDelete(client);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDeleteClient = async () => {
+    if (!clientToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      const success = await ClientService.deleteClient(clientToDelete.id);
+      if (success) {
+        toast({
+          title: "Client Deleted",
+          description: `${clientToDelete.name} has been deleted successfully.`,
+        });
+        await refreshClients();
+      } else {
+        toast({
+          title: "Delete Error",
+          description: "Failed to delete client.",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      console.error("Error deleting client:", error);
+      toast({
+        title: "Delete Error",
+        description: error.message || "An unexpected error occurred.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
+      setDeleteDialogOpen(false);
+      setClientToDelete(null);
     }
   };
 
@@ -127,7 +183,21 @@ function Clients() {
           onSearchChange={setSearchQuery}
           filters={filters}
           onFiltersChange={setFilters}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
         />
+        
+        {viewMode === 'card' && (
+          <ClientsCardView
+            clients={clients}
+            onClientClick={handleClientClick}
+            onEditClient={(client) => {
+              handleClientClick(client);
+              setProfileModalOpen(true);
+            }}
+            onDeleteClient={handleDeleteClient}
+          />
+        )}
       </div>
 
       <AddClientModal 
@@ -149,6 +219,37 @@ function Clients() {
         onOpenChange={setIsImportModalOpen}
         onImport={handleImportClients}
       />
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('clients.deleteDialog.title')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('clients.deleteDialog.description', { name: clientToDelete?.name })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>
+              {t('clients.deleteDialog.cancel')}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeleteClient}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {t('clients.deleteDialog.deleting')}
+                </>
+              ) : (
+                t('clients.deleteDialog.confirm')
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

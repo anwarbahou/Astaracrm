@@ -38,7 +38,7 @@ function EmailCenter() {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row h-[calc(100vh-8rem)] sm:h-[calc(100vh-4rem)] overflow-hidden">
+    <div className="flex flex-col sm:flex-row h-full w-full overflow-hidden">
       <EmailSidebar
         selectedFolder={selectedFolder}
         onFolderSelect={setSelectedFolder}

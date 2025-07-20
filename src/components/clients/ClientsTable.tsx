@@ -14,6 +14,8 @@ interface ClientsTableProps {
   onSearchChange: (query: string) => void;
   filters: ClientFilters;
   onFiltersChange: (filters: ClientFilters) => void;
+  viewMode: 'card' | 'list';
+  onViewModeChange: (mode: 'card' | 'list') => void;
 }
 
 export function ClientsTable({ 
@@ -23,6 +25,8 @@ export function ClientsTable({
   onSearchChange,
   filters,
   onFiltersChange,
+  viewMode,
+  onViewModeChange,
 }: ClientsTableProps) {
   const {
     sortField,
@@ -44,29 +48,33 @@ export function ClientsTable({
         onSearchChange={onSearchChange}
         filters={filters}
         onFiltersChange={onFiltersChange}
+        viewMode={viewMode}
+        onViewModeChange={onViewModeChange}
       />
       
-      <Card>
-        <CardContent className="p-0">
-          <ClientsTableContent
-            clients={paginatedClients}
-            onClientClick={onClientClick}
-            sortField={sortField}
-            sortDirection={sortDirection}
-            onSort={handleSort}
-          />
-          {filteredAndSortedClients.length > 0 && (
-            <ClientsTablePagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              rowsPerPage={rowsPerPage}
-              totalRows={filteredAndSortedClients.length}
-              onPageChange={setCurrentPage}
-              onRowsPerPageChange={setRowsPerPage}
+      {viewMode === 'list' && (
+        <Card>
+          <CardContent className="p-0">
+            <ClientsTableContent
+              clients={paginatedClients}
+              onClientClick={onClientClick}
+              sortField={sortField}
+              sortDirection={sortDirection}
+              onSort={handleSort}
             />
-          )}
-        </CardContent>
-      </Card>
+            {filteredAndSortedClients.length > 0 && (
+              <ClientsTablePagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                rowsPerPage={rowsPerPage}
+                totalRows={filteredAndSortedClients.length}
+                onPageChange={setCurrentPage}
+                onRowsPerPageChange={setRowsPerPage}
+              />
+            )}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

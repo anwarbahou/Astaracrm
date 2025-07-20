@@ -4,6 +4,7 @@ import { Calendar, User, MoreVertical, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -226,11 +227,10 @@ export function DealCard({
           {/* Owner Avatar */}
           <div className="flex items-center gap-2">
             {deal.ownerAvatar ? (
-              <img 
-                src={deal.ownerAvatar} 
-                alt={deal.owner}
-                className="h-6 w-6 rounded-full"
-              />
+              <Avatar className="h-6 w-6">
+                <AvatarImage src={deal.ownerAvatar} alt={deal.owner} />
+                <AvatarFallback>{deal.owner?.charAt(0)?.toUpperCase() || 'U'}</AvatarFallback>
+              </Avatar>
             ) : (
               <User className="h-4 w-4" />
             )}

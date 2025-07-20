@@ -2,15 +2,7 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-// Debug: Log environment variables (only in development)
-if (import.meta.env.DEV) {
-console.log('=== SUPABASE CLIENT DEBUG ===');
-console.log('VITE_SUPABASE_URL:', import.meta.env.VITE_SUPABASE_URL);
-console.log('VITE_SUPABASE_ANON_KEY:', import.meta.env.VITE_SUPABASE_ANON_KEY ? 'SET' : 'NOT SET');
-console.log('NEXT_PUBLIC_SUPABASE_URL:', import.meta.env.NEXT_PUBLIC_SUPABASE_URL);
-console.log('NEXT_PUBLIC_SUPABASE_ANON_KEY:', import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'SET' : 'NOT SET');
-console.log('================================');
-}
+
 
 // Try both VITE_ and NEXT_PUBLIC_ prefixes
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -69,12 +61,24 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   throw new Error(errorMessage);
 }
 
-// Custom storage implementation with better error handling
+// Mobile detection utility
+const isMobile = () => {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+         (window.innerWidth <= 768);
+};
+
+// Enhanced mobile-safe storage implementation
 const customStorage = {
   getItem: (key: string): string | null => {
     try {
-      // Prefer localStorage for persistent sessions, fallback to sessionStorage
-      return localStorage.getItem(key) || sessionStorage.getItem(key);
+      // Mobile-optimized storage access
+      if (isMobile()) {
+        // On mobile, try localStorage first for persistence
+        return localStorage.getItem(key) || sessionStorage.getItem(key) || null;
+      } else {
+        // Desktop: prefer sessionStorage for temporary sessions
+        return sessionStorage.getItem(key) || localStorage.getItem(key) || null;
+      }
     } catch (error) {
       console.warn('Storage access error:', error);
       return null;
@@ -82,17 +86,33 @@ const customStorage = {
   },
   setItem: (key: string, value: string): void => {
     try {
-      // Session persistence is determined by the `persist` flag in sessionStorage
-      if (sessionStorage.getItem('persist') === 'true') {
+      // Mobile-optimized storage strategy
+      if (isMobile()) {
+        // On mobile, always use localStorage for better persistence
         localStorage.setItem(key, value);
+        // Also set in sessionStorage as backup
+        sessionStorage.setItem(key, value);
+      } else {
+        // Desktop: use sessionStorage by default, localStorage for "remember me"
+        const persist = sessionStorage.getItem('persist') === 'true';
+        if (persist) {
+          localStorage.setItem(key, value);
+        }
+        sessionStorage.setItem(key, value);
       }
-      sessionStorage.setItem(key, value);
     } catch (error) {
       console.warn('Storage write error:', error);
+      // Fallback to memory storage if needed
+      try {
+        sessionStorage.setItem(key, value);
+      } catch (fallbackError) {
+        console.error('Fallback storage also failed:', fallbackError);
+      }
     }
   },
   removeItem: (key: string): void => {
     try {
+      // Clear from both storages
       localStorage.removeItem(key);
       sessionStorage.removeItem(key);
     } catch (error) {
@@ -101,7 +121,7 @@ const customStorage = {
   },
 };
 
-// Create Supabase client with enhanced configuration
+// Create Supabase client with mobile-optimized configuration
 export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
     autoRefreshToken: true,
@@ -110,31 +130,28 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, 
     flowType: 'pkce',
     storage: customStorage,
     storageKey: 'supabase.auth.token',
-    debug: import.meta.env.DEV
+    debug: import.meta.env.DEV,
+    // Mobile-specific settings
+    ...(isMobile() && {
+      // Shorter token refresh intervals for mobile
+      refreshTokenRotationEnabled: true,
+      // More aggressive token refresh on mobile
+      autoRefreshToken: true,
+    })
   },
   realtime: {
     params: {
-      eventsPerSecond: 10
+      eventsPerSecond: isMobile() ? 5 : 10 // Lower rate on mobile
     }
   },
   global: {
     headers: {
-      'X-Client-Info': 'astaracrm-web'
+      'X-Client-Info': `astaracrm-web-${isMobile() ? 'mobile' : 'desktop'}`
     }
   }
 });
 
-// Enhanced auth state change logging (only in development)
-if (import.meta.env.DEV) {
-supabase.auth.onAuthStateChange((event, session) => {
-  console.log('🔐 Auth State Change:', {
-    event,
-    sessionExists: !!session,
-    userId: session?.user?.id,
-    timestamp: new Date().toISOString()
-  });
-});
-}
+
 
 export const SUPABASE_URL_EXPORT = SUPABASE_URL;
 export const SUPABASE_ANON_KEY_EXPORT = SUPABASE_ANON_KEY;

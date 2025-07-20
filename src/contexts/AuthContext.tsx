@@ -48,6 +48,54 @@ export const useAuth = () => {
   return context;
 };
 
+// Mobile detection utility
+const isMobile = () => {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+         (window.innerWidth <= 768);
+};
+
+// Enhanced storage with mobile fallbacks
+const getMobileSafeStorage = () => {
+  const isMobileDevice = isMobile();
+  
+  return {
+    getItem: (key: string): string | null => {
+      try {
+        // Try localStorage first, then sessionStorage, then memory fallback
+        return localStorage.getItem(key) || sessionStorage.getItem(key) || null;
+      } catch (error) {
+        console.warn('Storage access error:', error);
+        return null;
+      }
+    },
+    setItem: (key: string, value: string): void => {
+      try {
+        // On mobile, prefer localStorage for persistence
+        if (isMobileDevice) {
+          localStorage.setItem(key, value);
+        } else {
+          // Desktop: use sessionStorage for temporary sessions
+          const persist = sessionStorage.getItem('persist') === 'true';
+          if (persist) {
+            localStorage.setItem(key, value);
+          }
+          sessionStorage.setItem(key, value);
+        }
+      } catch (error) {
+        console.warn('Storage write error:', error);
+      }
+    },
+    removeItem: (key: string): void => {
+      try {
+        localStorage.removeItem(key);
+        sessionStorage.removeItem(key);
+      } catch (error) {
+        console.warn('Storage remove error:', error);
+      }
+    },
+  };
+};
+
 // Optimized profile fetching with caching
 const fetchUserProfile = async (userId: string): Promise<UserProfile | null> => {
   const cacheKey = `user_profile_${userId}`;
@@ -110,25 +158,21 @@ const ensureUserProfile = async (user: User, retryCount = 0): Promise<void> => {
   }
 };
 
-// Session timeout configuration - REDUCED TIMEOUTS FOR BETTER UX
+// Mobile-optimized session configuration
 const SESSION_CONFIG = {
-  // Default session timeout (7 days) - INCREASED from 24 hours
-  DEFAULT_TIMEOUT: 1000 * 60 * 60 * 24 * 7,
+  // Shorter timeouts for mobile to prevent stuck sessions
+  DEFAULT_TIMEOUT: isMobile() ? 1000 * 60 * 60 * 12 : 1000 * 60 * 60 * 24 * 7, // 12 hours on mobile
+  SHORT_TIMEOUT: 1000 * 60 * 60 * 2, // 2 hours
+  EXTENDED_TIMEOUT: 1000 * 60 * 60 * 24 * 7, // 7 days
+  REMEMBER_ME_TIMEOUT: 1000 * 60 * 60 * 24 * 30, // 30 days
   
-  // Short session timeout (4 hours) - INCREASED from 1 hour
-  SHORT_TIMEOUT: 1000 * 60 * 60 * 4,
+  // More frequent checks on mobile
+  WARNING_TIME: isMobile() ? 1000 * 60 * 15 : 1000 * 60 * 30, // 15 min on mobile
+  REFRESH_INTERVAL: isMobile() ? 1000 * 60 * 30 : 1000 * 60 * 60, // 30 min on mobile
   
-  // Extended session timeout (30 days) - INCREASED from 7 days
-  EXTENDED_TIMEOUT: 1000 * 60 * 60 * 24 * 30,
-  
-  // Session timeout for "Remember Me" (90 days) - INCREASED from 30 days
-  REMEMBER_ME_TIMEOUT: 1000 * 60 * 60 * 24 * 90,
-  
-  // Warning time before session expires (30 minutes) - INCREASED from 5 minutes
-  WARNING_TIME: 1000 * 60 * 30,
-  
-  // Auto-refresh interval (1 hour) - INCREASED from 15 minutes
-  REFRESH_INTERVAL: 1000 * 60 * 60
+  // Mobile-specific settings
+  MOBILE_INIT_TIMEOUT: 15000, // 15 seconds for mobile initialization
+  MOBILE_RETRY_DELAY: 2000, // 2 seconds between retries
 };
 
 // Get session timeout based on user preference
@@ -150,6 +194,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [sessionWarning, setSessionWarning] = useState(false);
   const [sessionExpiryTime, setSessionExpiryTime] = useState<number | null>(null);
   const [authInitialized, setAuthInitialized] = useState(false);
+  const [mobileInitAttempts, setMobileInitAttempts] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -160,38 +205,63 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     [userProfile?.role]
   );
 
-  // IMPROVED Session timeout monitoring - less aggressive
+  // Mobile-specific initialization timeout
+  useEffect(() => {
+    if (isMobile() && initializing) {
+      const timeoutId = setTimeout(() => {
+        console.warn('Mobile auth initialization timeout - forcing completion');
+        setInitializing(false);
+        setAuthInitialized(true);
+        setMobileInitAttempts(prev => prev + 1);
+      }, SESSION_CONFIG.MOBILE_INIT_TIMEOUT);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [initializing]);
+
+  // Mobile retry logic for failed initialization
+  useEffect(() => {
+    if (isMobile() && mobileInitAttempts > 0 && mobileInitAttempts < 3) {
+      const retryTimeout = setTimeout(() => {
+        console.log('Retrying mobile auth initialization...');
+        setInitializing(true);
+        setAuthInitialized(false);
+      }, SESSION_CONFIG.MOBILE_RETRY_DELAY);
+
+      return () => clearTimeout(retryTimeout);
+    }
+  }, [mobileInitAttempts]);
+
+  // IMPROVED Session timeout monitoring - mobile optimized
   useEffect(() => {
     if (!session?.user || !authInitialized) return;
 
     const rememberMe = sessionStorage.getItem('persist') === 'true';
     const timeout = getSessionTimeout(rememberMe);
-    // Use session expiry time instead of created_at for more accurate timing
     const sessionExpiry = session.expires_at ? session.expires_at * 1000 : Date.now() + timeout;
     const expiryTime = Math.max(sessionExpiry, Date.now() + timeout);
     
     setSessionExpiryTime(expiryTime);
 
-    // Check for session expiry - LESS FREQUENT CHECKS
+    // Check for session expiry - mobile optimized frequency
     const checkSessionExpiry = () => {
       const now = Date.now();
       const timeUntilExpiry = expiryTime - now;
       
       if (timeUntilExpiry <= 0) {
-        // Only logout if session is actually expired
         console.log('Session expired, logging out...');
         forceLogout('Your session has expired. Please log in again.');
         return;
       }
       
-      // Show warning 30 minutes before expiry (increased from 5 minutes)
+      // Show warning before expiry
       if (timeUntilExpiry <= SESSION_CONFIG.WARNING_TIME && !sessionWarning) {
         setSessionWarning(true);
         console.warn(`Session will expire in ${Math.round(timeUntilExpiry / 1000 / 60)} minutes`);
       }
     };
 
-    // Set up periodic checks - LESS FREQUENT
+    // Set up periodic checks - mobile optimized frequency
     const intervalId = setInterval(checkSessionExpiry, SESSION_CONFIG.REFRESH_INTERVAL);
     
     // Initial check
@@ -203,7 +273,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, [session, sessionWarning, authInitialized]);
 
-  // IMPROVED Auto-refresh session before expiry
+  // IMPROVED Auto-refresh session before expiry - mobile optimized
   useEffect(() => {
     if (!session?.user || !sessionExpiryTime || !authInitialized) return;
 
@@ -217,7 +287,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const { data, error } = await supabase.auth.refreshSession();
         if (error) {
           console.error('Failed to refresh session:', error);
-          // Don't immediately logout on refresh failure, let Supabase handle it
+          // On mobile, be more aggressive about logout on refresh failure
+          if (isMobile()) {
+            console.log('Mobile: Refresh failed, logging out...');
+            forceLogout('Session refresh failed. Please log in again.');
+          }
           return;
         } else if (data.session) {
           console.log('Session refreshed successfully');
@@ -225,7 +299,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       } catch (err) {
         console.error('Session refresh error:', err);
-        // Don't immediately logout on refresh failure
+        if (isMobile()) {
+          forceLogout('Session refresh error. Please log in again.');
+        }
       }
     };
 
@@ -246,7 +322,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [location.pathname, error]);
 
-  // IMPROVED logout with selective storage clearing
+  // IMPROVED logout with mobile-optimized storage clearing
   const forceLogout = useCallback((msg?: string) => {
     console.log('Force logout called:', msg);
     
@@ -258,10 +334,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
     setWasAuthenticated(false);
     setAuthInitialized(false);
+    setMobileInitAttempts(0);
     
-    // Selective storage clearing - don't clear everything
+    // Mobile-optimized storage clearing
     try {
-      // Only clear auth-related items, not all storage
       const keysToRemove = [
         'user_profile_',
         'persist',
@@ -318,10 +394,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [user?.id]);
 
-  // IMPROVED Auth state change handler - less aggressive logout logic
+  // IMPROVED Auth state change handler - mobile optimized
   const handleAuthStateChange = useCallback(async (event: string, session: Session | null) => {
-    console.log('🔐 Auth state change:', event, !!session);
-    
     setInitializing(true);
     setSession(session);
     setUser(session?.user ?? null);
@@ -329,18 +403,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       // Handle explicit sign out events
       if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
-        console.log('User explicitly signed out or was deleted');
         setUserProfile(null);
         setWasAuthenticated(false);
         setAuthInitialized(true);
         setInitializing(false);
+        setMobileInitAttempts(0);
         return;
       }
 
       if (session?.user) {
         // User is authenticated
         setWasAuthenticated(true);
-        console.log('User authenticated:', session.user.email);
         
         if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
           const profile = await fetchUserProfile(session.user.id);
@@ -353,12 +426,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         }
       } else {
-        // No session - only force logout if user was previously authenticated AND we're not on login page
+        // No session - mobile optimized handling
         if (wasAuthenticated && location.pathname !== '/login') {
           console.log('No session but user was authenticated, redirecting to login');
           setUserProfile(null);
           setWasAuthenticated(false);
-          // Don't force logout immediately, let the user navigate naturally
+          // On mobile, be more aggressive about logout
+          if (isMobile()) {
+            forceLogout('Session lost. Please log in again.');
+          }
         } else {
           // New visitor or on login page - just clear profile and continue
           setUserProfile(null);
@@ -372,19 +448,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setInitializing(false);
       setAuthInitialized(true);
     }
-  }, [wasAuthenticated, location.pathname]);
+  }, [wasAuthenticated, location.pathname, forceLogout]);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthStateChange);
 
-    // Add timeout to prevent infinite loading
+    // Mobile-optimized timeout
     const timeoutId = setTimeout(() => {
       if (initializing) {
         console.warn('Auth initialization timeout - forcing completion');
         setInitializing(false);
         setAuthInitialized(true);
       }
-    }, 10000); // 10 second timeout
+    }, isMobile() ? SESSION_CONFIG.MOBILE_INIT_TIMEOUT : 10000);
 
     return () => {
       subscription.unsubscribe();
@@ -448,7 +524,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async (email: string, password: string, rememberMe: boolean = true) => {
     try {
-      console.log('Signing in with rememberMe:', rememberMe);
+      console.log('Signing in with rememberMe:', rememberMe, 'Mobile:', isMobile());
       
       // Set the persistence flag before signing in
       if (rememberMe) {
@@ -486,6 +562,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(null);
       setUserProfile(null);
       setSession(null);
+      setMobileInitAttempts(0);
       if (user?.id) {
         sessionStorage.removeItem(`user_profile_${user.id}`);
       }

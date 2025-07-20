@@ -307,8 +307,6 @@ class NotificationService {
    */
   async getNotificationsForUser(userId: string): Promise<NotificationData[]> {
     try {
-      console.log('🔍 Fetching notifications from database for user:', userId);
-      
       const { data, error } = await supabase
         .from('notifications' as any)
         .select('*')
@@ -325,13 +323,11 @@ class NotificationService {
         }
         
         // Fallback to localStorage
-        console.log('📦 Falling back to localStorage');
         return this.getStoredNotifications()
           .filter(notif => notif.target_user_id === userId)
           .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
       }
 
-      console.log('✅ Successfully fetched', (data || []).length, 'notifications from database');
       return (data as unknown as NotificationData[]) || [];
     } catch (error) {
       console.error('❌ Error getting notifications for user:', error);
@@ -486,8 +482,6 @@ class NotificationService {
    */
   async getUnreadCount(userId: string): Promise<number> {
     try {
-      console.log('🔢 Fetching unread count for user:', userId);
-      
       const { count, error } = await supabase
         .from('notifications' as any)
         .select('*', { count: 'exact', head: true })
@@ -504,12 +498,10 @@ class NotificationService {
         }
         
         // Fallback to localStorage
-        console.log('📦 Falling back to localStorage for unread count');
         const notifications = this.getStoredNotificationsForUser(userId);
         return notifications.filter(notif => !notif.is_read).length;
       }
 
-      console.log('✅ Unread count from database:', count || 0);
       return count || 0;
     } catch (error) {
       console.error('❌ Error getting unread count:', error);

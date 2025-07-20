@@ -117,14 +117,12 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
 
     try {
       setLoading(true);
-      console.log('🔄 Fetching notifications for user:', user.id);
       
       const [notificationsData, unreadCountData] = await Promise.all([
         notificationService.getNotificationsForUser(user.id),
         notificationService.getUnreadCount(user.id)
       ]);
       
-      console.log('📥 Fetched', notificationsData.length, 'notifications, unread:', unreadCountData);
       setNotifications(notificationsData);
       setUnreadCount(unreadCountData);
     } catch (error) {

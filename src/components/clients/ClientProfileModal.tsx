@@ -40,6 +40,7 @@ import {
   MessageSquare,
   Upload,
   Trash,
+  DollarSign,
 } from 'lucide-react';
 import { useClientProfile } from '@/hooks/useClientProfile';
 import type { ClientProfile } from '@/services/clientService';
@@ -76,6 +77,8 @@ export function ClientProfileModal({ clientId, open, onOpenChange, onSave, onDel
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [editedClient, setEditedClient] = useState<Partial<ClientProfile>>({});
+
+  console.log('🔍 ClientProfileModal rendered with clientId:', clientId, 'open:', open);
 
   const {
     client,
@@ -197,10 +200,10 @@ export function ClientProfileModal({ clientId, open, onOpenChange, onSave, onDel
   };
 
   const formatCurrency = (amount: number | null | undefined) => {
-    if (!amount) return '$0';
+    if (!amount) return '0 MAD';
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'MAD',
       minimumFractionDigits: 0,
     }).format(amount);
   };
@@ -487,6 +490,300 @@ export function ClientProfileModal({ clientId, open, onOpenChange, onSave, onDel
                       </p>
                     )}
                   </div>
+
+                  {/* Subowner */}
+                  <div>
+                    <Label>{t('clients.profile.fields.subowner', 'Secondary Owner')}</Label>
+                    {isEditing && (isAdmin || isManager) ? (
+                      <div className="mt-1.5">
+                        <Select
+                          value={editedClient.subowner_id || 'none'}
+                          onValueChange={(userId) => {
+                            const selectedUser = userId === 'none' ? null : users.find(u => u.id === userId);
+                            setEditedClient(prev => ({
+                              ...prev,
+                              subowner_id: userId === 'none' ? null : userId,
+                              subowner: selectedUser
+                            }));
+                          }}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder={t('clients.profile.fields.selectSubowner', 'Select secondary owner')} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">{t('clients.profile.fields.noSubowner', 'No secondary owner')}</SelectItem>
+                            {users.map((user) => (
+                              <SelectItem key={user.id} value={user.id}>
+                                <div className="flex flex-col">
+                                  <span className="font-medium">
+                                    {user.first_name ? `${user.first_name} ${user.last_name || ''}`.trim() : user.email}
+                                  </span>
+                                  <span className="text-xs text-muted-foreground">
+                                    {user.email} • {user.role}
+                                  </span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 mt-1.5">
+                        <Users className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm">{getUserDisplayName(client.subowner) || t('clients.profile.fields.noSubowner', 'No secondary owner')}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Earnings Information */}
+
+
+                  {/* Deal Value */}
+                  <div>
+                    <Label>{t('clients.profile.fields.dealValue', 'Deal Value')} (MAD)</Label>
+                    {isEditing ? (
+                      <div className="relative">
+                        <Input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={editedClient.total_deal_value || ''}
+                                                  onChange={(e) => {
+                          const dealValue = parseFloat(e.target.value) || 0;
+                          const totalEarnings = dealValue * 0.3; // 30% of deal value
+                          
+                          // If no subowner is selected, owner gets 30% (full earnings)
+                          // If subowner is selected, owner gets 15% and subowner gets 15%
+                          const hasSubowner = editedClient.subowner_id;
+                          const ownerPercentage = hasSubowner ? 50 : 100; // Database constraint: 50%+50%=100% or 100%+0%=100%
+                          const subownerPercentage = hasSubowner ? 50 : 0; // Database constraint: 50%+50%=100% or 100%+0%=100%
+                          
+                          const ownerEarnings = hasSubowner ? (totalEarnings * 15) / 30 : totalEarnings; // 15% or 30% of total earnings
+                          const subownerEarnings = hasSubowner ? (totalEarnings * 15) / 30 : 0; // 15% or 0% of total earnings
+                          
+                          setEditedClient(prev => ({
+                            ...prev,
+                            total_deal_value: dealValue,
+                            owner_percentage: ownerPercentage,
+                            subowner_percentage: subownerPercentage,
+                            owner_earnings: ownerEarnings,
+                            subowner_earnings: subownerEarnings,
+                            total_earnings: totalEarnings
+                          }));
+                        }}
+                          placeholder="0.00"
+                          className="mt-1.5 pr-12"
+                        />
+                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none mt-1.5">
+                          <span className="text-sm text-muted-foreground">MAD</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-sm mt-1.5">
+                        {client.total_deal_value ? formatCurrency(client.total_deal_value) : t('clients.profile.fields.noDealValue', 'No deal value set')}
+                      </p>
+                    )}
+                    {isEditing && editedClient.total_deal_value && editedClient.total_deal_value > 0 && (
+                      <p className="text-xs text-green-600 font-medium mt-1">
+                        Deal Value: {Number(editedClient.total_deal_value).toLocaleString('en-US', { 
+                          minimumFractionDigits: 2, 
+                          maximumFractionDigits: 2 
+                        })} MAD
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Total Earnings */}
+                  <div>
+                    <Label>{t('clients.profile.fields.totalEarnings', 'Total Earnings (30% of Deal Value)')}</Label>
+                    <div className="p-2 bg-muted rounded-md mt-1.5">
+                      <span className="text-lg font-semibold text-primary">
+                        {Number(client.total_earnings || 0).toLocaleString('en-US', { 
+                          minimumFractionDigits: 2, 
+                          maximumFractionDigits: 2 
+                        })} MAD
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Percentage Distribution */}
+                  <div className="space-y-4">
+                    <div>
+                      <Label>{t('clients.profile.fields.ownerPercentage', 'Owner %')}</Label>
+                      <Input
+                        value={client.subowner_id ? "15" : "30"}
+                        disabled
+                        className="mt-1.5 bg-muted cursor-not-allowed"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {t('clients.profile.fields.ownerEarnings', 'Owner will get')}: {Number(client.owner_earnings || 0).toLocaleString('en-US', { 
+                          minimumFractionDigits: 2, 
+                          maximumFractionDigits: 2 
+                        })} MAD
+                      </p>
+                    </div>
+                    
+                    {client.subowner_id && (
+                      <div>
+                        <Label>{t('clients.profile.fields.subownerPercentage', 'Subowner %')}</Label>
+                        <Input
+                          value="15"
+                          disabled
+                          className="mt-1.5 bg-muted cursor-not-allowed"
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {t('clients.profile.fields.subownerEarnings', 'Subowner will get')}: {Number(client.subowner_earnings || 0).toLocaleString('en-US', { 
+                            minimumFractionDigits: 2, 
+                            maximumFractionDigits: 2 
+                          })} MAD
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Percentage Negotiation System */}
+                  {client.subowner_id && (
+                    <div className="space-y-4 p-4 border rounded-lg bg-muted/50">
+                      <h4 className="font-semibold text-sm">
+                        {t('clients.profile.negotiation.title', 'Percentage Negotiation')}
+                      </h4>
+                      
+                      {/* Owner Suggestion */}
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">
+                          {t('clients.profile.negotiation.ownerSuggestion', 'Owner Suggestion')}
+                        </Label>
+                        <div className="flex gap-2">
+                          <Input
+                            type="number"
+                            min="0"
+                            max="30"
+                            value={editedClient.owner_suggested_percentage || ''}
+                            onChange={(e) => {
+                              setEditedClient(prev => ({
+                                ...prev,
+                                owner_suggested_percentage: parseInt(e.target.value) || 15
+                              }));
+                            }}
+                            placeholder="0-30"
+                            className="flex-1"
+                          />
+                          <Button
+                            variant={editedClient.owner_agreed ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => {
+                              setEditedClient(prev => ({
+                                ...prev,
+                                owner_agreed: !prev.owner_agreed
+                              }));
+                            }}
+                          >
+                            {editedClient.owner_agreed ? t('clients.profile.negotiation.agreed', 'Agreed') : t('clients.profile.negotiation.agree', 'Agree')}
+                          </Button>
+                        </div>
+                        {editedClient.owner_suggested_percentage && (
+                          <p className="text-xs text-muted-foreground">
+                            Owner suggests: {editedClient.owner_suggested_percentage}% = {Number((editedClient.total_earnings || 0) * editedClient.owner_suggested_percentage / 30).toLocaleString('en-US', { 
+                              minimumFractionDigits: 2, 
+                              maximumFractionDigits: 2 
+                            })} MAD
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Subowner Suggestion */}
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">
+                          {t('clients.profile.negotiation.subownerSuggestion', 'Subowner Suggestion')}
+                        </Label>
+                        <div className="flex gap-2">
+                          <Input
+                            type="number"
+                            min="0"
+                            max="30"
+                            value={editedClient.subowner_suggested_percentage || ''}
+                            onChange={(e) => {
+                              setEditedClient(prev => ({
+                                ...prev,
+                                subowner_suggested_percentage: parseInt(e.target.value) || 15
+                              }));
+                            }}
+                            placeholder="0-30"
+                            className="flex-1"
+                          />
+                          <Button
+                            variant={editedClient.subowner_agreed ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => {
+                              setEditedClient(prev => ({
+                                ...prev,
+                                subowner_agreed: !prev.subowner_agreed
+                              }));
+                            }}
+                          >
+                            {editedClient.subowner_agreed ? t('clients.profile.negotiation.agreed', 'Agreed') : t('clients.profile.negotiation.agree', 'Agree')}
+                          </Button>
+                        </div>
+                        {editedClient.subowner_suggested_percentage && (
+                          <p className="text-xs text-muted-foreground">
+                            Subowner suggests: {editedClient.subowner_suggested_percentage}% = {Number((editedClient.total_earnings || 0) * editedClient.subowner_suggested_percentage / 30).toLocaleString('en-US', { 
+                              minimumFractionDigits: 2, 
+                              maximumFractionDigits: 2 
+                            })} MAD
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Agreement Status */}
+                      <div className="flex items-center justify-between p-2 bg-background rounded border">
+                        <div className="text-sm">
+                          <span className="font-medium">Owner:</span> {editedClient.owner_agreed ? '✅ Agreed' : '⏳ Pending'}
+                        </div>
+                        <div className="text-sm">
+                          <span className="font-medium">Subowner:</span> {editedClient.subowner_agreed ? '✅ Agreed' : '⏳ Pending'}
+                        </div>
+                      </div>
+
+                      {/* Finalize Button */}
+                      {editedClient.owner_agreed && editedClient.subowner_agreed && !editedClient.is_finalized && (
+                        <Button 
+                          onClick={() => {
+                            const dealValue = parseFloat(String(editedClient.total_deal_value || '0'));
+                            const totalEarnings = dealValue * 0.3;
+                            
+                            // If no subowner is selected, owner gets 30% (full earnings)
+                            // If subowner is selected, owner gets 15% and subowner gets 15%
+                            const hasSubowner = editedClient.subowner_id;
+                            const ownerPercentage = hasSubowner ? 50 : 100; // Database constraint: 50%+50%=100% or 100%+0%=100%
+                            const subownerPercentage = hasSubowner ? 50 : 0; // Database constraint: 50%+50%=100% or 100%+0%=100%
+                            
+                            const ownerEarnings = hasSubowner ? (totalEarnings * 15) / 30 : totalEarnings; // 15% or 30% of total earnings
+                            const subownerEarnings = hasSubowner ? (totalEarnings * 15) / 30 : 0; // 15% or 0% of total earnings
+                            
+                            setEditedClient(prev => ({
+                              ...prev,
+                              is_finalized: true,
+                              owner_percentage: ownerPercentage,
+                              subowner_percentage: subownerPercentage,
+                              owner_earnings: ownerEarnings,
+                              subowner_earnings: subownerEarnings,
+                              total_earnings: totalEarnings
+                            }));
+                          }}
+                          className="w-full"
+                          variant="default"
+                        >
+                          {t('clients.profile.negotiation.finalize', 'Finalize Pricing')}
+                        </Button>
+                      )}
+
+                      {editedClient.is_finalized && (
+                        <div className="p-2 bg-green-50 border border-green-200 rounded text-green-800 text-sm">
+                          ✅ {t('clients.profile.negotiation.finalized', 'Pricing finalized and saved')}
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   <div>
                     <Label>{t('clients.table.industry')}</Label>

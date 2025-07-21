@@ -24,11 +24,14 @@ import { DealsViewToggle } from '@/components/deals/DealsViewToggle';
 import { DealsListTable } from '@/components/deals/DealsListTable';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { useDeals } from "@/hooks/useDeals";
+import { useUsers } from "@/hooks/useUsers";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { withPageTitle } from '@/components/withPageTitle';
 import { useLocation } from 'react-router-dom';
+import { supabase } from "@/integrations/supabase/client";
 
 function Deals() {
   const { t } = useTranslation();
@@ -49,6 +52,7 @@ function Deals() {
     tags: [],
     search: ''
   });
+  const [users, setUsers] = useState<any[]>([]);
   
   const { toast } = useToast();
   const location = useLocation();
@@ -295,6 +299,25 @@ function Deals() {
     setSelectedDeals([]);
   };
 
+  // Fetch users for avatar display
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('id, email, first_name, last_name, avatar_url');
+        
+        if (!error && data) {
+          setUsers(data);
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+    
+    fetchUsers();
+  }, []);
+
   // Get unique owners and tags from deals
   const availableOwners = Array.from(new Set(deals.map(d => d.owner)));
   const allTags = Array.from(new Set(deals.flatMap(deal => deal.tags || [])));
@@ -389,6 +412,40 @@ function Deals() {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-8"
           />
+        </div>
+
+        {/* Owner Avatar Filter */}
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">Filter by:</span>
+          <div className="flex items-center gap-1">
+            {users.slice(0, 5).map((user) => {
+              const ownerName = user.first_name && user.last_name 
+                ? `${user.first_name} ${user.last_name}` 
+                : user.first_name || user.email?.split('@')[0] || 'User';
+              return (
+                <Avatar
+                  key={user.id}
+                  className="h-6 w-6 cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all"
+                  onClick={() => {
+                    const newOwners = filters.owners.includes(ownerName)
+                      ? filters.owners.filter(o => o !== ownerName)
+                      : [...filters.owners, ownerName];
+                    handleFiltersChange({ ...filters, owners: newOwners });
+                  }}
+                >
+                  <AvatarImage src={user?.avatar_url} alt={ownerName} />
+                  <AvatarFallback>
+                    {user?.first_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+              );
+            })}
+            {users.length > 5 && (
+              <Badge variant="secondary" className="text-xs">
+                +{users.length - 5}
+              </Badge>
+            )}
+          </div>
         </div>
 
         <DealsFilterDropdown

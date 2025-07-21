@@ -10,6 +10,7 @@ import {
   BusinessInfoSection,
   TagsSection,
   NotesSection,
+  OwnershipSection,
 } from './client-form-sections';
 
 import { Button } from '@/components/ui/button';
@@ -25,8 +26,19 @@ interface ClientInsert {
   notes?: string | null;
   tags?: string[] | null;
   owner_id: string;
+  subowner_id?: string | null;
+  owner_earnings?: number;
+  subowner_earnings?: number;
+  total_earnings?: number;
+  owner_percentage?: number;
+  subowner_percentage?: number;
   contacts_count?: number;
   total_deal_value?: number;
+  owner_suggested_percentage?: number | null;
+  subowner_suggested_percentage?: number | null;
+  owner_agreed?: boolean;
+  subowner_agreed?: boolean;
+  is_finalized?: boolean;
   status?: string;
 }
 
@@ -37,6 +49,18 @@ export interface ClientFormData {
   industry: string;
   stage: string;
   owner: string;
+  subowner: string;
+  owner_earnings: number;
+  subowner_earnings: number;
+  total_earnings: number;
+  owner_percentage: number;
+  subowner_percentage: number;
+  total_deal_value: number;
+  owner_suggested_percentage?: number;
+  subowner_suggested_percentage?: number;
+  owner_agreed?: boolean;
+  subowner_agreed?: boolean;
+  is_finalized?: boolean;
   country: string;
   address: string;
   notes: string;
@@ -55,6 +79,18 @@ const initialFormData: ClientFormData = {
   industry: '',
   stage: '',
   owner: '',
+  subowner: '',
+  owner_earnings: 0,
+  subowner_earnings: 0,
+  total_earnings: 0,
+  owner_percentage: 100, // Default: owner gets 100% (30% of deal value) when no subowner
+  subowner_percentage: 0, // Default: no subowner
+  total_deal_value: 0, // Start with 0 for new clients
+  owner_suggested_percentage: undefined,
+  subowner_suggested_percentage: undefined,
+  owner_agreed: false,
+  subowner_agreed: false,
+  is_finalized: false,
   country: '',
   address: '',
   notes: '',
@@ -102,9 +138,20 @@ export function AddClientForm({ onOpenChange, onClientAdded }: AddClientFormProp
         address: formData.address || null,
         notes: formData.notes || null,
         tags: formData.tags.length > 0 ? formData.tags : null,
-        owner_id: user.id,
+        owner_id: formData.owner || user.id,
+        subowner_id: formData.subowner || null,
+        owner_earnings: formData.owner_earnings || 0,
+        subowner_earnings: formData.subowner_earnings || 0,
+        total_earnings: formData.total_earnings || 0,
+        owner_percentage: formData.owner_percentage || 100,
+        subowner_percentage: formData.subowner_percentage || 0,
         contacts_count: 0,
-        total_deal_value: 0,
+        total_deal_value: formData.total_deal_value || 0,
+        owner_suggested_percentage: formData.owner_suggested_percentage || null,
+        subowner_suggested_percentage: formData.subowner_suggested_percentage || null,
+        owner_agreed: formData.owner_agreed || false,
+        subowner_agreed: formData.subowner_agreed || false,
+        is_finalized: formData.is_finalized || false,
         status: 'active',
       };
 
@@ -164,6 +211,7 @@ export function AddClientForm({ onOpenChange, onClientAdded }: AddClientFormProp
     <form onSubmit={handleSubmit} className="space-y-6">
       <BasicInfoSection formData={formData} setFormData={setFormData} />
       <BusinessInfoSection formData={formData} setFormData={setFormData} />
+      <OwnershipSection formData={formData} setFormData={setFormData} />
       <TagsSection
         tags={formData.tags}
         onTagsChange={(newTags) => setFormData({ ...formData, tags: newTags })}

@@ -134,15 +134,9 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent 
-        side="bottom" 
-        className="h-[95vh] w-full max-w-none rounded-t-2xl border-t shadow-2xl bg-background/95 backdrop-blur-sm"
+        side="right" 
+        className="h-full w-full sm:w-[600px] lg:w-[700px] xl:w-[800px] border-l shadow-2xl bg-background/95 backdrop-blur-sm p-0 flex flex-col"
       >
-        {/* Header with drag handle */}
-        <div className="flex flex-col w-full">
-          {/* Drag handle */}
-          <div className="flex justify-center py-2">
-            <div className="w-12 h-1 bg-muted-foreground/20 rounded-full" />
-          </div>
           
           {/* Header content */}
           <SheetHeader className="px-6 pb-4">
@@ -211,7 +205,7 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
             </TabsList>
 
             <ScrollArea className="flex-1 px-6 py-4">
-              <TabsContent value="general" className="space-y-6 mt-4">
+                            <TabsContent value="general" className="space-y-6 mt-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="deal-name" className="text-sm font-medium">Deal Name</Label>
@@ -222,7 +216,42 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
                       disabled={!isEditing}
                       className="h-10"
                     />
-                </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="client-name" className="text-sm font-medium">Client Name</Label>
+                    <Input 
+                      id="client-name" 
+                      value={editedDeal.client} 
+                      onChange={e => updateField('client', e.target.value)} 
+                      disabled={!isEditing}
+                      className="h-10"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="client-email" className="text-sm font-medium">Client Email</Label>
+                    <Input 
+                      id="client-email" 
+                      value={editedDeal.clientEmail || ''} 
+                      onChange={e => updateField('clientEmail', e.target.value)} 
+                      disabled={!isEditing}
+                      className="h-10"
+                      placeholder="client@company.com"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="client-phone" className="text-sm font-medium">Client Phone</Label>
+                    <Input 
+                      id="client-phone" 
+                      value={editedDeal.clientPhone || ''} 
+                      onChange={e => updateField('clientPhone', e.target.value)} 
+                      disabled={!isEditing}
+                      className="h-10"
+                      placeholder="+212 6XX XXX XXX"
+                    />
+                  </div>
                   <div className="space-y-2">
                     <Label htmlFor="client" className="text-sm font-medium">Client</Label>
                   <Select
@@ -332,7 +361,7 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
               <TabsContent value="financial" className="space-y-6 mt-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="value" className="text-sm font-medium">Value</Label>
+                    <Label htmlFor="value" className="text-sm font-medium">Deal Value</Label>
                     <Input 
                       id="value" 
                       type="number" 
@@ -341,7 +370,8 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
                       disabled={!isEditing}
                       className="h-10"
                     />
-                </div>
+                  </div>
+                  
                   <div className="space-y-2">
                     <Label htmlFor="currency" className="text-sm font-medium">Currency</Label>
                     <Input 
@@ -351,29 +381,33 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
                       disabled={!isEditing}
                       className="h-10"
                     />
-                </div>
+                  </div>
+                  
                   <div className="space-y-2">
                     <Label htmlFor="probability" className="text-sm font-medium">Probability (%)</Label>
                     <Input 
                       id="probability" 
-                      type="number" 
+                      type="number"
+                      min="0"
+                      max="100"
                       value={editedDeal.probability} 
                       onChange={e => updateField('probability', Number(e.target.value))} 
                       disabled={!isEditing}
                       className="h-10"
                     />
-                          </div>
+                  </div>
+                  
                   <div className="space-y-2">
-                    <Label htmlFor="expectedCloseDate" className="text-sm font-medium">Expected Close Date</Label>
+                    <Label htmlFor="expected-close-date" className="text-sm font-medium">Expected Close Date</Label>
                     <Input 
-                      id="expectedCloseDate" 
-                      type="date" 
+                      id="expected-close-date" 
                       value={editedDeal.expectedCloseDate} 
                       onChange={e => updateField('expectedCloseDate', e.target.value)} 
                       disabled={!isEditing}
                       className="h-10"
+                      type="date"
                     />
-                      </div>
+                  </div>
                 </div>
               </TabsContent>
 
@@ -387,8 +421,22 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
                       onChange={e => updateField('source', e.target.value)} 
                       disabled={!isEditing}
                       className="h-10"
+                      placeholder="Website, Referral, Cold Call, etc."
                     />
-                </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="description" className="text-sm font-medium">Description</Label>
+                    <Textarea 
+                      id="description" 
+                      value={editedDeal.description || ''} 
+                      onChange={e => updateField('description', e.target.value)} 
+                      disabled={!isEditing}
+                      placeholder="Detailed description of the deal..."
+                      className="min-h-[120px] resize-none"
+                    />
+                  </div>
+                  
                   <div className="space-y-2">
                     <Label htmlFor="notes" className="text-sm font-medium">Notes</Label>
                     <Textarea 
@@ -400,12 +448,11 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
                       className="min-h-[120px] resize-none"
                     />
                   </div>
-          </div>
+                </div>
               </TabsContent>
-        </ScrollArea>
+            </ScrollArea>
           </Tabs>
-        </div>
-      </SheetContent>
-    </Sheet>
+        </SheetContent>
+      </Sheet>
   );
 }

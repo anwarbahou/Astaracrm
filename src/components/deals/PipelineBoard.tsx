@@ -150,7 +150,7 @@ export function PipelineBoard({
   ]);
 
   return (
-    <div className="flex gap-6 overflow-x-auto pb-6 min-h-[calc(100vh-350px)] animate-fade-in">
+    <div className="flex gap-6 overflow-x-auto pb-6 min-h-[calc(100vh-350px)] animate-fade-in custom-scrollbar">
       {stages.map((stage) => (
         <MemoizedPipelineColumn
             key={stage.id}

@@ -1,12 +1,12 @@
 import { Deal } from '@/types/deal';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '@/hooks/use-toast';
@@ -18,7 +18,7 @@ import { useState } from 'react';
 interface AddDealModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (deal: Omit<Deal, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  onSubmit: (deal: Omit<Deal, 'id' | 'created_at' | 'updated_at' | 'activities'>) => void;
 }
 
 export function AddDealModal({ open, onOpenChange, onSubmit }: AddDealModalProps) {
@@ -65,42 +65,49 @@ export function AddDealModal({ open, onOpenChange, onSubmit }: AddDealModalProps
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>{t('addDealModal.title')}</DialogTitle>
-          <DialogDescription>
+    <Sheet open={open} onOpenChange={handleClose}>
+      <SheetContent 
+        side="right" 
+        className="h-full w-full sm:w-[600px] lg:w-[700px] xl:w-[800px] border-l shadow-2xl bg-background/95 backdrop-blur-sm p-0 flex flex-col"
+      >
+        <SheetHeader className="px-6 py-4">
+          <SheetTitle>{t('addDealModal.title')}</SheetTitle>
+          <SheetDescription>
             {t('addDealModal.description')}
             <br />
             <span className="text-sm text-muted-foreground mt-2 block">
               Fields marked with <span className="text-red-500">*</span> are required
             </span>
-          </DialogDescription>
-        </DialogHeader>
+          </SheetDescription>
+        </SheetHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <BasicInfoFields formData={formData} onUpdateField={updateField} />
-            <DealDetailsFields formData={formData} onUpdateField={updateField} />
-          </div>
+        <div className="flex-1 px-6 py-4 overflow-y-auto">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <BasicInfoFields formData={formData} onUpdateField={updateField} />
+              <DealDetailsFields formData={formData} onUpdateField={updateField} />
+            </div>
 
-          {showValidationError && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                Please fill in all required fields: {getValidationErrors().join(', ')}
-              </AlertDescription>
-            </Alert>
-          )}
+            {showValidationError && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  Please fill in all required fields: {getValidationErrors().join(', ')}
+                </AlertDescription>
+              </Alert>
+            )}
+          </form>
+        </div>
 
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={handleClose}>
-              {t('common.cancel')}
-            </Button>
-            <Button type="submit">{t('addDealModal.submitButton')}</Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+        <SheetFooter className="px-6 py-4 border-t">
+          <Button type="button" variant="outline" onClick={handleClose}>
+            {t('common.cancel')}
+          </Button>
+          <Button type="submit" onClick={handleSubmit}>
+            {t('addDealModal.submitButton')}
+          </Button>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
   );
 }

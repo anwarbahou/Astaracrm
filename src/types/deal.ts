@@ -3,6 +3,8 @@ export interface Deal {
   name: string;
   client: string;
   clientId?: string;
+  clientPhone?: string | null;
+  clientEmail?: string | null;
   value: number;
   currency: string;
   stage: DealStage;
@@ -17,6 +19,7 @@ export interface Deal {
   created_at: string;
   updated_at: string;
   notes?: string;
+  description?: string;
   activities?: DealActivity[];
   files?: DealFile[];
 }

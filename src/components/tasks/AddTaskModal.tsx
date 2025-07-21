@@ -327,7 +327,7 @@ export function AddTaskModal({ open, onOpenChange, initialStatus = "todo" }: Add
                 </SelectTrigger>
                 <SelectContent>
                   {usersLoading ? (
-                    <SelectItem value="">{t('tasks.addTaskModal.form.loadingUsers')}</SelectItem>
+                    <SelectItem value="loading">{t('tasks.addTaskModal.form.loadingUsers')}</SelectItem>
                   ) : (
                     allUsers.map((user) => (
                       <SelectItem key={user.id} value={user.id}>

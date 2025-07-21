@@ -119,176 +119,6 @@
       "meetingDetails": "Appel de démo with StartupXYZ"
     }
   },
-  "clients": {
-    "addClient": "Ajouter un client",
-    "totalClients": "Total des clients",
-    "activeClients": "Clients actifs",
-    "prospects": "Prospects",
-    "totalRevenue": "Revenu total",
-    "table": {
-      "searchPlaceholder": "Rechercher des clients par nom, e-mail, secteur ou propriétaire...",
-      "filters": "Filtres",
-      "clientName": "Nom du Client",
-      "industry": "Secteur d'activité",
-      "tags": "Étiquettes",
-      "stage": "Étape",
-      "owner": "Propriétaire",
-      "location": "Lieu",
-      "contacts": "Contacts",
-      "dealValue": "Valeur des affaires",
-      "created": "Créé le",
-      "lastInteraction": "Dernière Interaction",
-      "status": "Statut",
-      "rowsPerPage": "Lignes par page :",
-      "of": "{{start}}-{{end}} sur {{total}}",
-      "cardView": "Vue en cartes",
-      "listView": "Vue en liste",
-      "noClients": "Aucun client trouvé",
-      "noClientsDescription": "Aucun client ne correspond à vos filtres actuels.",
-      "actions": {
-        "edit": "Modifier le client",
-        "delete": "Supprimer le client"
-      },
-      "deleteDialog": {
-        "title": "Supprimer le client",
-        "description": "Êtes-vous sûr de vouloir supprimer {name} ? Cette action ne peut pas être annulée et supprimera définitivement toutes les données associées.",
-        "cancel": "Annuler",
-        "confirm": "Supprimer le client",
-        "deleting": "Suppression..."
-      }
-    },
-    "filtersPanel": {
-      "title": "Filtres avancés",
-      "owner": "Propriétaire",
-      "ownerPlaceholder": "Sélectionner un propriétaire",
-      "allOwners": "Tous les propriétaires",
-      "stage": "Étape",
-      "stagePlaceholder": "Sélectionner une étape",
-      "allStages": "Toutes les étapes",
-      "industry": "Secteur",
-      "industryPlaceholder": "Sélectionner un secteur",
-      "allIndustries": "Tous les secteurs",
-      "location": "Lieu",
-      "locationPlaceholder": "Sélectionner un lieu",
-      "allLocations": "Tous les lieux",
-      "status": "Statut",
-      "statusPlaceholder": "Sélectionner un statut",
-      "allStatuses": "Tous les statuts",
-      "tags": "Étiquettes",
-      "addTag": "Ajouter une étiquette",
-      "dateRanges": "Plages de dates",
-      "dateCreated": "Date de création",
-      "from": "De",
-      "to": "À",
-      "lastInteraction": "Dernière interaction",
-      "clearAll": "Tout effacer",
-      "apply": "Appliquer les filtres"
-    },
-    "statuses": {
-      "active": "Actif",
-      "archived": "Archivé"
-    },
-    "tags": {
-      "vip": "VIP",
-      "high_value": "Haute valeur",
-      "enterprise": "Entreprise",
-      "smb": "PME",
-      "urgent": "Urgent",
-      "international": "International"
-    },
-    "profile": {
-      "title": "Profil Client",
-      "description": "Consultez et gérez les informations client, contacts, affaires et activités",
-      "loading": "Chargement du profil client...",
-      "notFound": "Client introuvable",
-      "save": "Enregistrer",
-      "saving": "Enregistrement...",
-      "cancel": "Annuler",
-      "edit": "Modifier",
-      "memberSince": "Membre depuis",
-      "totalDealValue": "Valeur totale des affaires",
-      "activeDeals": "Affaires actives",
-      "companyInformation": "Informations de l'entreprise",
-      "companyContacts": "Contacts de l'entreprise",
-      "addContact": "Ajouter un contact",
-      "primary": "Principal",
-      "filesDocuments": "Fichiers et documents",
-      "uploadFile": "Télécharger un fichier",
-      "noFilesUploaded": "Aucun fichier téléchargé",
-      "uploadContracts": "Téléchargez des contrats, propositions ou autres fichiers importants",
-      "uploadFirstDocument": "Télécharger le premier document",
-      "tabs": {
-        "overview": "Aperçu",
-        "contacts": "Contacts",
-        "deals": "Affaires",
-        "notes": "Notes",
-        "files": "Fichiers"
-      },
-      "fields": {
-        "owner": "Propriétaire",
-        "noEmail": "Aucun e-mail",
-        "noPhone": "Aucun téléphone",
-        "noCountry": "Aucun pays",
-        "noAddress": "Aucune adresse spécifiée",
-        "addressPlaceholder": "Entrez l'adresse de l'entreprise...",
-        "noIndustrySpecified": "Aucune industrie spécifiée",
-        "noOwnerAssigned": "Aucun propriétaire assigné",
-        "noTags": "Aucune étiquette",
-        "noNotesAvailable": "Aucune note disponible",
-        "noRoleSpecified": "Aucun rôle spécifié",
-        "notAvailable": "Non disponible",
-        "notes" : "Notes"
-      },
-      "deals": {
-        "title": "Affaires et opportunités",
-        "addDeal": "Ajouter une affaire",
-        "addFirstDeal": "Ajouter la première affaire",
-        "noDealsYet": "Aucune affaire pour le moment",
-        "createDealsToTrack": "Créez des affaires pour suivre les opportunités",
-        "closeDate": "Date de clôture :",
-        "notSet": "Non définie",
-        "probability": "probabilité"
-      },
-      "contacts": {
-        "noContactsYet": "Aucun contact pour le moment",
-        "addContactsToStart": "Ajoutez des contacts pour commencer à créer des relations"
-      },
-      "activities": {
-        "title": "Chronologie des activités",
-        "noActivitiesYet": "Aucune activité pour le moment",
-        "activitiesWillAppear": "Les activités apparaîtront ici lorsque vous interagirez avec ce client",
-        "by": "par",
-        "unknown": "Inconnu"
-      },
-      "stages": {
-        "lead": "Prospect",
-        "active": "Actif", 
-        "inactive": "Inactif",
-        "prospect": "Prospect potentiel",
-        "unknown": "Inconnu"
-      }
-    },
-
-      "toasts": {
-        "addClient": {
-          "success": {
-            "title": "Client ajouté avec succès",
-            "description": "Le client a été ajouté à votre CRM."
-          },
-          "error": {
-            "title": "Erreur lors de l'ajout du client",
-            "missingFields": "Le nom et l'e-mail sont obligatoires.",
-            "unexpected": "Une erreur inattendue s'est produite."
-          }
-        }
-      },
-      "addClientModal": {
-        "creating": "Création en cours...",
-        "submit": "Ajouter le client"
-      }
-    
-    
-  },
   "contacts": {
     "title": "Contacts",
     "description": "Gérez tous vos contacts et relations d'affaires.",
@@ -1186,5 +1016,258 @@
       "zapier": "Webhooks Zapier",
       "zapierDesc": "Automatiser les flux de travail avec Zapier"
     }
-  }
+  },
+    "clients": {
+      "ownership": {
+        "title": "Propriété et Gains",
+        "owner": "Propriétaire Principal",
+        "selectOwner": "Sélectionner le propriétaire principal",
+        "subowner": "Propriétaire Secondaire",
+        "selectSubowner": "Sélectionner le propriétaire secondaire (optionnel)",
+        "noSubowner": "Aucun propriétaire secondaire",
+        "dealValue": "Valeur de l'Affaire",
+        "earningsNote": "Les gains seront calculés à 30% de la valeur de l'affaire",
+        "totalEarnings": "Gains Totaux (30% de la Valeur de l'Affaire)",
+        "ownerPercentage": "Pourcentage du Propriétaire",
+        "ownerEarnings": "Le propriétaire recevra",
+        "subownerPercentage": "Pourcentage du Propriétaire Secondaire",
+        "subownerEarnings": "Le propriétaire secondaire recevra",
+        "negotiation": {
+          "title": "Négociation des Pourcentages",
+          "ownerSuggestion": "Suggestion du Propriétaire",
+          "subownerSuggestion": "Suggestion du Propriétaire Secondaire",
+          "agree": "Accepter",
+          "agreed": "Accepté",
+          "finalize": "Finaliser le Prix",
+          "finalized": "Prix finalisé et sauvegardé"
+        }
+      },
+      "profile": {
+        "title": "Profil Client",
+        "description": "Afficher et gérer les informations client, contacts, affaires et activités",
+        "loading": "Chargement du profil client...",
+        "notFound": "Client introuvable",
+        "save": "Sauvegarder",
+        "saving": "Sauvegarde...",
+        "cancel": "Annuler",
+        "edit": "Modifier",
+        "delete": "Supprimer",
+        "deleted": "Client supprimé",
+        "errorDeleting": "Erreur",
+        "failedDelete": "Échec de la suppression du client",
+        "unexpectedError": "Une erreur inattendue s'est produite",
+        "confirmDeleteTitle": "Supprimer le client ?",
+        "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce client ? Cette action ne peut pas être annulée.",
+        "memberSince": "Membre depuis",
+        "totalDealValue": "Valeur Totale des Affaires",
+        "activeDeals": "Affaires Actives",
+        "companyInformation": "Informations de l'Entreprise",
+        "companyContacts": "Contacts de l'Entreprise",
+        "addContact": "Ajouter un Contact",
+        "primary": "Principal",
+        "filesDocuments": "Fichiers et Documents",
+        "uploadFile": "Télécharger un Fichier",
+        "noFilesUploaded": "Aucun fichier téléchargé",
+        "uploadContracts": "Télécharger des contrats, propositions ou autres fichiers importants",
+        "uploadFirstDocument": "Télécharger le Premier Document",
+        "ownershipRestriction": "Seuls les administrateurs et managers peuvent changer la propriété",
+        "tabs": {
+          "overview": "Aperçu",
+          "contacts": "Contacts",
+          "deals": "Affaires",
+          "notes": "Notes",
+          "files": "Fichiers"
+        },
+        "fields": {
+          "owner": "Propriétaire",
+          "selectOwner": "Sélectionner le propriétaire",
+          "subowner": "Propriétaire Secondaire",
+          "selectSubowner": "Sélectionner le propriétaire secondaire",
+          "noSubowner": "Aucun propriétaire secondaire",
+          "noEmail": "Aucun email",
+          "noPhone": "Aucun téléphone",
+          "noCountry": "Aucun pays",
+          "noAddress": "Aucune adresse spécifiée",
+          "addressPlaceholder": "Entrez l'adresse de l'entreprise...",
+          "noIndustrySpecified": "Aucune industrie spécifiée",
+          "selectIndustry": "Sélectionner l'industrie",
+          "noOwnerAssigned": "Aucun propriétaire assigné",
+          "noTags": "Aucune étiquette",
+          "tagsPlaceholder": "Ajouter des étiquettes séparées par des virgules",
+          "noNotesAvailable": "Aucune note disponible",
+          "notesPlaceholder": "Ajouter des notes sur ce client...",
+          "noRoleSpecified": "Aucun rôle spécifié",
+          "notAvailable": "N/A",
+          "notes": "Notes",
+          "dealValue": "Valeur de l'Affaire",
+          "noDealValue": "Aucune valeur d'affaire définie",
+          "totalEarnings": "Gains Totaux (30% de la Valeur de l'Affaire)",
+          "ownerPercentage": "Propriétaire %",
+          "ownerEarnings": "Le propriétaire recevra",
+          "subownerPercentage": "Propriétaire Secondaire %",
+          "subownerEarnings": "Le propriétaire secondaire recevra"
+        },
+        "deals": {
+          "title": "Affaires et Opportunités",
+          "addDeal": "Ajouter une Affaire",
+          "addFirstDeal": "Ajouter la Première Affaire",
+          "noDealsYet": "Aucune affaire pour le moment",
+          "createDealsToTrack": "Créez des affaires pour suivre les opportunités",
+          "closeDate": "Date de clôture :",
+          "notSet": "Non définie",
+          "probability": "probabilité"
+        },
+        "contacts": {
+          "noContactsYet": "Aucun contact pour le moment",
+          "addContactsToStart": "Ajoutez des contacts pour commencer à créer des relations"
+        },
+        "activities": {
+          "title": "Chronologie des Activités",
+          "noActivitiesYet": "Aucune activité pour le moment",
+          "activitiesWillAppear": "Les activités apparaîtront ici lorsque vous interagirez avec ce client",
+          "by": "par",
+          "unknown": "Inconnu"
+        },
+        "stages": {
+          "lead": "Prospect",
+          "active": "Actif", 
+          "inactive": "Inactif",
+          "prospect": "Prospect potentiel",
+          "unknown": "Inconnu"
+        },
+        "negotiation": {
+          "title": "Négociation des Pourcentages",
+          "ownerSuggestion": "Suggestion du Propriétaire",
+          "subownerSuggestion": "Suggestion du Propriétaire Secondaire",
+          "agree": "Accepter",
+          "agreed": "Accepté",
+          "finalize": "Finaliser le Prix",
+          "finalized": "Prix finalisé et sauvegardé"
+        }
+      },
+      "addClientModal": {
+        "title": "Ajouter un Nouveau Client",
+        "profilePicture": "Photo de Profil",
+        "uploadPhoto": "Télécharger une Photo",
+        "uploadHint": "Optionnel : Télécharger le logo ou la photo du client",
+        "nameLabel": "Nom de l'Entreprise/Client *",
+        "namePlaceholder": "Entrez le nom de l'entreprise",
+        "emailLabel": "Adresse Email",
+        "emailPlaceholder": "contact@entreprise.com",
+        "phoneLabel": "Numéro de Téléphone",
+        "phonePlaceholder": "+1 555 XXX XXXX",
+        "countryLabel": "Pays/Localisation",
+        "countryPlaceholder": "Sélectionner la localisation",
+        "addressLabel": "Adresse",
+        "addressPlaceholder": "Entrez l'adresse de l'entreprise (rue, ville, code postal)",
+        "industryLabel": "Industrie",
+        "industryPlaceholder": "Sélectionner l'industrie",
+        "stageLabel": "Étape du Client",
+        "stagePlaceholder": "Sélectionner l'étape",
+        "ownerLabel": "Propriétaire du Compte",
+        "ownerPlaceholder": "Assigner le propriétaire du compte",
+        "tagsLabel": "Étiquettes",
+        "tagsPlaceholder": "Ajouter une étiquette et appuyer sur Entrée",
+        "notesLabel": "Notes",
+        "notesPlaceholder": "Ajouter des notes supplémentaires sur ce client...",
+        "creating": "Création...",
+        "submit": "Ajouter le Client"
+      },
+      "toasts": {
+        "addClient": {
+          "success": {
+            "title": "Client Ajouté avec Succès",
+            "description": "Le client a été ajouté à votre CRM."
+          },
+          "error": {
+            "title": "Erreur lors de l'Ajout du Client",
+            "missingFields": "Le nom et l'email sont obligatoires.",
+            "unexpected": "Une erreur inattendue s'est produite."
+          }
+        }
+      },
+      "importClients": "Importer des Clients",
+      "import": {
+        "title": "Importer des Clients",
+        "description": "Importez vos données clients depuis un fichier JSON ou collez-les directement"
+      },
+      "table": {
+        "searchPlaceholder": "Rechercher des clients par nom, email, industrie ou propriétaire...",
+        "filters": "Filtres",
+        "clientName": "Nom du Client",
+        "industry": "Industrie",
+        "tags": "Étiquettes",
+        "stage": "Étape",
+        "owner": "Propriétaire",
+        "location": "Localisation",
+        "contacts": "Contacts",
+        "dealValue": "Valeur de l'Affaire",
+        "created": "Créé",
+        "lastInteraction": "Dernière Interaction",
+        "status": "Statut",
+        "rowsPerPage": "Lignes par page :",
+        "of": "{{start}}-{{end}} sur {{total}}",
+        "importClients": "Importer des Clients",
+        "cardView": "Vue en Cartes",
+        "listView": "Vue en Liste",
+        "noClients": "Aucun client trouvé",
+        "noClientsDescription": "Aucun client ne correspond à vos filtres actuels.",
+        "actions": {
+          "edit": "Modifier le Client",
+          "delete": "Supprimer le Client"
+        },
+        "deleteDialog": {
+          "title": "Supprimer le Client",
+          "description": "Êtes-vous sûr de vouloir supprimer {name} ? Cette action ne peut pas être annulée et supprimera définitivement toutes les données associées.",
+          "cancel": "Annuler",
+          "confirm": "Supprimer le Client",
+          "deleting": "Suppression..."
+        }
+      },
+      "filtersPanel": {
+        "title": "Filtres Avancés",
+        "owner": "Propriétaire",
+        "ownerPlaceholder": "Sélectionner le propriétaire",
+        "allOwners": "Tous les propriétaires",
+        "stage": "Étape",
+        "stagePlaceholder": "Sélectionner l'étape",
+        "allStages": "Toutes les étapes",
+        "industry": "Industrie",
+        "industryPlaceholder": "Sélectionner l'industrie",
+        "allIndustries": "Toutes les industries",
+        "location": "Localisation",
+        "locationPlaceholder": "Sélectionner la localisation",
+        "allLocations": "Toutes les localisations",
+        "status": "Statut",
+        "statusPlaceholder": "Sélectionner le statut",
+        "allStatuses": "Tous les statuts",
+        "tags": "Étiquettes",
+        "addTag": "Ajouter une étiquette",
+        "dateRanges": "Plages de dates",
+        "dateCreated": "Date de création",
+        "from": "De",
+        "to": "À",
+        "lastInteraction": "Dernière interaction",
+        "clearAll": "Tout effacer",
+        "apply": "Appliquer les filtres"
+      },
+      "statuses": {
+        "active": "Actif",
+        "archived": "Archivé"
+      },
+      "tags": {
+        "vip": "VIP",
+        "high_value": "Valeur Élevée",
+        "enterprise": "Entreprise",
+        "smb": "PME",
+        "urgent": "Urgent",
+        "international": "International"
+      },
+      "addClient": "Ajouter un Client",
+      "totalClients": "Total des Clients",
+      "activeClients": "Clients Actifs",
+      "prospects": "Prospects",
+      "totalRevenue": "Revenu Total"
+    }
+  
 }

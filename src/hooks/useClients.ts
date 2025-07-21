@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Client } from "@/types/client";
 import { supabase } from '@/integrations/supabase/client';
-import type { Database } from '@/integrations/supabase/types';
+import type { Database } from '@/types/supabase';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 type SupabaseClient = Database['public']['Tables']['clients']['Row'];
@@ -52,7 +52,7 @@ export const useClients = () => {
                 .from('clients')
                 .select(`
                     *,
-                    users (
+                    owner:users!clients_owner_id_fkey (
                         id,
                         first_name,
                         last_name,
@@ -68,7 +68,7 @@ export const useClients = () => {
 
             return data?.map((client) => convertSupabaseClient({
                 ...client,
-                owner: client.users
+                owner: client.owner
             })) || [];
         },
         staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes

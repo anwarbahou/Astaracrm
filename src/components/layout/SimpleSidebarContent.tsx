@@ -96,6 +96,11 @@ export function SimpleSidebarContent() {
                     )}
                   >
                     {t(`app.sidebar.${item.labelKey}`)}
+                    {item.id === 'email' && (
+                      <span className="ml-2 text-xs text-gray-400">
+                        ({t('app.sidebar.soon')})
+                      </span>
+                    )}
                   </span>
                 </Link>
               </div>

@@ -1,11 +1,11 @@
 
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { useTranslation } from "react-i18next";
 import { AddClientForm } from "@/components/clients/AddClientForm";
 
@@ -19,16 +19,16 @@ export function AddClientModal({ open, onOpenChange, onClientAdded }: AddClientM
   const { t } = useTranslation();
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>{t('addClientModal.title')}</DialogTitle>
-          <DialogDescription>
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
+        <SheetHeader className="space-y-6">
+          <SheetTitle>{t('addClientModal.title')}</SheetTitle>
+          <SheetDescription>
             {t('addClientModal.description')}
-          </DialogDescription>
-        </DialogHeader>
+          </SheetDescription>
+        </SheetHeader>
         <AddClientForm onOpenChange={onOpenChange} onClientAdded={onClientAdded} />
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 }

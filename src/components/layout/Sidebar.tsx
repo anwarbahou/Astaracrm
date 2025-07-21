@@ -160,6 +160,11 @@ export const Sidebar = React.memo(function Sidebar({ isCollapsed, onToggle }: Si
                             {t('app.sidebar.soon')}
                           </span>
                         )}
+                        {item.id === 'email' && (
+                          <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-[#000000] text-white rounded">
+                            {t('app.sidebar.soon')}
+                          </span>
+                        )}
                         {item.id === 'messaging' && messagingUnreadCount > 0 && (
                           <Badge variant="destructive" className="h-5 w-5 p-0 text-xs flex items-center justify-center">
                             {messagingUnreadCount > 99 ? '99+' : messagingUnreadCount}

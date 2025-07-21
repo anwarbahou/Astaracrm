@@ -1,5 +1,5 @@
 import { useAuth } from '@/contexts/AuthContext';
-import { Database } from '@/integrations/supabase/types';
+import { Database } from '@/types/supabase';
 
 type UserRole = Database['public']['Enums']['user_role'];
 
@@ -11,7 +11,7 @@ export const useRoleAccess = () => {
   };
 
   const hasAnyRole = (roles: UserRole[]): boolean => {
-    return userProfile?.role ? roles.includes(userProfile.role) : false;
+    return userProfile?.role ? roles.includes(userProfile.role as UserRole) : false;
   };
 
   const canAccess = {

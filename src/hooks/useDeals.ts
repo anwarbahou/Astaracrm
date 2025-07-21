@@ -13,6 +13,8 @@ const transformDealFromDB = (dbDeal: any): Deal => ({
   name: dbDeal.name,
   client: dbDeal.client_name || 'Unknown Client',
   clientId: dbDeal.client_id || null,
+  clientPhone: dbDeal.client_phone || null,
+  clientEmail: dbDeal.client_email || null,
   value: Number(dbDeal.value),
   currency: dbDeal.currency || 'MAD',
   stage: mapDBStageToFrontend(dbDeal.stage, dbDeal.tags),
@@ -27,6 +29,7 @@ const transformDealFromDB = (dbDeal: any): Deal => ({
   created_at: dbDeal.created_at?.split('T')[0] || '',
   updated_at: dbDeal.updated_at?.split('T')[0] || '',
   notes: dbDeal.notes || '',
+  description: dbDeal.description || '',
   activities: []
 });
 

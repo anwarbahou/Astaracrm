@@ -16,8 +16,12 @@ interface BasicInfoFieldsProps {
     name: string;
     client: string;
     clientId: string;
+    clientPhone?: string;
+    clientEmail?: string;
     value: number;
+    currency: string;
     notes: string;
+    description?: string;
   };
   onUpdateField: (field: string, value: any) => void;
 }
@@ -95,6 +99,48 @@ export function BasicInfoFields({ formData, onUpdateField }: BasicInfoFieldsProp
           required
           min="1"
           className={formData.value <= 0 ? "border-red-300 focus:border-red-500" : ""}
+        />
+      </div>
+
+      <div>
+        <Label htmlFor="currency">Currency</Label>
+        <Input
+          id="currency"
+          value={formData.currency}
+          onChange={(e) => onUpdateField('currency', e.target.value)}
+          placeholder="MAD"
+        />
+      </div>
+
+      <div>
+        <Label htmlFor="client-email">Client Email</Label>
+        <Input
+          id="client-email"
+          type="email"
+          value={formData.clientEmail || ''}
+          onChange={(e) => onUpdateField('clientEmail', e.target.value)}
+          placeholder="client@company.com"
+        />
+      </div>
+
+      <div>
+        <Label htmlFor="client-phone">Client Phone</Label>
+        <Input
+          id="client-phone"
+          value={formData.clientPhone || ''}
+          onChange={(e) => onUpdateField('clientPhone', e.target.value)}
+          placeholder="+212 6XX XXX XXX"
+        />
+      </div>
+
+      <div className="col-span-2">
+        <Label htmlFor="description">Description</Label>
+        <Textarea
+          id="description"
+          value={formData.description || ''}
+          onChange={(e) => onUpdateField('description', e.target.value)}
+          placeholder="Detailed description of the deal..."
+          rows={3}
         />
       </div>
 

@@ -26,7 +26,10 @@ export function useClientProfile(clientId: string | null): UseClientProfileData 
   // Queries for each resource
   const clientQuery = useQuery({
     queryKey: ['clientProfile', clientId],
-    queryFn: () => clientId ? ClientService.getClientProfile(clientId) : Promise.resolve(null),
+    queryFn: () => {
+      console.log('🔄 useClientProfile queryFn called with clientId:', clientId);
+      return clientId ? ClientService.getClientProfile(clientId) : Promise.resolve(null);
+    },
     enabled: !!clientId,
     staleTime: 1000 * 60 * 5,
   });

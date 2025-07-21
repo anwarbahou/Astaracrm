@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/table";
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Database } from '@/integrations/supabase/types';
+import { Database } from '@/types/supabase';
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Shield, User, Crown, Mail, Calendar, Trash2, Edit, RefreshCw, Upload } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -90,7 +90,7 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({ searchQuery = 
     try {
       const { data, error } = await supabase
         .from('users')
-        .select('id, email, first_name, last_name, role, avatar_url, created_at, updated_at')
+        .select('id, email, first_name, last_name, role, avatar_url, created_at, updated_at, last_login_at, phone, preferences, status, timezone')
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -103,7 +103,24 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({ searchQuery = 
         return;
       }
 
-      setUsers(data || []);
+      // Transform the data to match UserProfile type
+      const transformedData = (data || []).map(user => ({
+        id: user.id,
+        email: user.email,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        role: user.role,
+        avatar_url: user.avatar_url,
+        created_at: user.created_at,
+        updated_at: user.updated_at,
+        last_login_at: user.last_login_at || null,
+        phone: user.phone || null,
+        preferences: user.preferences || null,
+        status: user.status || 'active',
+        timezone: user.timezone || null
+      }));
+
+      setUsers(transformedData);
     } catch (error) {
       console.error('Error fetching users:', error);
       toast({
@@ -368,7 +385,12 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({ searchQuery = 
             role: data.role,
             avatar_url: data.avatar_url,
             created_at: data.created_at,
-            updated_at: data.updated_at || null
+            updated_at: data.updated_at || null,
+            last_login_at: data.last_login_at || null,
+            phone: data.phone || null,
+            preferences: data.preferences || null,
+            status: data.status || 'active',
+            timezone: data.timezone || null
           });
 
           if (payload.eventType === 'INSERT') {

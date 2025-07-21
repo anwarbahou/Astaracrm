@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import type { Database } from '@/integrations/supabase/types';
+import type { Database } from '@/types/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 
 type User = Database['public']['Tables']['users']['Row'];

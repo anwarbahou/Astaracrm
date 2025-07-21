@@ -5,7 +5,10 @@ interface DealFormData {
   name: string;
   client: string;
   clientId: string;
+  clientPhone?: string;
+  clientEmail?: string;
   value: number;
+  currency: string;
   stage: DealStage;
   probability: number;
   expectedCloseDate: string;
@@ -15,13 +18,17 @@ interface DealFormData {
   priority: 'Low' | 'Medium' | 'High';
   tags: string[];
   notes: string;
+  description?: string;
 }
 
 const initialFormData: DealFormData = {
   name: '',
   client: '',
   clientId: '',
+  clientPhone: '',
+  clientEmail: '',
   value: 0,
+  currency: 'MAD',
   stage: 'Prospect',
   probability: 25,
   expectedCloseDate: '',
@@ -30,7 +37,8 @@ const initialFormData: DealFormData = {
   ownerId: '',
   priority: 'Medium',
   tags: [],
-  notes: ''
+  notes: '',
+  description: ''
 };
 
 export function useDealForm() {
@@ -55,13 +63,15 @@ export function useDealForm() {
     );
   };
 
-  const convertToDeal = (): Omit<Deal, 'id' | 'createdAt' | 'updatedAt'> => {
+  const convertToDeal = (): Omit<Deal, 'id' | 'created_at' | 'updated_at' | 'activities'> => {
     return {
       name: formData.name,
       client: formData.client,
       clientId: formData.clientId,
+      clientPhone: formData.clientPhone,
+      clientEmail: formData.clientEmail,
       value: formData.value,
-      currency: 'MAD',
+      currency: formData.currency,
       stage: formData.stage,
       probability: formData.probability,
       expectedCloseDate: formData.expectedCloseDate,
@@ -71,7 +81,7 @@ export function useDealForm() {
       tags: formData.tags,
       priority: formData.priority,
       notes: formData.notes,
-      activities: []
+      description: formData.description
     };
   };
 

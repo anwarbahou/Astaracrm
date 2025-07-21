@@ -18,11 +18,23 @@ export interface ClientProfile {
   stage?: string | null;
   status?: string | null;
   owner_id?: string | null;
+  subowner_id?: string | null;
+  owner_earnings?: number | null;
+  subowner_earnings?: number | null;
+  total_earnings?: number | null;
+  owner_percentage?: number | null;
+  subowner_percentage?: number | null;
   contacts_count?: number | null;
   total_deal_value?: number | null;
+  owner_suggested_percentage?: number | null;
+  subowner_suggested_percentage?: number | null;
+  owner_agreed?: boolean | null;
+  subowner_agreed?: boolean | null;
+  is_finalized?: boolean | null;
   created_at?: string | null;
   updated_at?: string | null;
   owner?: any;
+  subowner?: any;
   users?: any;
   company_name?: string;
   description?: string;
@@ -108,11 +120,20 @@ export class ClientService {
   // Get client profile with owner information
   static async getClientProfile(clientId: string): Promise<ClientProfile | null> {
     try {
+      console.log('🔍 Fetching client profile for ID:', clientId);
+      
       const { data, error } = await supabase
         .from('clients')
         .select(`
           *,
-          users (
+          owner:users!clients_owner_id_fkey (
+            id,
+            first_name,
+            last_name,
+            email,
+            avatar_url
+          ),
+          subowner:users!clients_subowner_id_fkey (
             id,
             first_name,
             last_name,
@@ -124,24 +145,27 @@ export class ClientService {
         .single();
 
       if (error) {
-        console.error('Error fetching client profile:', error);
+        console.error('❌ Error fetching client profile:', error);
         return null;
       }
 
       if (!data) {
-        console.warn('No client data returned for ID:', clientId);
+        console.warn('⚠️ No client data returned for ID:', clientId);
         return null;
       }
+
+      console.log('✅ Client data found:', data);
 
       // Transform the data to match expected structure
       const transformedData = {
         ...data,
-        owner: data.users || null
+        owner: data.owner || null
       };
 
+      console.log('🔄 Transformed data:', transformedData);
       return transformedData;
     } catch (error) {
-      console.error('Error in getClientProfile:', error);
+      console.error('❌ Error in getClientProfile:', error);
       return null;
     }
   }
@@ -396,6 +420,8 @@ export class ClientService {
         owner_id: client.owner_id || userId,
         contacts_count: client.contacts_count || 0, 
         total_deal_value: client.total_deal_value || 0,
+        owner_percentage: 100, // Default: owner gets 100% (30% of deal value) when no subowner
+        subowner_percentage: 0, // Default: no subowner
       }));
 
       const { error } = await supabase
@@ -469,7 +495,12 @@ export class ClientService {
       // Insert new client
       const { data, error } = await supabase
         .from('clients')
-        .insert({ ...clientInput, owner_id: clientInput.owner_id || userId })
+        .insert({ 
+          ...clientInput, 
+          owner_id: clientInput.owner_id || userId,
+          owner_percentage: 100, // Default: owner gets 100% (30% of deal value) when no subowner
+          subowner_percentage: 0, // Default: no subowner
+        })
         .select()
         .single();
       if (error) {

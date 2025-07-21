@@ -107,7 +107,7 @@ const TasksBoard: React.FC<TasksBoardProps> = ({ tasks }) => {
 
   return (
     <>
-      <div className="flex flex-nowrap overflow-x-auto gap-2 py-1">
+      <div className="flex gap-6 overflow-x-auto pb-6 min-h-[calc(100vh-350px)] animate-fade-in custom-scrollbar">
         {STATUS_COLUMNS.map(col => {
           const columnTasks = tasks.filter(task => task.status === col.key);
           const isDragOver = dragOverColumn === col.key;
@@ -116,8 +116,8 @@ const TasksBoard: React.FC<TasksBoardProps> = ({ tasks }) => {
             <Card
               key={col.key}
               className={cn(
-                "flex flex-col transition-all duration-200 crm-surface",
-                "bg-muted/40 rounded-lg p-1 min-h-[300px] min-w-[300px] border-0 shadow-none",
+                "min-w-[320px] max-w-[320px] flex flex-col transition-all duration-200 crm-surface",
+                "bg-muted/40 rounded-lg p-1 min-h-[300px] border-0 shadow-none",
                 isDragOver && "ring-2 ring-primary/50 bg-primary/5"
               )}
               onDragOver={(e) => handleDragOver(e, col.key)}
@@ -136,7 +136,7 @@ const TasksBoard: React.FC<TasksBoardProps> = ({ tasks }) => {
                 </div>
               </CardHeader>
               <CardContent className="flex-1 p-0 overflow-hidden flex flex-col">
-                <div className="space-y-3 h-[calc(100vh-400px)] overflow-y-auto px-3 pt-0 pb-3">
+                <div className="space-y-3 h-[calc(100vh-300px)] overflow-y-auto px-3 pt-0 pb-3 custom-scrollbar">
                   {columnTasks.length === 0 ? (
                     <div className={cn(
                       "text-center text-muted-foreground py-8 border-2 border-dashed border-muted-foreground/20 rounded-lg",

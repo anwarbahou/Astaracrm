@@ -42,7 +42,7 @@ export function ClientsCardView({ clients, onClientClick, onEditClient, onDelete
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'MAD',
       minimumFractionDigits: 0,
     }).format(amount);
   };

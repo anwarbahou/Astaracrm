@@ -44,6 +44,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Careers from "./pages/Careers";
 import Blogs from "./pages/Blogs";
+import Portfolio from "./pages/portfolio";
 
 // Keep login pages and landing page as regular imports since they're needed immediately
 import LoginPage from "./pages/LoginPage";
@@ -161,6 +162,7 @@ function AnimatedRoutes() {
       <Route path="/contact" element={<SimplePageLayout><Contact /></SimplePageLayout>} />
       <Route path="/careers" element={<SimplePageLayout><Careers /></SimplePageLayout>} />
       <Route path="/blogs" element={<SimplePageLayout><Blogs /></SimplePageLayout>} />
+      <Route path="/portfolio" element={<LazyWrapper><Portfolio /></LazyWrapper>} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SIgnupPage />} />
       <Route path="/dashboard">
@@ -253,7 +255,7 @@ const App = () => {
     : isRtl ? "mr-0 md:mr-64" : "ml-0 md:ml-64";
 
   // Hide sidebar and topnav on /login, /signup, landing, and new simple pages
-  const hideLayout = ["/login","/signup","/","/services","/projects","/about","/contact","/careers","/blogs"].includes(location.pathname);
+  const hideLayout = ["/login","/signup","/","/services","/projects","/about","/contact","/careers","/blogs","/portfolio"].includes(location.pathname);
 
   return (
     <QueryClientProvider client={queryClient}>

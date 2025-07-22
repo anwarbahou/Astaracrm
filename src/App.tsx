@@ -44,7 +44,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Careers from "./pages/Careers";
 import Blogs from "./pages/Blogs";
-import Portfolio from "./pages/portfolio";
+import Portfolio from "../src/pages/portfolio/portfolio";
 
 // Keep login pages and landing page as regular imports since they're needed immediately
 import LoginPage from "./pages/LoginPage";

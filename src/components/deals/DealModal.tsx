@@ -46,6 +46,8 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useUsersForSelection } from '@/hooks/useUsers';
 import { useClientsForSelection } from '@/hooks/useClients';
 import { useAuth } from '@/contexts/AuthContext';
+import { noteService } from '@/services/noteService';
+import type { Note } from '@/types/note';
 
 interface DealModalProps {
   deal: Deal | null;
@@ -63,12 +65,26 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
   
   // 2. All context hooks
   const { t } = useTranslation();
-  const { userProfile } = useAuth();
+  const { user, userProfile } = useAuth();
   
   // 3. All other hooks
   const { users: allUsers, isLoading: usersLoading, userRole, currentUser } = useUsersForSelection();
   const { clients: allClients, isLoading: clientsLoading } = useClientsForSelection();
   
+  // Notes for this deal
+  const [attachedNotes, setAttachedNotes] = useState<Note[]>([]);
+  useEffect(() => {
+    async function fetchNotes() {
+      if (deal && userProfile) {
+        const allNotes = await noteService.getNotes({ userId: userProfile.id, userRole: userProfile.role as any });
+        setAttachedNotes(allNotes.filter(n => n.relatedEntityType === 'deal' && n.relatedEntityId === deal.id));
+      } else {
+        setAttachedNotes([]);
+      }
+    }
+    fetchNotes();
+  }, [deal, userProfile, userRole]);
+
   // 4. Memoized values
   const availableClients = useMemo(() => {
     if (!allClients) return [];

@@ -34,9 +34,12 @@ interface NoteModalProps {
   onClose: () => void;
   onSave: (note: Partial<Note>) => void;
   note?: Note;
+  initialRelatedEntityType?: "deal" | "client" | "contact";
+  initialRelatedEntityId?: string;
+  initialRelatedEntityName?: string;
 }
 
-export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
+export function NoteModal({ isOpen, onClose, onSave, note, initialRelatedEntityType, initialRelatedEntityId, initialRelatedEntityName }: NoteModalProps) {
   const { t } = useTranslation();
   const { user, userProfile } = useAuth();
   const { toast } = useToast();
@@ -52,18 +55,31 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
   const [tags, setTags] = useState<string[]>(note?.tags || []);
   const [currentTag, setCurrentTag] = useState("");
   const [isPinned, setIsPinned] = useState(note?.isPinned || false);
-  const [relatedEntityType, setRelatedEntityType] = useState<Note["relatedEntityType"]>(note?.relatedEntityType || null);
-  const [relatedEntityId, setRelatedEntityId] = useState<string | null>(note?.relatedEntityId || null);
-  const [relatedEntityName, setRelatedEntityName] = useState<string | null>(null);
+  const [relatedEntityType, setRelatedEntityType] = useState<Note["relatedEntityType"]>(
+    note?.relatedEntityType || initialRelatedEntityType || null
+  );
+  const [relatedEntityId, setRelatedEntityId] = useState<string | null>(
+    note?.relatedEntityId || initialRelatedEntityId || null
+  );
+  const [relatedEntityName, setRelatedEntityName] = useState<string | null>(
+    initialRelatedEntityName || null
+  );
   const [priority, setPriority] = useState<Note["priority"]>(note?.priority || "medium");
   const [status, setStatus] = useState<Note["status"]>(note?.status || 'active');
 
   useEffect(() => {
     if (userProfile) {
       setContactsLoading(true);
+      function isAllowedRole(role: any): role is 'user' | 'admin' | 'manager' | 'team_leader' {
+        return role === 'user' || role === 'admin' || role === 'manager' || role === 'team_leader';
+      }
+      let allowedRole: 'user' | 'admin' | 'manager' | 'team_leader' = 'user';
+      if (typeof userProfile.role === 'string' && isAllowedRole(userProfile.role)) {
+        allowedRole = userProfile.role;
+      }
       contactsService.getContacts({ 
         userId: userProfile.id, 
-        userRole: (userProfile.role || 'user') as 'user' | 'admin' | 'manager'
+        userRole: allowedRole
       })
         .then(data => setContacts(data.map(c => ({ id: c.id, name: c.firstName + ' ' + c.lastName }))))
         .finally(() => setContactsLoading(false));
@@ -152,9 +168,9 @@ export function NoteModal({ isOpen, onClose, onSave, note }: NoteModalProps) {
     setTags([]);
     setCurrentTag("");
     setIsPinned(false);
-    setRelatedEntityType(null);
-    setRelatedEntityId(null);
-    setRelatedEntityName(null);
+    setRelatedEntityType(initialRelatedEntityType || null);
+    setRelatedEntityId(initialRelatedEntityId || null);
+    setRelatedEntityName(initialRelatedEntityName || null);
     setPriority("medium");
     setStatus('active');
     onClose();

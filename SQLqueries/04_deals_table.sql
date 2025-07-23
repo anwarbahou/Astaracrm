@@ -22,7 +22,10 @@ CREATE TABLE IF NOT EXISTS deals (
     description TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    owner_id UUID DEFAULT auth.uid() REFERENCES users(id) ON DELETE CASCADE
+    owner_id UUID DEFAULT auth.uid() REFERENCES users(id) ON DELETE CASCADE,
+    website TEXT, -- New: website for the deal
+    rating INTEGER CHECK (rating >= 0 AND rating <= 5), -- New: rating for the deal (0-5)
+    assignee_id UUID REFERENCES users(id) ON DELETE SET NULL -- New: assignee for the deal
 );
 
 -- Enable RLS
@@ -62,3 +65,4 @@ CREATE INDEX idx_deals_contact_id ON deals(contact_id);
 CREATE INDEX idx_deals_stage ON deals(stage);
 CREATE INDEX idx_deals_expected_close_date ON deals(expected_close_date);
 CREATE INDEX idx_deals_priority ON deals(priority);
+CREATE INDEX idx_deals_assignee_id ON deals(assignee_id);

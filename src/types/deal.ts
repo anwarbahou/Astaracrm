@@ -14,6 +14,11 @@ export interface Deal {
   owner: string;
   ownerId?: string;
   ownerAvatar?: string;
+  website?: string; // New: website for the deal
+  rating?: number; // New: rating for the deal (0-5)
+  assigneeId?: string; // New: assignee user id
+  assigneeName?: string; // New: assignee display name (optional, for UI)
+  assigneeAvatar?: string; // New: assignee avatar (optional, for UI)
   tags: string[];
   priority: 'Low' | 'Medium' | 'High';
   created_at: string;

@@ -107,6 +107,9 @@ export interface Database {
           description: string | null
           created_at: string
           updated_at: string | null
+          website: string | null
+          rating: number | null
+          assignee_id: string | null
         }
         Insert: {
           id?: string
@@ -126,6 +129,9 @@ export interface Database {
           description?: string | null
           created_at?: string
           updated_at?: string | null
+          website?: string | null
+          rating?: number | null
+          assignee_id?: string | null
         }
         Update: {
           id?: string
@@ -145,6 +151,9 @@ export interface Database {
           description?: string | null
           created_at?: string
           updated_at?: string | null
+          website?: string | null
+          rating?: number | null
+          assignee_id?: string | null
         }
       }
     }

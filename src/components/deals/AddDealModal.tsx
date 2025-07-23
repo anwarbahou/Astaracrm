@@ -52,7 +52,13 @@ export function AddDealModal({ open, onOpenChange, onSubmit }: AddDealModalProps
     }
 
     const newDeal = convertToDeal();
-    onSubmit(newDeal);
+    // Ensure website, rating, and assigneeId are included
+    onSubmit({
+      ...newDeal,
+      website: formData.website,
+      rating: formData.rating,
+      assigneeId: formData.assigneeId
+    });
     onOpenChange(false);
     resetForm();
     setShowValidationError(false);

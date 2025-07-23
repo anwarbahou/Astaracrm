@@ -116,6 +116,11 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
           }
         }
 
+        // For assigneeId, allow empty or undefined
+        let assigneeId = deal.assigneeId || deal.assignee_id || '';
+        if (typeof assigneeId !== 'string' || !assigneeId.match(/^([0-9a-fA-F-]{36})$/)) {
+          assigneeId = null;
+        }
         // Return normalized deal object
         return {
           name: deal.name,
@@ -132,7 +137,9 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
           owner: ownerName,
           ownerId: userProfile.id,
           currency: 'MAD', // Always use MAD
-          clientPhone: deal.clientPhone || deal.client_phone || null // Pass through phone number
+          clientPhone: deal.clientPhone || deal.client_phone || null, // Pass through phone number
+          rating: typeof deal.rating === 'number' ? deal.rating : undefined, // New
+          assigneeId: assigneeId,
         };
       });
     } catch (error) {
@@ -318,7 +325,9 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
     "probability": 70,
     "source": "Referral",
     "currency": "MAD",
-    "notes": "Key decision maker: Mr. El Amrani."
+    "notes": "Key decision maker: Mr. El Amrani.",
+    "rating": 5,
+    "assigneeId": "user-uuid"
   },
   {
     "name": "E-commerce Platform Upgrade",
@@ -333,7 +342,9 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
     "probability": 80,
     "source": "LinkedIn",
     "currency": "MAD",
-    "notes": "Client interested in Payzone and CMI integration."
+    "notes": "Client interested in Payzone and CMI integration.",
+    "rating": 4,
+    "assigneeId": "user-uuid"
   }
 ]`);
                 toast({

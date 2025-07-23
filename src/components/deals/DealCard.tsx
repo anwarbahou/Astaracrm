@@ -234,8 +234,24 @@ export function DealCard({
             ) : (
               <User className="h-4 w-4" />
             )}
+            {/* Assignee Avatar */}
+            {deal.assigneeAvatar ? (
+              <Avatar className="h-6 w-6">
+                <AvatarImage src={deal.assigneeAvatar} alt={deal.assigneeName} />
+                <AvatarFallback>{deal.assigneeName?.charAt(0)?.toUpperCase() || 'A'}</AvatarFallback>
+              </Avatar>
+            ) : deal.assigneeName ? (
+              <span>{deal.assigneeName}</span>
+            ) : null}
           </div>
-          
+          {/* Website */}
+          {deal.website && (
+            <a href={deal.website} target="_blank" rel="noopener noreferrer" className="underline text-blue-400">Website</a>
+          )}
+          {/* Rating */}
+          {typeof deal.rating === 'number' && (
+            <span>⭐ {deal.rating}</span>
+          )}
           {/* Due Date */}
           <div className="flex items-center gap-1">
             <Calendar className="h-3 w-3" />

@@ -21,6 +21,9 @@ interface DealDetailsFieldsProps {
     owner: string;
     ownerId: string;
     priority: 'Low' | 'Medium' | 'High';
+    website?: string;
+    rating?: number;
+    assigneeId?: string;
   };
   onUpdateField: (field: string, value: any) => void;
 }
@@ -154,6 +157,58 @@ export function DealDetailsFields({ formData, onUpdateField }: DealDetailsFields
             <SelectItem value="Low">{t('dashboard.priority.low')}</SelectItem>
             <SelectItem value="Medium">{t('dashboard.priority.medium')}</SelectItem>
             <SelectItem value="High">{t('dashboard.priority.high')}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Add website field */}
+      <div>
+        <Label htmlFor="website">Website</Label>
+        <Input
+          id="website"
+          type="text"
+          value={formData.website || ''}
+          onChange={e => onUpdateField('website', e.target.value)}
+          placeholder="https://example.com"
+        />
+      </div>
+      {/* Add rating field */}
+      <div>
+        <Label htmlFor="rating">Rating (0-5)</Label>
+        <Input
+          id="rating"
+          type="number"
+          min={0}
+          max={5}
+          value={formData.rating ?? ''}
+          onChange={e => onUpdateField('rating', Number(e.target.value))}
+          placeholder="0-5"
+        />
+      </div>
+      {/* Add assignee field */}
+      <div>
+        <Label htmlFor="assignee">Assignee</Label>
+        <Select
+          value={formData.assigneeId || ''}
+          onValueChange={val => onUpdateField('assigneeId', val)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select assignee" />
+          </SelectTrigger>
+          <SelectContent>
+            {users.map((user) => (
+              <SelectItem key={user.id} value={user.id}>
+                <div className="flex flex-col">
+                  <span className="font-medium">{user.name}</span>
+                  <span className="text-sm text-muted-foreground">{user.email} • {user.role}</span>
+                </div>
+              </SelectItem>
+            ))}
+            {users.length === 0 && !isLoadingUsers && (
+              <SelectItem value="no-users" disabled>
+                No users available
+              </SelectItem>
+            )}
           </SelectContent>
         </Select>
       </div>

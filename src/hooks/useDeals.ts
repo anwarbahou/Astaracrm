@@ -24,6 +24,11 @@ const transformDealFromDB = (dbDeal: any): Deal => ({
   owner: dbDeal.users ? `${dbDeal.users.first_name || ''} ${dbDeal.users.last_name || ''}`.trim() || dbDeal.users.email : 'Unknown Owner',
   ownerId: dbDeal.owner_id,
   ownerAvatar: dbDeal.users?.avatar_url,
+  website: dbDeal.website || '', // New
+  rating: dbDeal.rating ?? null, // New
+  assigneeId: dbDeal.assignee_id || null, // New
+  assigneeName: dbDeal.assignee_user ? `${dbDeal.assignee_user.first_name || ''} ${dbDeal.assignee_user.last_name || ''}`.trim() || dbDeal.assignee_user.email : '', // New, if joined
+  assigneeAvatar: dbDeal.assignee_user?.avatar_url || '', // New, if joined
   tags: (dbDeal.tags || []).filter((tag: string) => tag !== '__lead_stage__'),
   priority: capitalizeFirst(dbDeal.priority) as 'Low' | 'Medium' | 'High',
   created_at: dbDeal.created_at?.split('T')[0] || '',
@@ -62,7 +67,10 @@ const transformDealToDB = (deal: Partial<Deal>) => {
     tags: tags,
     priority: deal.priority?.toLowerCase() as 'low' | 'medium' | 'high',
     notes: deal.notes,
-    description: deal.notes // Use notes as description for now
+    description: deal.notes, // Use notes as description for now
+    website: deal.website || null, // New
+    rating: deal.rating ?? null, // New
+    assignee_id: deal.assigneeId || null, // New
   };
 };
 
@@ -143,6 +151,13 @@ export function useDeals() {
             last_name,
             email,
             avatar_url
+          ),
+          assignee_user:users!deals_assignee_id_fkey (
+            id,
+            first_name,
+            last_name,
+            email,
+            avatar_url
           )
         `)
         .order('created_at', { ascending: false });
@@ -188,7 +203,10 @@ export function useDeals() {
         tags: dealData.tags || [],
         priority: 'medium' as 'medium',
         notes: dealData.notes || '',
-        description: dealData.notes || ''
+        description: dealData.notes || '',
+        website: dealData.website || null, // New
+        rating: dealData.rating ?? null, // New
+        assignee_id: dealData.assigneeId || null, // New
       };
       
       console.log('Simplified deal data:', simpleDealData);

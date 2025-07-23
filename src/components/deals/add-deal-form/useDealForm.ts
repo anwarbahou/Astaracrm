@@ -19,6 +19,9 @@ interface DealFormData {
   tags: string[];
   notes: string;
   description?: string;
+  website?: string; // New
+  rating?: number; // New
+  assigneeId?: string; // New
 }
 
 const initialFormData: DealFormData = {
@@ -38,7 +41,10 @@ const initialFormData: DealFormData = {
   priority: 'Medium',
   tags: [],
   notes: '',
-  description: ''
+  description: '',
+  website: '', // New
+  rating: undefined, // New
+  assigneeId: '', // New
 };
 
 export function useDealForm() {
@@ -81,7 +87,10 @@ export function useDealForm() {
       tags: formData.tags,
       priority: formData.priority,
       notes: formData.notes,
-      description: formData.description
+      description: formData.description,
+      website: formData.website, // New
+      rating: formData.rating, // New
+      assigneeId: formData.assigneeId, // New
     };
   };
 

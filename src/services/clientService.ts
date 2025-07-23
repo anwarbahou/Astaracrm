@@ -60,7 +60,7 @@ export interface ClientInput {
 
 export interface UserContext {
   userId: string;
-  userRole: 'admin' | 'manager' | 'user' | null;
+  userRole: 'admin' | 'manager' | 'team_leader' | 'user' | null;
 }
 
 export interface Contact {

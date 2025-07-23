@@ -12,7 +12,7 @@ import { createAvatar } from '@dicebear/core';
 import * as micah from '@dicebear/micah';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-type UserRole = 'admin' | 'manager' | 'user';
+type UserRole = 'admin' | 'manager' | 'team_leader' | 'user';
 
 interface AddUserModalProps {
   open: boolean;
@@ -70,8 +70,6 @@ export function AddUserModal({ open, onOpenChange, onUserCreated }: AddUserModal
       if (supabase.auth.getSession) {
         const sessionResult = await supabase.auth.getSession();
         accessToken = sessionResult.data.session?.access_token;
-      } else if (supabase.auth.session) {
-        accessToken = supabase.auth.session()?.access_token;
       }
       // Use fetch directly for more control over error handling
       const res = await fetch('https://purgvbzgbdinporjahra.functions.supabase.co/create-user', {
@@ -218,6 +216,7 @@ export function AddUserModal({ open, onOpenChange, onUserCreated }: AddUserModal
                   <SelectItem value="user">User</SelectItem>
                   <SelectItem value="manager">Manager</SelectItem>
                   <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="team_leader">Team Leader</SelectItem>
                 </SelectContent>
               </Select>
             </div>

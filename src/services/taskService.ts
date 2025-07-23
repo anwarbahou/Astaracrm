@@ -49,7 +49,7 @@ export class TaskServiceError extends Error {
 
 export interface TaskServiceOptions {
   userId: string;
-  userRole: 'admin' | 'manager' | 'user';
+  userRole: 'admin' | 'manager' | 'team_leader' | 'user';
 }
 
 class TaskService {

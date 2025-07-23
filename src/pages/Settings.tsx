@@ -326,4 +326,4 @@ function Settings() {
   );
 }
 
-export default withPageTitle(Settings, 'Settings');
+export default withPageTitle(Settings, 'settings');

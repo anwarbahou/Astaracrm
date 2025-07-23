@@ -29,7 +29,7 @@
       },
       "userMenu": {
         "name": "John Doe",
-        "email": "john@wolfhunt.com",
+        "email": "john@skultix.com",
         "profile": "Profil",
         "settings": "Paramètres",
         "signOut": "Se déconnecter",
@@ -48,10 +48,11 @@
         "users": "Gestion des utilisateurs",
         "workflows": "Workflows",
         "activityLogs": "Journaux d'activité et piste d'audit",
-        "settings": "Paramètres",
+        "settings": "Paramètres & Préférences",
         "aiLeads": "Intelligence des leads par IA",
-        "fallback": "WOLFHUNT CRM",
-        "messaging": "Centre de Messagerie"
+        "fallback": "Skultix",
+        "messaging": "Centre de Messagerie",
+        "teamLeader": "Tableau Chef d'équipe"
       },
       "pageDescription": {
         "dashboard": "Aperçu des performances de votre CRM",
@@ -64,7 +65,8 @@
         "notes": "Capturez les informations importantes",
         "activityLogs": "Suivez toutes les activités du système et les actions des utilisateurs.",
         "aiLeads": "Génération de leads MENA et Europe avec IA avancée",
-        "messaging": "Chattez et communiquez avec votre équipe et vos clients"
+        "messaging": "Chattez et communiquez avec votre équipe et vos clients",
+        "teamLeader": "Gérez votre équipe et supervisez les affaires."
       }
     },
     "languageSwitcher": {

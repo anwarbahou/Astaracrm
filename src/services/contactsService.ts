@@ -23,7 +23,7 @@ export interface ContactInput {
 
 export interface ContactsServiceOptions {
   userId: string;
-  userRole: 'admin' | 'manager' | 'user' | null;
+  userRole: 'admin' | 'manager' | 'team_leader' | 'user' | null;
 }
 
 // Convert database contact to UI contact format

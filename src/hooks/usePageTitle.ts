@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const APP_NAME = 'WOLFHUNT CRM';
+const APP_NAME = 'Skultix';
 
 export function usePageTitle(pageTitle?: string) {
   const { t } = useTranslation();

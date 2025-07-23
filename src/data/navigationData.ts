@@ -16,7 +16,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 
-type UserRole = 'admin' | 'manager' | 'user';
+type UserRole = 'admin' | 'manager' | 'team_leader' | 'user';
 
 interface NavigationItem {
   id: string;

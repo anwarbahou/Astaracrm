@@ -19,11 +19,13 @@ import { AddContactModal } from "@/components/modals/AddContactModal";
 import { format, isToday, isTomorrow } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
 import { arSA } from 'date-fns/locale/ar-SA';
+import { useDeals } from '@/hooks/useDeals';
 
 function Dashboard() {
   const { t, i18n } = useTranslation();
   const [addClientOpen, setAddClientOpen] = useState(false);
   const [addContactOpen, setAddContactOpen] = useState(false);
+  const { deals, isLoading: dealsLoading } = useDeals();
 
   // Mock data for demo purposes
   const stats = [
@@ -55,13 +57,6 @@ function Dashboard() {
       trend: "up",
       description: t("dashboard.vsYesterday")
     }
-  ];
-
-  const recentDeals = [
-    { id: 1, client: "Acme Corp", value: "125,000 MAD", status: t("dashboard.status.negotiation"), probability: 75 },
-    { id: 2, client: "Tech Solutions", value: "87,500 MAD", status: t("dashboard.status.proposal"), probability: 60 },
-    { id: 3, client: "Global Industries", value: "245,000 MAD", status: t("dashboard.status.qualified"), probability: 90 },
-    { id: 4, client: "StartupXYZ", value: "52,000 MAD", status: t("dashboard.status.discovery"), probability: 40 }
   ];
 
   const taskDate = new Date();
@@ -235,20 +230,24 @@ function Dashboard() {
               </Button>
             </CardHeader>
             <CardContent className="space-y-2 sm:space-y-3 md:space-y-4">
-              {recentDeals.map((deal) => (
-                <div key={deal.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-2 sm:p-3 rounded-lg border border-border gap-2 sm:gap-3">
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium truncate text-sm sm:text-base">{deal.client}</p>
-                    <p className="text-xs sm:text-sm text-muted-foreground">{deal.value}</p>
+              {dealsLoading ? (
+                <div className="text-center text-muted-foreground py-4">{t('loading')}</div>
+              ) : (
+                deals.slice(0, 4).map((deal) => (
+                  <div key={deal.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-2 sm:p-3 rounded-lg border border-border gap-2 sm:gap-3">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium truncate text-sm sm:text-base">{deal.client}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground">{deal.value} {deal.currency}</p>
+                    </div>
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                      <Badge className={`${getStatusColor(deal.stage)} text-xs`} variant="secondary">
+                        {deal.stage}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground">{deal.probability}%</span>
+                    </div>
                   </div>
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                    <Badge className={`${getStatusColor(deal.status)} text-xs`} variant="secondary">
-                      {deal.status}
-                    </Badge>
-                    <span className="text-xs text-muted-foreground">{deal.probability}%</span>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </CardContent>
           </Card>
 

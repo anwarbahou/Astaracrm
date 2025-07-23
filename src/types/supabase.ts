@@ -797,7 +797,7 @@ export type Database = {
         | "negotiation"
         | "won"
         | "lost"
-      user_role: "admin" | "manager" | "user"
+      user_role: "admin" | "manager" | "team_leader" | "user"
       user_status: "active" | "inactive"
       visibility: "public" | "private"
     }

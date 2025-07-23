@@ -16,7 +16,7 @@ export interface Database {
           last_name: string | null
           email: string
           avatar_url: string | null
-          role: 'admin' | 'manager' | 'user'
+          role: 'admin' | 'manager' | 'team_leader' | 'user'
           created_at: string
           updated_at: string | null
         }
@@ -26,7 +26,7 @@ export interface Database {
           last_name?: string | null
           email: string
           avatar_url?: string | null
-          role?: 'admin' | 'manager' | 'user'
+          role?: 'admin' | 'manager' | 'team_leader' | 'user'
           created_at?: string
           updated_at?: string | null
         }
@@ -36,7 +36,7 @@ export interface Database {
           last_name?: string | null
           email?: string
           avatar_url?: string | null
-          role?: 'admin' | 'manager' | 'user'
+          role?: 'admin' | 'manager' | 'team_leader' | 'user'
           created_at?: string
           updated_at?: string | null
         }

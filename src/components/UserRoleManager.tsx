@@ -35,7 +35,7 @@ import { Card } from '@/components/ui/card';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter, SheetClose } from '@/components/ui/sheet';
 import { Checkbox } from '@/components/ui/checkbox';
 
-type UserRole = 'admin' | 'manager' | 'user';
+type UserRole = 'admin' | 'manager' | 'team_leader' | 'user';
 type UserProfile = Database['public']['Tables']['users']['Row'];
 
 interface UserRoleManagerProps {
@@ -48,8 +48,9 @@ const getRoleIcon = (role: UserRole | null) => {
       return <Crown className="h-4 w-4 text-yellow-500" />;
     case 'manager':
       return <Shield className="h-4 w-4 text-blue-500" />;
+    case 'team_leader':
+      return <Shield className="h-4 w-4 text-green-500" />;
     case 'user':
-      return <User className="h-4 w-4 text-gray-500" />;
     default:
       return <User className="h-4 w-4 text-gray-500" />;
   }
@@ -61,8 +62,9 @@ const getRoleColor = (role: UserRole | null) => {
       return 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200';
     case 'manager':
       return 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200';
+    case 'team_leader':
+      return 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200';
     case 'user':
-      return 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200';
     default:
       return 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200';
   }
@@ -572,6 +574,7 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({ searchQuery = 
                           <SelectItem value="user">User</SelectItem>
                           <SelectItem value="manager">Manager</SelectItem>
                           <SelectItem value="admin">Admin</SelectItem>
+                          <SelectItem value="team_leader">Team Leader</SelectItem>
                         </SelectContent>
                       </Select>
                       {updatingUserId === user.id && (
@@ -676,6 +679,7 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({ searchQuery = 
                     <SelectItem value="user">User</SelectItem>
                     <SelectItem value="manager">Manager</SelectItem>
                     <SelectItem value="admin">Admin</SelectItem>
+                    <SelectItem value="team_leader">Team Leader</SelectItem>
                   </SelectContent>
                 </Select>
                 {updatingUserId === user.id && (
@@ -789,6 +793,7 @@ export const UserRoleManager: React.FC<UserRoleManagerProps> = ({ searchQuery = 
                   <SelectItem value="user">User</SelectItem>
                   <SelectItem value="manager">Manager</SelectItem>
                   <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="team_leader">Team Leader</SelectItem>
                 </SelectContent>
               </Select>
             </div>

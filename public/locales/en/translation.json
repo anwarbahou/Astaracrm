@@ -29,7 +29,7 @@
       },
       "userMenu": {
         "name": "John Doe",
-        "email": "john@wolfhunt.com",
+        "email": "john@skultix.com",
         "profile": "Profile",
         "settings": "Settings",
         "signOut": "Sign Out",
@@ -42,17 +42,18 @@
         "contacts": "Contact Management",
         "deals": "Sales Pipeline",
         "tasks": "Task Management",
-        "calendar": "Calendar",
+        "calendar": "Calendar & Scheduling",
         "email": "Email Center",
-        "notes": "Notes",
+        "notes": "Notes & Documentation",
         "reports": "Reports & Analytics",
         "users": "User Management",
-        "workflows": "Workflows",
-        "activityLogs": "Activity Logs and Audit Trail",
-        "settings": "Settings",
+        "workflows": "Workflow Automation",
+        "activityLogs": "Activity Logs & Audit Trail",
+        "settings": "Settings & Preferences",
         "aiLeads": "AI Lead Intelligence",
-        "fallback": "WOLFHUNT CRM",
-        "messaging": "Messaging Center"
+        "fallback": "Skultix",
+        "messaging": "Messaging Center",
+        "teamLeader": "Team Leader Dashboard"
       },
       "pageDescription": {
         "dashboard": "Overview of your CRM performance",
@@ -65,7 +66,8 @@
         "notes": "Capture important information",
         "activityLogs": "Track all system activities and user actions.",
         "aiLeads": "Advanced AI lead generation for MENA and Europe",
-        "messaging": "Chat and communicate with your team and clients"
+        "messaging": "Chat and communicate with your team and clients",
+        "teamLeader": "Manage your team and oversee deals."
       }
     },
     "languageSwitcher": {

@@ -19,7 +19,7 @@ type NoteRow = {
 
 export interface NoteServiceOptions {
   userId: string;
-  userRole: 'user' | 'admin' | 'manager';
+  userRole: 'user' | 'admin' | 'manager' | 'team_leader';
 }
 
 // Convert database note to UI note format

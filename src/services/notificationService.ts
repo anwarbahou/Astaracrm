@@ -33,7 +33,7 @@ export interface NotificationInput {
 
 export interface UserContext {
   userId: string;
-  userRole: 'admin' | 'manager' | 'user';
+  userRole: 'admin' | 'manager' | 'team_leader' | 'user';
 }
 
 class NotificationService {

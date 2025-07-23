@@ -131,7 +131,8 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
           notes: deal.notes || '',
           owner: ownerName,
           ownerId: userProfile.id,
-          currency: deal.currency || 'MAD'
+          currency: 'MAD', // Always use MAD
+          clientPhone: deal.clientPhone || deal.client_phone || null // Pass through phone number
         };
       });
     } catch (error) {
@@ -269,6 +270,9 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
           </TabsContent>
 
           <TabsContent value="paste" className="space-y-4">
+            <div className="text-sm text-muted-foreground">
+              Please paste a <b>JSON array of deal objects</b> below. Example:
+            </div>
             <Textarea
               value={jsonInput}
               onChange={(e) => setJsonInput(e.target.value)}
@@ -278,10 +282,20 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
     "value": 15000,
     "stage": "proposal",
     "priority": "high",
-    "client_name": "Client Alpha",
-    "expected_close_date": "2024-12-31",
+    "client": "Client Alpha",
+    "expectedCloseDate": "2024-12-31",
     "tags": ["SaaS", "New Business"],
     "description": "Full redesign of client's existing website with new branding and features."
+  },
+  {
+    "name": "Mobile App Development",
+    "value": 25000,
+    "stage": "negotiation",
+    "priority": "medium",
+    "client": "Client Beta",
+    "expectedCloseDate": "2024-11-15",
+    "tags": ["Mobile", "App"],
+    "description": "Developing a cross-platform mobile app."
   }
 ]`}
               className="font-mono min-h-[300px]"
@@ -292,23 +306,43 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
               onClick={() => {
                 navigator.clipboard.writeText(`[
   {
-    "name": "Website Redesign",
-    "value": 15000,
+    "name": "Casablanca CRM Rollout",
+    "value": 120000,
     "stage": "proposal",
     "priority": "high",
-    "client_name": "Client Alpha",
-    "expected_close_date": "2024-12-31",
-    "tags": ["SaaS", "New Business"],
-    "description": "Full redesign of client's existing website with new branding and features."
+    "client": "Société Atlas",
+    "clientPhone": "+212 661-234567",
+    "expectedCloseDate": "2024-09-15",
+    "tags": ["CRM", "Morocco", "Enterprise"],
+    "description": "Deploying CRM system for sales and support teams in Casablanca.",
+    "probability": 70,
+    "source": "Referral",
+    "currency": "MAD",
+    "notes": "Key decision maker: Mr. El Amrani."
+  },
+  {
+    "name": "E-commerce Platform Upgrade",
+    "value": 85000,
+    "stage": "negotiation",
+    "priority": "medium",
+    "client": "MarocShop SARL",
+    "clientPhone": "+212 662-987654",
+    "expectedCloseDate": "2024-10-10",
+    "tags": ["E-commerce", "Upgrade", "Morocco"],
+    "description": "Upgrade Magento store and integrate local payment gateways.",
+    "probability": 80,
+    "source": "LinkedIn",
+    "currency": "MAD",
+    "notes": "Client interested in Payzone and CMI integration."
   }
 ]`);
                 toast({
                   title: "Copied to clipboard",
-                  description: "JSON object format copied successfully.",
+                  description: "Moroccan JSON array format copied successfully.",
                 });
               }}
             >
-              Copy JSON Object
+              Copy Moroccan JSON Example
             </Button>
           </TabsContent>
         </Tabs>

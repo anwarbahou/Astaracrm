@@ -11,8 +11,15 @@ import {
   X,
   AlertCircle,
   Trash2,
-  ArrowRight
+  ArrowRight,
+  Calendar,
+  User,
+  DollarSign,
+  Tag,
+  Phone,
+  Mail
 } from "lucide-react";
+import { FaWhatsapp } from 'react-icons/fa';
 import { Deal, DealFilters, DealStage } from '@/types/deal';
 import { mockDeals, pipelineStages } from '@/data/mockDeals';
 import { PipelineBoard } from '@/components/deals/PipelineBoard';
@@ -32,6 +39,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { withPageTitle } from '@/components/withPageTitle';
 import { useLocation } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetClose } from '@/components/ui/sheet';
 
 function Deals() {
   const { t } = useTranslation();
@@ -53,6 +61,8 @@ function Deals() {
     search: ''
   });
   const [users, setUsers] = useState<any[]>([]);
+  const [previewDeal, setPreviewDeal] = useState<Deal | null>(null);
+  const [previewModalOpen, setPreviewModalOpen] = useState(false);
   
   const { toast } = useToast();
   const location = useLocation();
@@ -110,6 +120,11 @@ function Deals() {
       setSelectedDeal(deal);
       setDealModalOpen(true);
     }
+  };
+
+  const handlePreviewDeal = (deal: Deal) => {
+    setPreviewDeal(deal);
+    setPreviewModalOpen(true);
   };
 
   const handleDealSelect = (deal: Deal) => {
@@ -522,16 +537,17 @@ function Deals() {
         <PipelineBoard
           deals={filteredDeals}
           stages={pipelineStages}
-          onDealClick={handleDealClick}
+          onDealClick={handlePreviewDeal} // Open preview on card click
           onDealMove={handleDealMove}
           onAddDeal={handleOpenAddDeal}
           onDealSelect={handleDealSelect}
           selectedDeals={selectedDeals}
+          onBulkDelete={handleDeleteAllDeals}
         />
       ) : (
         <DealsListTable
           deals={filteredDeals}
-          onDealClick={handleDealClick}
+          onDealClick={handlePreviewDeal} // Open preview on table row click
           onDealSelect={handleDealSelect}
           selectedDeals={selectedDeals}
         />
@@ -557,6 +573,103 @@ function Deals() {
         onOpenChange={setImportModalOpen}
         onImport={handleImportDeals}
       />
+
+      {/* Deal Preview Side Modal */}
+      <Sheet open={previewModalOpen} onOpenChange={setPreviewModalOpen}>
+        <SheetContent side="right" className="h-full w-full max-w-full sm:max-w-[90vw] md:max-w-[600px] lg:max-w-[700px] xl:max-w-[800px] border-l shadow-2xl bg-background/95 backdrop-blur-sm p-0 flex flex-col">
+          <SheetHeader className="px-4 sm:px-6 py-4 border-b">
+            <SheetTitle className="text-lg sm:text-2xl font-bold truncate flex items-center gap-2">
+              {previewDeal?.name}
+              <Badge variant="secondary" className="ml-2 text-xs">{previewDeal?.stage}</Badge>
+              <Badge variant="outline" className="ml-2 text-xs">{previewDeal?.priority}</Badge>
+            </SheetTitle>
+            <SheetDescription className="flex flex-wrap items-center gap-2 mt-2">
+              <span className="text-muted-foreground text-xs">Created {previewDeal?.created_at && new Date(previewDeal.created_at).toLocaleDateString()}</span>
+            </SheetDescription>
+          </SheetHeader>
+          <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-6 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              <div className="space-y-2">
+                <div className="font-semibold text-sm text-muted-foreground">Client</div>
+                <div className="flex items-center gap-2 text-lg font-medium">
+                  <User className="h-4 w-4 text-muted-foreground" />
+                  {previewDeal?.client}
+                </div>
+                {previewDeal?.clientPhone && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Phone className="h-4 w-4" />
+                    {previewDeal.clientPhone}
+                    <a
+                      href={`https://wa.me/${previewDeal.clientPhone.replace(/\D/g, '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Chat on WhatsApp"
+                      className="ml-1 text-green-500 hover:text-green-600"
+                    >
+                      <FaWhatsapp className="inline h-5 w-5 align-middle" />
+                    </a>
+                  </div>
+                )}
+                {previewDeal?.clientEmail && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Mail className="h-4 w-4" />
+                    {previewDeal.clientEmail}
+                  </div>
+                )}
+              </div>
+              <div className="space-y-2">
+                <div className="font-semibold text-sm text-muted-foreground">Owner</div>
+                <div className="flex items-center gap-2 text-lg font-medium">
+                  <User className="h-4 w-4 text-muted-foreground" />
+                  {previewDeal?.owner}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="font-semibold text-sm text-muted-foreground">Value</div>
+                <div className="flex items-center gap-2 text-lg font-bold text-green-600">
+                  <span className="font-bold text-green-600 text-lg">د.م.</span>
+                  {previewDeal?.value?.toLocaleString()} MAD
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="font-semibold text-sm text-muted-foreground">Probability</div>
+                <div className="flex items-center gap-2 text-lg font-medium">
+                  {previewDeal?.probability}%
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="font-semibold text-sm text-muted-foreground">Expected Close Date</div>
+                <div className="flex items-center gap-2 text-lg font-medium">
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  {previewDeal?.expectedCloseDate}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="font-semibold text-sm text-muted-foreground">Tags</div>
+                <div className="flex flex-wrap gap-2">
+                  {previewDeal?.tags?.map((tag) => (
+                    <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="space-y-4 mt-6">
+              <div>
+                <div className="font-semibold text-sm text-muted-foreground mb-1">Description</div>
+                <div className="bg-muted rounded-md p-3 text-sm whitespace-pre-line">
+                  {previewDeal?.description || <span className="text-muted-foreground">No description provided.</span>}
+                </div>
+              </div>
+              <div>
+                <div className="font-semibold text-sm text-muted-foreground mb-1">Notes</div>
+                <div className="bg-muted rounded-md p-3 text-sm whitespace-pre-line">
+                  {previewDeal?.notes || <span className="text-muted-foreground">No notes provided.</span>}
+                </div>
+              </div>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

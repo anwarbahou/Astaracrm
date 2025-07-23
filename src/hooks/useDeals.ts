@@ -177,6 +177,7 @@ export function useDeals() {
         name: dealData.name || 'Untitled Deal',
         client_name: dealData.client || 'Unknown Client',
         client_id: dealData.clientId || null,
+        client_phone: dealData.clientPhone || (dealData as any)?.client_phone || null, // Support both camelCase and snake_case
         value: Number(dealData.value) || 0,
         currency: dealData.currency || 'MAD',
         stage: 'prospect' as 'prospect',

@@ -359,7 +359,7 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
             {t('common.cancel')}
           </Button>
           <Button onClick={handleImport} disabled={!jsonInput.trim() || !!error}>
-            {t('common.import')}
+            {t('deals.import.cta', 'Import Deals')}
           </Button>
         </div>
       </DialogContent>

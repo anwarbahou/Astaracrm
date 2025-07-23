@@ -292,7 +292,8 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
     "client": "Client Alpha",
     "expectedCloseDate": "2024-12-31",
     "tags": ["SaaS", "New Business"],
-    "description": "Full redesign of client's existing website with new branding and features."
+    "description": "Full redesign of client's existing website with new branding and features.",
+    "rating": 5
   },
   {
     "name": "Mobile App Development",
@@ -302,7 +303,8 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
     "client": "Client Beta",
     "expectedCloseDate": "2024-11-15",
     "tags": ["Mobile", "App"],
-    "description": "Developing a cross-platform mobile app."
+    "description": "Developing a cross-platform mobile app.",
+    "rating": 4
   }
 ]`}
               className="font-mono min-h-[300px]"

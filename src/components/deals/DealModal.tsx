@@ -355,6 +355,58 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
                       className="h-10"
                     />
             </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="assignee" className="text-sm font-medium">Assignee</Label>
+                    <Select
+                      value={editedDeal.assigneeId || ''}
+                      onValueChange={v => {
+                        const selectedUser = allUsers.find(u => u.id === v);
+                        updateField('assigneeId', v);
+                        updateField('assigneeName', selectedUser ? (selectedUser.name || selectedUser.email || '') : '');
+                      }}
+                      disabled={!isEditing || usersLoading}
+                    >
+                      <SelectTrigger className="h-10">
+                        <SelectValue placeholder="Select assignee" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {usersLoading ? (
+                          <SelectItem value="loading" disabled>Loading users...</SelectItem>
+                        ) : allUsers.length === 0 ? (
+                          <SelectItem value="none" disabled>No users available</SelectItem>
+                        ) : (
+                          allUsers.map((user) => (
+                            <SelectItem key={user.id} value={user.id}>{user.name || user.email}</SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="website" className="text-sm font-medium">Website</Label>
+                    <Input
+                      id="website"
+                      value={editedDeal.website || ''}
+                      onChange={e => updateField('website', e.target.value)}
+                      disabled={!isEditing}
+                      className="h-10"
+                      placeholder="https://example.com"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="rating" className="text-sm font-medium">Rating</Label>
+                    <Input
+                      id="rating"
+                      type="number"
+                      min={1}
+                      max={5}
+                      value={editedDeal.rating ?? ''}
+                      onChange={e => updateField('rating', e.target.value === '' ? undefined : Math.max(1, Math.min(5, Math.round(Number(e.target.value))))) }
+                      disabled={!isEditing}
+                      className="h-10"
+                      placeholder="1-5"
+                    />
+                  </div>
                 </div>
               </TabsContent>
 
@@ -448,34 +500,6 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
                       className="min-h-[120px] resize-none"
                     />
                   </div>
-
-                  {/* Website, Rating, and Assignee fields in preview mode only */}
-                  {!isEditing && (
-                    <div className="space-y-2 pt-4 border-t mt-2">
-                      <div>
-                        <Label className="text-sm font-medium">Website</Label>
-                        <div className="h-10 flex items-center px-2 border rounded bg-muted/50">
-                          {editedDeal.website ? (
-                            <a href={editedDeal.website} target="_blank" rel="noopener noreferrer" className="underline text-blue-400">{editedDeal.website}</a>
-                          ) : (
-                            <span>-</span>
-                          )}
-                        </div>
-                      </div>
-                      <div>
-                        <Label className="text-sm font-medium">Rating</Label>
-                        <div className="h-10 flex items-center px-2 border rounded bg-muted/50">
-                          <span>{(editedDeal.rating === 0 || typeof editedDeal.rating === 'number') ? `⭐ ${editedDeal.rating}` : '-'}</span>
-                        </div>
-                      </div>
-                      <div>
-                        <Label className="text-sm font-medium">Assignee</Label>
-                        <div className="h-10 flex items-center px-2 border rounded bg-muted/50">
-                          <span>{editedDeal.assigneeName !== undefined && editedDeal.assigneeName !== null && editedDeal.assigneeName !== '' ? editedDeal.assigneeName : '-'}</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
                 </div>
               </TabsContent>
             </ScrollArea>

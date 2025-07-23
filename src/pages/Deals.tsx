@@ -314,6 +314,12 @@ function Deals() {
     setSelectedDeals([]);
   };
 
+  // Add this handler
+  const handleDealEdit = (deal: Deal) => {
+    setSelectedDeal(deal);
+    setDealModalOpen(true);
+  };
+
   // Fetch users for avatar display
   useEffect(() => {
     const fetchUsers = async () => {
@@ -543,6 +549,7 @@ function Deals() {
           onDealSelect={handleDealSelect}
           selectedDeals={selectedDeals}
           onBulkDelete={handleDeleteAllDeals}
+          onEdit={handleDealEdit} // Pass the edit handler
         />
       ) : (
         <DealsListTable

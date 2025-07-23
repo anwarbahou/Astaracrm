@@ -29,6 +29,7 @@ interface PipelineColumnProps {
   onDealSelect?: (deal: Deal, event: React.MouseEvent) => void;
   selectedDeals?: string[];
   draggedDealsCount?: number;
+  onEdit: (deal: Deal) => void;
 }
 
 export function PipelineColumn({
@@ -45,7 +46,8 @@ export function PipelineColumn({
   onBulkAction,
   onDealSelect,
   selectedDeals = [],
-  draggedDealsCount
+  draggedDealsCount,
+  onEdit
 }: PipelineColumnProps) {
   const { t } = useTranslation();
   const totalValue = deals.reduce((sum, deal) => sum + deal.value, 0);
@@ -209,7 +211,7 @@ export function PipelineColumn({
                   onClick={onDealClick}
                   onDragStart={onDragStart}
                   onDragEnd={onDragEnd}
-                  onEdit={onDealClick}
+                  onEdit={onEdit}
                   onSelect={onDealSelect ? (d) => onDealSelect(d, {} as React.MouseEvent) : undefined}
                   isSelected={selectedDeals.includes(deal.id)}
                 />

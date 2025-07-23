@@ -448,6 +448,34 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
                       className="min-h-[120px] resize-none"
                     />
                   </div>
+
+                  {/* Website, Rating, and Assignee fields in preview mode only */}
+                  {!isEditing && (
+                    <div className="space-y-2 pt-4 border-t mt-2">
+                      <div>
+                        <Label className="text-sm font-medium">Website</Label>
+                        <div className="h-10 flex items-center px-2 border rounded bg-muted/50">
+                          {editedDeal.website ? (
+                            <a href={editedDeal.website} target="_blank" rel="noopener noreferrer" className="underline text-blue-400">{editedDeal.website}</a>
+                          ) : (
+                            <span>-</span>
+                          )}
+                        </div>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium">Rating</Label>
+                        <div className="h-10 flex items-center px-2 border rounded bg-muted/50">
+                          <span>{(editedDeal.rating === 0 || typeof editedDeal.rating === 'number') ? `⭐ ${editedDeal.rating}` : '-'}</span>
+                        </div>
+                      </div>
+                      <div>
+                        <Label className="text-sm font-medium">Assignee</Label>
+                        <div className="h-10 flex items-center px-2 border rounded bg-muted/50">
+                          <span>{editedDeal.assigneeName !== undefined && editedDeal.assigneeName !== null && editedDeal.assigneeName !== '' ? editedDeal.assigneeName : '-'}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </TabsContent>
             </ScrollArea>

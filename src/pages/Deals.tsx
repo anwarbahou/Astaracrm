@@ -652,6 +652,29 @@ function Deals() {
                   ))}
                 </div>
               </div>
+              <div className="space-y-2">
+                <div className="font-semibold text-sm text-muted-foreground">Website</div>
+                <div className="flex items-center gap-2 text-lg font-medium">
+                  {previewDeal?.website ? (
+                    <a href={previewDeal.website} target="_blank" rel="noopener noreferrer" className="underline text-blue-400">{previewDeal.website}</a>
+                  ) : (
+                    <span>-</span>
+                  )}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="font-semibold text-sm text-muted-foreground">Rating</div>
+                <div className="flex items-center gap-2 text-lg font-medium">
+                  <span>⭐</span>
+                  <span>{typeof previewDeal?.rating === 'number' ? previewDeal.rating : '-'}</span>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="font-semibold text-sm text-muted-foreground">Assignee</div>
+                <div className="flex items-center gap-2 text-lg font-medium">
+                  {previewDeal?.assigneeName ? previewDeal.assigneeName : <span>-</span>}
+                </div>
+              </div>
             </div>
             <div className="space-y-4 mt-6">
               <div>

@@ -234,7 +234,7 @@ export function DealCard({
             ) : (
               <User className="h-4 w-4" />
             )}
-            {/* Assignee Avatar */}
+            {/* Assignee Avatar or Name or Dash */}
             {deal.assigneeAvatar ? (
               <Avatar className="h-6 w-6">
                 <AvatarImage src={deal.assigneeAvatar} alt={deal.assigneeName} />
@@ -242,16 +242,18 @@ export function DealCard({
               </Avatar>
             ) : deal.assigneeName ? (
               <span>{deal.assigneeName}</span>
-            ) : null}
+            ) : (
+              <span>-</span>
+            )}
           </div>
-          {/* Website */}
-          {deal.website && (
+          {/* Website (always show) */}
+          {deal.website ? (
             <a href={deal.website} target="_blank" rel="noopener noreferrer" className="underline text-blue-400">Website</a>
+          ) : (
+            <span>-</span>
           )}
-          {/* Rating */}
-          {typeof deal.rating === 'number' && (
-            <span>⭐ {deal.rating}</span>
-          )}
+          {/* Rating (always show) */}
+          <span>{typeof deal.rating === 'number' ? `⭐ ${deal.rating}` : '⭐ -'}</span>
           {/* Due Date */}
           <div className="flex items-center gap-1">
             <Calendar className="h-3 w-3" />

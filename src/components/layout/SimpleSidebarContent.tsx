@@ -61,14 +61,17 @@ export function SimpleSidebarContent() {
             return (
               <div key={item.id} className="relative">
                 <Link
-                  to={item.path}
-                  onClick={() => setOpenMobile(false)} // Close mobile sidebar on navigation
+                  to={item.soon ? '#' : item.path}
+                  onClick={() => !item.soon && setOpenMobile(false)} // Close mobile sidebar on navigation if not soon
                   className={cn(
                     "flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 relative group text-sm w-full",
                     isActive 
                       ? "bg-[#000000] text-white font-medium shadow-sm" 
-                      : "text-white hover:text-white hover:bg-[#000000]"
+                      : "text-white hover:text-white hover:bg-[#000000]",
+                    item.soon && "pointer-events-none opacity-60"
                   )}
+                  tabIndex={item.soon ? -1 : 0}
+                  aria-disabled={!!item.soon}
                 >
                   {/* Active indicator */}
                   {isActive && (
@@ -96,7 +99,7 @@ export function SimpleSidebarContent() {
                     )}
                   >
                     {t(`app.sidebar.${item.labelKey}`)}
-                    {item.id === 'email' && (
+                    {item.soon && (
                       <span className="ml-2 text-xs text-gray-400">
                         ({t('app.sidebar.soon')})
                       </span>

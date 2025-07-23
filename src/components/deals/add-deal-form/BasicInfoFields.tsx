@@ -42,28 +42,25 @@ export function BasicInfoFields({ formData, onUpdateField }: BasicInfoFieldsProp
     <>
       <div className="col-span-2">
         <Label htmlFor="dealName">
-          {t('addDealModal.dealNameLabel')} <span className="text-red-500">*</span>
+          {t('addDealModal.dealNameLabel')}
         </Label>
         <Input
           id="dealName"
           value={formData.name}
           onChange={(e) => onUpdateField('name', e.target.value)}
           placeholder={t('addDealModal.dealNamePlaceholder')}
-          required
-          className={!formData.name.trim() ? "border-red-300 focus:border-red-500" : ""}
         />
       </div>
 
       <div>
         <Label htmlFor="client">
-          {t('addDealModal.clientLabel')} <span className="text-red-500">*</span>
+          {t('addDealModal.clientLabel')}
         </Label>
         <Select
           value={formData.clientId}
           onValueChange={handleClientSelect}
-          required
         >
-          <SelectTrigger className={!formData.clientId ? "border-red-300 focus:border-red-500" : ""}>
+          <SelectTrigger>
             <SelectValue placeholder={isLoadingClients ? "Loading clients..." : t('addDealModal.clientPlaceholder')} />
           </SelectTrigger>
           <SelectContent>
@@ -88,7 +85,7 @@ export function BasicInfoFields({ formData, onUpdateField }: BasicInfoFieldsProp
 
       <div>
         <Label htmlFor="value">
-          {t('addDealModal.valueLabel')} <span className="text-red-500">*</span>
+          {t('addDealModal.valueLabel')}
         </Label>
         <Input
           id="value"
@@ -96,9 +93,6 @@ export function BasicInfoFields({ formData, onUpdateField }: BasicInfoFieldsProp
           value={formData.value}
           onChange={(e) => onUpdateField('value', parseInt(e.target.value) || 0)}
           placeholder="0"
-          required
-          min="1"
-          className={formData.value <= 0 ? "border-red-300 focus:border-red-500" : ""}
         />
       </div>
 

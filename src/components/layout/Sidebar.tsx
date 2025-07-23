@@ -118,17 +118,17 @@ export const Sidebar = React.memo(function Sidebar({ isCollapsed, onToggle }: Si
                   className="relative"
                 >
                   <Link
-                    to={authLoading || authError ? '#' : item.path}
+                    to={authLoading || authError || item.soon ? '#' : item.path}
                     className={cn(
                       "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 relative group text-sm w-full",
                       isActive 
                         ? "bg-gray-800 text-white font-medium" 
                         : "text-white hover:text-white hover:bg-gray-800",
-                      (authLoading || authError) && "pointer-events-none opacity-60"
+                      (authLoading || authError || item.soon) && "pointer-events-none opacity-60"
                     )}
                     title={isCollapsed ? t(`app.sidebar.${item.labelKey}`) : undefined}
-                    tabIndex={authLoading || authError ? -1 : 0}
-                    aria-disabled={!!(authLoading || authError)}
+                    tabIndex={authLoading || authError || item.soon ? -1 : 0}
+                    aria-disabled={!!(authLoading || authError || item.soon)}
                   >
                     {/* Active indicator */}
                     {isActive && (
@@ -155,12 +155,7 @@ export const Sidebar = React.memo(function Sidebar({ isCollapsed, onToggle }: Si
                         )}
                       >
                         {t(`app.sidebar.${item.labelKey}`)}
-                        {item.id === 'ai-leads' && (
-                          <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-[#000000] text-white rounded">
-                            {t('app.sidebar.soon')}
-                          </span>
-                        )}
-                        {item.id === 'email' && (
+                        {item.soon && (
                           <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-[#000000] text-white rounded">
                             {t('app.sidebar.soon')}
                           </span>
@@ -177,16 +172,6 @@ export const Sidebar = React.memo(function Sidebar({ isCollapsed, onToggle }: Si
               );
             })}
           </div>
-          {/* Debug info */}
-          {!isCollapsed && (
-            <div 
-              className="mt-4 p-2 text-xs text-gray-400 border-t border-[#000000]"
-            >
-                <div>Theme: {document.documentElement.classList.contains('dark') ? 'dark' : 'light'}</div>
-                <div>Items: {filteredNavigationItems.length}</div>
-                <div>User: {userProfile && (userProfile.role === 'user' || userProfile.role === 'admin' || userProfile.role === 'manager') ? userProfile.role : 'none'}</div>
-            </div>
-          )}
         </nav>
       )}
     </div>

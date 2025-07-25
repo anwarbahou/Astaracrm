@@ -35,6 +35,14 @@ export const Navbar = () => {
             <Link to="/contact" className="text-white/80 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 rounded px-2 py-1">Contact Us</Link>
             <Link to="/careers" className="text-white/80 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 rounded px-2 py-1">Careers</Link>
             <Link to="/blogs" className="text-white/80 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 rounded px-2 py-1">Blogs</Link>
+            {/* Staff Login Glassy Button */}
+            <Link
+              to="/login"
+              className="ml-4 px-5 py-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 text-white font-semibold shadow-lg hover:bg-white/20 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50"
+              style={{ boxShadow: '0 4px 24px 0 rgba(255,255,255,0.10)' }}
+            >
+              Staff Login
+            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -93,6 +101,15 @@ export const Navbar = () => {
               >
                 Contact
               </a>
+              {/* Staff Login Glassy Button for Mobile */}
+              <Link
+                to="/login"
+                className="mt-2 px-5 py-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 text-white font-semibold shadow-lg hover:bg-white/20 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 text-center"
+                style={{ boxShadow: '0 4px 24px 0 rgba(255,255,255,0.10)' }}
+                onClick={toggleMobileMenu}
+              >
+                Staff Login
+              </Link>
             </div>
           </div>
         )}

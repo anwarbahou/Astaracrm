@@ -15,10 +15,8 @@ import { pageVariants } from "@/lib/animations";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState, lazy, Suspense } from "react";
 import { cn } from "@/lib/utils";
+import { initToolbar } from '@stagewise/toolbar';
 
-// Stagewise toolbar imports
-import { StagewiseToolbar } from "@stagewise/toolbar-react";
-import { ReactPlugin } from "@stagewise-plugins/react";
 
 // Lazy load pages for code splitting
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -239,6 +237,29 @@ const App = () => {
   const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
   const location = useLocation();
 
+  // Stagewise toolbar setup
+  useEffect(() => {
+    const setupStagewise = () => {
+      // Only initialize once and only in development mode
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔧 Stagewise: Initializing toolbar in development mode');
+        const stagewiseConfig = {
+          plugins: [],
+        };
+        try {
+          initToolbar(stagewiseConfig);
+          console.log('✅ Stagewise: Toolbar initialized successfully');
+        } catch (error) {
+          console.error('❌ Stagewise: Failed to initialize toolbar', error);
+        }
+      } else {
+        console.log('🚫 Stagewise: Not in development mode, skipping toolbar initialization');
+      }
+    };
+
+    setupStagewise();
+  }, []);
+
   useEffect(() => {
     // Set up WebGL error handling
     setupWebGLErrorHandling();
@@ -263,11 +284,6 @@ const App = () => {
         <NotificationProvider>
           <ThemeProvider>
             <TooltipProvider>
-            <StagewiseToolbar 
-              config={{
-                plugins: [ReactPlugin]
-              }}
-            />
             <Toaster />
             <Sonner />
             <SessionManager />

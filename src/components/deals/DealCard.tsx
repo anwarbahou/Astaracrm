@@ -12,6 +12,17 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { NoteModal } from '@/components/notes/NoteModal';
 import { useState } from 'react';
 
@@ -130,15 +141,44 @@ export function DealCard({
                     }}>
                       Attach Note
                     </DropdownMenuItem>
-                    {/* Remove the Delete Deal menu item */}
-                    {/*
-                    <DropdownMenuItem onClick={(e) => {
-                      e.stopPropagation();
-                      onDelete?.(deal);
-                    }} className="text-red-500">
-                      Delete Deal
-                    </DropdownMenuItem>
-                    */}
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <DropdownMenuItem 
+                          onSelect={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                          }}
+                          className="text-red-500"
+                        >
+                          Delete Deal
+                        </DropdownMenuItem>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Deal</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete "{deal.name}"? This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel onClick={(e) => e.stopPropagation()}>
+                            Cancel
+                          </AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDelete?.(deal);
+                            }}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                     <DropdownMenuSeparator />
                   </>
                 )}

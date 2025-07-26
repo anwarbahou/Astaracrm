@@ -140,6 +140,7 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
           clientPhone: deal.clientPhone || deal.client_phone || null, // Pass through phone number
           rating: typeof deal.rating === 'number' ? deal.rating : undefined, // New
           assigneeId: assigneeId,
+          website: deal.website || null, // Handle website field
         };
       });
     } catch (error) {
@@ -293,7 +294,8 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
     "expectedCloseDate": "2024-12-31",
     "tags": ["SaaS", "New Business"],
     "description": "Full redesign of client's existing website with new branding and features.",
-    "rating": 5
+    "rating": 5,
+    "website": "https://www.example.com"
   },
   {
     "name": "Mobile App Development",
@@ -304,7 +306,8 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
     "expectedCloseDate": "2024-11-15",
     "tags": ["Mobile", "App"],
     "description": "Developing a cross-platform mobile app.",
-    "rating": 4
+    "rating": 4,
+    "website": "https://www.example.com"
   }
 ]`}
               className="font-mono min-h-[300px]"
@@ -329,7 +332,8 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
     "currency": "MAD",
     "notes": "Key decision maker: Mr. El Amrani.",
     "rating": 5,
-    "assigneeId": "user-uuid"
+    "assigneeId": "user-uuid",
+    "website": "https://www.societe-atlas.ma"
   },
   {
     "name": "E-commerce Platform Upgrade",
@@ -346,7 +350,8 @@ export function ImportDealsModal({ open, onOpenChange, onImport }: ImportDealsMo
     "currency": "MAD",
     "notes": "Client interested in Payzone and CMI integration.",
     "rating": 4,
-    "assigneeId": "user-uuid"
+    "assigneeId": "user-uuid",
+    "website": "https://www.marocshop.ma"
   }
 ]`);
                 toast({

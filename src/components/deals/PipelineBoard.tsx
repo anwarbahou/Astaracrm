@@ -13,6 +13,7 @@ interface PipelineBoardProps {
   onDealSelect?: (deal: Deal, event: React.MouseEvent) => void;
   selectedDeals?: string[];
   onEdit: (deal: Deal) => void;
+  onDelete?: (deal: Deal) => void;
 }
 
 const MemoizedPipelineColumn = memo(PipelineColumn);
@@ -26,7 +27,8 @@ export function PipelineBoard({
   onBulkDelete,
   onDealSelect,
   selectedDeals = [],
-  onEdit
+  onEdit,
+  onDelete
 }: PipelineBoardProps) {
   const [draggedDeal, setDraggedDeal] = useState<Deal | null>(null);
   const [draggedDeals, setDraggedDeals] = useState<Deal[]>([]);
@@ -135,7 +137,8 @@ export function PipelineBoard({
     onDealSelect,
     selectedDeals,
     draggedDealsCount: draggedDeals.length,
-    onEdit
+    onEdit,
+    onDelete
   }), [
     stageDealsMap,
     onDealClick,
@@ -150,7 +153,8 @@ export function PipelineBoard({
     onDealSelect,
     selectedDeals,
     draggedDeals.length,
-    onEdit
+    onEdit,
+    onDelete
   ]);
 
   return (

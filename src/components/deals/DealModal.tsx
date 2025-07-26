@@ -1,12 +1,12 @@
 import { Deal, DealStage } from '@/types/deal';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetDescription,
-  SheetClose
+  SheetFooter
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,35 +19,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from 'react-i18next';
 import {
-  Calendar,
-  FileText,
-  MessageSquare,
-  Activity,
   Save,
   Trash2,
-  DollarSign,
-  Users,
-  Tag,
-  Clock,
-  BarChart,
-  Link,
-  AlertCircle,
-  X,
-  ChevronDown,
-  ChevronUp
+  AlertCircle
 } from 'lucide-react';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { useUsersForSelection } from '@/hooks/useUsers';
 import { useClientsForSelection } from '@/hooks/useClients';
 import { useAuth } from '@/contexts/AuthContext';
 import { noteService } from '@/services/noteService';
 import type { Note } from '@/types/note';
+import { useToast } from '@/hooks/use-toast';
+import { QuickNoteCreator } from '@/components/notes/QuickNoteCreator';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface DealModalProps {
   deal: Deal | null;
@@ -58,21 +44,69 @@ interface DealModalProps {
 }
 
 export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealModalProps) {
-  // 1. All useState hooks
-  const [editedDeal, setEditedDeal] = useState<Deal>(deal);
-  const [isEditing, setIsEditing] = useState(false);
-  const [activeTab, setActiveTab] = useState('general');
-  
-  // 2. All context hooks
   const { t } = useTranslation();
-  const { user, userProfile } = useAuth();
-  
-  // 3. All other hooks
-  const { users: allUsers, isLoading: usersLoading, userRole, currentUser } = useUsersForSelection();
+  const { toast } = useToast();
+  const { userProfile } = useAuth();
+  const { users: allUsers, isLoading: usersLoading, userRole } = useUsersForSelection();
   const { clients: allClients, isLoading: clientsLoading } = useClientsForSelection();
   
+  // Form state
+  const [formData, setFormData] = useState({
+    name: '',
+    client: '',
+    clientId: '',
+    clientPhone: '',
+    clientEmail: '',
+    value: 0,
+    currency: 'MAD',
+    stage: 'Prospect' as DealStage,
+    probability: 25,
+    expectedCloseDate: '',
+    source: '',
+    owner: '',
+    ownerId: '',
+    priority: 'Medium' as 'Low' | 'Medium' | 'High',
+    tags: [] as string[],
+    notes: '',
+    description: '',
+    website: '',
+    rating: undefined as number | undefined,
+    assigneeId: '',
+  });
+
   // Notes for this deal
   const [attachedNotes, setAttachedNotes] = useState<Note[]>([]);
+  const [showValidationError, setShowValidationError] = useState(false);
+
+  // Initialize form data when deal changes
+  useEffect(() => {
+    if (deal) {
+      setFormData({
+        name: deal.name || '',
+        client: deal.client || '',
+        clientId: deal.clientId || '',
+        clientPhone: deal.clientPhone || '',
+        clientEmail: deal.clientEmail || '',
+        value: deal.value || 0,
+        currency: deal.currency || 'MAD',
+        stage: deal.stage || 'Prospect',
+        probability: deal.probability || 25,
+        expectedCloseDate: deal.expectedCloseDate || '',
+        source: deal.source || '',
+        owner: deal.owner || '',
+        ownerId: deal.ownerId || '',
+        priority: deal.priority || 'Medium',
+        tags: deal.tags || [],
+        notes: deal.notes || '',
+        description: deal.description || '',
+        website: deal.website || '',
+        rating: deal.rating,
+        assigneeId: deal.assigneeId || '',
+      });
+    }
+  }, [deal]);
+
+  // Fetch notes
   useEffect(() => {
     async function fetchNotes() {
       if (deal && userProfile) {
@@ -85,442 +119,403 @@ export function DealModal({ deal, open, onOpenChange, onSave, onDelete }: DealMo
     fetchNotes();
   }, [deal, userProfile, userRole]);
 
-  // 4. Memoized values
-  const availableClients = useMemo(() => {
-    if (!allClients) return [];
-    if (userProfile?.role === 'admin') return allClients;
-    return allClients.filter(client => client.owner_id === userProfile?.id);
-  }, [allClients, userProfile]);
+  const updateField = (field: string, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
 
-  // 5. Effects
-  useEffect(() => {
-    if (deal) {
-      setEditedDeal(deal);
-      setIsEditing(true); // Always open in edit mode
+  const validateForm = (): boolean => {
+    return !!(
+      formData.name.trim() && 
+      formData.clientId && 
+      formData.expectedCloseDate && 
+      formData.value > 0 &&
+      formData.ownerId
+    );
+  };
+
+  const getValidationErrors = () => {
+    const errors = [];
+    if (!formData.name.trim()) errors.push('Deal name');
+    if (!formData.clientId) errors.push('Client assignment');
+    if (!formData.expectedCloseDate) errors.push('Expected close date');
+    if (formData.value <= 0) errors.push('Deal value (must be greater than 0)');
+    if (!formData.ownerId) errors.push('Deal owner');
+    return errors;
+  };
+
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      const errors = getValidationErrors();
+      setShowValidationError(true);
+      toast({
+        title: "Required Fields Missing",
+        description: `Please fill in: ${errors.join(', ')}`,
+        variant: "destructive",
+      });
+      return;
     }
-  }, [deal]);
 
-  // 6. Callbacks and handlers
-  const handleSave = () => {
-    onSave?.(editedDeal);
-    setIsEditing(false);
-  };
-
-  const updateField = <K extends keyof Deal>(field: K, value: Deal[K]) => {
-    setEditedDeal(prev => ({ ...prev, [field]: value }));
-  };
-
-  const getPriorityColor = (priority: string) => {
-    const colors = {
-      'High': 'bg-red-500',
-      'Medium': 'bg-yellow-500',
-      'Low': 'bg-green-500'
+    const updatedDeal: Deal = {
+      ...deal!,
+      ...formData,
+      tags: formData.tags,
+      priority: formData.priority,
     };
-    return colors[priority] || 'bg-gray-500';
+
+    onSave?.(updatedDeal);
+    setShowValidationError(false);
+  };
+
+  const handleClose = () => {
+    onOpenChange(false);
+    setShowValidationError(false);
   };
 
   const handleDelete = () => {
-    if (window.confirm('Are you sure you want to delete this deal?')) {
+    if (deal && window.confirm('Are you sure you want to delete this deal?')) {
       onDelete(deal.id);
       onOpenChange(false);
     }
   };
 
-  const getStageColor = (stage: DealStage) => {
-    const stageColors = {
-      'Lead': 'bg-purple-500',
-      'Prospect': 'bg-blue-500',
-      'Qualified': 'bg-green-500',
-      'Proposal': 'bg-yellow-500',
-      'Negotiation': 'bg-orange-500',
-      'Won/Lost': 'bg-gray-500'
-    };
-    return stageColors[stage] || 'bg-gray-500';
-  };
-
-  if (!deal || !editedDeal) return null;
-
-  const handleOpenChange = (open: boolean) => {
-    if (!open) {
-      setIsEditing(false);
+  const handleNoteCreated = async () => {
+    if (deal && userProfile) {
+      const allNotes = await noteService.getNotes({ userId: userProfile.id, userRole: userProfile.role as any });
+      setAttachedNotes(allNotes.filter(n => n.relatedEntityType === 'deal' && n.relatedEntityId === deal.id));
     }
-    onOpenChange(open);
   };
+
+  if (!deal) return null;
 
   return (
-    <Sheet open={open} onOpenChange={handleOpenChange}>
+    <Sheet open={open} onOpenChange={handleClose}>
       <SheetContent 
         side="right" 
         className="h-full w-full sm:w-[600px] lg:w-[700px] xl:w-[800px] border-l shadow-2xl bg-background/95 backdrop-blur-sm p-0 flex flex-col"
       >
-          
-          {/* Header content */}
-          <SheetHeader className="px-6 pb-4">
-            <div className="flex items-start justify-between w-full">
-              <div className="space-y-2 flex-1 min-w-0">
-                <SheetTitle className="text-xl sm:text-2xl font-semibold flex items-center gap-2">
-                {isEditing ? (
-                  <Input
-                    value={editedDeal.name}
-                    onChange={(e) => updateField('name', e.target.value)}
-                      className="text-xl sm:text-2xl font-semibold h-9 bg-transparent border-none p-0 focus-visible:ring-0"
-                      placeholder="Deal name..."
-                  />
-                ) : (
-                    <span className="truncate">{editedDeal.name}</span>
-                )}
-              </SheetTitle>
-                <SheetDescription className="flex flex-wrap items-center gap-2">
-                  <Badge variant="secondary" className={`${getStageColor(editedDeal.stage)} text-white text-xs`}>
-                  {editedDeal.stage}
-                </Badge>
-                  <Badge variant="outline" className={`${getPriorityColor(editedDeal.priority)} text-white text-xs`}>
-                  {editedDeal.priority} Priority
-                </Badge>
-                  <span className="text-muted-foreground text-xs">
-                  Created {new Date(editedDeal.created_at).toLocaleDateString()}
-                </span>
-              </SheetDescription>
-            </div>
-              
-              {/* Action buttons */}
-              <div className="flex items-center gap-2 ml-4">
-                <SheetClose asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <X className="h-4 w-4" />
-                  </Button>
-                </SheetClose>
-              {isEditing ? (
-                <>
-                    <Button variant="outline" size="sm" onClick={() => setIsEditing(false)}>
-                    Cancel
-                  </Button>
-                    <Button size="sm" onClick={handleSave}>
-                    <Save className="w-4 h-4 mr-2" />
-                      Save
-                  </Button>
-                </>
-              ) : (
-                  <Button variant="destructive" size="sm" onClick={handleDelete}>
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Delete
-                  </Button>
-              )}
-            </div>
-          </div>
+        <SheetHeader className="px-6 py-4">
+          <SheetTitle>Edit Deal</SheetTitle>
+          <SheetDescription>
+            Update the deal information
+            <br />
+            <span className="text-sm text-muted-foreground mt-2 block">
+              Fields marked with <span className="text-red-500">*</span> are required
+            </span>
+          </SheetDescription>
         </SheetHeader>
 
-          <Separator className="mx-6" />
+        <div className="flex-1 px-6 py-4 overflow-y-auto">
+          <form onSubmit={handleSave} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              {/* Basic Info Fields */}
+              <div className="space-y-4">
+                <div className="col-span-2">
+                  <Label htmlFor="dealName">Deal Name <span className="text-red-500">*</span></Label>
+                  <Input
+                    id="dealName"
+                    value={formData.name}
+                    onChange={(e) => updateField('name', e.target.value)}
+                    placeholder="Enter deal name"
+                  />
+                </div>
 
-          {/* Tabs for better organization */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
-            <TabsList className="grid w-full grid-cols-3 mx-6 mt-4">
-              <TabsTrigger value="general" className="text-xs">General</TabsTrigger>
-              <TabsTrigger value="financial" className="text-xs">Financial</TabsTrigger>
-              <TabsTrigger value="details" className="text-xs">Details</TabsTrigger>
-            </TabsList>
-
-            <ScrollArea className="flex-1 px-6 py-4">
-                            <TabsContent value="general" className="space-y-6 mt-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="deal-name" className="text-sm font-medium">Deal Name</Label>
-                    <Input 
-                      id="deal-name" 
-                      value={editedDeal.name} 
-                      onChange={e => updateField('name', e.target.value)} 
-                      disabled={!isEditing}
-                      className="h-10"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="client-name" className="text-sm font-medium">Client Name</Label>
-                    <Input 
-                      id="client-name" 
-                      value={editedDeal.client} 
-                      onChange={e => updateField('client', e.target.value)} 
-                      disabled={!isEditing}
-                      className="h-10"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="client-email" className="text-sm font-medium">Client Email</Label>
-                    <Input 
-                      id="client-email" 
-                      value={editedDeal.clientEmail || ''} 
-                      onChange={e => updateField('clientEmail', e.target.value)} 
-                      disabled={!isEditing}
-                      className="h-10"
-                      placeholder="client@company.com"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="client-phone" className="text-sm font-medium">Client Phone</Label>
-                    <Input 
-                      id="client-phone" 
-                      value={editedDeal.clientPhone || ''} 
-                      onChange={e => updateField('clientPhone', e.target.value)} 
-                      disabled={!isEditing}
-                      className="h-10"
-                      placeholder="+212 6XX XXX XXX"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="client" className="text-sm font-medium">Client</Label>
+                <div>
+                  <Label htmlFor="client">Client <span className="text-red-500">*</span></Label>
                   <Select
-                    value={editedDeal.clientId || ''}
-                    onValueChange={v => {
-                      const selectedClient = allClients.find(c => c.id === v);
-                      updateField('clientId', v);
+                    value={formData.clientId}
+                    onValueChange={(value) => {
+                      const selectedClient = allClients.find(c => c.id === value);
+                      updateField('clientId', value);
                       updateField('client', selectedClient?.name || '');
                     }}
-                    disabled={!isEditing || clientsLoading}
                   >
-                      <SelectTrigger className="h-10">
-                        <SelectValue placeholder="Select client" />
-                      </SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue placeholder={clientsLoading ? "Loading clients..." : "Select client"} />
+                    </SelectTrigger>
                     <SelectContent>
-                      {clientsLoading ? (
-                        <SelectItem value="loading" disabled>Loading clients...</SelectItem>
-                      ) : allClients.length === 0 ? (
-                        <SelectItem value="none" disabled>No clients available</SelectItem>
-                  ) : (
-                        allClients.map((client) => (
-                          <SelectItem key={client.id} value={client.id}>{client.name}</SelectItem>
-                        ))
-                      )}
+                      {allClients.map((client) => (
+                        <SelectItem key={client.id} value={client.id}>
+                          <div className="flex flex-col">
+                            <span className="font-medium">{client.name}</span>
+                            {client.email && (
+                              <span className="text-sm text-muted-foreground">{client.email}</span>
+                            )}
+                          </div>
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="owner" className="text-sm font-medium">Owner</Label>
-                  {userRole === 'admin' ? (
-                    <Select
-                      value={editedDeal.ownerId || ''}
-                      onValueChange={v => {
-                        const selectedUser = allUsers.find(u => u.id === v);
-                        updateField('ownerId', v);
-                        updateField('owner', selectedUser?.name || '');
-                      }}
-                      disabled={!isEditing || usersLoading}
-                    >
-                        <SelectTrigger className="h-10">
-                          <SelectValue placeholder="Select owner" />
-                        </SelectTrigger>
-                      <SelectContent>
-                        {usersLoading ? (
-                          <SelectItem value="loading" disabled>Loading users...</SelectItem>
-                        ) : allUsers.length === 0 ? (
-                          <SelectItem value="none" disabled>No users available</SelectItem>
-                        ) : (
-                          allUsers.map((user) => (
-                            <SelectItem key={user.id} value={user.id}>{user.name}</SelectItem>
-                          ))
-                        )}
-                      </SelectContent>
-                    </Select>
-                  ) : (
-                    <Input
-                      id="owner"
-                      value={editedDeal.owner}
-                      disabled
-                        className="h-10"
+
+                <div>
+                  <Label htmlFor="value">Value <span className="text-red-500">*</span></Label>
+                  <Input
+                    id="value"
+                    type="number"
+                    value={formData.value}
+                    onChange={(e) => updateField('value', parseInt(e.target.value) || 0)}
+                    placeholder="0"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="currency">Currency</Label>
+                  <Input
+                    id="currency"
+                    value={formData.currency}
+                    onChange={(e) => updateField('currency', e.target.value)}
+                    placeholder="MAD"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="client-email">Client Email</Label>
+                  <Input
+                    id="client-email"
+                    type="email"
+                    value={formData.clientEmail || ''}
+                    onChange={(e) => updateField('clientEmail', e.target.value)}
+                    placeholder="client@company.com"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="client-phone">Client Phone</Label>
+                  <Input
+                    id="client-phone"
+                    value={formData.clientPhone || ''}
+                    onChange={(e) => updateField('clientPhone', e.target.value)}
+                    placeholder="+212 6XX XXX XXX"
+                  />
+                </div>
+
+                <div className="col-span-2">
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    value={formData.description || ''}
+                    onChange={(e) => updateField('description', e.target.value)}
+                    placeholder="Detailed description of the deal..."
+                    rows={3}
+                  />
+                </div>
+
+                <div className="col-span-2">
+                  <Label>Notes</Label>
+                  
+                  {/* Quick Note Creator */}
+                  {deal && (
+                    <QuickNoteCreator
+                      dealId={deal.id}
+                      dealName={deal.name}
+                      onNoteCreated={handleNoteCreated}
+                      isEditing={true}
                     />
                   )}
+                  
+                  {/* Display attached notes */}
+                  {attachedNotes.length > 0 && (
+                    <div className="space-y-3 mt-4">
+                      <Label className="text-sm font-medium">Attached Notes</Label>
+                      <div className="space-y-2">
+                        {attachedNotes.map((note) => (
+                          <div key={note.id} className="p-3 bg-muted rounded-lg border">
+                            <div className="flex items-start justify-between mb-2">
+                              <h4 className="font-medium text-sm">{note.title}</h4>
+                              <Badge 
+                                variant={note.priority === 'high' ? 'destructive' : note.priority === 'medium' ? 'default' : 'secondary'}
+                                className="text-xs"
+                              >
+                                {note.priority}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground whitespace-pre-line">
+                              {note.content}
+                            </p>
+                            <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                              <span>{new Date(note.createdAt).toLocaleDateString()}</span>
+                              {note.isPinned && <Badge variant="outline" className="text-xs">Pinned</Badge>}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="stage" className="text-sm font-medium">Stage</Label>
-                  <Select value={editedDeal.stage} onValueChange={v => updateField('stage', v as DealStage)} disabled={!isEditing}>
-                      <SelectTrigger className="h-10">
-                        <SelectValue />
-                      </SelectTrigger>
+              </div>
+
+              {/* Deal Details Fields */}
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="stage">Stage</Label>
+                  <Select value={formData.stage} onValueChange={(value) => updateField('stage', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select stage" />
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Prospect">Prospect</SelectItem>
                       <SelectItem value="Lead">Lead</SelectItem>
                       <SelectItem value="Qualified">Qualified</SelectItem>
-                      <SelectItem value="Proposal">Proposal</SelectItem>
                       <SelectItem value="Negotiation">Negotiation</SelectItem>
                       <SelectItem value="Won/Lost">Won/Lost</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="priority" className="text-sm font-medium">Priority</Label>
-                  <Select value={editedDeal.priority} onValueChange={v => updateField('priority', v as Deal['priority'])} disabled={!isEditing}>
-                      <SelectTrigger className="h-10">
-                        <SelectValue />
-                      </SelectTrigger>
+
+                <div>
+                  <Label htmlFor="probability">Probability (%)</Label>
+                  <Input
+                    id="probability"
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={formData.probability}
+                    onChange={(e) => updateField('probability', parseInt(e.target.value) || 0)}
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="closeDate">Expected Close Date <span className="text-red-500">*</span></Label>
+                  <Input
+                    id="closeDate"
+                    type="date"
+                    value={formData.expectedCloseDate}
+                    onChange={(e) => updateField('expectedCloseDate', e.target.value)}
+                    required
+                    className={!formData.expectedCloseDate ? "border-red-300 focus:border-red-500" : ""}
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="source">Source</Label>
+                  <Input
+                    id="source"
+                    value={formData.source}
+                    onChange={(e) => updateField('source', e.target.value)}
+                    placeholder="Website, Referral, Cold Call, etc."
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="owner">Owner <span className="text-red-500">*</span></Label>
+                  <Select
+                    value={formData.ownerId}
+                    onValueChange={(value) => {
+                      const selectedUser = allUsers.find(u => u.id === value);
+                      updateField('ownerId', value);
+                      updateField('owner', selectedUser?.name || '');
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={usersLoading ? "Loading users..." : "Select owner"} />
+                    </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="High">High</SelectItem>
-                      <SelectItem value="Medium">Medium</SelectItem>
-                      <SelectItem value="Low">Low</SelectItem>
+                      {allUsers.map((user) => (
+                        <SelectItem key={user.id} value={user.id}>
+                          {user.name || user.email}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="tags" className="text-sm font-medium">Tags</Label>
-                    <Input 
-                      id="tags" 
-                      value={editedDeal.tags.join(', ')} 
-                      onChange={e => updateField('tags', e.target.value.split(',').map(t => t.trim()))} 
-                      disabled={!isEditing}
-                      placeholder="Enter tags separated by commas"
-                      className="h-10"
-                    />
+                </div>
+
+                <div>
+                  <Label htmlFor="priority">Priority</Label>
+                  <Select value={formData.priority} onValueChange={(value) => updateField('priority', value)}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Low">Low</SelectItem>
+                      <SelectItem value="Medium">Medium</SelectItem>
+                      <SelectItem value="High">High</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="assignee">Assignee</Label>
+                  <Select
+                    value={formData.assigneeId}
+                    onValueChange={(value) => updateField('assigneeId', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select assignee" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {allUsers.map((user) => (
+                        <SelectItem key={user.id} value={user.id}>
+                          {user.name || user.email}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="website">Website</Label>
+                  <Input
+                    id="website"
+                    value={formData.website || ''}
+                    onChange={(e) => updateField('website', e.target.value)}
+                    placeholder="https://example.com"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="rating">Rating</Label>
+                  <Input
+                    id="rating"
+                    type="number"
+                    min={1}
+                    max={5}
+                    value={formData.rating ?? ''}
+                    onChange={(e) => updateField('rating', e.target.value === '' ? undefined : Math.max(1, Math.min(5, Math.round(Number(e.target.value)))))}
+                    placeholder="1-5"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="tags">Tags</Label>
+                  <Input
+                    id="tags"
+                    value={formData.tags.join(', ')}
+                    onChange={(e) => updateField('tags', e.target.value.split(',').map(t => t.trim()))}
+                    placeholder="Enter tags separated by commas"
+                  />
+                </div>
+              </div>
             </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="assignee" className="text-sm font-medium">Assignee</Label>
-                    <Select
-                      value={editedDeal.assigneeId || ''}
-                      onValueChange={v => {
-                        const selectedUser = allUsers.find(u => u.id === v);
-                        updateField('assigneeId', v);
-                        updateField('assigneeName', selectedUser ? (selectedUser.name || selectedUser.email || '') : '');
-                      }}
-                      disabled={!isEditing || usersLoading}
-                    >
-                      <SelectTrigger className="h-10">
-                        <SelectValue placeholder="Select assignee" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {usersLoading ? (
-                          <SelectItem value="loading" disabled>Loading users...</SelectItem>
-                        ) : allUsers.length === 0 ? (
-                          <SelectItem value="none" disabled>No users available</SelectItem>
-                        ) : (
-                          allUsers.map((user) => (
-                            <SelectItem key={user.id} value={user.id}>{user.name || user.email}</SelectItem>
-                          ))
-                        )}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="website" className="text-sm font-medium">Website</Label>
-                    <Input
-                      id="website"
-                      value={editedDeal.website || ''}
-                      onChange={e => updateField('website', e.target.value)}
-                      disabled={!isEditing}
-                      className="h-10"
-                      placeholder="https://example.com"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="rating" className="text-sm font-medium">Rating</Label>
-                    <Input
-                      id="rating"
-                      type="number"
-                      min={1}
-                      max={5}
-                      value={editedDeal.rating ?? ''}
-                      onChange={e => updateField('rating', e.target.value === '' ? undefined : Math.max(1, Math.min(5, Math.round(Number(e.target.value))))) }
-                      disabled={!isEditing}
-                      className="h-10"
-                      placeholder="1-5"
-                    />
-                  </div>
-                </div>
-              </TabsContent>
 
-              <TabsContent value="financial" className="space-y-6 mt-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="value" className="text-sm font-medium">Deal Value</Label>
-                    <Input 
-                      id="value" 
-                      type="number" 
-                      value={editedDeal.value} 
-                      onChange={e => updateField('value', Number(e.target.value))} 
-                      disabled={!isEditing}
-                      className="h-10"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="currency" className="text-sm font-medium">Currency</Label>
-                    <Input 
-                      id="currency" 
-                      value={editedDeal.currency} 
-                      onChange={e => updateField('currency', e.target.value)} 
-                      disabled={!isEditing}
-                      className="h-10"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="probability" className="text-sm font-medium">Probability (%)</Label>
-                    <Input 
-                      id="probability" 
-                      type="number"
-                      min="0"
-                      max="100"
-                      value={editedDeal.probability} 
-                      onChange={e => updateField('probability', Number(e.target.value))} 
-                      disabled={!isEditing}
-                      className="h-10"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="expected-close-date" className="text-sm font-medium">Expected Close Date</Label>
-                    <Input 
-                      id="expected-close-date" 
-                      value={editedDeal.expectedCloseDate} 
-                      onChange={e => updateField('expectedCloseDate', e.target.value)} 
-                      disabled={!isEditing}
-                      className="h-10"
-                      type="date"
-                    />
-                  </div>
-                </div>
-              </TabsContent>
+            {showValidationError && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  Please fill in all required fields: {getValidationErrors().join(', ')}
+                </AlertDescription>
+              </Alert>
+            )}
+          </form>
+        </div>
 
-              <TabsContent value="details" className="space-y-6 mt-4">
-                <div className="grid grid-cols-1 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="source" className="text-sm font-medium">Source</Label>
-                    <Input 
-                      id="source" 
-                      value={editedDeal.source} 
-                      onChange={e => updateField('source', e.target.value)} 
-                      disabled={!isEditing}
-                      className="h-10"
-                      placeholder="Website, Referral, Cold Call, etc."
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="description" className="text-sm font-medium">Description</Label>
-                    <Textarea 
-                      id="description" 
-                      value={editedDeal.description || ''} 
-                      onChange={e => updateField('description', e.target.value)} 
-                      disabled={!isEditing}
-                      placeholder="Detailed description of the deal..."
-                      className="min-h-[120px] resize-none"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="notes" className="text-sm font-medium">Notes</Label>
-                    <Textarea 
-                      id="notes" 
-                      value={editedDeal.notes || ''} 
-                      onChange={e => updateField('notes', e.target.value)} 
-                      disabled={!isEditing}
-                      placeholder="Add notes about this deal..."
-                      className="min-h-[120px] resize-none"
-                    />
-                  </div>
-                </div>
-              </TabsContent>
-            </ScrollArea>
-          </Tabs>
-        </SheetContent>
-      </Sheet>
+        <SheetFooter className="px-6 py-4 border-t">
+          <Button type="button" variant="destructive" onClick={handleDelete}>
+            <Trash2 className="h-4 w-4 mr-2" />
+            Delete
+          </Button>
+          <div className="flex gap-2">
+            <Button type="button" variant="outline" onClick={handleClose}>
+              Cancel
+            </Button>
+            <Button type="submit" onClick={handleSave}>
+              <Save className="h-4 w-4 mr-2" />
+              Save Changes
+            </Button>
+          </div>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
   );
 }

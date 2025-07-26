@@ -40,6 +40,11 @@ import { withPageTitle } from '@/components/withPageTitle';
 import { useLocation } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetClose } from '@/components/ui/sheet';
+import { QuickNoteCreator } from '@/components/notes/QuickNoteCreator';
+import { NoteEditor } from '@/components/notes/NoteEditor';
+import { noteService } from '@/services/noteService';
+import { useAuth } from '@/contexts/AuthContext';
+import type { Note } from '@/types/note';
 
 function Deals() {
   const { t } = useTranslation();
@@ -63,9 +68,11 @@ function Deals() {
   const [users, setUsers] = useState<any[]>([]);
   const [previewDeal, setPreviewDeal] = useState<Deal | null>(null);
   const [previewModalOpen, setPreviewModalOpen] = useState(false);
+  const [previewNotes, setPreviewNotes] = useState<Note[]>([]);
   
   const { toast } = useToast();
   const location = useLocation();
+  const { userProfile } = useAuth();
   
   // Try to use backend data, fallback to mock data if deals table doesn't exist
   const { 
@@ -125,6 +132,34 @@ function Deals() {
   const handlePreviewDeal = (deal: Deal) => {
     setPreviewDeal(deal);
     setPreviewModalOpen(true);
+    // Fetch notes for this deal
+    if (userProfile) {
+      fetchPreviewNotes(deal.id);
+    }
+  };
+
+  const fetchPreviewNotes = async (dealId: string) => {
+    if (!userProfile) return;
+    
+    try {
+      const allNotes = await noteService.getNotes({ 
+        userId: userProfile.id, 
+        userRole: userProfile.role as any 
+      });
+      const dealNotes = allNotes.filter(n => 
+        n.relatedEntityType === 'deal' && n.relatedEntityId === dealId
+      );
+      setPreviewNotes(dealNotes);
+    } catch (error) {
+      console.error('Error fetching preview notes:', error);
+      setPreviewNotes([]);
+    }
+  };
+
+  const handlePreviewNoteCreated = async () => {
+    if (previewDeal && userProfile) {
+      await fetchPreviewNotes(previewDeal.id);
+    }
   };
 
   const handleDealSelect = (deal: Deal) => {
@@ -318,6 +353,11 @@ function Deals() {
   const handleDealEdit = (deal: Deal) => {
     setSelectedDeal(deal);
     setDealModalOpen(true);
+  };
+
+  // Add handler for individual deal deletion
+  const handleDealDeleteFromCard = (deal: Deal) => {
+    handleDealDelete(deal.id);
   };
 
   // Fetch users for avatar display
@@ -550,6 +590,7 @@ function Deals() {
           selectedDeals={selectedDeals}
           onBulkDelete={handleDeleteAllDeals}
           onEdit={handleDealEdit} // Pass the edit handler
+          onDelete={handleDealDeleteFromCard} // Pass the delete handler
         />
       ) : (
         <DealsListTable
@@ -692,9 +733,32 @@ function Deals() {
               </div>
               <div>
                 <div className="font-semibold text-sm text-muted-foreground mb-1">Notes</div>
-                <div className="bg-muted rounded-md p-3 text-sm whitespace-pre-line">
-                  {previewDeal?.notes || <span className="text-muted-foreground">No notes provided.</span>}
-                </div>
+                
+                {/* Quick Note Creator */}
+                {previewDeal && (
+                  <QuickNoteCreator
+                    dealId={previewDeal.id}
+                    dealName={previewDeal.name}
+                    onNoteCreated={handlePreviewNoteCreated}
+                    isEditing={true} // Always allow editing in preview
+                  />
+                )}
+                
+                {/* Display attached notes */}
+                {previewNotes.length > 0 && (
+                  <div className="space-y-3 mt-4">
+                    <div className="font-semibold text-sm text-muted-foreground">Attached Notes</div>
+                    <div className="space-y-2">
+                      {previewNotes.map((note) => (
+                        <NoteEditor
+                          key={note.id}
+                          note={note}
+                          onNoteUpdated={handlePreviewNoteCreated}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

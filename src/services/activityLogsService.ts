@@ -51,7 +51,7 @@ class ActivityLogsService {
         throw error;
       }
 
-      // Get user data for each notification
+      // Analyze the 
       const userIds = [...new Set([
         ...notificationsData.map((n: any) => n.user_id),
         ...notificationsData.map((n: any) => n.target_user_id)
